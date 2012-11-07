@@ -12,6 +12,7 @@ abstract class AmazonCore{
     protected $marketplaceId;
     protected $secretKey;
     protected $options;
+    protected $mockMode;
     
     protected function __construct($s){
         include('/var/www/athena/plugins/newAmazon/amazon-config.php');
@@ -51,6 +52,7 @@ abstract class AmazonCore{
         
         $this->options['SignatureVersion'] = 2;
         $this->options['SignatureMethod'] = 'HmacSHA256';
+        $this->options['Version'] = '2011-01-01';
     }
     
     protected function throttle(){
@@ -150,9 +152,7 @@ abstract class AmazonCore{
 
 //handles order retrieval
 class AmazonOrder extends AmazonCore{
-    private $orderId;
     private $itemFlag;
-    private $tokenItemFlag;
     private $data;
 
     public function __construct($s,$o = null,$d = null){
@@ -172,7 +172,13 @@ class AmazonOrder extends AmazonCore{
         $this->throttleTime = $throttleTimeOrder;
         $this->throttleCount = $this->throttleLimit;
         
-        $this->options['Action'] = 'GetOrder';
+        if ($throttleSafe){
+            $this->throttleLimit++;
+            $this->throttleTime++;
+            $this->throttleCount = $this->throttleLimit;
+        }
+        
+        //$this->options['Action'] = 'GetOrder';
     }
     
     
@@ -427,10 +433,6 @@ class AmazonOrderList extends AmazonCore implements Iterator{
     private $itemFlag;
     private $tokenUseFlag;
     private $tokenItemFlag;
-    private $createdBefore;
-    private $createdAfter;
-    private $modifiedBefore;
-    private $modifiedAfter;
 
     public function __construct(){
         $this->i = 0;
@@ -488,6 +490,45 @@ class AmazonOrderList extends AmazonCore implements Iterator{
         $this->orderList = array();
     }
 
+    protected function prepareToken(){
+        if (!$this->tokenFlag){
+            return false;
+        } else {
+            $this->options['NextToken'] = $this->data['NextToken'];
+            $this->options['Action'] = 'ListOrdersByNextToken';
+            
+            //When using tokens, only the NextToken option should be used
+            foreach($this->options as $o => $v){
+                if ($o == 'AWSAccessKeyId'){
+                    continue;
+                } else
+                if ($o == 'Action'){
+                    continue;
+                } else
+                if ($o == 'SellerId'){
+                    continue;
+                } else
+                if ($o == 'SignatureVersion'){
+                    continue;
+                } else
+                if ($o == 'SignatureMethod'){
+                    continue;
+                } else
+                if ($o == 'NextToken'){
+                    continue;
+                } else
+                if ($o == 'Timestamp'){
+                    continue;
+                } else
+                if ($o == 'Version'){
+                    continue;
+                } else {
+                    unset($this->options[$o]);
+                }
+            }
+        }
+    }
+    
     /**
      * Sets the time frame for the orders fetched.
      * 
@@ -507,21 +548,108 @@ class AmazonOrderList extends AmazonCore implements Iterator{
             if ($upper){
                 $before = strtotime($upper);
             }
+            if ($mode == 'Created'){
+                $this->options['CreatedAfter'] = $after;
+                if ($before) {
+                    $this->options['CreatedBefore'] = $before;
+                }
+                unset($this->options['LastUpdatedAfter']);
+                unset($this->options['LastUpdatedBefore']);
+            } else if ($mode == 'Modified'){
+                $this->options['LastUpdatedAfter'] = $after;
+                if ($before){
+                    $this->options['LastUpdatedBefore'] = $before;
+                }
+                unset($this->options['CreatedAfter']);
+                unset($this->options['CreatedBefore']);
+            } else {
+                throw new InvalidArgumentException('First parameter should be either "Created" or "Modified".');
+            }
+            
         } catch (Exception $e){
             throw new InvalidArgumentException('Second/Third parameters should be timestamps.');
         }
         
-        if ($mode == 'Created'){
-            $this->options['CreatedAfter'] = $after;
-            $this->options['CreatedBefore'] = $before;
-        } else if ($mode == 'Modified'){
-            $this->options['LastUpdatedAfter'] = $after;
-            $this->options['LastUpdatedBefore'] = $before;
+    }
+    
+    /**
+     * Sets option for status filter of next request
+     * @param array $list array of strings, or a single string
+     * @throws InvalidArgumentException
+     */
+    public function setOrderStatusFilter($list){
+        if (is_string($list)){
+            //if single string, set as filter
+            $this->resetOrderStatusFilter();
+            $this->options['OrderStatus.Status.1'] = $list;
+        } else if (is_array($list)){
+            //if array of strings, set all filters
+            $this->resetOrderStatusFilter();
+            $i = 1;
+            foreach($list as $x){
+                $this->options['OrderStatus.Status.'.$i++] = $x;
+            }
         } else {
-            throw new InvalidArgumentException('First parameter should be either "Created" or "Modified".');
+            throw new InvalidArgumentException('setOrderStatusFilter() needs a string or array of strings');
         }
     }
 
+    /**
+     * Resets the Order Status Filter to default
+     */
+    public function resetOrderStatusFilter(){
+        for ($i = 1; $i <= 7; $i++){
+            if (array_key_exists('OrderStatus.Status.'.$i,$this->options)){
+                unset($this->options['OrderStatus.Status.'.$i]);
+            }
+        }
+    }
+    
+    /**
+     * Sets (or resets) the Fulfillment Channel Filter
+     * @param string $filter 'AFN' or 'MFN' or null
+     */
+    public function setFulfillmentChannelFilter($filter = null){
+        if ($filter == 'AFN' || $filter == 'MFN'){
+            $this->options['FulfillmentChannel.Channel.1'] = $filter;
+        } else {
+            unset($this->options['FulfillmentChannel.Channel.1']);
+        }
+    }
+    
+    /**
+     * Sets option for payment method filter of next request
+     * @param array $list array of strings, or a single string
+     * @throws InvalidArgumentException
+     */
+    public function setPaymentMethodFilter($list){
+        if (is_string($list)){
+            //if single string, set as filter
+            $this->resetPaymentMethodFilter();
+            $this->options['PaymentMethod.1'] = $list;
+        } else if (is_array($list)){
+            //if array of strings, set all filters
+            $this->resetPaymentMethodFilter();
+            $i = 1;
+            foreach($list as $x){
+                $this->options['PaymentMethod.'.$i++] = $x;
+            }
+        } else {
+            throw new InvalidArgumentException('setOrderStatusFilter() needs a string or array of strings');
+        }
+    }
+    
+    /**
+     * Resets the Payment Method Filter to default
+     */
+    public function resetPaymentMethodFilter(){
+        for ($i = 1; $i <= 7; $i++){
+            if (array_key_exists('PaymentMethod.'.$i,$this->options)){
+                unset($this->options['PaymentMethod.'.$i]);
+            }
+        }
+    }
+    
     /**
      * Iterator function
      * @return type
@@ -563,7 +691,6 @@ class AmazonOrderList extends AmazonCore implements Iterator{
 
 //contains info for a single item
 class AmazonItemList extends AmazonCore implements Iterator{
-    private $orderId;
     private $itemList;
     private $tokenFlag;
     private $tokenUseFlag;
@@ -578,19 +705,19 @@ class AmazonItemList extends AmazonCore implements Iterator{
         $this->throttleLimit = $throttleLimitItem;
         $this->throttleTime = $throttleTimeItem;
         $this->throttleCount = $this->throttleLimit;
-    }
-    
-    public function setUseToken($b){
-        if (is_bool($b)){
-            $this->tokenUseFlag = $b;
-        } else {
-            return false;
+        
+        if ($throttleSafe){
+            $this->throttleLimit++;
+            $this->throttleTime++;
+            $this->throttleCount = $this->throttleLimit;
         }
     }
     
+    
+    
     public function setOrderId($id){
         if (!is_null($id)){
-            $this->orderId = $id;
+            $this->options['AmazonOrderId'] = $id;
         } else {
             throw new InvalidArgumentException('Order ID was Null');
         }
@@ -601,26 +728,61 @@ class AmazonItemList extends AmazonCore implements Iterator{
         
     }
 
+    /**
+     * Returns whether or not the Item List has a token available
+     * @return boolean
+     */
     public function hasToken(){
         return $this->tokenFlag;
     }
 
+    /**
+     * Sets whether or not the ItemList should automatically use tokens if it receives one. This includes item tokens
+     * @param boolean $b
+     * @return boolean false if invalid paramter
+     */
+    public function setUseToken($b){
+        if (is_bool($b)){
+            $this->tokenUseFlag = $b;
+        } else {
+            return false;
+        }
+    }
+    
+    /**
+     * Iterator function
+     * @return type
+     */
     public function current(){
        return $this->itemList[$this->i]; 
     }
 
+    /**
+     * Iterator function
+     */
     public function rewind(){
         $this->i = 0;
     }
 
+    /**
+     * Iterator function
+     * @return type
+     */
     public function key() {
         return $this->i;
     }
 
+    /**
+     * Iterator function
+     */
     public function next() {
         $this->i++;
     }
 
+    /**
+     * Iterator function
+     * @return type
+     */
     public function valid() {
         return isset($this->itemList[$this->i]);
     }

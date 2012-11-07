@@ -21,7 +21,7 @@ $store['BigKitchen']['keyId'] = 'KEYGOESHERE';
 $store['BigKitchen']['secretKey'] = 'SECRET';
 
 
-//Amazon Throttle Values
+//Amazon Throttle Values in seconds
 //Do not modify unless Amazon changes the values
 //Fetching Orders
 $throttleLimitOrder = 6;

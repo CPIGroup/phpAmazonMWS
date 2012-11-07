@@ -66,6 +66,48 @@ abstract class AmazonCore{
         $this->throttleCount = $this->throttleLimit;
     }
     
+    public function genRequest(){
+        $url = $this->urlbase;
+        
+        //options array... redo this using foreach because it's brilliant
+        
+        
+        $sig = $this->genSig();
+        //print_r($this->options);
+        
+        $this->debug();
+    }
+    
+    protected function genSig(){
+        //start with method
+        $query = 'POST';
+        //add Amazon endpoint
+        $query .= $this->urlbase;
+        
+        if (is_array($this->options)){
+            ksort($this->options);
+            
+            //add query bits
+            foreach ($this->options as $i => $x){
+                if (!$firstdone){
+                    $query .= '?';
+                    $firstdone = true;
+                } else {
+                    $query .= '&';
+                }
+                
+                $query .= $i.'='.$x;
+            }
+            
+        } else {
+            throw new InvalidArgumentException('No query options set!');
+        }
+        
+        //DEBUG MODE IS GO
+        echo $query;
+        
+        return hash_hmac('sha256', $query, $this->secretKey);
+    }
 
     protected function makesomekindofrequest(){
         include('/var/www/athena/includes/includes.php');
@@ -110,16 +152,7 @@ class AmazonOrder extends AmazonCore{
         $this->options['Action'] = 'GetOrder';
     }
     
-    public function genRequest(){
-        $url = $this->urlbase;
-        
-        //options array... redo this using foreach because it's brilliant
-        
-        $sig = hash_hmac('sha256', $url, $this->secretKey);
-        //print_r($this->options);
-        
-        $this->debug();
-    }
+    
     
     public function setFetchItems($b = true){
         if (is_bool($b)){
@@ -129,10 +162,98 @@ class AmazonOrder extends AmazonCore{
         }
     }
 
-    public function getDetails(){
-        
+    public function getAllDetails(){
+        return $this->data;
+    }
+    
+    public function getAmazonOrderId(){
+        return $this->data['AmazonOrderId'];
+    }
+    
+    public function getSellerOrderId(){
+        return $this->data['SellerOrderId'];
+    }
+    
+    public function PurchaseDate(){
+        return $this->data['PurchaseDate'];
+    }
+    
+    public function getLastUpdateDate(){
+        return $this->data['LastUpdateDate'];
+    }
+    
+    public function getOrderStatus(){
+        return $this->data['OrderStatus'];
+    }
+    
+    public function getFulfillmentChannel(){
+        return $this->data['FulfillmentChannel'];
+    }
+    
+    public function getSalesChannel(){
+        return $this->data['SalesChannel'];
+    }
+    
+    public function getOrderChannel(){
+        return $this->data['OrderChannel'];
+    }
+    
+    public function getShipServiceLevel(){
+        return $this->data['ShipServiceLevel'];
+    }
+    
+    public function getShippingAddress(){
+        return $this->data['ShippingAddress'];
+    }
+    
+    public function getOrderTotal(){
+        return $this->data['OrderTotal'];
     }
 
+    public function getNumberofItemsShipped(){
+        return $this->data['NumberOfItemsShipped'];
+    }
+    
+    public function getNumberOfItemsUnshipped(){
+        return $this->data['NumberOfItemsUnshipped'];
+    }
+    
+    public function getPaymentExecutionDetail(){
+        return $this->data['PaymentExecutionDetail'];
+    }
+    
+    public function getPayment(){
+        return $this->data['Payment'];
+    }
+    
+    public function getPaymentMethod(){
+        return $this->data['PaymentMethod'];
+    }
+    
+    public function getMarketplaceId(){
+        return $this->data['MarketplaceId'];
+    }
+    
+    public function getBuyerName(){
+        return $this->data['BuyerName'];
+    }
+    
+    public function getBuyerEmail(){
+        return $this->data['BuyerEmail'];
+    }
+    
+    public function getShipServiceLevelCategory(){
+        return $this->data['AmazonOrderId'];
+    }
+    
+    public function getPercentShipped(){
+        if (array_key_exists('NumberOfItemsShipped',$this->data) && array_key_exists('NumberOfItemsUnshipped',$this->data)){
+            $ratio = $this->data['NumberOfItemsShipped'] / $this->data['NumberOfItemsUnshipped'];
+        }
+        
+        return $ratio;
+    }
+    
     public function fetchOrder(){
         $this->options['Timestamp'] = date('Y-m-d\TH%3\Ai%3\AsO');
     }

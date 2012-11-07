@@ -66,6 +66,14 @@ abstract class AmazonCore{
         $this->throttleCount = $this->throttleLimit;
     }
     
+    /**
+     * Returns all information for sake of convenience
+     * @return array All information in an associative array
+     */
+    public function getAllDetails(){
+        return $this->data;
+    }
+    
     public function genRequest(){
         $url = $this->urlbase;
         $url .= $this->urlbranch;
@@ -170,7 +178,7 @@ class AmazonOrder extends AmazonCore{
     
     /**
      * Sets the flag for whether or not to fetch items
-     * @param bool $b True to get items, False to not
+     * @param boolean $b True to get items, False to not
      * @throws InvalidArgumentException
      */
     public function setFetchItems($b = true){
@@ -181,14 +189,6 @@ class AmazonOrder extends AmazonCore{
         }
     }
 
-    /**
-     * Returns all order information for sake of convenience
-     * @return array All information in an associative array
-     */
-    public function getAllDetails(){
-        return $this->data;
-    }
-    
     /**
      * Returns the Amazon Order ID for the Order
      * @return string Amazon's Order ID
@@ -313,7 +313,7 @@ class AmazonOrder extends AmazonCore{
 
     /**
      * Returns the number of items in the Order that have been shipped
-     * @return int
+     * @return integer
      */
     public function getNumberofItemsShipped(){
         return $this->data['NumberOfItemsShipped'];
@@ -321,7 +321,7 @@ class AmazonOrder extends AmazonCore{
     
     /**
      * Returns the number of items in the Order that have yet to be shipped
-     * @return int
+     * @return integer
      */
     public function getNumberOfItemsUnshipped(){
         return $this->data['NumberOfItemsUnshipped'];
@@ -436,27 +436,47 @@ class AmazonOrderList extends AmazonCore implements Iterator{
         $this->i = 0;
     }
     
+    /**
+     * Returns whether or not the Order List has a token available
+     * @return boolean
+     */
     public function hasToken(){
         return $this->tokenFlag;
     }
 
+    /**
+     * Sets whether or not the OrderList should automatically grab items for the Orders it receives
+     * @param boolean $b
+     * @return boolean false if invalid paramter
+     */
     public function setFetchItems($b = true){
         if (is_bool($b)){
             $this->itemFlag = $b;
-        } else {
-            throw new InvalidArgumentException('The paramater for setFetchItems() should be either true or false.');
-        }
-    }
-    
-    public function setUseToken($b){
-        if (is_bool($b)){
-            $this->tokenUseFlag = $b;
         } else {
             return false;
         }
     }
     
-    public function setUseItemToken($b){
+    /**
+     * Sets whether or not the OrderList should automatically use tokens if it receives one. This includes item tokens
+     * @param boolean $b
+     * @return boolean false if invalid paramter
+     */
+    public function setUseToken($b = true){
+        if (is_bool($b)){
+            $this->tokenUseFlag = $b;
+            $this->tokenItemFlag = $b;
+        } else {
+            return false;
+        }
+    }
+    
+    /**
+     * Sets whether or not the OrderList should automatically use tokens when fetching items
+     * @param type $b
+     * @return boolean false if invalid paramter
+     */
+    public function setUseItemToken($b = true){
         if (is_bool($b)){
             $this->tokenItemFlag = $b;
         } else {
@@ -468,6 +488,15 @@ class AmazonOrderList extends AmazonCore implements Iterator{
         $this->orderList = array();
     }
 
+    /**
+     * Sets the time frame for the orders fetched.
+     * 
+     * Sets the time frame for the orders fetched. If no times are specified, times default to the current time
+     * @param string $mode "Created" or "Modified"
+     * @param dateTime $lower Date the order was created after
+     * @param dateTime $upper Date the order was created before
+     * @throws InvalidArgumentException
+     */
     public function setLimits($mode,$lower = null,$upper = null){
         try{
             if ($lower){
@@ -493,22 +522,40 @@ class AmazonOrderList extends AmazonCore implements Iterator{
         }
     }
 
+    /**
+     * Iterator function
+     * @return type
+     */
     public function current(){
        return $this->orderList[$this->i]; 
     }
 
+    /**
+     * Iterator function
+     */
     public function rewind(){
         $this->i = 0;
     }
 
+    /**
+     * Iterator function
+     * @return type
+     */
     public function key() {
         return $this->i;
     }
 
+    /**
+     * Iterator function
+     */
     public function next() {
         $this->i++;
     }
 
+    /**
+     * Iterator function
+     * @return type
+     */
     public function valid() {
         return isset($this->orderList[$this->i]);
     }

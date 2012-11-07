@@ -68,16 +68,33 @@ abstract class AmazonCore{
     
     public function genRequest(){
         $url = $this->urlbase;
+        $url .= $this->urlbranch;
         
-        //options array... redo this using foreach because it's brilliant
+        $query = '';
         
+        foreach ($this->options as $i => $x){
+                if (!$firstdone){
+                    $query .= '?';
+                    $firstdone = true;
+                } else {
+                    $query .= '&';
+                }
+                
+                $query .= $i.'='.$x;
+            }
         
         $sig = $this->genSig();
-        //print_r($this->options);
+        
+        $query .= $sig;
         
         $this->debug();
     }
     
+    /**
+     * Generates the signature hash for signing the request
+     * @return string has string
+     * @throws InvalidArgumentException if no options are detected
+     */
     protected function genSig(){
         //start with method
         $query = 'POST';
@@ -100,7 +117,7 @@ abstract class AmazonCore{
             }
             
         } else {
-            throw new InvalidArgumentException('No query options set!');
+            throw new Exception('No query options set!');
         }
         
         //DEBUG MODE IS GO
@@ -119,9 +136,7 @@ abstract class AmazonCore{
     }
     
     protected function debug(){
-        echo '<br>';
         myPrint($this->options);
-        echo '<br>';
     }
 }
 
@@ -153,7 +168,11 @@ class AmazonOrder extends AmazonCore{
     }
     
     
-    
+    /**
+     * Sets the flag for whether or not to fetch items
+     * @param bool $b True to get items, False to not
+     * @throws InvalidArgumentException
+     */
     public function setFetchItems($b = true){
         if (is_bool($b)){
             $this->itemFlag = $b;
@@ -162,90 +181,214 @@ class AmazonOrder extends AmazonCore{
         }
     }
 
+    /**
+     * Returns all order information for sake of convenience
+     * @return array All information in an associative array
+     */
     public function getAllDetails(){
         return $this->data;
     }
     
+    /**
+     * Returns the Amazon Order ID for the Order
+     * @return string Amazon's Order ID
+     */
     public function getAmazonOrderId(){
         return $this->data['AmazonOrderId'];
     }
     
+    /**
+     * Returns the Seller ID for the Order
+     * @return string Seller-defined Order ID
+     */
     public function getSellerOrderId(){
         return $this->data['SellerOrderId'];
     }
     
+    /**
+     * Returns the purchase date of the Order
+     * @return dateTime timestamp
+     */
     public function PurchaseDate(){
         return $this->data['PurchaseDate'];
     }
     
+    /**
+     * Returns the timestamp of the last modification date
+     * @return dateTime timestamp
+     */
     public function getLastUpdateDate(){
         return $this->data['LastUpdateDate'];
     }
     
+    /**
+     * Returns the status of the Order
+     * 
+     * Returns the status of the Order. Possible Order Statuses are:
+     * -Pending
+     * -Unshipped
+     * -Partially Shipped
+     * -Shipped
+     * -InvoiceUnconfirmed (China only)
+     * -Canceled
+     * -Unfulfillable
+     * @return string order status
+     */
     public function getOrderStatus(){
         return $this->data['OrderStatus'];
     }
     
+    /**
+     * Returns the Fulfillment Channel (AFN or MFN)
+     * @return string either AFN or MFN
+     */
     public function getFulfillmentChannel(){
         return $this->data['FulfillmentChannel'];
     }
     
+    /**
+     * Returns the Sales Channel Channel of the Order
+     * @return string
+     */
     public function getSalesChannel(){
         return $this->data['SalesChannel'];
     }
     
+    /**
+     * Returns the Order Channel of the first item in the Order.
+     * @return string
+     */
     public function getOrderChannel(){
         return $this->data['OrderChannel'];
     }
     
+    /**
+     * Returns the shipment service level of the Order
+     * @return string
+     */
     public function getShipServiceLevel(){
         return $this->data['ShipServiceLevel'];
     }
     
+    /**
+     * Returns an array containing all of the address information.
+     * 
+     * Returns an associative array of the address information, with the following fields:
+     * -Name
+     * -AddressLine1
+     * -AddressLine2
+     * -AddressLine3
+     * -City
+     * -County
+     * -District
+     * -StateOrRegion
+     * -PostalCode
+     * -CountryCode
+     * -Phone
+     * @return array Address array
+     */
     public function getShippingAddress(){
         return $this->data['ShippingAddress'];
     }
     
+    /**
+     * Returns an array containing the total cost of the Order along with the currency used
+     * 
+     * Returns an associative array with the following fields:
+     * -Amount
+     * -CurrencyCode
+     * @return array
+     */
     public function getOrderTotal(){
         return $this->data['OrderTotal'];
     }
+    
+    /**
+     * Returns just the total cost of the Order
+     * @return string String of order total
+     */
+    public function getOrderTotalAmount(){
+        return $this->data['OrderTotal']['Amount'];
+    }
 
+    /**
+     * Returns the number of items in the Order that have been shipped
+     * @return int
+     */
     public function getNumberofItemsShipped(){
         return $this->data['NumberOfItemsShipped'];
     }
     
+    /**
+     * Returns the number of items in the Order that have yet to be shipped
+     * @return int
+     */
     public function getNumberOfItemsUnshipped(){
         return $this->data['NumberOfItemsUnshipped'];
     }
     
+    /**
+     * Returns an array of the complete payment details
+     * 
+     * Returns an associative array...
+     * ...
+     * ...
+     * @return array
+     */
     public function getPaymentExecutionDetail(){
         return $this->data['PaymentExecutionDetail'];
     }
     
-    public function getPayment(){
-        return $this->data['Payment'];
-    }
-    
+    /**
+     * Returns the payment method (either COD, CVS, or Other) of the Order
+     * @return string COD, CVS, or Other
+     */    
     public function getPaymentMethod(){
         return $this->data['PaymentMethod'];
     }
     
+    /**
+     * Returns the ID of the Marketplace in which the Order was placed
+     * @return string
+     */
     public function getMarketplaceId(){
         return $this->data['MarketplaceId'];
     }
     
+    /**
+     * Returns the name of the buyer
+     * @return string
+     */
     public function getBuyerName(){
         return $this->data['BuyerName'];
     }
     
+    /**
+     * Returns the email address of the buyer
+     * @return string
+     */
     public function getBuyerEmail(){
         return $this->data['BuyerEmail'];
     }
     
+    /**
+     * Returns the shipment service level category of the Order
+     * 
+     * Returns the shipment serice level category of the Order. Valid values are...
+     * -Expedited
+     * -NextDay
+     * -SecondDay
+     * -Standard
+     * @return type
+     */
     public function getShipServiceLevelCategory(){
         return $this->data['AmazonOrderId'];
     }
     
+    /**
+     * Returns the ratio of shipped items to unshipped items
+     * @return float Decimal number from 0 to 1
+     */
     public function getPercentShipped(){
         if (array_key_exists('NumberOfItemsShipped',$this->data) && array_key_exists('NumberOfItemsUnshipped',$this->data)){
             $ratio = $this->data['NumberOfItemsShipped'] / $this->data['NumberOfItemsUnshipped'];
@@ -258,8 +401,17 @@ class AmazonOrder extends AmazonCore{
         $this->options['Timestamp'] = date('Y-m-d\TH%3\Ai%3\AsO');
     }
 
-    public function setOrderId(){
-        
+    /**
+     * Sets the Amazon Order ID for the next request, in case it was not set in the constructor
+     * @param string $id the Amazon Order ID
+     * @throws InvalidArgumentException if the parameter is left empty
+     */
+    public function setOrderId($id){
+        if ($id){
+            $this->options['AmazonOrderId'] = $id;
+        } else {
+            throw new InvalidArgumentException('No Order ID given!');
+        }
     }
 
     public function fetchItems(){

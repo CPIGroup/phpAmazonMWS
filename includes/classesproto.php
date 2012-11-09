@@ -9,29 +9,28 @@ abstract class AmazonCore{
     protected $throttleTime;
     protected $throttleCount;
     protected $storeName;
-    protected $marketplaceId;
     protected $secretKey;
     protected $options;
+    protected $config;
     protected $mockMode;
     
-    protected function __construct($s){
-        include('/var/www/athena/plugins/newAmazon/amazon-config.php');
+    /**
+     * 
+     * @param string $s Name for store as seen in config file
+     * @param boolean $mock flag for enabling Mock Mode
+     * @throws Exception if key config data is missing
+     */
+    protected function __construct($s, $mock=false){
+        $this->config = '/var/www/athena/plugins/newAmazon/amazon-config.php';
+        
+        include($this->config);
         
         if(array_key_exists($s, $store)){
-            if(array_key_exists('name', $store[$s])){
-                $this->storeName = $store[$s]['name'];
-            } else {
-                $this->storeName = $s;
-            }
+            $this->storeName = $s;
             if(array_key_exists('merchantId', $store[$s])){
                 $this->options['SellerId'] = $store[$s]['merchantId'];
             } else {
                 throw new Exception('Merchant ID missing.');
-            }
-            if(array_key_exists('marketplaceId', $store[$s])){
-//                $this->marketplaceId = $store[$s]['marketplaceId'];
-            } else {
-                throw new Exception('Marketplace ID missing.');
             }
             if(array_key_exists('keyId', $store[$s])){
                 $this->options['AWSAccessKeyId'] = $store[$s]['keyId'];
@@ -48,13 +47,25 @@ abstract class AmazonCore{
             throw new Exception('Store does not exist.');
         }
         
+        if (is_bool($mock)){
+            $this->mockMode = $mock;
+        }
+        
+        
         $this->urlbase = $serviceURL;
         
         $this->options['SignatureVersion'] = 2;
-        $this->options['SignatureMethod'] = 'HmacSHA256';
+        $this->options['SignatureMethod'] = 'HmacSHA1';
         $this->options['Version'] = '2011-01-01';
     }
     
+    protected function parseXML(){
+        
+    }
+    
+    /**
+     * Manages the object's throttling
+     */
     protected function throttle(){
         $this->throttleCount--;
         if ($this->throttleCount < 1){
@@ -64,6 +75,9 @@ abstract class AmazonCore{
         
     }
     
+    /**
+     * Resets throttle count
+     */
     protected function throttleReset(){
         $this->throttleCount = $this->throttleLimit;
     }
@@ -76,15 +90,18 @@ abstract class AmazonCore{
         return $this->data;
     }
     
+    /**
+     * trying to generate a proper URL
+     * 
+     * DEPRECATED
+     * @return string
+     */
     public function genRequest(){
-        $url = $this->urlbase;
-        $url .= $this->urlbranch;
-        
         $query = '';
-        
+        uksort($this->options,'strcmp');
         foreach ($this->options as $i => $x){
                 if (!$firstdone){
-                    $query .= '?';
+                    //$query .= '?';
                     $firstdone = true;
                 } else {
                     $query .= '&';
@@ -93,80 +110,203 @@ abstract class AmazonCore{
                 $query .= $i.'='.$x;
             }
         
+//            $queryParameters = array();
+//        foreach ($parameters as $key => $value) {
+//            $queryParameters[] = $key . '=' . $this->_urlencode($value);
+//        }
+//        return implode('&', $queryParameters);
+            
         $sig = $this->genSig();
         
-        $query .= $sig;
+        var_dump($sig);
         
-        $this->debug();
+        $query .= '&Signature='.$sig;
+        
+        //$this->options['Signature'] = $sig;
+        return $query;
+        //return $sig;
     }
     
     /**
      * Generates the signature hash for signing the request
+     * 
+     * DEPRECATED?
      * @return string has string
      * @throws InvalidArgumentException if no options are detected
      */
     protected function genSig(){
-        //start with method
+        include($this->config);
         $query = 'POST';
-        //add Amazon endpoint
-        $query .= $this->urlbase;
+        $query .= "\n";
+        $endpoint = parse_url ($serviceURL);
+        $query .= $endpoint['host'];
+        $query .= "\n";
+//        $uri = array_key_exists('path', $endpoint) ? $endpoint['path'] : null;
+//        if (!isset ($uri)) {
+//        	$uri = "/";
+//        }
+//		$uriencoded = implode("/", explode("/", $uri));
+//        $query .= $uriencoded;
+        $query .= '/'.$this->urlbranch;
+        $query .= "\n";
+        
+        
         
         if (is_array($this->options)){
-            ksort($this->options);
-            
-            //add query bits
-            foreach ($this->options as $i => $x){
-                if (!$firstdone){
-                    $query .= '?';
-                    $firstdone = true;
-                } else {
-                    $query .= '&';
-                }
-                
-                $query .= $i.'='.$x;
+            //combine query bits
+            $queryParameters = array();
+            foreach ($this->options as $key => $value) {
+                $queryParameters[] = $key . '=' . $this->_urlencode($value);
             }
-            
+            $query = implode('&', $queryParameters);
+//            //add query bits
+//            foreach ($this->options as $i => $x){
+//                if (!$firstdone){
+//                    //$query .= '?';
+//                    $firstdone = true;
+//                } else {
+//                    $query .= '&';
+//                }
+//                
+//                $query .= $i.'='.$x;
+//            }
         } else {
             throw new Exception('No query options set!');
         }
         
-        //DEBUG MODE IS GO
-        echo $query;
         
-        return hash_hmac('sha256', $query, $this->secretKey);
-    }
-
-    protected function makesomekindofrequest(){
-        include('/var/www/athena/includes/includes.php');
-
-        
-
-        fetchURL($this->urlbase);
-
+        return rawurlencode(base64_encode(hash_hmac('sha1', $query, $this->secretKey,true)));
     }
     
-    protected function debug(){
-        myPrint($this->options);
+    /**
+     * Generates timestamp in ISO8601 format, two minutes earlier than provided date
+     * @param string $time time string that is fed through strtotime before being used
+     * @return string time
+     */
+    protected function genTime($time=false){
+        if (!$time){
+            $time = time();
+        } else {
+            $time = strtotime($time);
+            
+        }
+        return date('Y-m-d\TH:i:sO',$time-2*60);
+            
     }
+    
+    // -- test --
+    /**
+     * Reformats the provided string using rawurlencode while also replacing ~
+     * 
+     * Almost the same as using rawurlencode
+     * @param string $value
+     * @return string
+     */
+    protected function _urlencode($value) {
+        return rawurlencode($value);
+		return str_replace('%7E', '~', rawurlencode($value));
+    }
+    
+    /**
+     * Fuses all of the parameters together into a string, copied from Amazon
+     * @param array $parameters
+     * @return string
+     */
+    protected function _getParametersAsString(array $parameters) {
+        $queryParameters = array();
+        foreach ($parameters as $key => $value) {
+            $queryParameters[] = $key . '=' . $this->_urlencode($value);
+        }
+        return implode('&', $queryParameters);
+    }
+    
+    /**
+     * validates signature and sets up signing of them, copied from Amazon
+     * @param array $parameters
+     * @param string $key
+     * @return string signed string
+     * @throws Exception
+     */
+    protected function _signParameters(array $parameters, $key) {
+        $algorithm = $this->options['SignatureMethod'];
+        $stringToSign = null;
+        if (2 === $this->options['SignatureVersion']) {
+            $stringToSign = $this->_calculateStringToSignV2($parameters);
+//            var_dump($stringToSign);
+        } else {
+            throw new Exception("Invalid Signature Version specified");
+        }
+        return $this->_sign($stringToSign, $key, $algorithm);
+    }
+    
+    /**
+     * generates the string to sign, copied from Amazon
+     * @param array $parameters
+     * @return type
+     */
+    protected function _calculateStringToSignV2(array $parameters) {
+        $data = 'POST';
+        $data .= "\n";
+        $endpoint = parse_url ($this->urlbase.$this->urlbranch);
+        $data .= $endpoint['host'];
+        $data .= "\n";
+        $uri = array_key_exists('path', $endpoint) ? $endpoint['path'] : null;
+        if (!isset ($uri)) {
+        	$uri = "/";
+        }
+		$uriencoded = implode("/", array_map(array($this, "_urlencode"), explode("/", $uri)));
+        $data .= $uriencoded;
+        $data .= "\n";
+        uksort($parameters, 'strcmp');
+        $data .= $this->_getParametersAsString($parameters);
+        return $data;
+    }
+    /**
+     * Runs the hash, copies from amazon
+     * @param string $data
+     * @param string $key
+     * @param string $algorithm 'HmacSHA1' or 'HmacSHA256'
+     * @return string
+     * @throws Exception
+     */
+     protected function _sign($data, $key, $algorithm)
+    {
+        if ($algorithm === 'HmacSHA1') {
+            $hash = 'sha1';
+        } else if ($algorithm === 'HmacSHA256') {
+            $hash = 'sha256';
+        } else {
+            throw new Exception ("Non-supported signing method specified");
+        }
+        
+        return base64_encode(
+            hash_hmac($hash, $data, $key, true)
+        );
+    }
+    
+    // -- end test --
+    
 }
 
 //handles order retrieval
 class AmazonOrder extends AmazonCore{
     private $itemFlag;
+    private $tokenItemFlag;
     private $data;
+    private $xmldata;
 
     public function __construct($s,$o = null,$d = null){
-        include('/var/www/athena/plugins/newAmazon/amazon-config.php');
         parent::__construct($s);
+        include($this->config);
         
         if($o){
             $this->options['AmazonOrderId.Id.1'] = $o;
         }
-        if ($d && is_array($d)) {
-            //fill out info this way
+        if ($d) {
+            $this->xmldata = $d;
         }
         
-        $this->urlbranch = 'Orders/2011-01-01/';
+        $this->urlbranch = 'Orders/2011-01-01';
         
         $this->throttleLimit = $throttleLimitOrder;
         $this->throttleTime = $throttleTimeOrder;
@@ -181,6 +321,65 @@ class AmazonOrder extends AmazonCore{
         //$this->options['Action'] = 'GetOrder';
     }
     
+    /**
+     * Populates the object's data using the stored XML data. Clears existing data
+     * @return boolean if no XML data
+     */
+    protected function parseXML(){
+        if (!$this->xmldata){
+            return false;
+        }
+        $this->data = array();
+        $this->data['AmazonOrderId'] = (string)$this->xmldata->AmazonOrderId;
+        $this->data['SellerOrderId'] = (string)$this->xmldata->SellerOrderId;
+        $this->data['PurchaseDate'] = (string)$this->xmldata->PurchaseDate;
+        $this->data['LastUpdateDate'] = (string)$this->xmldata->LastUpdateDate;
+        $this->data['OrderStatus'] = (string)$this->xmldata->OrderStatus;
+        $this->data['FulfillmentChannel'] = (string)$this->xmldata->FulfillmentChannel;
+        $this->data['SalesChannel'] = (string)$this->xmldata->SalesChannel;
+        $this->data['OrderChannel'] = (string)$this->xmldata->OrderChannel;
+        $this->data['ShipServiceLevel'] = (string)$this->xmldata->ShipServiceLevel;
+        
+        if (isset($this->xmldata->ShippingAddress)){
+            $this->data['ShippingAddress'] = array();
+            $this->data['ShippingAddress']['Phone'] = (string)$this->xmldata->ShippingAddress->Phone;
+            $this->data['ShippingAddress']['PostalCode'] = (string)$this->xmldata->ShippingAddress->PostalCode;
+            $this->data['ShippingAddress']['Name'] = (string)$this->xmldata->ShippingAddress->Name;
+            $this->data['ShippingAddress']['CountryCode'] = (string)$this->xmldata->ShippingAddress->CountryCode;
+            $this->data['ShippingAddress']['StateOrRegion'] = (string)$this->xmldata->ShippingAddress->StateOrRegion;
+            $this->data['ShippingAddress']['AddressLine1'] = (string)$this->xmldata->ShippingAddress->AddressLine1;
+            $this->data['ShippingAddress']['AddressLine2'] = (string)$this->xmldata->ShippingAddress->AddressLine2;
+            $this->data['ShippingAddress']['AddressLine3'] = (string)$this->xmldata->ShippingAddress->AddressLine3;
+            $this->data['ShippingAddress']['City'] = (string)$this->xmldata->ShippingAddress->City;
+        }
+        
+        
+        
+        if (isset($this->xmldata->OrderTotal)){
+            $this->data['OrderTotal'] = array();
+            $this->data['OrderTotal']['Amount'] = (string)$this->xmldata->OrderTotal->Amount;
+            $this->data['OrderTotal']['CurrencyCode'] = (string)$this->xmldata->OrderTotal->CurrencyCode;
+        }
+        
+        $this->data['NumberOfItemsShipped'] = (string)$this->xmldata->NumberOfItemsShipped;
+        $this->data['NumberOfItemsUnshipped'] = (string)$this->xmldata->NumberOfItemsUnshipped;
+        
+        if (isset($this->xmldata->PaymentExecutionDetail)){
+            $this->data['PaymentExecutionDetail'] = array();
+            
+            $i = 0;
+            foreach($this->xmldata->PaymentExecutionDetail->children() as $x){
+                $this->data['PaymentExecutionDetail']['Payment'.$i]['Amount'] = (string)$x->Payment->Amount;
+                $this->data['PaymentExecutionDetail']['Payment'.$i]['CurrencyCode'] = (string)$x->Payment->CurrencyCode;
+                $this->data['PaymentExecutionDetail']['Payment'.$i]['SubPaymentMethod'] = (string)$x->SubPaymentMethod;
+            }
+        }
+        
+        $this->data['MarketplaceId'] = (string)$this->xmldata->MarketplaceId;
+        $this->data['BuyerName'] = (string)$this->xmldata->BuyerName;
+        $this->data['BuyerEmail'] = (string)$this->xmldata->BuyerEmail;
+        $this->data['ShipServiceLevelCategory'] = (string)$this->xmldata->ShipServiceLevelCategory;
+    }
     
     /**
      * Sets the flag for whether or not to fetch items
@@ -195,6 +394,19 @@ class AmazonOrder extends AmazonCore{
         }
     }
 
+    /**
+     * Sets whether or not the Order should automatically use tokens when fetching items
+     * @param type $b
+     * @return boolean false if invalid paramter
+     */
+    public function setUseItemToken($b = true){
+        if (is_bool($b)){
+            $this->tokenItemFlag = $b;
+        } else {
+            return false;
+        }
+    }
+    
     /**
      * Returns the Amazon Order ID for the Order
      * @return string Amazon's Order ID
@@ -388,7 +600,7 @@ class AmazonOrder extends AmazonCore{
      * @return type
      */
     public function getShipServiceLevelCategory(){
-        return $this->data['AmazonOrderId'];
+        return $this->data['ShipServiceLevelCategory'];
     }
     
     /**
@@ -404,7 +616,37 @@ class AmazonOrder extends AmazonCore{
     }
     
     public function fetchOrder(){
-        $this->options['Timestamp'] = date('Y-m-d\TH%3\Ai%3\AsO');
+        //STILL TO DO: GET SET OF MULTIPLE ORDER IDS
+        $this->options['Timestamp'] = $this->genTime();
+        $this->options['Action'] = 'GetOrder';
+        
+        $url = $this->urlbase.$this->urlbranch;
+        
+        $this->options['Signature'] = $this->_signParameters($this->options, $this->secretKey);
+        $query = $this->_getParametersAsString($this->options);
+//        myPrint($this->options);
+//        myPrint($query);
+        
+//        myPrint($this->options);
+//        $query = $this->genRequest();
+//        myPrint($query);
+        
+        $response = fetchURL($url,array('Post'=>$query));
+        //myPrint($response);
+        
+        if ($response['code'] != 200){
+            throw new Exception('Still to do: handle this better');
+        }
+        
+        $xml = simplexml_load_string($response['body']);
+        
+        $this->xmldata = $xml->GetOrderResult->Orders->Order;
+        $this->parseXML();
+        
+        if ($this->itemFlag){
+            $this->fetchItems();
+        }
+        
     }
 
     /**
@@ -414,14 +656,24 @@ class AmazonOrder extends AmazonCore{
      */
     public function setOrderId($id){
         if ($id){
-            $this->options['AmazonOrderId'] = $id;
+            $this->options['AmazonOrderId.Id.1'] = $id;
         } else {
             throw new InvalidArgumentException('No Order ID given!');
         }
     }
 
     public function fetchItems(){
-        
+        $this->data['Items'] = new AmazonItemList($this->storeName,$this->data['AmazonOrderId']);
+        $this->data['Items']->setUseToken($this->tokenItemFlag);
+        $this->data['Items']->fetchItems();
+    }
+    
+    /**
+     * returns entire Item List object, for convenience
+     * @return AmazonItemList item list
+     */
+    public function getItems(){
+        return $this->data['Items'];
     }
 }
 
@@ -434,8 +686,28 @@ class AmazonOrderList extends AmazonCore implements Iterator{
     private $tokenUseFlag;
     private $tokenItemFlag;
 
-    public function __construct(){
+    public function __construct($s){
+        parent::__construct($s);
         $this->i = 0;
+        include($this->config);
+        
+        if(array_key_exists('marketplaceId', $store[$s])){
+            $this->options['MarketplaceId.Id.1'] = $store[$s]['marketplaceId'];
+        } else {
+            throw new Exception('Marketplace ID missing.');
+        }
+        
+        $this->urlbranch = 'Orders/2011-01-01';
+        
+        $this->throttleLimit = $throttleLimitOrderList;
+        $this->throttleTime = $throttleTimeOrderList;
+        $this->throttleCount = $this->throttleLimit;
+        
+        if ($throttleSafe){
+            $this->throttleLimit++;
+            $this->throttleTime++;
+            $this->throttleCount = $this->throttleLimit;
+        }
     }
     
     /**
@@ -487,9 +759,63 @@ class AmazonOrderList extends AmazonCore implements Iterator{
     }
     
     public function fetchOrders(){
+        //STILL TO DO: USE TOKENS
+        $this->options['Timestamp'] = $this->genTime();
+        $this->options['Action'] = 'ListOrders';
+        
+        if (!array_key_exists('CreatedAfter', $this->options) && !array_key_exists('LastUpdatedAfter', $this->options)){
+            $this->setLimits('Created');
+        }
+        
+        if ($this->tokenFlag && $this->tokenUseFlag){
+            $this->prepareToken();
+        } else {
+            unset($this->options['NextToken']);
+        }
+        
+        $url = $this->urlbase.$this->urlbranch;
+        
+        $this->options['Signature'] = $this->_signParameters($this->options, $this->secretKey);
+        $query = $this->_getParametersAsString($this->options);
+//        myPrint($this->options);
+//        myPrint($query);
+        
+//        myPrint($this->options);
+//        $query = $this->genRequest();
+//        myPrint($query);
+        
+        $response = fetchURL($url,array('Post'=>$query));
+//        myPrint($response);
+        
+        $xml = simplexml_load_string($response['body']);
+        
         $this->orderList = array();
+        
+        foreach($xml->ListOrdersResult->Orders->children() as $key => $order){
+            if ($key != 'Order'){
+                break;
+            }
+            $this->orderList[] = new AmazonOrder($this->storeName,null,$order);
+        }
+        
+        foreach($this->orderList as $x){
+            $x->parseXML();
+            
+            if($this->itemFlag){
+                $x->setUseItemToken($this->tokenItemFlag);
+                $x->fetchItems();
+            }
+        }
+        
+        myPrint($this->orderList);
+        
+        
     }
 
+    /**
+     * Makes the preparations necessary for using tokens
+     * @return boolean returns false if no token to use
+     */
     protected function prepareToken(){
         if (!$this->tokenFlag){
             return false;
@@ -541,12 +867,12 @@ class AmazonOrderList extends AmazonCore implements Iterator{
     public function setLimits($mode,$lower = null,$upper = null){
         try{
             if ($lower){
-                $after = strtotime($lower);
+                $after = $this->genTime($lower);
             } else {
-                $after = strtotime(time().'- 2 minutes');
+                $after = $this->genTime('- 2 min');
             }
             if ($upper){
-                $before = strtotime($upper);
+                $before = $this->genTime($upper);
             }
             if ($mode == 'Created'){
                 $this->options['CreatedAfter'] = $after;
@@ -651,6 +977,75 @@ class AmazonOrderList extends AmazonCore implements Iterator{
     }
     
     /**
+     * Sets (or resets) the Email Filter. This resets certain fields.
+     * 
+     * Sets (or resets) the Seller Order ID Filter. The following filter options are disabled by this function:
+     * -SellerOrderId
+     * -OrderStatus
+     * -PaymentMethod
+     * -FulfillmentChannel
+     * -LastUpdatedAfter
+     * -LastUpdatedBefore
+     * @param string $filter string or null
+     */
+    public function setEmailFilter($filter = null){
+        if (is_string($filter)){
+            $this->options['BuyerEmail'] = $filter;
+            //these fields must be disabled
+            unset($this->options['SellerOrderId']);
+            $this->resetOrderStatusFilter();
+            $this->resetPaymentMethodFilter();
+            $this->setFulfillmentChannelFilter(null);
+            unset($this->options['LastUpdatedAfter']);
+            unset($this->options['LastUpdatedBefore']);
+        } else {
+            unset($this->options['BuyerEmail']);
+        }
+    }
+    
+    /**
+     * Sets (or resets) the Seller Order ID Filter. This resets certain fields.
+     * 
+     * Sets (or resets) the Seller Order ID Filter. The following filter options are disabled by this function:
+     * -BuyerEmail
+     * -OrderStatus
+     * -PaymentMethod
+     * -FulfillmentChannel
+     * -LastUpdatedAfter
+     * -LastUpdatedBefore
+     * @param string $filter string or null
+     */
+    public function setSellerOrderIdFilter($filter = null){
+        if (is_string($filter)){
+            $this->options['SellerOrderId'] = $filter;
+            //these fields must be disabled
+            unset($this->options['BuyerEmail']);
+            $this->resetOrderStatusFilter();
+            $this->resetPaymentMethodFilter();
+            $this->setFulfillmentChannelFilter(null);
+            unset($this->options['LastUpdatedAfter']);
+            unset($this->options['LastUpdatedBefore']);
+        } else {
+            unset($this->options['SellerOrderId']);
+        }
+    }
+    
+    /**
+     * Sets the max number of results per page for the next request
+     * @param type $num
+     * @throws InvalidArgumentException
+     */
+    public function setMaxResultsPerPage($num){
+        if (is_int($num)){
+            if ($num <= 100 && $num >= 1){
+                $this->options['MaxResultsPerPage'] = $num;
+            }
+        } else {
+            throw new InvalidArgumentException();
+        }
+    }
+    
+    /**
      * Iterator function
      * @return type
      */
@@ -695,12 +1090,17 @@ class AmazonItemList extends AmazonCore implements Iterator{
     private $tokenFlag;
     private $tokenUseFlag;
     private $i;
+    private $xmldata;
 
-    public function __construct(){
-        include('/var/www/athena/plugins/newAmazon/amazon-config.php');
-        parent::__construct();
+    public function __construct($s, $id=null){
+        parent::__construct($s);
+        include($this->config);
         
+        $this->urlbranch = 'Orders/2011-01-01';
         
+        if (!is_null($id)){
+            $this->options['AmazonOrderId'] = $id;
+        }
         
         $this->throttleLimit = $throttleLimitItem;
         $this->throttleTime = $throttleTimeItem;
@@ -713,7 +1113,69 @@ class AmazonItemList extends AmazonCore implements Iterator{
         }
     }
     
-    
+    /**
+     * Populates the object's data using the stored XML data. Clears existing data
+     * @return boolean if no XML data
+     */
+    protected function parseXML(){
+        if (!$this->xmldata){
+            return false;
+        }
+        $this->itemList = array();
+        foreach($this->xmldata->children() as $item){
+            
+            $this->itemList['AmazonOrderId'] = (string)$this->xmldata->AmazonOrderId;
+            $this->itemList['SellerOrderId'] = (string)$this->xmldata->SellerOrderId;
+            $this->itemList['PurchaseDate'] = (string)$this->xmldata->PurchaseDate;
+            $this->itemList['LastUpdateDate'] = (string)$this->xmldata->LastUpdateDate;
+            $this->itemList['OrderStatus'] = (string)$this->xmldata->OrderStatus;
+            $this->itemList['FulfillmentChannel'] = (string)$this->xmldata->FulfillmentChannel;
+            $this->itemList['SalesChannel'] = (string)$this->xmldata->SalesChannel;
+            $this->itemList['OrderChannel'] = (string)$this->xmldata->OrderChannel;
+            $this->itemList['ShipServiceLevel'] = (string)$this->xmldata->ShipServiceLevel;
+
+            if (isset($this->xmldata->ShippingAddress)){
+                $this->itemList['ShippingAddress'] = array();
+                $this->itemList['ShippingAddress']['Phone'] = (string)$this->xmldata->ShippingAddress->Phone;
+                $this->itemList['ShippingAddress']['PostalCode'] = (string)$this->xmldata->ShippingAddress->PostalCode;
+                $this->itemList['ShippingAddress']['Name'] = (string)$this->xmldata->ShippingAddress->Name;
+                $this->itemList['ShippingAddress']['CountryCode'] = (string)$this->xmldata->ShippingAddress->CountryCode;
+                $this->itemList['ShippingAddress']['StateOrRegion'] = (string)$this->xmldata->ShippingAddress->StateOrRegion;
+                $this->itemList['ShippingAddress']['AddressLine1'] = (string)$this->xmldata->ShippingAddress->AddressLine1;
+                $this->itemList['ShippingAddress']['AddressLine2'] = (string)$this->xmldata->ShippingAddress->AddressLine2;
+                $this->itemList['ShippingAddress']['AddressLine3'] = (string)$this->xmldata->ShippingAddress->AddressLine3;
+                $this->itemList['ShippingAddress']['City'] = (string)$this->xmldata->ShippingAddress->City;
+            }
+
+
+
+            if (isset($this->xmldata->OrderTotal)){
+                $this->itemList['OrderTotal'] = array();
+                $this->itemList['OrderTotal']['Amount'] = (string)$this->xmldata->OrderTotal->Amount;
+                $this->itemList['OrderTotal']['CurrencyCode'] = (string)$this->xmldata->OrderTotal->CurrencyCode;
+            }
+
+            $this->itemList['NumberOfItemsShipped'] = (string)$this->xmldata->NumberOfItemsShipped;
+            $this->itemList['NumberOfItemsUnshipped'] = (string)$this->xmldata->NumberOfItemsUnshipped;
+
+            if (isset($this->xmldata->PaymentExecutionDetail)){
+                $this->itemList['PaymentExecutionDetail'] = array();
+
+                $i = 0;
+                foreach($this->xmldata->PaymentExecutionDetail->children() as $x){
+                    $this->data['PaymentExecutionDetail']['Payment'.$i]['Amount'] = (string)$x->Payment->Amount;
+                    $this->data['PaymentExecutionDetail']['Payment'.$i]['CurrencyCode'] = (string)$x->Payment->CurrencyCode;
+                    $this->data['PaymentExecutionDetail']['Payment'.$i]['SubPaymentMethod'] = (string)$x->SubPaymentMethod;
+                }
+            }
+
+            $this->data['MarketplaceId'] = (string)$this->xmldata->MarketplaceId;
+            $this->data['BuyerName'] = (string)$this->xmldata->BuyerName;
+            $this->data['BuyerEmail'] = (string)$this->xmldata->BuyerEmail;
+            $this->data['ShipServiceLevelCategory'] = (string)$this->xmldata->ShipServiceLevelCategory;
+        }
+            
+    }
     
     public function setOrderId($id){
         if (!is_null($id)){
@@ -724,10 +1186,52 @@ class AmazonItemList extends AmazonCore implements Iterator{
     }
 
     public function fetchItems(){
+        $this->options['Timestamp'] = $this->genTime();
+        $this->options['Action'] = 'ListOrderItems';
         
+        if($this->tokenFlag && $this->tokenUseFlag){
+            $this->prepareToken();
+        } else {
+            unset($this->options['NextToken']);
+        }
+        
+        $url = $this->urlbase.$this->urlbranch;
+        
+        $this->options['Signature'] = $this->_signParameters($this->options, $this->secretKey);
+        $query = $this->_getParametersAsString($this->options);
+//        myPrint($this->options);
+//        myPrint($query);
+        
+//        myPrint($this->options);
+//        $query = $this->genRequest();
+//        myPrint($query);
+        
+        $response = fetchURL($url,array('Post'=>$query));
+        myPrint($response);
+        
+        $this->xmldata = simplexml_load_string($response['body'])->ListOrderItemsResult->OrderItems;
+        
+        $this->itemList = array();
+        $this->parseXML();
         
     }
 
+    /**
+     * Makes the preparations necessary for using tokens
+     * @return boolean returns false if no token to use
+     */
+    protected function prepareToken(){
+        if (!$this->tokenFlag){
+            return false;
+        } else {
+            $this->options['NextToken'] = $this->data['NextToken'];
+            $this->options['Action'] = 'ListOrderItemsByNextToken';
+            
+            //When using tokens, only the NextToken option should be used
+            unset($this->options['AmazonOrderId']);
+        }
+    }
+    
     /**
      * Returns whether or not the Item List has a token available
      * @return boolean
@@ -747,6 +1251,232 @@ class AmazonItemList extends AmazonCore implements Iterator{
         } else {
             return false;
         }
+    }
+    
+    /**
+     * Returns entire list of items
+     * @return array list of item arrays
+     */
+    public function getItemList(){
+        return $this->itemList;
+    }
+    
+    /**
+     * Returns the Order ID, which is the same for all items in the list
+     * @return string
+     */
+    public function getAmazonOrderId(){
+        return $this->itemList[0]['AmazonOrderId'];
+    }
+    
+    /**
+     * Returns ASIN of specified item, defaults to first if none given
+     * @param string $i id of item to get
+     * @return string
+     */
+    public function getASIN($i = 0){
+        return $this->itemList[$i]['ASIN'];
+    }
+    
+    /**
+     * Returns Seller SKU of specified item, defaults to first if none given
+     * @param string $i id of item to get
+     * @return string
+     */
+    public function getSellerSKU($i = 0){
+        return $this->itemList[$i]['SellerSKU'];
+    }
+    
+    /**
+     * Returns Order Item ID of specified item, defaults to first if none given
+     * @param string $i id of item to get
+     * @return string
+     */
+    public function getOrderItemId($i = 0){
+        return $this->itemList[$i]['OrderItemId'];
+    }
+    
+    /**
+     * Returns Title of specified item, defaults to first if none given
+     * @param string $i id of item to get
+     * @return string
+     */
+    public function getTitle($i = 0){
+        return $this->itemList[$i]['Title'];
+    }
+    
+    /**
+     * Returns quantity ordered of specified item, defaults to first if none given
+     * @param string $i id of item to get
+     * @return string
+     */
+    public function QuantityOrdered($i = 0){
+        return $this->itemList[$i]['QuantityOrdered'];
+    }
+    
+    /**
+     * Returns quantity shipped of specified item, defaults to first if none given
+     * @param string $i id of item to get
+     * @return string
+     */
+    public function getQuantityShipped($i = 0){
+        return $this->itemList[$i]['QuantityShipped'];
+    }
+    
+    /**
+     * Calculates percent of items shipped
+     * @param string $i id of item to get
+     * @return float decimal number from 0 to 1
+     */
+    public function getPercentShipped($i = 0){
+        if ($this->itemList[$i]['QuantityOrdered'] == 0){
+            return false;
+        }
+        return $this->itemList[$i]['QuantityShipped']/$this->itemList[$i]['QuantityOrdered'];
+    }
+    
+    /**
+     * Returns text for gift message of specified item, defaults to first if none given
+     * @param string $i id of item to get
+     * @return string
+     */
+    public function getGiftMessageText($i = 0){
+        return $this->itemList[$i]['GiftMessageText'];
+    }
+    
+    /**
+     * Returns quantity shipped of specified item, defaults to first if none given
+     * @param string $i id of item to get
+     * @return string
+     */
+    public function getGiftWrapLevel($i = 0){
+        return $this->itemList[$i]['GiftWrapLevel'];
+    }
+    
+    /**
+     * Returns item price of specified item, defaults to first if none given
+     * @param string $i id of item to get
+     * @return array contains Amount and Currency Code
+     */
+    public function getItemPrice($i = 0){
+        return $this->itemList[$i]['ItemPrice'];
+    }
+    
+    /**
+     * Returns price amount of specified item, defaults to first if none given
+     * @param string $i id of item to get
+     * @return string
+     */
+    public function getItemPriceAmount($i = 0){
+        return $this->itemList[$i]['QuantityShipped']['Amount'];
+    }
+    
+    /**
+     * Returns shipping price of specified item, defaults to first if none given
+     * @param string $i id of item to get
+     * @return array contains Amount and Currency Code
+     */
+    public function getShippingPrice($i = 0){
+        return $this->itemList[$i]['ShippingPrice'];
+    }
+    
+    /**
+     * Returns shipping price amount of specified item, defaults to first if none given
+     * @param string $i id of item to get
+     * @return string
+     */
+    public function getShippingPriceAmount($i = 0){
+        return $this->itemList[$i]['ShippingPrice']['Amount'];
+    }
+    
+    /**
+     * Returns wrapping price of specified item, defaults to first if none given
+     * @param string $i id of item to get
+     * @return array contains Amount and Currency Code
+     */
+    public function getGiftWrapPrice($i = 0){
+        return $this->itemList[$i]['GiftWrapPrice'];
+    }
+    
+    /**
+     * Returns wrapping price amount of specified item, defaults to first if none given
+     * @param string $i id of item to get
+     * @return string
+     */
+    public function getGiftWrapPriceAmount($i = 0){
+        return $this->itemList[$i]['GiftWrapPrice']['Amount'];
+    }
+    
+    /**
+     * Returns item tax of specified item, defaults to first if none given
+     * @param string $i id of item to get
+     * @return array contains Amount and Currency Code
+     */
+    public function getItemTax($i = 0){
+        return $this->itemList[$i]['ItemTax'];
+    }
+    
+    /**
+     * Returns item tax amount of specified item, defaults to first if none given
+     * @param string $i id of item to get
+     * @return string
+     */
+    public function getItemTaxAmount($i = 0){
+        return $this->itemList[$i]['ItemTax']['Amount'];
+    }
+    
+    /**
+     * Returns shipping tax of specified item, defaults to first if none given
+     * @param string $i id of item to get
+     * @return array contains Amount and Currency Code
+     */
+    public function getShippingTax($i = 0){
+        return $this->itemList[$i]['ShippingTax'];
+    }
+    
+    /**
+     * Returns shipping tax amount of specified item, defaults to first if none given
+     * @param string $i id of item to get
+     * @return string
+     */
+    public function getShippingTaxAmount($i = 0){
+        return $this->itemList[$i]['ShippingTax']['Amount'];
+    }
+    
+    /**
+     * Returns wrapping tax of specified item, defaults to first if none given
+     * @param string $i id of item to get
+     * @return array contains Amount and Currency Code
+     */
+    public function getGiftWrapTax($i = 0){
+        return $this->itemList[$i]['GiftWrapTax'];
+    }
+    
+    /**
+     * Returns wrapping tax amount of specified item, defaults to first if none given
+     * @param string $i id of item to get
+     * @return string
+     */
+    public function getGiftWrapTaxAmount($i = 0){
+        return $this->itemList[$i]['GiftWrapTax']['Amount'];
+    }
+    
+    /**
+     * Returns item tax of specified item, defaults to first if none given
+     * @param string $i id of item to get
+     * @return array contains Amount and Currency Code
+     */
+    public function getShippingDiscount($i = 0){
+        return $this->itemList[$i]['ShippingDiscount'];
+    }
+    
+    /**
+     * Returns item tax amount of specified item, defaults to first if none given
+     * @param string $i id of item to get
+     * @return string
+     */
+    public function getShippingDiscountAmount($i = 0){
+        return $this->itemList[$i]['ShippingDiscount']['Amount'];
     }
     
     /**

@@ -3,22 +3,21 @@
 //Service URL Base
 //Current setting is United States
 $serviceURL = 'https://mws.amazonservices.com/';
+//$serviceURL = 'http://localhost/';
 
 //for User-Agent header
 $applicationName = 'Athena Amazon Plugin';
 $applicationVersion = '0.1';
 
 
-//Full name of store, for reporting purposes
-$store['BigKitchen']['name'] = 'Big Kitchen';
 //Merchant ID for this store
-$store['BigKitchen']['merchantId'] = 'MERCHANTID';
+$store['BigKitchen']['merchantId'] = 'AYBHI2AQPIRDU';
 //Marketplace ID for this store
-$store['BigKitchen']['marketplaceId'] = 'MARKETPLACEID';
+$store['BigKitchen']['marketplaceId'] = 'ATVPDKIKX0DER';
 //Access Key ID
-$store['BigKitchen']['keyId'] = 'KEYGOESHERE';
+$store['BigKitchen']['keyId'] = 'AKIAJBQH4G6FKKUAPU6Q';
 //Secret Accress Key for this store
-$store['BigKitchen']['secretKey'] = 'SECRET';
+$store['BigKitchen']['secretKey'] = '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';
 
 
 //Amazon Throttle Values in seconds
@@ -26,6 +25,9 @@ $store['BigKitchen']['secretKey'] = 'SECRET';
 //Fetching Orders
 $throttleLimitOrder = 6;
 $throttleTimeOrder = 60;
+//Fetching Order Lists
+$throttleLimitOrderList = 6;
+$throttleTimeOrderList = 60;
 //Fetching Items
 $throttleLimitItem = 30;
 $throttleTimeItem = 2;

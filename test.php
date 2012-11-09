@@ -3,9 +3,14 @@ include('/var/www/athena/includes/header.php');
 
 include('includes/classesproto.php');
 
-$a = new AmazonOrder('BigKitchen');
+//$a = new AmazonOrderList('BigKitchen');
+//$a->setLimits('Modified','-1 hours');
+//$a->fetchOrders();
 
-$a->genRequest();
+$a = new AmazonOrder('BigKitchen');
+$a->setOrderId('106-2655952-6625846');
+$a->setFetchItems();
+$a->fetchOrder();
 
 include('/var/www/athena/includes/footer.php');
 

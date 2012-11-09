@@ -1,4 +1,36 @@
 <?php
+
+/*
+ * Plan:
+ * Database doubles as look-up table and record cache
+ * -unique ID
+ * -AmazonOrderID
+ * -request type (either ListOrders/token or GetOrder)
+ * -XML response, broken down into individual orders
+ * -timestamp of request, used for throttling calculations
+ * -status of order, used to determine which orders should be updated (eg Shipped is done with)
+ * -flag for items for this order were ever retrieved
+ * 
+ * item table is similar
+ * -unique ID
+ * -id  corresponding to other table id
+ * -timestamp
+ * -even though it's dumb, store whether or not token was used via order status
+ * -XML response broken into individual items
+ * 
+ * Need to find a way to connect to the database, check last timestamp of desired request type
+ * for retrieving specific order information, check cache first to see if it was already received
+ * functionality for updating orders
+ * 
+ * Get = fetch from cache or ?????
+ * I'll probably have to make a new function for this, with a different name
+ * 
+ * caching is a great idea because it means information retrieval even if Amazon is down
+ * 
+ * 
+ * oh and I still need Mock powers
+ */
+
 abstract class AmazonCore{
     //this is the abstract master class thing
     //track and do throttling
@@ -15,7 +47,7 @@ abstract class AmazonCore{
     protected $mockMode;
     
     /**
-     * 
+     * AmazonCore constructor sets up key information used in all Amazon requests
      * @param string $s Name for store as seen in config file
      * @param boolean $mock flag for enabling Mock Mode
      * @throws Exception if key config data is missing
@@ -59,6 +91,9 @@ abstract class AmazonCore{
         $this->options['Version'] = '2011-01-01';
     }
     
+    /**
+     * Skeleton function
+     */
     protected function parseXML(){
         
     }
@@ -67,17 +102,32 @@ abstract class AmazonCore{
      * Manages the object's throttling
      */
     protected function throttle(){
-        echo $this->throttleCount.'-->';
-        $this->throttleCount--;
-        if ($this->throttleCount < 1){
-            sleep($this->throttleTime);
-            $this->throttleCount++;
+//        echo $this->throttleCount.'-->';
+//        $this->throttleCount--;
+//        if ($this->throttleCount < 1){
+//            sleep($this->throttleTime);
+//            $this->throttleCount++;
+//        }
+//        echo $this->throttleCount.'<br>';
+        //database stuff goes here
+        include('/var/www/athena/includes/config.php');
+        DB_PLUGINS;
+        
+        $previous = time();
+        $refresh = 2;
+        $now = time();
+        
+        if($now-$previous < $refresh){
+            sleep($refresh);
         }
-        echo $this->throttleCount.'<br>';
+        
+        
     }
     
     /**
      * Resets throttle count
+     * 
+     * DEPRECATED?
      */
     protected function throttleReset(){
         $this->throttleCount = $this->throttleLimit;
@@ -94,7 +144,7 @@ abstract class AmazonCore{
     /**
      * trying to generate a proper URL
      * 
-     * DEPRECATED
+     * DEPRECATED?
      * @return string
      */
     public function genRequest(){
@@ -197,7 +247,7 @@ abstract class AmazonCore{
     
     // -- test --
     /**
-     * Reformats the provided string using rawurlencode while also replacing ~
+     * Reformats the provided string using rawurlencode while also replacing ~, copied from Amazon
      * 
      * Almost the same as using rawurlencode
      * @param string $value
@@ -263,7 +313,7 @@ abstract class AmazonCore{
         return $data;
     }
     /**
-     * Runs the hash, copies from amazon
+     * Runs the hash, copied from Amazon
      * @param string $data
      * @param string $key
      * @param string $algorithm 'HmacSHA1' or 'HmacSHA256'
@@ -289,13 +339,21 @@ abstract class AmazonCore{
     
 }
 
-//handles order retrieval
+/**
+ * AmazonOrder object gets the details for a single object from Amazon
+ */
 class AmazonOrder extends AmazonCore{
     private $itemFlag;
     private $tokenItemFlag;
     private $data;
     private $xmldata;
 
+    /**
+     * AmazonOrder object gets the details for a single object from Amazon
+     * @param string $s store name as seen in config
+     * @param string $o Order number to automatically set
+     * @param SimpleXMLElement $d XML data from Amazon to be parsed
+     */
     public function __construct($s,$o = null,$d = null){
         parent::__construct($s);
         include($this->config);
@@ -617,6 +675,10 @@ class AmazonOrder extends AmazonCore{
         return $ratio;
     }
     
+    /**
+     * Fetches the specified order from Amazon after setting the necessary parameters
+     * @throws Exception if request fails
+     */
     public function fetchOrder(){
         //STILL TO DO: GET SET OF MULTIPLE ORDER IDS
         $this->options['Timestamp'] = $this->genTime();
@@ -665,6 +727,9 @@ class AmazonOrder extends AmazonCore{
         }
     }
 
+    /**
+     * Fetches items for the orders stored in the Order List
+     */
     public function fetchItems(){
         $this->data['Items'] = new AmazonItemList($this->storeName,$this->data['AmazonOrderId']);
         $this->data['Items']->setUseToken($this->tokenItemFlag);
@@ -680,7 +745,9 @@ class AmazonOrder extends AmazonCore{
     }
 }
 
-//makes a list of order objects from source
+/**
+ * Amazon Order Lists pull a set of Orders and turn them into an array of AmazonOrder objects.
+ */
 class AmazonOrderList extends AmazonCore implements Iterator{
     private $orderList;
     private $i;
@@ -690,6 +757,11 @@ class AmazonOrderList extends AmazonCore implements Iterator{
     private $tokenItemFlag;
     private $index;
 
+    /**
+     * Amazon Order Lists pull a set of Orders and turn them into an array of AmazonOrder objects.
+     * @param string $s name of store, as seen in the config file
+     * @throws Exception if Marketplace ID is missing from config
+     */
     public function __construct($s){
         parent::__construct($s);
         $this->i = 0;
@@ -762,8 +834,10 @@ class AmazonOrderList extends AmazonCore implements Iterator{
         }
     }
     
+    /**
+     * Fetches orders from Amazon using the pre-set parameters and putting them in an array of AmazonOrder objects
+     */
     public function fetchOrders(){
-        //STILL TO DO: USE TOKENS
         $this->options['Timestamp'] = $this->genTime();
         $this->options['Action'] = 'ListOrders';
         
@@ -1093,7 +1167,9 @@ class AmazonOrderList extends AmazonCore implements Iterator{
     }
 }
 
-//contains info for a single item
+/**
+ * AmazonItemLists contain all of the items for a given order
+ */
 class AmazonItemList extends AmazonCore implements Iterator{
     private $itemList;
     private $tokenFlag;
@@ -1102,6 +1178,11 @@ class AmazonItemList extends AmazonCore implements Iterator{
     private $xmldata;
     private $orderId;
 
+    /**
+     * AmazonItemLists contain all of the items for a given order
+     * @param string $s store name as seen in Config
+     * @param string $id order ID to be automatically set
+     */
     public function __construct($s, $id=null){
         parent::__construct($s);
         include($this->config);
@@ -1207,6 +1288,11 @@ class AmazonItemList extends AmazonCore implements Iterator{
             
     }
     
+    /**
+     * Sets the Order ID to be used, in case it was not already set when the object was initiated
+     * @param string $id Amazon Order ID
+     * @throws InvalidArgumentException if none given
+     */
     public function setOrderId($id){
         if (!is_null($id)){
             $this->options['AmazonOrderId'] = $id;
@@ -1215,7 +1301,12 @@ class AmazonItemList extends AmazonCore implements Iterator{
         }
     }
 
+    /**
+     * Retrieves the items from amazon using the pre-defined parameters
+     * @throws Exception if the request to Amazon fails
+     */
     public function fetchItems(){
+        //STILL TO DO: EAT THE TOKENS
         $this->options['Timestamp'] = $this->genTime();
         $this->options['Action'] = 'ListOrderItems';
         

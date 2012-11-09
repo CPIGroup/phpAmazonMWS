@@ -67,12 +67,13 @@ abstract class AmazonCore{
      * Manages the object's throttling
      */
     protected function throttle(){
+        echo $this->throttleCount.'-->';
         $this->throttleCount--;
         if ($this->throttleCount < 1){
             sleep($this->throttleTime);
             $this->throttleCount++;
         }
-        
+        echo $this->throttleCount.'<br>';
     }
     
     /**
@@ -372,6 +373,7 @@ class AmazonOrder extends AmazonCore{
                 $this->data['PaymentExecutionDetail']['Payment'.$i]['Amount'] = (string)$x->Payment->Amount;
                 $this->data['PaymentExecutionDetail']['Payment'.$i]['CurrencyCode'] = (string)$x->Payment->CurrencyCode;
                 $this->data['PaymentExecutionDetail']['Payment'.$i]['SubPaymentMethod'] = (string)$x->SubPaymentMethod;
+                $i++;
             }
         }
         
@@ -631,6 +633,7 @@ class AmazonOrder extends AmazonCore{
 //        $query = $this->genRequest();
 //        myPrint($query);
         
+        $this->throttle();
         $response = fetchURL($url,array('Post'=>$query));
         //myPrint($response);
         
@@ -685,6 +688,7 @@ class AmazonOrderList extends AmazonCore implements Iterator{
     private $itemFlag;
     private $tokenUseFlag;
     private $tokenItemFlag;
+    private $index;
 
     public function __construct($s){
         parent::__construct($s);
@@ -771,12 +775,16 @@ class AmazonOrderList extends AmazonCore implements Iterator{
             $this->prepareToken();
         } else {
             unset($this->options['NextToken']);
+            $this->index = 0;
+            $this->orderList = array();
         }
         
         $url = $this->urlbase.$this->urlbranch;
         
         $this->options['Signature'] = $this->_signParameters($this->options, $this->secretKey);
         $query = $this->_getParametersAsString($this->options);
+        
+        //old way
 //        myPrint($this->options);
 //        myPrint($query);
         
@@ -784,30 +792,31 @@ class AmazonOrderList extends AmazonCore implements Iterator{
 //        $query = $this->genRequest();
 //        myPrint($query);
         
+        $this->throttle();
         $response = fetchURL($url,array('Post'=>$query));
-//        myPrint($response);
         
         $xml = simplexml_load_string($response['body']);
         
-        $this->orderList = array();
         
         foreach($xml->ListOrdersResult->Orders->children() as $key => $order){
             if ($key != 'Order'){
                 break;
             }
-            $this->orderList[] = new AmazonOrder($this->storeName,null,$order);
-        }
-        
-        foreach($this->orderList as $x){
-            $x->parseXML();
-            
+            $this->orderList[$this->index] = new AmazonOrder($this->storeName,null,$order);
+            $this->orderList[$this->index]->parseXML();
+            $this->orderList[$this->index]->setUseItemToken($this->tokenItemFlag);
             if($this->itemFlag){
-                $x->setUseItemToken($this->tokenItemFlag);
-                $x->fetchItems();
+                $this->orderList[$this->index]->fetchItems();
             }
+            $this->index++;
         }
         
         myPrint($this->orderList);
+        
+        if ($this->tokenFlag && $this->tokenUseFlag){
+            echo '<br>IT BEGINS AGAIN<br>';
+            $this->fetchOrders();
+        }
         
         
     }
@@ -1091,6 +1100,7 @@ class AmazonItemList extends AmazonCore implements Iterator{
     private $tokenUseFlag;
     private $i;
     private $xmldata;
+    private $orderId;
 
     public function __construct($s, $id=null){
         parent::__construct($s);
@@ -1100,6 +1110,7 @@ class AmazonItemList extends AmazonCore implements Iterator{
         
         if (!is_null($id)){
             $this->options['AmazonOrderId'] = $id;
+            $this->orderId = $id;
         }
         
         $this->throttleLimit = $throttleLimitItem;
@@ -1122,57 +1133,76 @@ class AmazonItemList extends AmazonCore implements Iterator{
             return false;
         }
         $this->itemList = array();
+        
+        $n = 0;
         foreach($this->xmldata->children() as $item){
             
-            $this->itemList['AmazonOrderId'] = (string)$this->xmldata->AmazonOrderId;
-            $this->itemList['SellerOrderId'] = (string)$this->xmldata->SellerOrderId;
-            $this->itemList['PurchaseDate'] = (string)$this->xmldata->PurchaseDate;
-            $this->itemList['LastUpdateDate'] = (string)$this->xmldata->LastUpdateDate;
-            $this->itemList['OrderStatus'] = (string)$this->xmldata->OrderStatus;
-            $this->itemList['FulfillmentChannel'] = (string)$this->xmldata->FulfillmentChannel;
-            $this->itemList['SalesChannel'] = (string)$this->xmldata->SalesChannel;
-            $this->itemList['OrderChannel'] = (string)$this->xmldata->OrderChannel;
-            $this->itemList['ShipServiceLevel'] = (string)$this->xmldata->ShipServiceLevel;
+            $this->itemList[$n]['ASIN'] = (string)$item->ASIN;
+            $this->itemList[$n]['SellerSKU'] = (string)$item->SellerSKU;
+            $this->itemList[$n]['OrderItemId'] = (string)$item->OrderItemId;
+            $this->itemList[$n]['Title'] = (string)$item->Title;
+            $this->itemList[$n]['QuantityOrdered'] = (string)$item->QuantityOrdered;
+            $this->itemList[$n]['QuantityShipped'] = (string)$item->QuantityShipped;
+            $this->itemList[$n]['GiftMessageText'] = (string)$item->GiftMessageText;
+            $this->itemList[$n]['GiftWrapLevel'] = (string)$item->GiftWrapLevel;
 
-            if (isset($this->xmldata->ShippingAddress)){
-                $this->itemList['ShippingAddress'] = array();
-                $this->itemList['ShippingAddress']['Phone'] = (string)$this->xmldata->ShippingAddress->Phone;
-                $this->itemList['ShippingAddress']['PostalCode'] = (string)$this->xmldata->ShippingAddress->PostalCode;
-                $this->itemList['ShippingAddress']['Name'] = (string)$this->xmldata->ShippingAddress->Name;
-                $this->itemList['ShippingAddress']['CountryCode'] = (string)$this->xmldata->ShippingAddress->CountryCode;
-                $this->itemList['ShippingAddress']['StateOrRegion'] = (string)$this->xmldata->ShippingAddress->StateOrRegion;
-                $this->itemList['ShippingAddress']['AddressLine1'] = (string)$this->xmldata->ShippingAddress->AddressLine1;
-                $this->itemList['ShippingAddress']['AddressLine2'] = (string)$this->xmldata->ShippingAddress->AddressLine2;
-                $this->itemList['ShippingAddress']['AddressLine3'] = (string)$this->xmldata->ShippingAddress->AddressLine3;
-                $this->itemList['ShippingAddress']['City'] = (string)$this->xmldata->ShippingAddress->City;
+            if (isset($item->ItemPrice)){
+                $this->itemList[$n]['ItemPrice'] = array();
+                $this->itemList[$n]['ItemPrice']['Amount'] = (string)$item->ItemPrice->Amount;
+                $this->itemList[$n]['ItemPrice']['CurrencyCode'] = (string)$item->ItemPrice->CurrencyCode;
             }
 
-
-
-            if (isset($this->xmldata->OrderTotal)){
-                $this->itemList['OrderTotal'] = array();
-                $this->itemList['OrderTotal']['Amount'] = (string)$this->xmldata->OrderTotal->Amount;
-                $this->itemList['OrderTotal']['CurrencyCode'] = (string)$this->xmldata->OrderTotal->CurrencyCode;
+            if (isset($item->ShippingPrice)){
+                $this->itemList[$n]['ShippingPrice'] = array();
+                $this->itemList[$n]['ShippingPrice']['Amount'] = (string)$item->ShippingPrice->Amount;
+                $this->itemList[$n]['ShippingPrice']['CurrencyCode'] = (string)$item->ShippingPrice->CurrencyCode;
+            }
+            
+            if (isset($item->GiftWrapPrice)){
+                $this->itemList[$n]['GiftWrapPrice'] = array();
+                $this->itemList[$n]['GiftWrapPrice']['Amount'] = (string)$item->GiftWrapPrice->Amount;
+                $this->itemList[$n]['GiftWrapPrice']['CurrencyCode'] = (string)$item->GiftWrapPrice->CurrencyCode;
+            }
+            
+            if (isset($item->ItemTax)){
+                $this->itemList[$n]['ItemTax'] = array();
+                $this->itemList[$n]['ItemTax']['Amount'] = (string)$item->ItemTax->Amount;
+                $this->itemList[$n]['ItemTax']['CurrencyCode'] = (string)$item->ItemTax->CurrencyCode;
+            }
+            
+            if (isset($item->ShippingTax)){
+                $this->itemList[$n]['ShippingTax'] = array();
+                $this->itemList[$n]['ShippingTax']['Amount'] = (string)$item->ShippingTax->Amount;
+                $this->itemList[$n]['ShippingTax']['CurrencyCode'] = (string)$item->ShippingTax->CurrencyCode;
+            }
+            
+            if (isset($item->GiftWrapTax)){
+                $this->itemList[$n]['GiftWrapTax'] = array();
+                $this->itemList[$n]['GiftWrapTax']['Amount'] = (string)$item->GiftWrapTax->Amount;
+                $this->itemList[$n]['GiftWrapTax']['CurrencyCode'] = (string)$item->GiftWrapTax->CurrencyCode;
+            }
+            
+            if (isset($item->ShippingDiscount)){
+                $this->itemList[$n]['ShippingDiscount'] = array();
+                $this->itemList[$n]['ShippingDiscount']['Amount'] = (string)$item->ShippingDiscount->Amount;
+                $this->itemList[$n]['ShippingDiscount']['CurrencyCode'] = (string)$item->ShippingDiscount->CurrencyCode;
+            }
+            
+            if (isset($item->PromotionDiscount)){
+                $this->itemList[$n]['PromotionDiscount'] = array();
+                $this->itemList[$n]['PromotionDiscount']['Amount'] = (string)$item->PromotionDiscount->Amount;
+                $this->itemList[$n]['PromotionDiscount']['CurrencyCode'] = (string)$item->PromotionDiscount->CurrencyCode;
             }
 
-            $this->itemList['NumberOfItemsShipped'] = (string)$this->xmldata->NumberOfItemsShipped;
-            $this->itemList['NumberOfItemsUnshipped'] = (string)$this->xmldata->NumberOfItemsUnshipped;
-
-            if (isset($this->xmldata->PaymentExecutionDetail)){
-                $this->itemList['PaymentExecutionDetail'] = array();
+            if (isset($item->PromotionIds)){
+                $this->itemList[$n]['PromotionIds'] = array();
 
                 $i = 0;
-                foreach($this->xmldata->PaymentExecutionDetail->children() as $x){
-                    $this->data['PaymentExecutionDetail']['Payment'.$i]['Amount'] = (string)$x->Payment->Amount;
-                    $this->data['PaymentExecutionDetail']['Payment'.$i]['CurrencyCode'] = (string)$x->Payment->CurrencyCode;
-                    $this->data['PaymentExecutionDetail']['Payment'.$i]['SubPaymentMethod'] = (string)$x->SubPaymentMethod;
+                foreach($item->PromotionIds->children() as $x){
+                    $this->itemList[$n]['PromotionIds'][$i] = (string)$x;
+                    $i++;
                 }
             }
-
-            $this->data['MarketplaceId'] = (string)$this->xmldata->MarketplaceId;
-            $this->data['BuyerName'] = (string)$this->xmldata->BuyerName;
-            $this->data['BuyerEmail'] = (string)$this->xmldata->BuyerEmail;
-            $this->data['ShipServiceLevelCategory'] = (string)$this->xmldata->ShipServiceLevelCategory;
         }
             
     }
@@ -1206,10 +1236,17 @@ class AmazonItemList extends AmazonCore implements Iterator{
 //        $query = $this->genRequest();
 //        myPrint($query);
         
+        $this->throttle();
         $response = fetchURL($url,array('Post'=>$query));
         myPrint($response);
         
-        $this->xmldata = simplexml_load_string($response['body'])->ListOrderItemsResult->OrderItems;
+        $xml = simplexml_load_string($response['body'])->ListOrderItemsResult;
+        
+        if ($this->orderId != $xml->AmazonOrderId){
+            throw new Exception('You grabbed the wrong Order\'s items! - '.$this->orderId.' =/='.$xml->AmazonOrderId);
+        }
+        
+        $this->xmldata = $xml->OrderItems;
         
         $this->itemList = array();
         $this->parseXML();
@@ -1477,6 +1514,43 @@ class AmazonItemList extends AmazonCore implements Iterator{
      */
     public function getShippingDiscountAmount($i = 0){
         return $this->itemList[$i]['ShippingDiscount']['Amount'];
+    }
+    
+    /**
+     * Returns item tax of specified item, defaults to first if none given
+     * @param string $i id of item to get
+     * @return array contains Amount and Currency Code
+     */
+    public function getPromotionDiscount($i = 0){
+        return $this->itemList[$i]['PromotionDiscount'];
+    }
+    
+    /**
+     * Returns item tax amount of specified item, defaults to first if none given
+     * @param string $i id of item to get
+     * @return string
+     */
+    public function getPromotionDiscountAmount($i = 0){
+        return $this->itemList[$i]['PromotionDiscount']['Amount'];
+    }
+    
+    /**
+     * Returns list of promotions for specified item, defaults to first if none given
+     * @param string $i id of item to get
+     * @return array
+     */
+    public function getPromotionIds($i = 0){
+        return $this->itemList[$i]['PromotionIds'];
+    }
+    
+    /**
+     * Returns specified promotion ID for specified item, both default to first if none given
+     * @param string $i id of item to get
+     * @param integer $j index of promotion to get 
+     * @return type
+     */
+    public function getPromotionId($i = 0, $j = 0){
+        return $this->itemList[$i]['PromotionIds'][$j];
     }
     
     /**

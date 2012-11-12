@@ -27,6 +27,7 @@
  * 
  * caching is a great idea because it means information retrieval even if Amazon is down
  * 
+ * need a function for Updating non-completed orders
  * 
  * oh and I still need Mock powers
  */
@@ -111,15 +112,39 @@ abstract class AmazonCore{
 //        echo $this->throttleCount.'<br>';
         //database stuff goes here
         include('/var/www/athena/includes/config.php');
-        DB_PLUGINS;
+        //DB_PLUGINS;
         
-        $previous = time();
-        $refresh = 2;
-        $now = time();
-        
-        if($now-$previous < $refresh){
-            sleep($refresh);
+        $sql = 'SELECT MAX(timestamp) as maxtime FROM `amazonRequestLog` WHERE `type` = ?';
+        $value = array($this->options['Action']); //tokens...
+        $result = db::executeQuery($sql, $value, DB_PLUGINS)->fetchAll();
+        if(!$result){
+            return;
         }
+        
+        $maxtime = $result[0]['maxtime'];
+        echo $maxtime; flush();
+        while(true){
+            $mintime = time()-$this->throttleTime;
+            $timediff = $maxtime-$mintime;
+            echo $timediff.'<br>';
+            if($maxtime <= $mintime){
+                echo 'ready go... '.$mintime.'<br>'; flush();
+                return;
+            }
+            echo 'sleeping for '.$timediff.'<br>'; flush();
+            sleep($timediff);
+            $result = db::executeQuery($sql, $value, DB_PLUGINS)->fetchAll();
+        }
+        
+        
+        
+//        $previous = time();
+//        $refresh = 2;
+//        $now = time();
+//        
+//        if($now-$previous < $refresh){
+//            sleep($refresh);
+//        }
         
         
     }
@@ -243,6 +268,20 @@ abstract class AmazonCore{
         }
         return date('Y-m-d\TH:i:sO',$time-2*60);
             
+    }
+    
+    protected function logRequest(){
+        include('/var/www/athena/includes/config.php');
+        DB_PLUGINS;
+        
+        $sql = "INSERT INTO  `amazonRequestLog` (`id` ,`type` ,`timestamp`)VALUES (NULL ,  ?,  ?)";
+        $value = array($this->options['Action'],time());
+        var_dump($value);
+        
+        $result = db::executeQuery($sql, $value, DB_PLUGINS);
+        if (!$result){
+            throw new Exception('write failed');
+        }
     }
     
     // -- test --
@@ -697,6 +736,7 @@ class AmazonOrder extends AmazonCore{
         
         $this->throttle();
         $response = fetchURL($url,array('Post'=>$query));
+        $this->logRequest();
         //myPrint($response);
         
         if ($response['code'] != 200){
@@ -711,9 +751,23 @@ class AmazonOrder extends AmazonCore{
         if ($this->itemFlag){
             $this->fetchItems();
         }
-        
+    
     }
-
+    
+//    protected function fetchOrderFromCache(){
+//        include ('db-config.php');
+//        
+//        $sql = 'SELECT * FROM `amazonOrderLog` WHERE orderid = ?';
+//        $value = array($this->options['AmazonOrderId.Id.1']);
+//        
+//        $result = db::executeQuery($sql, $value, DB_PLUGINS)->fetchAll();
+//        
+//        myPrint($result);
+//        
+//        return array();
+//    }
+    
+    
     /**
      * Sets the Amazon Order ID for the next request, in case it was not set in the constructor
      * @param string $id the Amazon Order ID
@@ -838,6 +892,15 @@ class AmazonOrderList extends AmazonCore implements Iterator{
      * Fetches orders from Amazon using the pre-set parameters and putting them in an array of AmazonOrder objects
      */
     public function fetchOrders(){
+        //Pseudocode am go
+        //
+        //get order ID
+        //query database for said ID
+        //if found
+        //fetch XML from cache table
+        //else do what I've normally been doing
+        //log copy of results in database
+
         $this->options['Timestamp'] = $this->genTime();
         $this->options['Action'] = 'ListOrders';
         
@@ -868,6 +931,7 @@ class AmazonOrderList extends AmazonCore implements Iterator{
         
         $this->throttle();
         $response = fetchURL($url,array('Post'=>$query));
+        $this->logRequest();
         
         $xml = simplexml_load_string($response['body']);
         
@@ -1306,6 +1370,18 @@ class AmazonItemList extends AmazonCore implements Iterator{
      * @throws Exception if the request to Amazon fails
      */
     public function fetchItems(){
+        //Pseudocode am go
+        //
+        //get order ID
+        //query database for ID to see if items marked as fetched
+        //if found
+        //query database for items belonging to said ID
+        //if found
+        //fetch XML from cache table
+        //else do what I've normally been doing
+        //log copy of results in database
+        //mark entry for order as now having items
+        
         //STILL TO DO: EAT THE TOKENS
         $this->options['Timestamp'] = $this->genTime();
         $this->options['Action'] = 'ListOrderItems';
@@ -1329,6 +1405,7 @@ class AmazonItemList extends AmazonCore implements Iterator{
         
         $this->throttle();
         $response = fetchURL($url,array('Post'=>$query));
+        $this->logRequest();
         myPrint($response);
         
         $xml = simplexml_load_string($response['body'])->ListOrderItemsResult;
@@ -1342,6 +1419,7 @@ class AmazonItemList extends AmazonCore implements Iterator{
         $this->itemList = array();
         $this->parseXML();
         
+        echo '...';flush();
     }
 
     /**

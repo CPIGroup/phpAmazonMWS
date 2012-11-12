@@ -134,6 +134,7 @@ abstract class AmazonCore{
             echo 'sleeping for '.$timediff.'<br>'; flush();
             sleep($timediff);
             $result = db::executeQuery($sql, $value, DB_PLUGINS)->fetchAll();
+            $maxtime = $result[0]['maxtime'];
         }
         
         

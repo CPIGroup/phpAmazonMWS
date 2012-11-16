@@ -88,7 +88,7 @@ abstract class AmazonCore{
         $this->urlbase = $serviceURL;
         
         $this->options['SignatureVersion'] = 2;
-        $this->options['SignatureMethod'] = 'HmacSHA1';
+        $this->options['SignatureMethod'] = 'HmacSHA256';
         $this->options['Version'] = '2011-01-01';
     }
     
@@ -122,16 +122,15 @@ abstract class AmazonCore{
         }
         
         $maxtime = $result[0]['maxtime'];
-        echo $maxtime; flush();
+        flush();
         while(true){
             $mintime = time()-$this->throttleTime;
             $timediff = $maxtime-$mintime;
-            echo $timediff.'<br>';
             if($maxtime <= $mintime){
-                echo 'ready go... '.$mintime.'<br>'; flush();
+                flush();
                 return;
             }
-            echo 'sleeping for '.$timediff.'<br>'; flush();
+            flush();
             sleep($timediff);
             $result = db::executeQuery($sql, $value, DB_PLUGINS)->fetchAll();
             $maxtime = $result[0]['maxtime'];
@@ -811,6 +810,7 @@ class AmazonOrderList extends AmazonCore implements Iterator{
     private $tokenUseFlag;
     private $tokenItemFlag;
     private $index;
+    private $token;
 
     /**
      * Amazon Order Lists pull a set of Orders and turn them into an array of AmazonOrder objects.
@@ -934,10 +934,22 @@ class AmazonOrderList extends AmazonCore implements Iterator{
         $response = fetchURL($url,array('Post'=>$query));
         $this->logRequest();
         
-        $xml = simplexml_load_string($response['body']);
+        $path = $this->options['Action'].'Result';
         
+        var_dump(simplexml_load_string($response['body']));
+        var_dump($path);
         
-        foreach($xml->ListOrdersResult->Orders->children() as $key => $order){
+        $xml = simplexml_load_string($response['body'])->$path;
+        
+        echo 'the lime must be drawn here';
+        var_dump($xml);
+        
+        if ($xml->NextToken){
+            $this->tokenFlag = true;
+            $this->token = true;
+        }
+        
+        foreach($xml->Orders->children() as $key => $order){
             if ($key != 'Order'){
                 break;
             }
@@ -968,7 +980,7 @@ class AmazonOrderList extends AmazonCore implements Iterator{
         if (!$this->tokenFlag){
             return false;
         } else {
-            $this->options['NextToken'] = $this->data['NextToken'];
+            $this->options['NextToken'] = $this->token;
             $this->options['Action'] = 'ListOrdersByNextToken';
             
             //When using tokens, only the NextToken option should be used
@@ -1242,6 +1254,8 @@ class AmazonItemList extends AmazonCore implements Iterator{
     private $i;
     private $xmldata;
     private $orderId;
+    private $index;
+    private $token;
 
     /**
      * AmazonItemLists contain all of the items for a given order
@@ -1272,16 +1286,21 @@ class AmazonItemList extends AmazonCore implements Iterator{
     
     /**
      * Populates the object's data using the stored XML data. Clears existing data
+     * @param boolean $reset put TRUE to remove existing data
      * @return boolean if no XML data
      */
-    protected function parseXML(){
+    protected function parseXML($reset = false){
         if (!$this->xmldata){
             return false;
         }
-        $this->itemList = array();
+        if ($reset){
+            $this->itemList = array();
+            $this->index = 0;
+        }
         
-        $n = 0;
+        
         foreach($this->xmldata->children() as $item){
+            $n = $this->index++;
             
             $this->itemList[$n]['ASIN'] = (string)$item->ASIN;
             $this->itemList[$n]['SellerSKU'] = (string)$item->SellerSKU;
@@ -1391,6 +1410,8 @@ class AmazonItemList extends AmazonCore implements Iterator{
             $this->prepareToken();
         } else {
             unset($this->options['NextToken']);
+            $this->index = 0;
+            $this->itemList = array();
         }
         
         $url = $this->urlbase.$this->urlbranch;
@@ -1407,20 +1428,35 @@ class AmazonItemList extends AmazonCore implements Iterator{
         $this->throttle();
         $response = fetchURL($url,array('Post'=>$query));
         $this->logRequest();
-        myPrint($response);
         
-        $xml = simplexml_load_string($response['body'])->ListOrderItemsResult;
+        $path = $this->options['Action'].'Result';
+        $xml = simplexml_load_string($response['body'])->$path;
+        
+        if ($xml->NextToken){
+            $this->tokenFlag = true;
+            $this->token = true;
+        }
+        
+        
+        if (is_null($xml->AmazonOrderId)){
+            throw new Exception('You dun got throttled.');
+        }
         
         if ($this->orderId != $xml->AmazonOrderId){
             throw new Exception('You grabbed the wrong Order\'s items! - '.$this->orderId.' =/='.$xml->AmazonOrderId);
         }
         
+        
+        
         $this->xmldata = $xml->OrderItems;
         
-        $this->itemList = array();
         $this->parseXML();
         
-        echo '...';flush();
+        
+        if ($this->tokenFlag && $this->tokenUseFlag){
+            echo '<br>IT BEGINS AGAIN<br>';
+            $this->fetchItems();
+        }
     }
 
     /**
@@ -1431,7 +1467,7 @@ class AmazonItemList extends AmazonCore implements Iterator{
         if (!$this->tokenFlag){
             return false;
         } else {
-            $this->options['NextToken'] = $this->data['NextToken'];
+            $this->options['NextToken'] = $this->token;
             $this->options['Action'] = 'ListOrderItemsByNextToken';
             
             //When using tokens, only the NextToken option should be used

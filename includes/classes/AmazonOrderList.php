@@ -2,7 +2,7 @@
 /**
  * Amazon Order Lists pull a set of Orders and turn them into an array of AmazonOrder objects.
  */
-class AmazonOrderList extends AmazonCore implements Iterator{
+class AmazonOrderList extends AmazonOrderCore implements Iterator{
     private $orderList;
     private $i;
     private $tokenFlag;
@@ -28,8 +28,6 @@ class AmazonOrderList extends AmazonCore implements Iterator{
         } else {
             throw new Exception('Marketplace ID missing.');
         }
-        
-        $this->urlbranch = 'Orders/2011-01-01';
         
         $this->throttleLimit = $throttleLimitOrderList;
         $this->throttleTime = $throttleTimeOrderList;

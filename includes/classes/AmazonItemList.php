@@ -2,7 +2,7 @@
 /**
  * AmazonItemLists contain all of the items for a given order
  */
-class AmazonItemList extends AmazonCore implements Iterator{
+class AmazonItemList extends AmazonOrderCore implements Iterator{
     private $itemList;
     private $tokenFlag;
     private $tokenUseFlag;
@@ -22,7 +22,6 @@ class AmazonItemList extends AmazonCore implements Iterator{
         parent::__construct($s, $mock);
         include($this->config);
         
-        $this->urlbranch = 'Orders/2011-01-01';
         
         if (!is_null($id)){
             $this->options['AmazonOrderId'] = $id;

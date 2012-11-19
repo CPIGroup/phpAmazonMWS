@@ -4,7 +4,7 @@
  * 
  * Please note that it has a 5 minute throttle time.
  */
-class AmazonServiceStatus extends AmazonCore{
+class AmazonServiceStatus extends AmazonOrderCore{
     private $lastTimestamp;
     private $status;
     
@@ -17,7 +17,6 @@ class AmazonServiceStatus extends AmazonCore{
         parent::__construct($s, $mock);
         include($this->config);
         
-        $this->urlbranch = 'Orders/2011-01-01';
         $this->options['Action'] = 'GetServiceStatus';
         
         $this->throttleLimit = $throttleLimitStatus;

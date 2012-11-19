@@ -2,7 +2,7 @@
 /**
  * AmazonOrder object gets the details for a single object from Amazon
  */
-class AmazonOrder extends AmazonCore{
+class AmazonOrder extends AmazonOrderCore{
     private $itemFlag;
     private $tokenItemFlag;
     private $data;
@@ -25,8 +25,6 @@ class AmazonOrder extends AmazonCore{
         if ($d) {
             $this->xmldata = $d;
         }
-        
-        $this->urlbranch = 'Orders/2011-01-01';
         
         $this->throttleLimit = $throttleLimitOrder;
         $this->throttleTime = $throttleTimeOrder;

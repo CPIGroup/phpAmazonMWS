@@ -16,9 +16,10 @@ class AmazonItemList extends AmazonCore implements Iterator{
      * AmazonItemLists contain all of the items for a given order
      * @param string $s store name as seen in Config
      * @param string $id order ID to be automatically set
+     * @param boolean $mock set true to enable mock mode
      */
-    public function __construct($s, $id=null){
-        parent::__construct($s);
+    public function __construct($s, $id=null, $mock = false){
+        parent::__construct($s, $mock);
         include($this->config);
         
         $this->urlbranch = 'Orders/2011-01-01';

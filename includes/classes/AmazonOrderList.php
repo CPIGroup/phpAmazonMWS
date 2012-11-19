@@ -15,10 +15,11 @@ class AmazonOrderList extends AmazonCore implements Iterator{
     /**
      * Amazon Order Lists pull a set of Orders and turn them into an array of AmazonOrder objects.
      * @param string $s name of store, as seen in the config file
+     * @param boolean $mock set true to enable mock mode
      * @throws Exception if Marketplace ID is missing from config
      */
-    public function __construct($s){
-        parent::__construct($s);
+    public function __construct($s, $mock = false){
+        parent::__construct($s, $mock);
         $this->i = 0;
         include($this->config);
         

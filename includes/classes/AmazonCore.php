@@ -44,7 +44,9 @@ abstract class AmazonCore{
     protected $secretKey;
     protected $options;
     protected $config;
-    protected $mockMode;
+    protected $mockMode = false;
+    protected $mockFiles;
+    protected $mockIndex = 0;
     
     /**
      * AmazonCore constructor sets up key information used in all Amazon requests
@@ -89,6 +91,73 @@ abstract class AmazonCore{
         $this->options['SignatureVersion'] = 2;
         $this->options['SignatureMethod'] = 'HmacSHA256';
         $this->options['Version'] = '2011-01-01';
+    }
+    
+    /**
+     * Enables (or disables Mock Mode) for the object
+     * @param boolean $b true = on, false = off
+     * @param type $files filename(s) of the mock files to use
+     */
+    public function setMock($b = true,$files = null){
+        if (is_bool($b)){
+            $this->mockMode = $b;
+        }
+        if (is_string($files)){
+            $this->mockFiles = array();
+            $this->mockFiles[0] = $files;
+        } else if (is_array($files)){
+            $this->mockFiles = $files;
+        }
+    }
+    
+    public function fetchMockFile(){
+        if(!array_key_exists(0, $this->mockFiles)){
+            return false;
+        }
+        if(!array_key_exists($this->mockIndex, $this->mockFiles)){
+            $this->mockIndex = 0;
+        }
+        $url = $this->mockFiles[$this->mockIndex++];
+        
+        if(file_exists($url)){
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+        }
+        
     }
     
     /**
@@ -275,7 +344,6 @@ abstract class AmazonCore{
         
         $sql = "INSERT INTO  `amazonRequestLog` (`id` ,`type` ,`timestamp`)VALUES (NULL ,  ?,  ?)";
         $value = array($this->options['Action'],time());
-        var_dump($value);
         
         $result = db::executeQuery($sql, $value, DB_PLUGINS);
         if (!$result){

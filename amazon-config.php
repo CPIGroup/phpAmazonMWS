@@ -31,6 +31,9 @@ $throttleTimeOrderList = 60;
 //Fetching Items
 $throttleLimitItem = 30;
 $throttleTimeItem = 2;
+//Fetching Service Status
+$throttleLimitStatus = 2;
+$throttleTimeStatus = 300;
 
 //Safe Throttle Mode
 //Adds extra second onto throttle times to ensure service does not fail

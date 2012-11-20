@@ -3,7 +3,6 @@
 class AmazonParticipationList extends AmazonSellersCore{
     private $tokenFlag;
     private $tokenUseFlag;
-    private $token;
     private $xmldata;
     private $participationList;
     private $marketplaceList;
@@ -44,10 +43,15 @@ class AmazonParticipationList extends AmazonSellersCore{
         }
     }
     
+    /**
+     * Fetches the participation list from Amazon, using a token if available
+     */
     public function fetchParticipationList(){
         $this->options['Timestamp'] = $this->genTime();
         if ($this->tokenFlag && $this->tokenUseFlag){
             $this->options['Action'] = 'ListMarketplaceParticipationsByNextToken';
+        } else {
+            unset($this->options['NextToken']);
         }
         
         
@@ -74,26 +78,141 @@ class AmazonParticipationList extends AmazonSellersCore{
         $xmlP = $xml->ListParticipations;
         $xmlM = $xml->ListMarketplaces;
         
-        var_dump($xmlP);
-        var_dump($xmlM);
+        if ($xml->NextToken){
+            $this->tokenFlag = true;
+            $this->options['NextToken'] = (string)$xml->NextToken;
+        }
         
         $i = 0;
         $this->marketplaceList = array();
         foreach($xmlP->children() as $x){
-            var_dump($x);
             $this->marketplaceList[$i]['MarketplaceId'] = (string)$x->MarketplaceId;
             $this->marketplaceList[$i]['SellerId'] = (string)$x->SellerId;
             $this->marketplaceList[$i]['Suspended'] = (string)$x->HasSellerSuspendedListings;
             $i++;
         }
         
-        myPrint($this->orderList);
+        $i = 0;
+        $this->participationList = array();
+        foreach($xmlM->children() as $x){
+            $this->participationList[$i]['MarketplaceId'] = (string)$x->MarketplaceId;
+            $this->participationList[$i]['Name'] = (string)$x->Name;
+            $this->participationList[$i]['Country'] = (string)$x->DefaultCountryCode;
+            $this->participationList[$i]['Currency'] = (string)$x->DefaultCurrencyCode;
+            $this->participationList[$i]['Language'] = (string)$x->DefaultLanguageCode;
+            $i++;
+        }
+        
+        myPrint($this->marketplaceList);
+        myPrint($this->participationList);
         
     }
     
-    protected function parseXML(){
-        
+    /**
+     * Returns entire list of marketplaces, for convenience
+     * @return array
+     */
+    public function getMarketplaceList(){
+        return $this->marketplaceList;
     }
     
+    /**
+     * Returns entire list of participations, for convenience
+     * @return array
+     */
+    public function getParticipationList(){
+        return $this->participationList;
+    }
+    
+    /**
+     * Returns the Marketplace ID for the specified entry, defaults to 0
+     * @param int $i index
+     * @return string MarketplaceId, or False if Non-numeric index
+     */
+    public function getMarketplaceId($i = 0){
+        if (is_numeric($i)){
+            return $this->marketplaceList[$i]['MarketplaceId'];
+        } else {
+            return false;
+        }
+    }
+    
+    /**
+     * Returns the Seller ID for the specified entry, defaults to 0
+     * @param int $i index
+     * @return string SellerId, or False if Non-numeric index
+     */
+    public function getSellerId($i = 0){
+        if (is_numeric($i)){
+            return $this->marketplaceList[$i]['SellerId'];
+        } else {
+            return false;
+        }
+    }
+    
+    /**
+     * Returns the Seller ID for the specified entry, defaults to 0
+     * @param int $i index
+     * @return string "Yes" or "No"
+     */
+    public function getSuspensionStatus($i = 0){
+        if (is_numeric($i)){
+            return $this->marketplaceList[$i]['Suspended'];
+        } else {
+            return false;
+        }
+    }
+    
+    /**
+     * Returns the name for the specified entry, defaults to 0
+     * @param int $i index
+     * @return string name, or False if Non-numeric index
+     */
+    public function getName($i = 0){
+        if (is_numeric($i)){
+            return $this->participationList[$i]['Name'];
+        } else {
+            return false;
+        }
+    }
+    
+    /**
+     * Returns the default country code for the specified entry, defaults to 0
+     * @param int $i index
+     * @return string country code, or False if Non-numeric index
+     */
+    public function getCountry($i = 0){
+        if (is_numeric($i)){
+            return $this->participationList[$i]['Country'];
+        } else {
+            return false;
+        }
+    }
+    
+    /**
+     * Returns the default currency code for the specified entry, defaults to 0
+     * @param int $i index
+     * @return string currency code, or False if Non-numeric index
+     */
+    public function getCurreny($i = 0){
+        if (is_numeric($i)){
+            return $this->participationList[$i]['Currency'];
+        } else {
+            return false;
+        }
+    }
+    
+    /**
+     * Returns the default language code for the specified entry, defaults to 0
+     * @param int $i index
+     * @return string language code, or False if Non-numeric index
+     */
+    public function getLanguage($i = 0){
+        if (is_numeric($i)){
+            return $this->participationList[$i]['Language'];
+        } else {
+            return false;
+        }
+    }
 }
 ?>

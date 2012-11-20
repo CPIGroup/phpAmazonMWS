@@ -10,7 +10,6 @@ class AmazonOrderList extends AmazonOrderCore implements Iterator{
     private $tokenUseFlag;
     private $tokenItemFlag;
     private $index;
-    private $token;
 
     /**
      * Amazon Order Lists pull a set of Orders and turn them into an array of AmazonOrder objects.
@@ -145,7 +144,7 @@ class AmazonOrderList extends AmazonOrderCore implements Iterator{
         
         if ($xml->NextToken){
             $this->tokenFlag = true;
-            $this->token = true;
+            $this->options['NextToken'] = (string)$xml->NextToken;
         }
         
         foreach($xml->Orders->children() as $key => $order){
@@ -179,7 +178,6 @@ class AmazonOrderList extends AmazonOrderCore implements Iterator{
         if (!$this->tokenFlag){
             return false;
         } else {
-            $this->options['NextToken'] = $this->token;
             $this->options['Action'] = 'ListOrdersByNextToken';
             
             //When using tokens, only the NextToken option should be used

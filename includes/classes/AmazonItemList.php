@@ -189,7 +189,7 @@ class AmazonItemList extends AmazonOrderCore implements Iterator{
         
         if ($xml->NextToken){
             $this->tokenFlag = true;
-            $this->token = true;
+            $this->options['NextToken'] = (string)$xml->NextToken;
         }
         
         
@@ -222,9 +222,7 @@ class AmazonItemList extends AmazonOrderCore implements Iterator{
         if (!$this->tokenFlag){
             return false;
         } else {
-            $this->options['NextToken'] = $this->token;
             $this->options['Action'] = 'ListOrderItemsByNextToken';
-            
             //When using tokens, only the NextToken option should be used
             unset($this->options['AmazonOrderId']);
         }

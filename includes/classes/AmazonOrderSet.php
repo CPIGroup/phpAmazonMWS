@@ -12,8 +12,8 @@ class AmazonOrderSet extends AmazonOrderCore implements Iterator{
      * @param boolean $mock set true to enable mock mode
      * @throws Exception if Marketplace ID is missing from config
      */
-    public function __construct($s, $o = null, $mock = false){
-        parent::__construct($s, $mock);
+    public function __construct($s, $o = null, $mock = false, $m = null){
+        parent::__construct($s, $mock, $m);
         $this->i = 0;
         include($this->config);
         
@@ -96,14 +96,17 @@ class AmazonOrderSet extends AmazonOrderCore implements Iterator{
         $this->options['Signature'] = $this->_signParameters($this->options, $this->secretKey);
         $query = $this->_getParametersAsString($this->options);
         
-        
-        $this->throttle();
-        $response = fetchURL($url,array('Post'=>$query));
-        $this->logRequest();
-        
-        var_dump(simplexml_load_string($response['body']));
-        
-        $xml = simplexml_load_string($response['body'])->GetOrderResult;
+        if ($this->mockMode){
+           $xml = $this->fetchMockFile();
+        } else {
+            $this->throttle();
+            $response = fetchURL($url,array('Post'=>$query));
+            $this->logRequest();
+
+            var_dump(simplexml_load_string($response['body']));
+
+            $xml = simplexml_load_string($response['body'])->GetOrderResult;
+        }
         
         echo 'the lime must be drawn here';
         var_dump($xml);

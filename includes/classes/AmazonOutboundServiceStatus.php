@@ -13,8 +13,8 @@ class AmazonOutboundServiceStatus extends AmazonOutboundCore{
      * @param string $s store name, as seen in the config file
      * @param boolean $mock set true to enable mock mode
      */
-    public function __construct($s, $mock = false){
-        parent::__construct($s, $mock);
+    public function __construct($s, $mock = false, $m = null){
+        parent::__construct($s, $mock, $m);
         include($this->config);
         
         $this->options['Action'] = 'GetServiceStatus';

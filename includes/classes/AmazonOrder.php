@@ -13,10 +13,11 @@ class AmazonOrder extends AmazonOrderCore{
      * @param string $s store name as seen in config
      * @param string $o Order number to automatically set
      * @param SimpleXMLElement $d XML data from Amazon to be parsed
+     * @param array $m
      * @param boolean $mock set true to enable mock mode
      */
-    public function __construct($s,$o = null,$d = null, $mock = false){
-        parent::__construct($s, $mock);
+    public function __construct($s,$o = null,$d = null, $mock = false, $m = null){
+        parent::__construct($s, $mock, $m);
         include($this->config);
         
         if($o){
@@ -355,18 +356,18 @@ class AmazonOrder extends AmazonOrderCore{
 //        myPrint($query);
         
         if ($this->mockMode){
-            $response = $this->fetchMockFile();
+            $xml = $this->fetchMockFile();
         } else {
             $this->throttle();
             $response = fetchURL($url,array('Post'=>$query));
             $this->logRequest();
+            
+            $xml = simplexml_load_string($response['body']);
         }
         
         if ($response['code'] != 200){
             throw new Exception('Still to do: handle this better');
         }
-        
-        $xml = simplexml_load_string($response['body']);
         
         $this->xmldata = $xml->GetOrderResult->Orders->Order;
         $this->parseXML();

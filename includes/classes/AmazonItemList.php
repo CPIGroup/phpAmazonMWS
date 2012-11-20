@@ -18,8 +18,8 @@ class AmazonItemList extends AmazonOrderCore implements Iterator{
      * @param string $id order ID to be automatically set
      * @param boolean $mock set true to enable mock mode
      */
-    public function __construct($s, $id=null, $mock = false){
-        parent::__construct($s, $mock);
+    public function __construct($s, $id=null, $mock = false, $m = null){
+        parent::__construct($s, $mock, $m);
         include($this->config);
         
         
@@ -180,12 +180,17 @@ class AmazonItemList extends AmazonOrderCore implements Iterator{
 //        $query = $this->genRequest();
 //        myPrint($query);
         
-        $this->throttle();
-        $response = fetchURL($url,array('Post'=>$query));
-        $this->logRequest();
-        
-        $path = $this->options['Action'].'Result';
-        $xml = simplexml_load_string($response['body'])->$path;
+        if ($this->mockMode){
+           $xml = $this->fetchMockFile();
+        } else {
+            $this->throttle();
+            $response = fetchURL($url,array('Post'=>$query));
+            $this->logRequest();
+
+            $path = $this->options['Action'].'Result';
+            $xml = simplexml_load_string($response['body'])->$path;
+        }
+            
         
         if ($xml->NextToken){
             $this->tokenFlag = true;

@@ -15,10 +15,11 @@ class AmazonOrderList extends AmazonOrderCore implements Iterator{
      * Amazon Order Lists pull a set of Orders and turn them into an array of AmazonOrder objects.
      * @param string $s name of store, as seen in the config file
      * @param boolean $mock set true to enable mock mode
+     * @param array $m list of files
      * @throws Exception if Marketplace ID is missing from config
      */
-    public function __construct($s, $mock = false){
-        parent::__construct($s, $mock);
+    public function __construct($s, $mock = false, $m = null){
+        parent::__construct($s, $mock, $m);
         $this->i = 0;
         include($this->config);
         
@@ -128,16 +129,21 @@ class AmazonOrderList extends AmazonOrderCore implements Iterator{
 //        $query = $this->genRequest();
 //        myPrint($query);
         
-        $this->throttle();
-        $response = fetchURL($url,array('Post'=>$query));
-        $this->logRequest();
-        
-        $path = $this->options['Action'].'Result';
-        
-        var_dump(simplexml_load_string($response['body']));
-        var_dump($path);
-        
-        $xml = simplexml_load_string($response['body'])->$path;
+        if ($this->mockMode){
+           $xml = $this->fetchMockFile();
+        } else {
+            $this->throttle();
+            $response = fetchURL($url,array('Post'=>$query));
+            $this->logRequest();
+
+            $path = $this->options['Action'].'Result';
+
+//            var_dump(simplexml_load_string($response['body']));
+//            var_dump($path);
+
+            $xml = simplexml_load_string($response['body'])->$path;
+        }
+            
         
         echo 'the lime must be drawn here';
         var_dump($xml);
@@ -151,7 +157,7 @@ class AmazonOrderList extends AmazonOrderCore implements Iterator{
             if ($key != 'Order'){
                 break;
             }
-            $this->orderList[$this->index] = new AmazonOrder($this->storeName,null,$order);
+            $this->orderList[$this->index] = new AmazonOrder($this->storeName,null,$order,$this->mockMode);
             $this->orderList[$this->index]->parseXML();
             $this->orderList[$this->index]->setUseItemToken($this->tokenItemFlag);
             if($this->itemFlag){

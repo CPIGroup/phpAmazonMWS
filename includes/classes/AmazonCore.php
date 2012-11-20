@@ -52,9 +52,10 @@ abstract class AmazonCore{
      * AmazonCore constructor sets up key information used in all Amazon requests
      * @param string $s Name for store as seen in config file
      * @param boolean $mock flag for enabling Mock Mode
+     * @param array $m list of mock file URLs to provide to the Mock Server
      * @throws Exception if key config data is missing
      */
-    protected function __construct($s, $mock=false){
+    protected function __construct($s, $mock=false, $m = null){
         $this->config = '/var/www/athena/plugins/newAmazon/amazon-config.php';
         
         include($this->config);
@@ -83,6 +84,9 @@ abstract class AmazonCore{
         
         if (is_bool($mock)){
             $this->mockMode = $mock;
+            if ($m){
+                $this->mockFiles = $m;
+            }
         }
         
         
@@ -120,43 +124,21 @@ abstract class AmazonCore{
         
         if(file_exists($url)){
             
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
+            try{
+                return simplexml_load_file($url);
+            } catch (Exception $e){
+                echo 'uh oh';
+            }
             
         }
         
+    }
+    
+    /**
+     * Sets mock index back to 0
+     */
+    public function resetMock(){
+        $this->mockIndex = 0;
     }
     
     /**

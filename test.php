@@ -10,8 +10,9 @@ include('includes/classes.php');
 //$a->setLimits('Modified','-1 hours');
 //$a->fetchOrders();
 
-$a = new AmazonServiceStatus('BigKitchen');
-echo $a->getTimestamp();
+$a = new AmazonOrderSet('BigKitchen',array(1,2));
+var_dump ($a);
+$a->fetchOrders();
 
 //$a = new AmazonOrder('BigKitchen');
 //$a->setOrderId('106-2655952-6625846');

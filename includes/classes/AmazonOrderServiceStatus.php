@@ -4,7 +4,7 @@
  * 
  * Please note that it has a 5 minute throttle time.
  */
-class AmazonServiceStatus extends AmazonOrderCore{
+class AmazonOrderServiceStatus extends AmazonOrderCore{
     private $lastTimestamp;
     private $status;
     

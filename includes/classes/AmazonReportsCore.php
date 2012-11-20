@@ -9,6 +9,7 @@ abstract class AmazonInboundCore extends AmazonCore{
     public function __construct($s, $mock = false){
         parent::__construct($s, $mock);
         $this->urlbranch = '';
+        $this->options['Version'] = '2009-01-01';
     }
 }
 ?>

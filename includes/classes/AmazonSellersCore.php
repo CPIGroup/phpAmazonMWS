@@ -9,6 +9,7 @@ abstract class AmazonSellersCore extends AmazonCore{
     public function __construct($s, $mock = false){
         parent::__construct($s, $mock);
         $this->urlbranch = 'Sellers/2011-07-01';
+        $this->options['Version'] = '2011-07-01';
     }
 }
 ?>

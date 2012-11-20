@@ -90,7 +90,6 @@ abstract class AmazonCore{
         
         $this->options['SignatureVersion'] = 2;
         $this->options['SignatureMethod'] = 'HmacSHA256';
-        $this->options['Version'] = '2011-01-01';
     }
     
     /**

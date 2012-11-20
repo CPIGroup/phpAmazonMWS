@@ -9,6 +9,7 @@ abstract class AmazonOutboundCore extends AmazonCore{
     public function __construct($s, $mock = false){
         parent::__construct($s, $mock);
         $this->urlbranch = 'FulfillmentOutboundShipment/2010-10-01';
+        $this->options['Version'] = '2010-10-01';
     }
 }
 ?>

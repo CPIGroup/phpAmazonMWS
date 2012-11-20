@@ -30,8 +30,8 @@ class AmazonOrderSet extends AmazonOrderCore implements Iterator{
             }
         }
         
-        $this->throttleLimit = $throttleLimitOrderList;
-        $this->throttleTime = $throttleTimeOrderList;
+        $this->throttleLimit = $throttleLimitOrder;
+        $this->throttleTime = $throttleTimeOrder;
         
         if ($throttleSafe){
             $this->throttleLimit++;

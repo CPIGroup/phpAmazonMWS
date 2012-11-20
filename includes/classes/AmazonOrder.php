@@ -146,7 +146,7 @@ class AmazonOrder extends AmazonOrderCore{
      * Returns the purchase date of the Order
      * @return dateTime timestamp
      */
-    public function PurchaseDate(){
+    public function getPurchaseDate(){
         return $this->data['PurchaseDate'];
     }
     

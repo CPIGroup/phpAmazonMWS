@@ -12,7 +12,9 @@ include('includes/classes.php');
 
 $a = new AmazonParticipationList('BigKitchen');
 $a->fetchParticipationList();
-var_dump ($a);
+//var_dump ($a);
+echo 'should get nothing: ';
+var_dump($a->getLanguage(5));
 
 //$a = new AmazonOrder('BigKitchen');
 //$a->setOrderId('106-2655952-6625846');

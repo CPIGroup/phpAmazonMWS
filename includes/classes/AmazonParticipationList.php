@@ -67,13 +67,13 @@ class AmazonParticipationList extends AmazonSellersCore{
         
         $path = $this->options['Action'].'Result';
         
-        var_dump(simplexml_load_string($response['body']));
-        var_dump($path);
+//        var_dump(simplexml_load_string($response['body']));
+//        var_dump($path);
         
         $xml = simplexml_load_string($response['body'])->$path;
         
-        echo 'the lime must be drawn here';
-        myPrint($xml);
+//        echo 'the lime must be drawn here';
+//        myPrint($xml);
         
         $xmlP = $xml->ListParticipations;
         $xmlM = $xml->ListMarketplaces;
@@ -103,8 +103,8 @@ class AmazonParticipationList extends AmazonSellersCore{
             $i++;
         }
         
-        myPrint($this->marketplaceList);
-        myPrint($this->participationList);
+//        myPrint($this->marketplaceList);
+//        myPrint($this->participationList);
         
     }
     

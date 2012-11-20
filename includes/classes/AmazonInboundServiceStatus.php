@@ -35,18 +35,20 @@ class AmazonInboundServiceStatus extends AmazonInboundCore{
         $query = $this->_getParametersAsString($this->options);
         
         if ($this->mockMode){
-            $response = $this->fetchMockFile();
+            $xml = $this->fetchMockFile();
         } else {
             $this->throttle();
             $response = fetchURL($url,array('Post'=>$query));
             $this->logRequest();
+            
+            $xml = simplexml_load_string($response['body']);
         }
         
         if ($response['code'] != 200){
             throw new Exception('Still to do: handle this better...'.$response['code']);
         }
         
-        $xml = simplexml_load_string($response['body']);
+        
         
         $this->lastTimestamp = (string)$xml->GetServiceStatusResult->Timestamp;
         $this->status = (string)$xml->GetServiceStatusResult->Status;

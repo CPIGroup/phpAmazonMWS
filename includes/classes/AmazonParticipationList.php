@@ -12,8 +12,8 @@ class AmazonParticipationList extends AmazonSellersCore{
      * @param string $s store name, as seen in the config file
      * @param boolean $mock set true to enable mock mode
      */
-    public function __construct($s, $mock = false) {
-        parent::__construct($s, $mock);
+    public function __construct($s, $mock = false, $m = null) {
+        parent::__construct($s, $mock, $m);
         include($this->config);
         
         $this->options['Action'] = 'ListMarketplaceParticipations';
@@ -60,18 +60,22 @@ class AmazonParticipationList extends AmazonSellersCore{
         $this->options['Signature'] = $this->_signParameters($this->options, $this->secretKey);
         $query = $this->_getParametersAsString($this->options);
         
-        
-        $this->throttle();
-        $response = fetchURL($url,array('Post'=>$query));
-        $this->logRequest();
-        
         $path = $this->options['Action'].'Result';
         
-//        var_dump(simplexml_load_string($response['body']));
-//        var_dump($path);
-        
-        $xml = simplexml_load_string($response['body'])->$path;
-        
+        if ($this->mockMode){
+           $xml = $this->fetchMockFile()->$path;
+        } else {
+            $this->throttle();
+            $response = fetchURL($url,array('Post'=>$query));
+            $this->logRequest();
+
+//            var_dump(simplexml_load_string($response['body']));
+//            var_dump($path);
+
+            $xml = simplexml_load_string($response['body'])->$path;
+        }
+            
+
 //        echo 'the lime must be drawn here';
 //        myPrint($xml);
         
@@ -100,6 +104,7 @@ class AmazonParticipationList extends AmazonSellersCore{
             $this->participationList[$i]['Country'] = (string)$x->DefaultCountryCode;
             $this->participationList[$i]['Currency'] = (string)$x->DefaultCurrencyCode;
             $this->participationList[$i]['Language'] = (string)$x->DefaultLanguageCode;
+            $this->participationList[$i]['Domain'] = (string)$x->DomainName;
             $i++;
         }
         
@@ -210,6 +215,19 @@ class AmazonParticipationList extends AmazonSellersCore{
     public function getLanguage($i = 0){
         if (is_numeric($i)){
             return $this->participationList[$i]['Language'];
+        } else {
+            return false;
+        }
+    }
+    
+    /**
+     * Returns the domain name for the specified entry, defaults to 0
+     * @param int $i index
+     * @return string language code, or False if Non-numeric index
+     */
+    public function getDomain($i = 0){
+        if (is_numeric($i)){
+            return $this->participationList[$i]['Domain'];
         } else {
             return false;
         }

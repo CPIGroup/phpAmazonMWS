@@ -10,7 +10,8 @@ include('includes/classes.php');
 //$a->setLimits('Modified','-1 hours');
 //$a->fetchOrders();
 
-$a = new AmazonParticipationList('BigKitchen');
+//$a = new AmazonParticipationList('BigKitchen');
+$a = new AmazonParticipationList('BigKitchen',true,array('mocky.xml'));
 $a->fetchParticipationList();
 //var_dump ($a);
 echo 'should get something: ';

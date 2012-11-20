@@ -129,14 +129,15 @@ class AmazonOrderList extends AmazonOrderCore implements Iterator{
 //        $query = $this->genRequest();
 //        myPrint($query);
         
+        $path = $this->options['Action'].'Result';
         if ($this->mockMode){
-           $xml = $this->fetchMockFile();
+           $xml = $this->fetchMockFile()->$path;
         } else {
             $this->throttle();
             $response = fetchURL($url,array('Post'=>$query));
             $this->logRequest();
 
-            $path = $this->options['Action'].'Result';
+            
 
 //            var_dump(simplexml_load_string($response['body']));
 //            var_dump($path);

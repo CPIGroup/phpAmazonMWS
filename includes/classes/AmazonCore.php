@@ -84,7 +84,10 @@ abstract class AmazonCore{
         
         if (is_bool($mock)){
             $this->mockMode = $mock;
-            if ($m){
+            if (is_string($m)){
+                $this->mockFiles = array();
+                $this->mockFiles[0] = $m;
+            } else if (is_array($m)){
                 $this->mockFiles = $m;
             }
         }
@@ -120,7 +123,8 @@ abstract class AmazonCore{
         if(!array_key_exists($this->mockIndex, $this->mockFiles)){
             $this->mockIndex = 0;
         }
-        $url = $this->mockFiles[$this->mockIndex++];
+        $url = 'mock/'.$this->mockFiles[$this->mockIndex++];
+        
         
         if(file_exists($url)){
             
@@ -130,6 +134,8 @@ abstract class AmazonCore{
                 echo 'uh oh';
             }
             
+        } else {
+            throw new Exception('File '.$url.'not found!');
         }
         
     }

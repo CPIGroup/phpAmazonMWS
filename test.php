@@ -11,11 +11,12 @@ include('includes/classes.php');
 //$a->fetchOrders();
 
 //$a = new AmazonParticipationList('BigKitchen');
-$a = new AmazonParticipationList('BigKitchen',true,array('mocky.xml'));
+$a = new AmazonParticipationList('BigKitchen',true,array('mocky.xml','mocky2.xml'));
+$a->setUseToken();
 $a->fetchParticipationList();
 //var_dump ($a);
 echo 'should get something: ';
-var_dump($a->getLanguage(0));
+var_dump($a->getSellerId(0));
 
 //$a = new AmazonOrder('BigKitchen');
 //$a->setOrderId('106-2655952-6625846');

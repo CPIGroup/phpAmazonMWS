@@ -152,6 +152,9 @@ class AmazonOrderList extends AmazonOrderCore implements Iterator{
         if ($xml->NextToken){
             $this->tokenFlag = true;
             $this->options['NextToken'] = (string)$xml->NextToken;
+        } else {
+            unset($this->options['NextToken']);
+            $this->tokenFlag = false;
         }
         
         foreach($xml->Orders->children() as $key => $order){

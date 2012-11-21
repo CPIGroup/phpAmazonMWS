@@ -85,6 +85,9 @@ class AmazonParticipationList extends AmazonSellersCore{
         if ($xml->NextToken){
             $this->tokenFlag = true;
             $this->options['NextToken'] = (string)$xml->NextToken;
+        } else {
+            unset($this->options['NextToken']);
+            $this->tokenFlag = false;
         }
         
         $i = 0;
@@ -108,8 +111,9 @@ class AmazonParticipationList extends AmazonSellersCore{
             $i++;
         }
         
-//        myPrint($this->marketplaceList);
-//        myPrint($this->participationList);
+        if ($this->tokenFlag && $this->tokenUseFlag){
+            $this->fetchParticipationList();
+        }
         
     }
     

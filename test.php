@@ -15,8 +15,10 @@ $a = new AmazonParticipationList('BigKitchen',true,array('mocky.xml','mocky2.xml
 $a->setUseToken();
 $a->fetchParticipationList();
 //var_dump ($a);
-echo 'should get something: ';
+echo 'First reply: ';
 var_dump($a->getSellerId(0));
+echo 'Token reply: ';
+var_dump($a->getSellerId(1));
 
 //$a = new AmazonOrder('BigKitchen');
 //$a->setOrderId('106-2655952-6625846');

@@ -20,6 +20,9 @@ $store['BigKitchen']['keyId'] = 'AKIAJBQH4G6FKKUAPU6Q';
 $store['BigKitchen']['secretKey'] = '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';
 
 
+//Location of log file to use
+$logpath = 'log.txt';
+
 //Amazon Throttle Values in seconds
 //Do not modify unless Amazon changes the values
 //Fetching Orders

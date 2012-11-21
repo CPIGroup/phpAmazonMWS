@@ -6,6 +6,8 @@ class AmazonParticipationList extends AmazonSellersCore{
     private $xmldata;
     private $participationList;
     private $marketplaceList;
+    private $indexM = 0;
+    private $indexP = 0;
     
     /**
      * Gets list of marketplaces run by seller
@@ -45,8 +47,9 @@ class AmazonParticipationList extends AmazonSellersCore{
     
     /**
      * Fetches the participation list from Amazon, using a token if available
+     * @param boolean $refresh set false to preserve current list (for internal use)
      */
-    public function fetchParticipationList(){
+    public function fetchParticipationList($refresh = true){
         $this->options['Timestamp'] = $this->genTime();
         if ($this->tokenFlag && $this->tokenUseFlag){
             $this->options['Action'] = 'ListMarketplaceParticipationsByNextToken';
@@ -90,29 +93,32 @@ class AmazonParticipationList extends AmazonSellersCore{
             $this->tokenFlag = false;
         }
         
-        $i = 0;
-        $this->marketplaceList = array();
-        foreach($xmlP->children() as $x){
-            $this->marketplaceList[$i]['MarketplaceId'] = (string)$x->MarketplaceId;
-            $this->marketplaceList[$i]['SellerId'] = (string)$x->SellerId;
-            $this->marketplaceList[$i]['Suspended'] = (string)$x->HasSellerSuspendedListings;
-            $i++;
+        if ($refresh){
+          $this->marketplaceList = array();  
+          $this->participationList = array();
         }
         
-        $i = 0;
-        $this->participationList = array();
+        
+        foreach($xmlP->children() as $x){
+            $this->marketplaceList[$this->indexP]['MarketplaceId'] = (string)$x->MarketplaceId;
+            $this->marketplaceList[$this->indexP]['SellerId'] = (string)$x->SellerId;
+            $this->marketplaceList[$this->indexP]['Suspended'] = (string)$x->HasSellerSuspendedListings;
+            $this->indexP++;
+        }
+        
+        
         foreach($xmlM->children() as $x){
-            $this->participationList[$i]['MarketplaceId'] = (string)$x->MarketplaceId;
-            $this->participationList[$i]['Name'] = (string)$x->Name;
-            $this->participationList[$i]['Country'] = (string)$x->DefaultCountryCode;
-            $this->participationList[$i]['Currency'] = (string)$x->DefaultCurrencyCode;
-            $this->participationList[$i]['Language'] = (string)$x->DefaultLanguageCode;
-            $this->participationList[$i]['Domain'] = (string)$x->DomainName;
-            $i++;
+            $this->participationList[$this->indexM]['MarketplaceId'] = (string)$x->MarketplaceId;
+            $this->participationList[$this->indexM]['Name'] = (string)$x->Name;
+            $this->participationList[$this->indexM]['Country'] = (string)$x->DefaultCountryCode;
+            $this->participationList[$this->indexM]['Currency'] = (string)$x->DefaultCurrencyCode;
+            $this->participationList[$this->indexM]['Language'] = (string)$x->DefaultLanguageCode;
+            $this->participationList[$this->indexM]['Domain'] = (string)$x->DomainName;
+            $this->indexM++;
         }
         
         if ($this->tokenFlag && $this->tokenUseFlag){
-            $this->fetchParticipationList();
+            $this->fetchParticipationList(false);
         }
         
     }

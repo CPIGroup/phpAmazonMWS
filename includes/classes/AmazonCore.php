@@ -47,6 +47,7 @@ abstract class AmazonCore{
     protected $mockMode = false;
     protected $mockFiles;
     protected $mockIndex = 0;
+    protected $logpath;
     
     /**
      * AmazonCore constructor sets up key information used in all Amazon requests
@@ -59,6 +60,7 @@ abstract class AmazonCore{
         $this->config = '/var/www/athena/plugins/newAmazon/amazon-config.php';
         
         include($this->config);
+        $this->logpath = $logpath;
         
         if(array_key_exists($s, $store)){
             $this->storeName = $s;
@@ -129,6 +131,7 @@ abstract class AmazonCore{
         if(file_exists($url)){
             
             try{
+                $this->log("Fetched Mock File: $url");
                 return simplexml_load_file($url);
             } catch (Exception $e){
                 echo 'uh oh';
@@ -219,6 +222,44 @@ abstract class AmazonCore{
      */
     public function getAllDetails(){
         return $this->data;
+    }
+    
+    protected function log($msg, $level = 'info'){
+        if ($msg) {
+            $backtrace = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS);
+
+            if($userName){ 
+                    $name = $userName;
+            }else{
+                    $name = 'guest';
+            }
+
+            if(isset($backtrace) && isset($backtrace[1]) && isset($backtrace[1]['file']) && isset($backtrace[1]['line']) && isset($backtrace[1]['function'])){
+                    $fileName = basename($backtrace[1]['file']);
+                    $file = $backtrace[1]['file'];
+                    $line = $backtrace[1]['line'];
+                    $function = $backtrace[1]['function'];
+            }else{
+                    $fileName = basename($backtrace[0]['file']);
+                    $file = $backtrace[0]['file'];
+                    $line = $backtrace[0]['line'];
+                    $function = $backtrace[0]['function'];
+            }
+            if(isset($_SERVER['REMOTE_ADDR'])){
+                    $ip = $_SERVER['REMOTE_ADDR'];
+                    if($ip == '127.0.0.1')$ip = 'local';//save some char
+            }else{
+                    $ip = 'cli';
+            }	
+            if (file_exists($this->logpath) && is_writable($this->logpath)){
+                $str = "[$level][" . date("Y/m/d h:i:s", mktime()) . " $name@$ip $fileName:$line $function] " . $msg;
+                $fd = fopen($this->logpath, "a+");
+                fwrite($fd,$str . "\r\n");
+                fclose($fd);
+            }
+        } else {
+            return false;
+        }
     }
     
     /**

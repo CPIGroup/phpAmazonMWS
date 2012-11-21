@@ -340,7 +340,6 @@ class AmazonOrder extends AmazonOrderCore{
      * @throws Exception if request fails
      */
     public function fetchOrder(){
-        //STILL TO DO: GET SET OF MULTIPLE ORDER IDS
         $this->options['Timestamp'] = $this->genTime();
         $this->options['Action'] = 'GetOrder';
         
@@ -359,6 +358,7 @@ class AmazonOrder extends AmazonOrderCore{
             $xml = $this->fetchMockFile();
         } else {
             $this->throttle();
+            $this->log("Making request to Amazon");
             $response = fetchURL($url,array('Post'=>$query));
             $this->logRequest();
             
@@ -366,7 +366,7 @@ class AmazonOrder extends AmazonOrderCore{
         }
         
         if ($response['code'] != 200){
-            throw new Exception('Still to do: handle this better');
+            $this->log("Status not OK: ".$response['code'],'Warning');
         }
         
         $this->xmldata = $xml->GetOrderResult->Orders->Order;
@@ -401,7 +401,8 @@ class AmazonOrder extends AmazonOrderCore{
         if ($id){
             $this->options['AmazonOrderId.Id.1'] = $id;
         } else {
-            throw new InvalidArgumentException('No Order ID given!');
+            $this->log("Attempted to set AmazonOrderId to nothing",'Warning');
+            return false;
         }
     }
 

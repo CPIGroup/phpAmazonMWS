@@ -136,7 +136,7 @@ class AmazonItemList extends AmazonOrderCore implements Iterator{
         if (!is_null($id)){
             $this->options['AmazonOrderId'] = $id;
         } else {
-            throw new InvalidArgumentException('Order ID was Null');
+            $this->log("Attempted to set AmazonOrderId to null",'Warning');
         }
     }
 
@@ -145,19 +145,6 @@ class AmazonItemList extends AmazonOrderCore implements Iterator{
      * @throws Exception if the request to Amazon fails
      */
     public function fetchItems(){
-        //Pseudocode am go
-        //
-        //get order ID
-        //query database for ID to see if items marked as fetched
-        //if found
-        //query database for items belonging to said ID
-        //if found
-        //fetch XML from cache table
-        //else do what I've normally been doing
-        //log copy of results in database
-        //mark entry for order as now having items
-        
-        //STILL TO DO: EAT THE TOKENS
         $this->options['Timestamp'] = $this->genTime();
         $this->options['Action'] = 'ListOrderItems';
         
@@ -184,6 +171,7 @@ class AmazonItemList extends AmazonOrderCore implements Iterator{
            $xml = $this->fetchMockFile();
         } else {
             $this->throttle();
+            $this->log("Making request to Amazon");
             $response = fetchURL($url,array('Post'=>$query));
             $this->logRequest();
 
@@ -202,14 +190,10 @@ class AmazonItemList extends AmazonOrderCore implements Iterator{
         
         
         if (is_null($xml->AmazonOrderId)){
-            throw new Exception('You dun got throttled.');
+            $this->log("You dun got throttled.",'Warning');
+        } else if ($this->orderId != $xml->AmazonOrderId){
+            $this->log('You grabbed the wrong Order\'s items! - '.$this->orderId.' =/='.$xml->AmazonOrderId,'Warning');
         }
-        
-        if ($this->orderId != $xml->AmazonOrderId){
-            throw new Exception('You grabbed the wrong Order\'s items! - '.$this->orderId.' =/='.$xml->AmazonOrderId);
-        }
-        
-        
         
         $this->xmldata = $xml->OrderItems;
         
@@ -217,7 +201,7 @@ class AmazonItemList extends AmazonOrderCore implements Iterator{
         
         
         if ($this->tokenFlag && $this->tokenUseFlag){
-            echo '<br>IT BEGINS AGAIN<br>';
+            $this->log("Recursively fetching more items");
             $this->fetchItems();
         }
     }

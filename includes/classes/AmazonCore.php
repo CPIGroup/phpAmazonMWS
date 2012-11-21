@@ -67,30 +67,33 @@ abstract class AmazonCore{
             if(array_key_exists('merchantId', $store[$s])){
                 $this->options['SellerId'] = $store[$s]['merchantId'];
             } else {
-                throw new Exception('Merchant ID missing.');
+                $this->log("Merchant ID is missing!",'Warning');
             }
             if(array_key_exists('keyId', $store[$s])){
                 $this->options['AWSAccessKeyId'] = $store[$s]['keyId'];
             } else {
-                throw new Exception('Access Key ID missing.');
+                $this->log("Access Key ID is missing!",'Warning');
             }
             if(array_key_exists('secretKey', $store[$s])){
                 $this->secretKey = $store[$s]['secretKey'];
             } else {
-                throw new Exception('Access Key missing.');
+                $this->log("Secret Key is missing!",'Warning');
             }
             
         } else {
-            throw new Exception('Store does not exist.');
+            $this->log("Store $s does not exist!",'Warning');
         }
         
         if (is_bool($mock)){
             $this->mockMode = $mock;
+            $this->log("Mock Mode set to true");
             if (is_string($m)){
                 $this->mockFiles = array();
                 $this->mockFiles[0] = $m;
+                $this->log("Single Mock File set: $m");
             } else if (is_array($m)){
                 $this->mockFiles = $m;
+                $this->log("Mock files array set.");
             }
         }
         
@@ -109,21 +112,26 @@ abstract class AmazonCore{
     public function setMock($b = true,$files = null){
         if (is_bool($b)){
             $this->mockMode = $b;
+            $this->log("Mock Mode set to $b");
         }
         if (is_string($files)){
             $this->mockFiles = array();
             $this->mockFiles[0] = $files;
+            $this->log("Single Mock File set: $files");
         } else if (is_array($files)){
             $this->mockFiles = $files;
+            $this->log("Mock files set: ".var_dump($files));
         }
     }
     
     public function fetchMockFile(){
         if(!array_key_exists(0, $this->mockFiles)){
+            $this->log("Attempted to retrieve mock files, but no mock files present",'Warning');
             return false;
         }
         if(!array_key_exists($this->mockIndex, $this->mockFiles)){
-            $this->mockIndex = 0;
+            $this->resetMock();
+            $this->log("End of Mock List, resetting to 0");
         }
         $url = 'mock/'.$this->mockFiles[$this->mockIndex++];
         
@@ -134,11 +142,11 @@ abstract class AmazonCore{
                 $this->log("Fetched Mock File: $url");
                 return simplexml_load_file($url);
             } catch (Exception $e){
-                echo 'uh oh';
+                $this->log("Error when opening Mock File: $url",'Warning');
             }
             
         } else {
-            throw new Exception('File '.$url.'not found!');
+            $this->log("Mock File not found: $url",'Warning');
         }
         
     }
@@ -148,6 +156,7 @@ abstract class AmazonCore{
      */
     public function resetMock(){
         $this->mockIndex = 0;
+        $this->log("Mock List index reset to 0");
     }
     
     /**
@@ -189,6 +198,7 @@ abstract class AmazonCore{
                 return;
             }
             flush();
+            $this->log("Last request of this type: ".date("Y/m/d h:i:s", $maxtime).", Sleeping for $timediff seconds",'Throttle');
             sleep($timediff);
             $result = db::executeQuery($sql, $value, DB_PLUGINS)->fetchAll();
             $maxtime = $result[0]['maxtime'];
@@ -224,7 +234,13 @@ abstract class AmazonCore{
         return $this->data;
     }
     
-    protected function log($msg, $level = 'info'){
+    /**
+     * 
+     * @param type $msg
+     * @param type $level "Info", "Warning", "Urgent", "Throttle"
+     * @return boolean false on failure
+     */
+    protected function log($msg, $level = 'Info'){
         if ($msg) {
             $backtrace = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS);
 
@@ -366,16 +382,20 @@ abstract class AmazonCore{
             
     }
     
+    /**
+     * Writes to the database the request made and the timestamp
+     */
     protected function logRequest(){
         include('/var/www/athena/includes/config.php');
         DB_PLUGINS;
         
         $sql = "INSERT INTO  `amazonRequestLog` (`id` ,`type` ,`timestamp`)VALUES (NULL ,  ?,  ?)";
         $value = array($this->options['Action'],time());
+        $this->log("Logging action to database: ".$this->options['Action']);
         
         $result = db::executeQuery($sql, $value, DB_PLUGINS);
         if (!$result){
-            throw new Exception('write failed');
+            $this->log("Could not write to database!",'Urgent');
         }
     }
     

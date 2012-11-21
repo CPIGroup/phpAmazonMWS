@@ -100,6 +100,7 @@ class AmazonOrderSet extends AmazonOrderCore implements Iterator{
            $xml = $this->fetchMockFile();
         } else {
             $this->throttle();
+            $this->log("Making request to Amazon");
             $response = fetchURL($url,array('Post'=>$query));
             $this->logRequest();
 

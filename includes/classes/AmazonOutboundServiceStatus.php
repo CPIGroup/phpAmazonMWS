@@ -38,6 +38,7 @@ class AmazonOutboundServiceStatus extends AmazonOutboundCore{
             $url = $this->fetchMockFile();
         } else {
             $this->throttle();
+            $this->log("Making request to Amazon");
             $response = fetchURL($url,array('Post'=>$query));
             $this->logRequest();
             
@@ -45,7 +46,7 @@ class AmazonOutboundServiceStatus extends AmazonOutboundCore{
         }
         
         if ($response['code'] != 200){
-            throw new Exception('Still to do: handle this better...'.$response['code']);
+            $this->log("Status not OK: ".$response['code'],'Warning');
         }
         
         

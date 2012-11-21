@@ -26,7 +26,7 @@ class AmazonOrderList extends AmazonOrderCore implements Iterator{
         if(array_key_exists('marketplaceId', $store[$s])){
             $this->options['MarketplaceId.Id.1'] = $store[$s]['marketplaceId'];
         } else {
-            throw new Exception('Marketplace ID missing.');
+            $this->log("Marketplace ID is missing",'Urgent');
         }
         
         $this->throttleLimit = $throttleLimitOrderList;
@@ -92,15 +92,6 @@ class AmazonOrderList extends AmazonOrderCore implements Iterator{
      * Fetches orders from Amazon using the pre-set parameters and putting them in an array of AmazonOrder objects
      */
     public function fetchOrders(){
-        //Pseudocode am go
-        //
-        //get order ID
-        //query database for said ID
-        //if found
-        //fetch XML from cache table
-        //else do what I've normally been doing
-        //log copy of results in database
-
         $this->options['Timestamp'] = $this->genTime();
         $this->options['Action'] = 'ListOrders';
         
@@ -134,13 +125,9 @@ class AmazonOrderList extends AmazonOrderCore implements Iterator{
            $xml = $this->fetchMockFile()->$path;
         } else {
             $this->throttle();
+            $this->log("Making request to Amazon");
             $response = fetchURL($url,array('Post'=>$query));
             $this->logRequest();
-
-            
-
-//            var_dump(simplexml_load_string($response['body']));
-//            var_dump($path);
 
             $xml = simplexml_load_string($response['body'])->$path;
         }
@@ -173,7 +160,7 @@ class AmazonOrderList extends AmazonOrderCore implements Iterator{
         myPrint($this->orderList);
         
         if ($this->tokenFlag && $this->tokenUseFlag){
-            echo '<br>IT BEGINS AGAIN<br>';
+            $this->log("Recursively fetching more items for the list");
             $this->fetchOrders();
         }
         

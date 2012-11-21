@@ -69,18 +69,12 @@ class AmazonParticipationList extends AmazonSellersCore{
            $xml = $this->fetchMockFile()->$path;
         } else {
             $this->throttle();
+            $this->log("Making request to Amazon");
             $response = fetchURL($url,array('Post'=>$query));
             $this->logRequest();
 
-//            var_dump(simplexml_load_string($response['body']));
-//            var_dump($path);
-
             $xml = simplexml_load_string($response['body'])->$path;
         }
-            
-
-//        echo 'the lime must be drawn here';
-//        myPrint($xml);
         
         $xmlP = $xml->ListParticipations;
         $xmlM = $xml->ListMarketplaces;
@@ -118,6 +112,7 @@ class AmazonParticipationList extends AmazonSellersCore{
         }
         
         if ($this->tokenFlag && $this->tokenUseFlag){
+            $this->log("Recursively fetching more Participationseses");
             $this->fetchParticipationList(false);
         }
         

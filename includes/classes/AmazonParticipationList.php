@@ -3,7 +3,6 @@
 class AmazonParticipationList extends AmazonSellersCore{
     private $tokenFlag;
     private $tokenUseFlag;
-    private $xmldata;
     private $participationList;
     private $marketplaceList;
     private $indexM = 0;
@@ -17,8 +16,6 @@ class AmazonParticipationList extends AmazonSellersCore{
     public function __construct($s, $mock = false, $m = null) {
         parent::__construct($s, $mock, $m);
         include($this->config);
-        
-        $this->options['Action'] = 'ListMarketplaceParticipations';
         
         $this->throttleLimit = $throttleLimitSellers;
         $this->throttleTime = $throttleTimeSellers;
@@ -54,6 +51,7 @@ class AmazonParticipationList extends AmazonSellersCore{
         if ($this->tokenFlag && $this->tokenUseFlag){
             $this->options['Action'] = 'ListMarketplaceParticipationsByNextToken';
         } else {
+            $this->options['Action'] = 'ListMarketplaceParticipations';
             unset($this->options['NextToken']);
         }
         

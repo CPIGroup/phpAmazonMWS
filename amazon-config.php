@@ -40,6 +40,9 @@ $throttleTimeStatus = 300;
 //Fetching Sellers Participation
 $throttleLimitSellers = 15;
 $throttleTimeSellers = 60;
+//Fetching Sellers Participation
+$throttleLimitInventory = 30;
+$throttleTimeInventory = 2;
 
 //Safe Throttle Mode
 //Adds extra second onto throttle times to ensure service does not fail

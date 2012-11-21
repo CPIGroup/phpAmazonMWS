@@ -8,3 +8,28 @@ This is the Amazon log, for Amazon classes to use.
 [Info][2012/11/21 10:52:36 guest@local AmazonParticipationList.php:69 fetchMockFile] Fetched Mock File: mock/mocky.xml
 [Info][2012/11/21 10:52:36 guest@local test.php:16 fetchParticipationList] Recursively fetching more Participationseses
 [Info][2012/11/21 10:52:36 guest@local AmazonParticipationList.php:69 fetchMockFile] Fetched Mock File: mock/mocky2.xml
+[Info][2012/11/21 03:27:46 guest@local AmazonInventoryCore.php:10 __construct] Mock Mode set to true
+[Info][2012/11/21 03:31:38 guest@local AmazonInventoryCore.php:10 __construct] Mock Mode set to true
+[Info][2012/11/21 03:31:41 guest@local AmazonInventoryCore.php:10 __construct] Mock Mode set to true
+[Info][2012/11/21 03:32:26 guest@local AmazonInventoryCore.php:10 __construct] Mock Mode set to true
+[Info][2012/11/21 03:32:27 guest@local test.php:25 fetchInventoryList] Making request to Amazon
+[Info][2012/11/21 03:32:30 guest@local AmazonInventoryList.php:68 logRequest] Logging action to database: ListInventorySupply
+[Info][2012/11/21 03:39:08 guest@local AmazonInventoryCore.php:10 __construct] Mock Mode set to true
+[Info][2012/11/21 03:39:08 guest@local test.php:25 fetchInventoryList] Making request to Amazon
+[Info][2012/11/21 03:39:10 guest@local AmazonInventoryList.php:69 logRequest] Logging action to database: ListInventorySupply
+[Info][2012/11/21 03:43:03 guest@local AmazonInventoryCore.php:10 __construct] Mock Mode set to true
+[Info][2012/11/21 03:43:03 guest@local test.php:25 fetchInventoryList] Making request to Amazon
+[Info][2012/11/21 03:43:06 guest@local AmazonInventoryList.php:69 logRequest] Logging action to database: ListInventorySupply
+[Info][2012/11/21 03:44:48 guest@local AmazonInventoryCore.php:10 __construct] Mock Mode set to 
+[Info][2012/11/21 03:44:48 guest@local test.php:25 fetchInventoryList] Making request to Amazon
+[Info][2012/11/21 03:44:50 guest@local AmazonInventoryList.php:69 logRequest] Logging action to database: ListInventorySupply
+[Info][2012/11/21 03:45:23 guest@local test.php:25 fetchInventoryList] Making request to Amazon
+[Info][2012/11/21 03:45:26 guest@local AmazonInventoryList.php:69 logRequest] Logging action to database: ListInventorySupply
+[Info][2012/11/21 03:54:29 guest@local test.php:25 fetchInventoryList] Making request to Amazon
+[Info][2012/11/21 03:54:31 guest@local AmazonInventoryList.php:70 logRequest] Logging action to database: ListInventorySupply
+[Info][2012/11/21 03:55:35 guest@local test.php:25 fetchInventoryList] Making request to Amazon
+[Info][2012/11/21 03:55:37 guest@local AmazonInventoryList.php:70 logRequest] Logging action to database: ListInventorySupply
+[Info][2012/11/21 04:10:42 guest@local test.php:25 fetchInventoryList] Making request to Amazon
+[Info][2012/11/21 04:10:44 guest@local AmazonInventoryList.php:70 logRequest] Logging action to database: ListInventorySupply
+[Info][2012/11/21 04:11:21 guest@local test.php:26 fetchInventoryList] Making request to Amazon
+[Info][2012/11/21 04:11:23 guest@local AmazonInventoryList.php:70 logRequest] Logging action to database: ListInventorySupply

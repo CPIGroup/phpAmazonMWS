@@ -17,6 +17,8 @@ class AmazonInboundShipment extends AmazonInboundCore{
             $this->options['ShipmentId'] = $id;
         }
         
+        $this->options['InboundShipmentHeader.ShipmentStatus'] = 'WORKING';
+        
         $this->throttleLimit = $throttleLimitInventory;
         $this->throttleTime = $throttleTimeInventory;
     }
@@ -163,6 +165,22 @@ class AmazonInboundShipment extends AmazonInboundCore{
         }
     }
     
+    /**
+     * 
+     * @param string $s
+     */
+    public function setStatus($s){
+        if (is_string($s) && $s){
+            $this->options['InboundShipmentHeader.ShipmentStatus'] = $s;
+        }
+    }
+    
+    /**
+     * Sends a request to Amazon to create an Inbound Shipment
+     * 
+     * TEST THIS BEFORE I MOVE ONTO UPDATING... WHAT HAPPENS IF IT FAILS?
+     * @return boolean true on success, false on failure
+     */
     public function createShipment(){
         if (!array_key_exists('InboundShipmentHeader.ShipmentName',$this->options)){
             $this->log("Header must be set in order to make a shipment",'Warning');
@@ -196,6 +214,8 @@ class AmazonInboundShipment extends AmazonInboundCore{
         if ($verify != $this->options['InboundShipmentHeader.ShipmentId']){
             $this->log("Order ID mismatch! ".$this->options['InboundShipmentHeader.ShipmentId']." =/= $verify",'Warning');
             return false;
+        } else {
+            return true;
         }
     }
     

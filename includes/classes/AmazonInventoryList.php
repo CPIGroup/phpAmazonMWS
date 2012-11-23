@@ -1,10 +1,11 @@
 <?php
 
-class AmazonInventoryList extends AmazonInventoryCore{
+class AmazonInventoryList extends AmazonInventoryCore implements Iterator{
     private $tokenFlag;
     private $tokenUseFlag;
     private $supplyList;
     private $index = 0;
+    private $i = 0;
     
     public function __construct($s, $mock = false, $m = null) {
         parent::__construct($s, $mock, $m);
@@ -71,7 +72,7 @@ class AmazonInventoryList extends AmazonInventoryCore{
 
             $xml = simplexml_load_string($response['body'])->$path;
         }
-        myPrint($xml);
+//        myPrint($xml);
         
         if ($xml->NextToken){
             $this->tokenFlag = true;
@@ -90,15 +91,34 @@ class AmazonInventoryList extends AmazonInventoryCore{
             $this->supplyList[$this->index]['Condition'] = (string)$x->Condition;
             $this->supplyList[$this->index]['InStockSupplyQuantity'] = (string)$x->InStockSupplyQuantity;
             if ((int)$x->TotalSupplyQuantity > 0){
-                $this->supplyList[$this->index]['EarliestAvailability'] = (string)$x->EarliestAvailability->TimepointType;
+                if ($x->EarliestAvailability->TimepointType == 'DateTime'){
+                    $this->supplyList[$this->index]['EarliestAvailability'] = (string)$x->EarliestAvailability->DateTime;
+                } else {
+                    $this->supplyList[$this->index]['EarliestAvailability'] = (string)$x->EarliestAvailability->TimepointType;
+                }
             }
             if ($this->options['ResponseGroup'] == 'Detailed'){
-                
+                $j = 0;
+                foreach($x->SupplyDetail->children() as $z){
+                    if ($z->EarliestAvailableToPick->TimepointType == 'DateTime'){
+                        $this->supplyList[$this->index]['SupplyDetail'][$j]['EarliestAvailableToPick'] = (string)$z->EarliestAvailableToPick->DateTime;
+                    } else {
+                        $this->supplyList[$this->index]['SupplyDetail'][$j]['EarliestAvailableToPick'] = (string)$z->EarliestAvailableToPick->TimepointType;
+                    }
+                    if ($z->LatestAvailableToPick->TimepointType == 'DateTime'){
+                        $this->supplyList[$this->index]['SupplyDetail'][$j]['LatestAvailableToPick'] = (string)$z->LatestAvailableToPick->DateTime;
+                    } else {
+                        $this->supplyList[$this->index]['SupplyDetail'][$j]['LatestAvailableToPick'] = (string)$z->LatestAvailableToPick->TimepointType;
+                    }
+                    $this->supplyList[$this->index]['SupplyDetail'][$j]['Quantity'] = (string)$z->Quantity;
+                    $this->supplyList[$this->index]['SupplyDetail'][$j]['SupplyType'] = (string)$z->SupplyType;
+                    $j++;
+                }
             }
             $this->index++;
         }
         
-        var_dump($this->supplyList);
+//        var_dump($this->supplyList);
         
         if ($this->tokenFlag && $this->tokenUseFlag){
             $this->log("Recursively fetching more Inventory Supplies");
@@ -127,6 +147,10 @@ class AmazonInventoryList extends AmazonInventoryCore{
         
     }
     
+    /**
+     * set the SKUs to fetch in the next request
+     * @param array $a array or single string
+     */
     public function setSellerSkus($a){
         $this->resetSkus();
         if (is_string($a)){
@@ -140,6 +164,9 @@ class AmazonInventoryList extends AmazonInventoryCore{
         unset($this->options['QueryStartDateTime']);
     }
     
+    /**
+     * resets the Seller SKU options
+     */
     private function resetSkus(){
         foreach($this->options as $op=>$junk){
             if(preg_match("#SellerSkus.member.#",$op)){
@@ -148,10 +175,204 @@ class AmazonInventoryList extends AmazonInventoryCore{
         }
     }
     
+    /**
+     * Sets whether or not to get detailed results back
+     * @param string $s "Basic" or "Detailed"
+     */
     public function setResponseGroup($s){
         if ($s == 'Basic' || $s == 'Detailed'){
             $this->options['ResponseGroup'] = $s;
         }
+    }
+    
+    /**
+     * Returns all info of the given index, defaulting to 0
+     * @param integer $i
+     * @return array
+     */
+    public function getSupply($i = 0){
+        if (is_numeric($i)){
+            return $this->supplyList[$i];
+        }
+    }
+    
+    /**
+     * Returns the Seller SKU of the given index, defaulting to 0
+     * @param integer $i
+     * @return string
+     */
+    public function getSellerSku($i = 0){
+        if (is_numeric($i)){
+            return $this->supplyList[$i]['SellerSKU'];
+        }
+    }
+    
+    /**
+     * Returns the ASIN of the given index, defaulting to 0
+     * @param integer $i
+     * @return string
+     */
+    public function getASIN($i = 0){
+        if (is_numeric($i)){
+            return $this->supplyList[$i]['ASIN'];
+        }
+    }
+    
+    /**
+     * Returns the Total Supply Quantity of the given index, defaulting to 0
+     * @param integer $i
+     * @return string
+     */
+    public function getTotalSupplyQuantity($i = 0){
+        if (is_numeric($i)){
+            return $this->supplyList[$i]['TotalSupplyQuantity'];
+        }
+    }
+    
+    /**
+     * Returns the FNSKU of the given index, defaulting to 0
+     * @param integer $i
+     * @return string
+     */
+    public function getFNSKU($i = 0){
+        if (is_numeric($i)){
+            return $this->supplyList[$i]['FNSKU'];
+        }
+    }
+
+    /**
+     * Returns the Seller SKU of the given index, defaulting to 0
+     * @param integer $i
+     * @return string
+     */
+    public function getCondition($i = 0){
+        if (is_numeric($i)){
+            return $this->supplyList[$i]['Condition'];
+        }
+    }
+    
+    /**
+     * Returns the in-stock supply quantity of the given index, defaulting to 0
+     * @param integer $i
+     * @return string
+     */
+    public function getInStockSupplyQuantity($i = 0){
+        if (is_numeric($i)){
+            return $this->supplyList[$i]['InStockSupplyQuantity'];
+        }
+    }
+    
+    /**
+     * Returns the earliest availability timeframe of the given index, defaulting to 0
+     * @param integer $i
+     * @return string timeframe or timestamp
+     */
+    public function getEarliestAvailability($i = 0){
+        if (is_numeric($i) && array_key_exists('EarliestAvailability', $this->supplyList[$i])){
+            return $this->supplyList[$i]['EarliestAvailability'];
+        }
+    }
+    
+    /**
+     * Returns all supply details of the given index, defaulting to 0
+     * @param integer $i
+     * @param integer $j optional
+     * @return array
+     */
+    public function getSupplyDetails($i = 0, $j = null){
+        if (is_numeric($i) && array_key_exists('SupplyDetail', $this->supplyList[$i])){
+            if (is_null($j)){
+                return $this->supplyList[$i]['SupplyDetail'];
+            } else if (is_numeric($j)) {
+                return $this->supplyList[$i]['SupplyDetail'][$j];
+            }
+        }
+    }
+    
+    /**
+     * Returns the earliest pick timeframe of the given index, defaulting to 0
+     * @param integer $i
+     * @param integer $j
+     * @return string timeframe or timestamp
+     */
+    public function getEarliestAvailableToPick($i = 0, $j = 0){
+        if (is_numeric($i) && is_numeric($j) && array_key_exists('SupplyDetail', $this->supplyList[$i])){
+            return $this->supplyList[$i]['SupplyDetail'][$j]['EarliestAvailableToPick'];
+        }
+    }
+    
+    /**
+     * Returns the latest pick timeframe of the given index, defaulting to 0
+     * @param integer $i
+     * @param integer $j
+     * @return string timeframe or timestamp
+     */
+    public function getLatestAvailableToPick($i = 0, $j = 0){
+        if (is_numeric($i) && is_numeric($j) && array_key_exists('SupplyDetail', $this->supplyList[$i])){
+            return $this->supplyList[$i]['SupplyDetail'][$j]['LatestAvailableToPick'];
+        }
+    }
+    
+    /**
+     * Returns the quantity detail of the given index, defaulting to 0
+     * @param integer $i
+     * @param integer $j
+     * @return string number
+     */
+    public function getQuantity($i = 0, $j = 0){
+        if (is_numeric($i) && is_numeric($j) && array_key_exists('SupplyDetail', $this->supplyList[$i])){
+            return $this->supplyList[$i]['SupplyDetail'][$j]['Quantity'];
+        }
+    }
+    
+    /**
+     * Returns the supply type detail of the given index, defaulting to 0
+     * @param integer $i
+     * @param integer $j
+     * @return string
+     */
+    public function getSupplyType($i = 0, $j = 0){
+        if (is_numeric($i) && is_numeric($j) && array_key_exists('SupplyDetail', $this->supplyList[$i])){
+            return $this->supplyList[$i]['SupplyDetail'][$j]['SupplyType'];
+        }
+    }
+    
+    /**
+     * Iterator function
+     * @return type
+     */
+    public function current(){
+       return $this->supplyList[$this->i]; 
+    }
+
+    /**
+     * Iterator function
+     */
+    public function rewind(){
+        $this->i = 0;
+    }
+
+    /**
+     * Iterator function
+     * @return type
+     */
+    public function key() {
+        return $this->i;
+    }
+
+    /**
+     * Iterator function
+     */
+    public function next() {
+        $this->i++;
+    }
+
+    /**
+     * Iterator function
+     * @return type
+     */
+    public function valid() {
+        return isset($this->supplyList[$this->i]);
     }
 }
 ?>

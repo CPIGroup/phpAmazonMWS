@@ -1,3 +1,40 @@
 This is the Amazon log, for Amazon classes to use.
 [Info][2012/11/23 09:33:24 guest@local test.php:26 fetchInventoryList] Making request to Amazon
 [Info][2012/11/23 09:33:26 guest@local AmazonInventoryList.php:71 logRequest] Logging action to database: ListInventorySupply
+[Info][2012/11/23 02:38:26 guest@local AmazonInventoryCore.php:10 __construct] Mock Mode set to true
+[Info][2012/11/23 02:38:26 guest@local AmazonInventoryCore.php:10 __construct] Single Mock File set: plan.xml
+[Info][2012/11/23 02:38:26 guest@local AmazonInboundShipmentPlan.php:145 fetchMockFile] Fetched Mock File: mock/plan.xml
+[Info][2012/11/23 02:38:48 guest@local AmazonInventoryCore.php:10 __construct] Mock Mode set to true
+[Info][2012/11/23 02:38:48 guest@local AmazonInventoryCore.php:10 __construct] Single Mock File set: plan.xml
+[Info][2012/11/23 02:38:48 guest@local AmazonInboundShipmentPlan.php:145 fetchMockFile] Fetched Mock File: mock/plan.xml
+[Info][2012/11/23 02:39:02 guest@local AmazonInventoryCore.php:10 __construct] Mock Mode set to true
+[Info][2012/11/23 02:39:02 guest@local AmazonInventoryCore.php:10 __construct] Single Mock File set: plan.xml
+[Info][2012/11/23 02:39:02 guest@local AmazonInboundShipmentPlan.php:145 fetchMockFile] Fetched Mock File: mock/plan.xml
+[Info][2012/11/23 02:39:30 guest@local AmazonInventoryCore.php:10 __construct] Mock Mode set to true
+[Info][2012/11/23 02:39:30 guest@local AmazonInventoryCore.php:10 __construct] Single Mock File set: plan.xml
+[Info][2012/11/23 02:39:30 guest@local AmazonInboundShipmentPlan.php:145 fetchMockFile] Fetched Mock File: mock/plan.xml
+[Info][2012/11/23 02:40:02 guest@local AmazonInventoryCore.php:10 __construct] Mock Mode set to true
+[Info][2012/11/23 02:40:02 guest@local AmazonInventoryCore.php:10 __construct] Single Mock File set: plan.xml
+[Info][2012/11/23 02:40:02 guest@local AmazonInboundShipmentPlan.php:145 fetchMockFile] Fetched Mock File: mock/plan.xml
+[Warning][2012/11/23 02:40:02 guest@local test.php:19 getShipmentId] Shipment ID not found!
+[Info][2012/11/23 02:51:36 guest@local AmazonInventoryCore.php:10 __construct] Mock Mode set to true
+[Info][2012/11/23 02:51:36 guest@local AmazonInventoryCore.php:10 __construct] Single Mock File set: plan.xml
+[Info][2012/11/23 02:51:36 guest@local AmazonInboundShipmentPlanner.php:145 fetchMockFile] Fetched Mock File: mock/plan.xml
+[Info][2012/11/23 02:52:13 guest@local AmazonInventoryCore.php:10 __construct] Mock Mode set to true
+[Info][2012/11/23 02:52:13 guest@local AmazonInventoryCore.php:10 __construct] Single Mock File set: plan.xml
+[Info][2012/11/23 02:52:13 guest@local AmazonInboundShipmentPlanner.php:145 fetchMockFile] Fetched Mock File: mock/plan.xml
+[Info][2012/11/23 02:53:35 guest@local AmazonInventoryCore.php:10 __construct] Mock Mode set to true
+[Info][2012/11/23 02:53:35 guest@local AmazonInventoryCore.php:10 __construct] Single Mock File set: plan.xml
+[Info][2012/11/23 02:53:35 guest@local AmazonInboundShipmentPlanner.php:145 fetchMockFile] Fetched Mock File: mock/plan.xml
+[Info][2012/11/23 02:53:49 guest@local AmazonInventoryCore.php:10 __construct] Mock Mode set to true
+[Info][2012/11/23 02:53:49 guest@local AmazonInventoryCore.php:10 __construct] Single Mock File set: plan.xml
+[Info][2012/11/23 02:53:49 guest@local AmazonInboundShipmentPlanner.php:145 fetchMockFile] Fetched Mock File: mock/plan.xml
+[Info][2012/11/23 02:55:03 guest@local AmazonInventoryCore.php:10 __construct] Mock Mode set to true
+[Info][2012/11/23 02:55:03 guest@local AmazonInventoryCore.php:10 __construct] Single Mock File set: plan.xml
+[Info][2012/11/23 02:55:03 guest@local AmazonInboundShipmentPlanner.php:145 fetchMockFile] Fetched Mock File: mock/plan.xml
+[Info][2012/11/23 02:55:25 guest@local AmazonInventoryCore.php:10 __construct] Mock Mode set to true
+[Info][2012/11/23 02:55:25 guest@local AmazonInventoryCore.php:10 __construct] Single Mock File set: plan.xml
+[Info][2012/11/23 02:55:25 guest@local AmazonInboundShipmentPlanner.php:145 fetchMockFile] Fetched Mock File: mock/plan.xml
+[Info][2012/11/23 02:55:43 guest@local AmazonInventoryCore.php:10 __construct] Mock Mode set to true
+[Info][2012/11/23 02:55:43 guest@local AmazonInventoryCore.php:10 __construct] Single Mock File set: plan.xml
+[Info][2012/11/23 02:55:43 guest@local AmazonInboundShipmentPlanner.php:145 fetchMockFile] Fetched Mock File: mock/plan.xml

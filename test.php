@@ -10,6 +10,13 @@ include('includes/classes.php');
 //$a->setLimits('Modified','-1 hours');
 //$a->fetchOrders();
 
+$a = new AmazonInboundShipmentPlanner('BigKitchen',true,'plan.xml');
+$address = array('Name'=>'Nameo','AddressLine1'=>'Nameworld');
+$a->setAddress($address);
+$things = array(array('SellerSKU' => '123', 'Quantity' => '4'));
+$a->setItems($things);
+$a->fetchPlan();
+var_dump($a->getShipmentId());
 
 ////$a = new AmazonParticipationList('BigKitchen');
 //$a = new AmazonParticipationList('BigKitchen',true,array('mocky.xml','mocky2.xml'));
@@ -21,9 +28,9 @@ include('includes/classes.php');
 //echo 'Token reply: ';
 //var_dump($a->getSellerId(1));
 
-$a = new AmazonInventoryList('BigKitchen');
-$a->setResponseGroup('Detailed');
-$a->fetchInventoryList();
+//$a = new AmazonInventoryList('BigKitchen');
+//$a->setResponseGroup('Detailed');
+//$a->fetchInventoryList();
 
 //$a = new AmazonOrder('BigKitchen');
 //$a->setOrderId('106-2655952-6625846');

@@ -1,11 +1,11 @@
 <?php
 
-class AmazonInboundShipmentPlan extends AmazonInventoryCore{
-    private $xmldata;
+class AmazonInboundShipmentPlanner extends AmazonInventoryCore{
     private $plan;
+    private $shipmentId;
     
     /**
-     * Fetches a plan from Amazon. There's really not much point to using this.
+     * Fetches a plan from Amazon. This is how you get a Shipment ID.
      * @param string $s name of store as seen in config file
      * @param boolean $mock true to enable mock mode
      * @param array $m list of mock files to use
@@ -151,9 +151,42 @@ class AmazonInboundShipmentPlan extends AmazonInventoryCore{
 
             $xml = simplexml_load_string($response['body'])->CreateInboundShipmentPlanResult->InboundShipmentPlans;
         }
-//        myPrint($xml);
+        myPrint($xml);
         $this->plan = $xml;
+        
+        $i = 0;
+        foreach($xml->children() as $x){
+            $this->shipmentId[$i++] = (string)$x->ShipmentId;
+        }
+        
+        
+        
     }
     
+    /**
+     * Returns the plan because why not
+     * @return SimpleXMLObject
+     */
+    public function getPlan(){
+        return $this->plan;
+    }
+    
+    /**
+     * returns the shipment ID if it exists
+     * @param integer $i set to return a specific shipment ID
+     * @return string single Shipment ID, array if no index given, or false on failure
+     */
+    public function getShipmentId($i = null){
+        if ($this->shipmentId){
+            if (is_numeric($i)){
+                return $this->shipmentId[$i];
+            } else {
+                return $this->shipmentId;
+            }
+        } else {
+            $this->log("Shipment ID not found!",'Warning');
+            return false;
+        }
+    }
 }
 ?>

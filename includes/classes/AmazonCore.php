@@ -126,6 +126,10 @@ abstract class AmazonCore{
         }
     }
     
+    /**
+     * Fetches the given mock file, or attempts to
+     * @return SimpleXMLObject file, or false on failure
+     */
     public function fetchMockFile(){
         if(!array_key_exists(0, $this->mockFiles)){
             $this->log("Attempted to retrieve mock files, but no mock files present",'Warning');
@@ -237,9 +241,9 @@ abstract class AmazonCore{
     }
     
     /**
-     * 
-     * @param type $msg
-     * @param type $level "Info", "Warning", "Urgent", "Throttle"
+     * Writes to the log a message
+     * @param string $msg message to write to log
+     * @param string $level "Info", "Warning", "Urgent", "Throttle"
      * @return boolean false on failure
      */
     protected function log($msg, $level = 'Info'){

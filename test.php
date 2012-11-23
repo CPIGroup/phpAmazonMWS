@@ -17,6 +17,10 @@ $things = array(array('SellerSKU' => '123', 'Quantity' => '4'));
 $a->setItems($things);
 $a->fetchPlan();
 var_dump($a->getShipmentId());
+$b = new AmazonInboundShipment('BigKitchen',true,'plan.xml');
+$b->usePlan($a->getPlan(0));
+var_dump($a);
+var_dump($b);
 
 ////$a = new AmazonParticipationList('BigKitchen');
 //$a = new AmazonParticipationList('BigKitchen',true,array('mocky.xml','mocky2.xml'));

@@ -1,8 +1,10 @@
 <?php
 
-class AmazonInboundShipmentPlanner extends AmazonInventoryCore{
-    private $plan;
+class AmazonInboundShipmentPlanner extends AmazonInboundCore implements Iterator{
+    private $xmldata;
+    private $planList;
     private $shipmentId;
+    private $i;
     
     /**
      * Fetches a plan from Amazon. This is how you get a Shipment ID.
@@ -151,42 +153,114 @@ class AmazonInboundShipmentPlanner extends AmazonInventoryCore{
 
             $xml = simplexml_load_string($response['body'])->CreateInboundShipmentPlanResult->InboundShipmentPlans;
         }
-        myPrint($xml);
-        $this->plan = $xml;
+//        myPrint($xml);
+        $this->xmldata = $xml;
         
+        $this->parseXML();
+        
+        
+        
+    }
+    
+    protected function parseXML() {
         $i = 0;
-        foreach($xml->children() as $x){
-            $this->shipmentId[$i++] = (string)$x->ShipmentId;
+        foreach($this->xmldata->children() as $x){
+            foreach($x->ShipToAddress->children() as $y => $z){
+                $this->planList[$i]['ShipToAddress'][$y] = (string)$z;
+                
+            }
+            $this->planList[$i]['ShipmentId'] = (string)$x->ShipmentId;
+            $this->planList[$i]['DestinationFulfillmentCenterId'] = (string)$x->DestinationFulfillmentCenterId;
+            $this->planList[$i]['LabelPrepType'] = (string)$x->LabelPrepType;
+            $j = 0;
+            foreach($x->Items->children() as $y => $z){
+                $this->planList[$i]['Items'][$j]['SellerSKU'] = (string)$z->SellerSKU;
+                $this->planList[$i]['Items'][$j]['Quantity'] = (string)$z->Quantity;
+                $j++;
+                
+            }
+            $i++;
         }
-        
-        
-        
     }
     
     /**
      * Returns the plan because why not
      * @return SimpleXMLObject
      */
-    public function getPlan(){
-        return $this->plan;
+    public function getPlan($i = 0){
+        return $this->planList[$i];
+    }
+    
+    /**
+     * returns an array of the shipping IDs for convenient use
+     * @return array list of shipping IDs, or false on failure
+     */
+    public function getShipmentIdList(){
+        if (!is_array($this->planList)){
+            $this->log("No plan list defined yet",'Warning');
+            return false;
+        }
+        $a = array();
+        foreach($this->planList as $x){
+            $a[] = $x['ShipmentId'];
+        }
     }
     
     /**
      * returns the shipment ID if it exists
-     * @param integer $i set to return a specific shipment ID
-     * @return string single Shipment ID, array if no index given, or false on failure
+     * @param integer $i index to return, defaults to 0
+     * @return string single Shipment ID or false on failure
      */
-    public function getShipmentId($i = null){
-        if ($this->shipmentId){
-            if (is_numeric($i)){
-                return $this->shipmentId[$i];
+    public function getShipmentId($i = 0){
+        if (is_numeric($i)){
+            if (isset($this->planList[$i]['ShipmentId'])){
+                return $this->planList[$i]['ShipmentId'];
             } else {
-                return $this->shipmentId;
+                $this->log("Shipment ID not found!",'Warning');
+                return false;
             }
         } else {
-            $this->log("Shipment ID not found!",'Warning');
+            $this->log("Invalid index for shipping ID: $i",'Warning');
             return false;
         }
+    }
+
+    /**
+     * Iterator function
+     * @return type
+     */
+    public function current(){
+       return $this->planList[$this->i]; 
+    }
+
+    /**
+     * Iterator function
+     */
+    public function rewind(){
+        $this->i = 0;
+    }
+
+    /**
+     * Iterator function
+     * @return type
+     */
+    public function key() {
+        return $this->i;
+    }
+
+    /**
+     * Iterator function
+     */
+    public function next() {
+        $this->i++;
+    }
+
+    /**
+     * Iterator function
+     * @return type
+     */
+    public function valid() {
+        return isset($this->planList[$this->i]);
     }
 }
 ?>

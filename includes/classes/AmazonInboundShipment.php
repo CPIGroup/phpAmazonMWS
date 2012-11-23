@@ -1,6 +1,6 @@
 <?php
 
-class AmazonInboundShipment extends AmazonInventoryCore{
+class AmazonInboundShipment extends AmazonInboundCore{
     
     
     /**
@@ -13,9 +13,57 @@ class AmazonInboundShipment extends AmazonInventoryCore{
     public function __construct($s, $id = null, $mock = false, $m = null) {
         parent::__construct($s, $mock, $m);
         
+        if (isset($id) && is_numeric($id)){
+            $this->options['ShipmentId'] = $id;
+        }
         
         $this->throttleLimit = $throttleLimitInventory;
         $this->throttleTime = $throttleTimeInventory;
+    }
+    
+    /**
+     * Automatically fills in the necessary fields using a planner array to reduce redundant declarations
+     * @param array $x plan array from InboundShipmentPlanner
+     * @return boolean false on failure
+     */
+    public function usePlan($x){
+        if (is_array($x)){
+            $this->resetAddress();
+            $this->resetItems();
+            
+            //inheriting address
+            $this->options['InboundShipmentHeader.ShipFromAddress.Name'] = $x['ShipToAddress']['Name'];
+            $this->options['InboundShipmentHeader.ShipFromAddress.AddressLine1'] = $x['ShipToAddress']['AddressLine1'];
+            if (array_key_exists('AddressLine2', $x['ShipToAddress'])){
+            $this->options['InboundShipmentHeader.ShipFromAddress.AddressLine2'] = $x['ShipToAddress']['AddressLine2'];
+            }
+            $this->options['InboundShipmentHeader.ShipFromAddress.City'] = $x['ShipToAddress']['City'];
+            if (array_key_exists('DistrictOrCounty', $x['ShipToAddress'])){
+                $this->options['InboundShipmentHeader.ShipFromAddress.DistrictOrCounty'] = $x['ShipToAddress']['DistrictOrCounty'];
+            }
+            if (array_key_exists('StateOrProvidenceCode', $x['ShipToAddress'])){
+                $this->options['InboundShipmentHeader.ShipFromAddress.StateOrProvidenceCode'] = $x['ShipToAddress']['StateOrProvidenceCode'];
+            }
+            $this->options['InboundShipmentHeader.ShipFromAddress.CountryCode'] = $x['ShipToAddress']['CountryCode'];
+            if (array_key_exists('PostalCode', $x['ShipToAddress'])){
+                $this->options['InboundShipmentHeader.ShipFromAddress.PostalCode'] = $x['ShipToAddress']['PostalCode'];
+            }
+            
+            $this->options['InboundShipmentHeader.ShipmentId'] = $x['ShipmentId'];
+            $this->options['InboundShipmentHeader.DestinationFulfillmentCenterId'] = $x['DestinationFulfillmentCenterId'];
+            $this->options['InboundShipmentHeader.LabelPrepType'] = $x['LabelPrepType'];
+            
+            $i = 1;
+            foreach($x['Items'] as $z){
+                $this->options['InboundShipmentItems.member.'.$i.'.SellerSKU'] = $z['SellerSKU'];
+                $this->options['InboundShipmentItems.member.'.$i.'.QuantityShipped'] = $z['Quantity'];
+                $i++;
+            }
+            
+        } else {
+           $this->log("usePlan requires an array",'Warning');
+           return false; 
+        }
     }
     
     /**
@@ -40,21 +88,21 @@ class AmazonInboundShipment extends AmazonInventoryCore{
             return false;
         }
         $this->resetAddress();
-        $this->options['ShipFromAddress.Name'] = $a['Name'];
-        $this->options['ShipFromAddress.AddressLine1'] = $a['AddressLine1'];
+        $this->options['InboundShipmentHeader.ShipFromAddress.Name'] = $a['Name'];
+        $this->options['InboundShipmentHeader.ShipFromAddress.AddressLine1'] = $a['AddressLine1'];
         if (array_key_exists('AddressLine2', $a)){
-            $this->options['ShipFromAddress.AddressLine2'] = $a['AddressLine2'];
+            $this->options['InboundShipmentHeader.ShipFromAddress.AddressLine2'] = $a['AddressLine2'];
         }
-        $this->options['ShipFromAddress.City'] = $a['City'];
+        $this->options['InboundShipmentHeader.ShipFromAddress.City'] = $a['City'];
         if (array_key_exists('DistrictOrCounty', $a)){
-            $this->options['ShipFromAddress.DistrictOrCounty'] = $a['DistrictOrCounty'];
+            $this->options['InboundShipmentHeader.ShipFromAddress.DistrictOrCounty'] = $a['DistrictOrCounty'];
         }
         if (array_key_exists('StateOrProvidenceCode', $a)){
-            $this->options['ShipFromAddress.StateOrProvidenceCode'] = $a['StateOrProvidenceCode'];
+            $this->options['InboundShipmentHeader.ShipFromAddress.StateOrProvidenceCode'] = $a['StateOrProvidenceCode'];
         }
-        $this->options['ShipFromAddress.CountryCode'] = $a['CountryCode'];
+        $this->options['InboundShipmentHeader.ShipFromAddress.CountryCode'] = $a['CountryCode'];
         if (array_key_exists('PostalCode', $a)){
-            $this->options['ShipFromAddress.PostalCode'] = $a['PostalCode'];
+            $this->options['InboundShipmentHeader.ShipFromAddress.PostalCode'] = $a['PostalCode'];
         }
         
         
@@ -64,24 +112,14 @@ class AmazonInboundShipment extends AmazonInventoryCore{
      * resets the address options
      */
     protected function resetAddress(){
-        unset($this->options['ShipFromAddress.Name']);
-        unset($this->options['ShipFromAddress.AddressLine1']);
-        unset($this->options['ShipFromAddress.AddressLine2']);
-        unset($this->options['ShipFromAddress.City']);
-        unset($this->options['ShipFromAddress.DistrictOrCounty']);
-        unset($this->options['ShipFromAddress.StateOrProvidenceCode']);
-        unset($this->options['ShipFromAddress.CountryCode']);
-        unset($this->options['ShipFromAddress.PostalCode']);
-    }
-    
-    /**
-     * Sets the labeling preference, not required, default setting is SELLER_LABEL
-     * @param string $s "SELLER_LABEL", "AMAZON_LABEL_ONLY", "AMAZON_LABEL_PREFERRED"
-     */
-    public function setLabelPreference($s){
-        if (is_string($s)){
-            $this->options['LabelPrepPreference'] = $s;
-        }
+        unset($this->options['InboundShipmentHeader.ShipFromAddress.Name']);
+        unset($this->options['InboundShipmentHeader.ShipFromAddress.AddressLine1']);
+        unset($this->options['InboundShipmentHeader.ShipFromAddress.AddressLine2']);
+        unset($this->options['InboundShipmentHeader.ShipFromAddress.City']);
+        unset($this->options['InboundShipmentHeader.ShipFromAddress.DistrictOrCounty']);
+        unset($this->options['InboundShipmentHeader.ShipFromAddress.StateOrProvidenceCode']);
+        unset($this->options['InboundShipmentHeader.ShipFromAddress.CountryCode']);
+        unset($this->options['InboundShipmentHeader.ShipFromAddress.PostalCode']);
     }
     
     /**
@@ -125,15 +163,16 @@ class AmazonInboundShipment extends AmazonInventoryCore{
         }
     }
     
-    public function fetchPlan(){
-        if (!array_key_exists('ShipFromAddress.Name',$this->options)){
-            $this->log("Address must be set in order to make a plan",'Warning');
+    public function createShipment(){
+        if (!array_key_exists('InboundShipmentHeader.ShipmentName',$this->options)){
+            $this->log("Header must be set in order to make a shipment",'Warning');
             return false;
         }
-        if (!array_key_exists('InboundShipmentPlanRequestItems.member.1.SellerSKU',$this->options)){
-            $this->log("Items must be set in order to make a plan",'Warning');
+        if (!array_key_exists('InboundShipmentItems.member.1.SellerSKU',$this->options)){
+            $this->log("Items must be set in order to make a shipment",'Warning');
             return false;
         }
+        $this->options['Action'] = 'CreateInboundShipment';
         
         $this->options['Timestamp'] = $this->genTime();
         $url = $this->urlbase.$this->urlbranch;
@@ -142,7 +181,7 @@ class AmazonInboundShipment extends AmazonInventoryCore{
         $query = $this->_getParametersAsString($this->options);
         
         if ($this->mockMode){
-           $xml = $this->fetchMockFile()->CreateInboundShipmentPlanResult->InboundShipmentPlans;
+           $xml = $this->fetchMockFile()->CreateInboundShipmentResult;
         } else {
             $this->throttle();
             $this->log("Making request to Amazon");
@@ -152,15 +191,12 @@ class AmazonInboundShipment extends AmazonInventoryCore{
             $xml = simplexml_load_string($response['body'])->CreateInboundShipmentPlanResult->InboundShipmentPlans;
         }
         myPrint($xml);
-        $this->plan = $xml;
+        $verify = (string)$xml->ShipmentId;
         
-        $i = 0;
-        foreach($xml->children() as $x){
-            $this->shipmentId[$i] = (string)$x->shipmentId;
+        if ($verify != $this->options['InboundShipmentHeader.ShipmentId']){
+            $this->log("Order ID mismatch! ".$this->options['InboundShipmentHeader.ShipmentId']." =/= $verify",'Warning');
+            return false;
         }
-        
-        
-        
     }
     
 }

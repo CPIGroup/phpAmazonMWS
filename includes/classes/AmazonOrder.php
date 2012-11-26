@@ -410,14 +410,14 @@ class AmazonOrder extends AmazonOrderCore{
      * Fetches items for the orders stored in the Order List
      */
     public function fetchItems(){
-        $this->data['Items'] = new AmazonItemList($this->storeName,$this->data['AmazonOrderId']);
+        $this->data['Items'] = new AmazonOrderItemList($this->storeName,$this->data['AmazonOrderId']);
         $this->data['Items']->setUseToken($this->tokenItemFlag);
         $this->data['Items']->fetchItems();
     }
     
     /**
      * returns entire Item List object, for convenience
-     * @return AmazonItemList item list
+     * @return AmazonOrderItemList item list
      */
     public function getItems(){
         return $this->data['Items'];

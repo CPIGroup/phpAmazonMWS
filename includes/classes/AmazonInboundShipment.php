@@ -4,9 +4,8 @@ class AmazonInboundShipment extends AmazonInboundCore{
     
     
     /**
-     * Fetches a plan from Amazon. This is how you get a Shipment ID.
+     * Submits a shipment to Amazon or updates it.
      * @param string $s name of store as seen in config file
-     * @param string $id optional ID to set
      * @param boolean $mock true to enable mock mode
      * @param array $m list of mock files to use
      */
@@ -36,7 +35,7 @@ class AmazonInboundShipment extends AmazonInboundCore{
             $this->options['InboundShipmentHeader.ShipFromAddress.Name'] = $x['ShipToAddress']['Name'];
             $this->options['InboundShipmentHeader.ShipFromAddress.AddressLine1'] = $x['ShipToAddress']['AddressLine1'];
             if (array_key_exists('AddressLine2', $x['ShipToAddress'])){
-            $this->options['InboundShipmentHeader.ShipFromAddress.AddressLine2'] = $x['ShipToAddress']['AddressLine2'];
+                $this->options['InboundShipmentHeader.ShipFromAddress.AddressLine2'] = $x['ShipToAddress']['AddressLine2'];
             }
             $this->options['InboundShipmentHeader.ShipFromAddress.City'] = $x['ShipToAddress']['City'];
             if (array_key_exists('DistrictOrCounty', $x['ShipToAddress'])){

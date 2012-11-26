@@ -1,6 +1,6 @@
 <?php
 
-abstract class AmazonInboundCore extends AmazonCore{
+abstract class AmazonReportsCore extends AmazonCore{
     /**
      * For organization's sake
      * @param type $s

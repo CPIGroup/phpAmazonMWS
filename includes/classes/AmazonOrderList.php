@@ -6,7 +6,6 @@ class AmazonOrderList extends AmazonOrderCore implements Iterator{
     private $orderList;
     private $i;
     private $tokenFlag;
-    private $itemFlag;
     private $tokenUseFlag;
     private $tokenItemFlag;
     private $index;
@@ -46,19 +45,6 @@ class AmazonOrderList extends AmazonOrderCore implements Iterator{
      */
     public function hasToken(){
         return $this->tokenFlag;
-    }
-
-    /**
-     * Sets whether or not the OrderList should automatically grab items for the Orders it receives
-     * @param boolean $b
-     * @return boolean false if invalid paramter
-     */
-    public function setFetchItems($b = true){
-        if (is_bool($b)){
-            $this->itemFlag = $b;
-        } else {
-            return false;
-        }
     }
     
     /**
@@ -150,10 +136,6 @@ class AmazonOrderList extends AmazonOrderCore implements Iterator{
             }
             $this->orderList[$this->index] = new AmazonOrder($this->storeName,null,$order,$this->mockMode);
             $this->orderList[$this->index]->parseXML();
-            $this->orderList[$this->index]->setUseItemToken($this->tokenItemFlag);
-            if($this->itemFlag){
-                $this->orderList[$this->index]->fetchItems();
-            }
             $this->index++;
         }
         
@@ -206,6 +188,24 @@ class AmazonOrderList extends AmazonOrderCore implements Iterator{
                     unset($this->options[$o]);
                 }
             }
+        }
+    }
+    
+    /**
+     * returns array of item lists or a single item list
+     * @param boolean $token whether or not to automatically use tokens when fetching items
+     * @param integer $i index
+     * @return array AmazonOrderItemList or array of AmazonOrderItemLists
+     */
+    public function fetchItems($token = false, $i = null){
+        if ($i == null){
+            $a = array();
+            foreach($this->orderList as $x){
+                $a[] = $x->fetchItems($token);
+            }
+            return $a;
+        } else if (is_numeric($i)) {
+            return $this->orderList[$i]->fetchItems($token);
         }
     }
     

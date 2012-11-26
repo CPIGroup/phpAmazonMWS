@@ -3,8 +3,6 @@
 class AmazonOrderSet extends AmazonOrderCore implements Iterator{
     private $i;
     private $orderList;
-    private $itemFlag;
-    private $tokenItemFlag;
     
     /**
      * Amazon Order Set is a variation of Amazon Order that pulls multiple specified orders.
@@ -59,32 +57,6 @@ class AmazonOrderSet extends AmazonOrderCore implements Iterator{
     }
     
     /**
-     * Sets whether or not the OrderSet should automatically grab items for the Orders it receives
-     * @param boolean $b
-     * @return boolean false if invalid paramter
-     */
-    public function setFetchItems($b = true){
-        if (is_bool($b)){
-            $this->itemFlag = $b;
-        } else {
-            return false;
-        }
-    }
-    
-    /**
-     * Sets whether or not the OrderSet should automatically use tokens when fetching items
-     * @param type $b
-     * @return boolean false if invalid paramter
-     */
-    public function setUseItemToken($b = true){
-        if (is_bool($b)){
-            $this->tokenItemFlag = $b;
-        } else {
-            return false;
-        }
-    }
-    
-    /**
      * Fetches orders from Amazon using the pre-set parameters and putting them in an array of AmazonOrder objects
      */
     public function fetchOrders(){
@@ -118,17 +90,30 @@ class AmazonOrderSet extends AmazonOrderCore implements Iterator{
             }
             $this->orderList[$this->index] = new AmazonOrder($this->storeName,null,$order);
             $this->orderList[$this->index]->parseXML();
-            $this->orderList[$this->index]->setUseItemToken($this->tokenItemFlag);
-            if($this->itemFlag){
-                $this->orderList[$this->index]->fetchItems();
-            }
             $this->index++;
         }
         
         myPrint($this->orderList);
         
     }
-
+    
+    /**
+     * returns array of item lists or a single item list
+     * @param boolean $token whether or not to automatically use tokens when fetching items
+     * @param integer $i index
+     * @return array AmazonOrderItemList or array of AmazonOrderItemLists
+     */
+    public function fetchItems($token = false, $i = null){
+        if ($i == null){
+            $a = array();
+            foreach($this->orderList as $x){
+                $a[] = $x->fetchItems($token);
+            }
+            return $a;
+        } else if (is_numeric($i)) {
+            return $this->orderList[$i]->fetchItems($token);
+        }
+    }
     
     /**
      * Iterator function

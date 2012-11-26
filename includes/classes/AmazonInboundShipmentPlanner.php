@@ -3,7 +3,6 @@
 class AmazonInboundShipmentPlanner extends AmazonInboundCore implements Iterator{
     private $xmldata;
     private $planList;
-    private $shipmentId;
     private $i;
     
     /**

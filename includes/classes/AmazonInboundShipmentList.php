@@ -3,10 +3,7 @@
 class AmazonInboundShipmentList extends AmazonInboundCore implements Iterator{
     private $tokenFlag = false;
     private $tokenUseFlag = false;
-    private $itemFlag = false;
-    private $tokenItemFlag = false;
     private $shipmentList;
-    private $itemList;
     private $index = 0;
     private $i = 0;
     
@@ -40,33 +37,6 @@ class AmazonInboundShipmentList extends AmazonInboundCore implements Iterator{
     public function setUseToken($b = true){
         if (is_bool($b)){
             $this->tokenUseFlag = $b;
-            $this->tokenItemFlag = $b;
-        } else {
-            return false;
-        }
-    }
-    
-    /**
-     * Sets whether or not the OrderList should automatically use tokens when fetching items
-     * @param type $b
-     * @return boolean false if invalid paramter
-     */
-    public function setUseItemToken($b = true){
-        if (is_bool($b)){
-            $this->tokenItemFlag = $b;
-        } else {
-            return false;
-        }
-    }
-    
-    /**
-     * Sets whether or not the Shipment List should automatically grab items for the Shipments it receives
-     * @param boolean $b
-     * @return boolean false if invalid paramter
-     */
-    public function setFetchItems($b = true){
-        if (is_bool($b)){
-            $this->itemFlag = $b;
         } else {
             return false;
         }
@@ -199,7 +169,6 @@ class AmazonInboundShipmentList extends AmazonInboundCore implements Iterator{
             $this->options['Action'] = 'ListInboundShipments';
             $this->index = 0;
             $this->shipmentList = array();
-            $this->itemList = array();
         }
         
         $url = $this->urlbase.$this->urlbranch;
@@ -233,10 +202,6 @@ class AmazonInboundShipmentList extends AmazonInboundCore implements Iterator{
         
         foreach($xml->ShipmentData->children() as $x){
             $this->shipmentList[$this->index] = $this->parseXML($x);
-            if($this->itemFlag){
-                $this->itemList[$this->index] = new AmazonInboundShipmentItemList($this->storeName,$this->getShipmentId($this->index),$this->mockMode,$this->mockFiles);
-                $this->itemList[$this->index]->fetchItems();
-            }
             $this->index++;
         }
         
@@ -296,6 +261,30 @@ class AmazonInboundShipmentList extends AmazonInboundCore implements Iterator{
         $a['AreCasesRequired'] = (string)$xml->AreCasesRequired;
         
         return $a;
+    }
+    
+    /**
+     * returns array of item lists or a single item list
+     * @param boolean $token whether or not to automatically use tokens when fetching items
+     * @param integer $i index
+     * @return array AmazonOrderItemList or array of AmazonOrderItemLists
+     */
+    public function fetchItems($token = false, $i = null){
+        if ($i == null){
+            $a = array();
+            $n = 0;
+            foreach($this->shipmentList as $x){
+                $a[$n] = new AmazonInboundShipmentItemList($this->storeName,$x['ShipmentId'],$this->mockMode,$this->mockFiles);
+                $a[$n]->setUseToken($token);
+                $a[$n]->fetchItems();
+            }
+            return $a;
+        } else if (is_numeric($i)) {
+            $temp = new AmazonInboundShipmentItemList($this->storeName,$this->shipmentList[$i]['ShipmentId'],$this->mockMode,$this->mockFiles);
+            $temp->setUseToken($token);
+            $temp->fetchItems();
+            return $temp;
+        }
     }
     
     /**

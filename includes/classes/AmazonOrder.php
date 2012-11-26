@@ -3,8 +3,6 @@
  * AmazonOrder object gets the details for a single object from Amazon
  */
 class AmazonOrder extends AmazonOrderCore{
-    private $itemFlag;
-    private $tokenItemFlag;
     private $data;
     private $xmldata;
 
@@ -99,32 +97,6 @@ class AmazonOrder extends AmazonOrderCore{
         $this->data['BuyerName'] = (string)$this->xmldata->BuyerName;
         $this->data['BuyerEmail'] = (string)$this->xmldata->BuyerEmail;
         $this->data['ShipServiceLevelCategory'] = (string)$this->xmldata->ShipServiceLevelCategory;
-    }
-    
-    /**
-     * Sets the flag for whether or not to fetch items
-     * @param boolean $b True to get items, False to not
-     * @throws InvalidArgumentException
-     */
-    public function setFetchItems($b = true){
-        if (is_bool($b)){
-            $this->itemFlag = $b;
-        } else {
-            throw new InvalidArgumentException('The paramater for setFetchItems() should be either true or false.');
-        }
-    }
-
-    /**
-     * Sets whether or not the Order should automatically use tokens when fetching items
-     * @param type $b
-     * @return boolean false if invalid paramter
-     */
-    public function setUseItemToken($b = true){
-        if (is_bool($b)){
-            $this->tokenItemFlag = $b;
-        } else {
-            return false;
-        }
     }
     
     /**
@@ -371,26 +343,8 @@ class AmazonOrder extends AmazonOrderCore{
         
         $this->xmldata = $xml->GetOrderResult->Orders->Order;
         $this->parseXML();
-        
-        if ($this->itemFlag){
-            $this->fetchItems();
-        }
     
     }
-    
-//    protected function fetchOrderFromCache(){
-//        include ('db-config.php');
-//        
-//        $sql = 'SELECT * FROM `amazonOrderLog` WHERE orderid = ?';
-//        $value = array($this->options['AmazonOrderId.Id.1']);
-//        
-//        $result = db::executeQuery($sql, $value, DB_PLUGINS)->fetchAll();
-//        
-//        myPrint($result);
-//        
-//        return array();
-//    }
-    
     
     /**
      * Sets the Amazon Order ID for the next request, in case it was not set in the constructor
@@ -407,20 +361,18 @@ class AmazonOrder extends AmazonOrderCore{
     }
 
     /**
-     * Fetches items for the orders stored in the Order List
+     * Fetches items for the order
+     * @param boolean $token whether or not to automatically use item tokens
+     * @return AmazonOrderItemList container for order's items
      */
-    public function fetchItems(){
-        $this->data['Items'] = new AmazonOrderItemList($this->storeName,$this->data['AmazonOrderId']);
-        $this->data['Items']->setUseToken($this->tokenItemFlag);
-        $this->data['Items']->fetchItems();
-    }
-    
-    /**
-     * returns entire Item List object, for convenience
-     * @return AmazonOrderItemList item list
-     */
-    public function getItems(){
-        return $this->data['Items'];
+    public function fetchItems($token = false){
+        if (!is_bool($token)){
+            return false;
+        }
+        $items = new AmazonOrderItemList($this->storeName,$this->data['AmazonOrderId'],$this->mockMode,$this->mockFiles);
+        $items->setUseToken($token);
+        $items->fetchItems();
+        return $items;
     }
 }
 

@@ -17,8 +17,10 @@ $things = array(array('SellerSKU' => '123', 'Quantity' => '4'));
 $a->setItems($things);
 $a->fetchPlan();
 var_dump($a->getShipmentId());
-$b = new AmazonInboundShipment('BigKitchen',true,'plan.xml');
+$b = new AmazonInboundShipment('BigKitchen',true,'createship.xml');
 $b->usePlan($a->getPlan(0));
+$b->setShipmentId('FBA63JX44');
+$b->createShipment();
 var_dump($a);
 var_dump($b);
 

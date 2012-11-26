@@ -39,7 +39,6 @@ abstract class AmazonCore{
     protected $urlbranch;
     protected $throttleLimit;
     protected $throttleTime;
-    protected $throttleCount;
     protected $storeName;
     protected $secretKey;
     protected $options;
@@ -131,7 +130,7 @@ abstract class AmazonCore{
      * @return SimpleXMLObject file, or false on failure
      */
     public function fetchMockFile(){
-        if(!array_key_exists(0, $this->mockFiles)){
+        if(!is_array($this->mockFiles) || !array_key_exists(0, $this->mockFiles)){
             $this->log("Attempted to retrieve mock files, but no mock files present",'Warning');
             return false;
         }

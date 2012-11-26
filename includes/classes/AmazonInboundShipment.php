@@ -10,12 +10,9 @@ class AmazonInboundShipment extends AmazonInboundCore{
      * @param boolean $mock true to enable mock mode
      * @param array $m list of mock files to use
      */
-    public function __construct($s, $id = null, $mock = false, $m = null) {
+    public function __construct($s, $mock = false, $m = null) {
         parent::__construct($s, $mock, $m);
-        
-        if (isset($id) && is_numeric($id)){
-            $this->options['ShipmentId'] = $id;
-        }
+        include($this->config);
         
         $this->options['InboundShipmentHeader.ShipmentStatus'] = 'WORKING';
         
@@ -32,6 +29,8 @@ class AmazonInboundShipment extends AmazonInboundCore{
         if (is_array($x)){
             $this->resetAddress();
             $this->resetItems();
+            
+            $this->options['ShipmentId'] = $x['ShipmentId'];
             
             //inheriting address
             $this->options['InboundShipmentHeader.ShipFromAddress.Name'] = $x['ShipToAddress']['Name'];
@@ -55,11 +54,20 @@ class AmazonInboundShipment extends AmazonInboundCore{
             $this->options['InboundShipmentHeader.DestinationFulfillmentCenterId'] = $x['DestinationFulfillmentCenterId'];
             $this->options['InboundShipmentHeader.LabelPrepType'] = $x['LabelPrepType'];
             
+            $caseflag = false;
             $i = 1;
             foreach($x['Items'] as $z){
                 $this->options['InboundShipmentItems.member.'.$i.'.SellerSKU'] = $z['SellerSKU'];
                 $this->options['InboundShipmentItems.member.'.$i.'.QuantityShipped'] = $z['Quantity'];
+                if (array_key_exists('QuantityInCase', $z)){
+                    $this->options['InboundShipmentItems.member.'.$i.'.QuantityInCase'] = $z['QuantityInCase'];
+                    $caseflag = true;
+                }
                 $i++;
+            }
+            
+            if ($caseflag){
+                $this->options['InboundShipmentHeader.AreCasesRequired'] = true;
             }
             
         } else {
@@ -94,20 +102,18 @@ class AmazonInboundShipment extends AmazonInboundCore{
         $this->options['InboundShipmentHeader.ShipFromAddress.AddressLine1'] = $a['AddressLine1'];
         if (array_key_exists('AddressLine2', $a)){
             $this->options['InboundShipmentHeader.ShipFromAddress.AddressLine2'] = $a['AddressLine2'];
+        } else {
+            $this->options['InboundShipmentHeader.ShipFromAddress.AddressLine2'] = null;
         }
         $this->options['InboundShipmentHeader.ShipFromAddress.City'] = $a['City'];
         if (array_key_exists('DistrictOrCounty', $a)){
             $this->options['InboundShipmentHeader.ShipFromAddress.DistrictOrCounty'] = $a['DistrictOrCounty'];
+        } else {
+            $this->options['InboundShipmentHeader.ShipFromAddress.DistrictOrCounty'] = null;
         }
-        if (array_key_exists('StateOrProvidenceCode', $a)){
-            $this->options['InboundShipmentHeader.ShipFromAddress.StateOrProvidenceCode'] = $a['StateOrProvidenceCode'];
-        }
+        $this->options['InboundShipmentHeader.ShipFromAddress.StateOrProvidenceCode'] = $a['StateOrProvidenceCode'];
         $this->options['InboundShipmentHeader.ShipFromAddress.CountryCode'] = $a['CountryCode'];
-        if (array_key_exists('PostalCode', $a)){
-            $this->options['InboundShipmentHeader.ShipFromAddress.PostalCode'] = $a['PostalCode'];
-        }
-        
-        
+        $this->options['InboundShipmentHeader.ShipFromAddress.PostalCode'] = $a['PostalCode'];
     }
     
     /**
@@ -128,9 +134,10 @@ class AmazonInboundShipment extends AmazonInboundCore{
      * Sets the items to be included in the next request
      * 
      * Sets the items to be included in the next request, using this format:
-     * Array of arrays, each with two fields:
+     * Array of arrays, each with the following fields:
      * 'SellerSKU'
      * 'Quantity'
+     * 'QuantityInCase' (optional)
      * @param array $a array of item arrays
      * @return boolean false if failure
      */
@@ -145,6 +152,9 @@ class AmazonInboundShipment extends AmazonInboundCore{
             if (array_key_exists('SellerSKU', $x) && array_key_exists('Quantity', $x)){
                 $this->options['InboundShipmentPlanRequestItems.member.'.$i.'.SellerSKU'] = $x['SellerSKU'];
                 $this->options['InboundShipmentPlanRequestItems.member.'.$i.'.Quantity'] = $x['Quantity'];
+                if (array_key_exists('QuantityInCase', $x)){
+                    $this->options['InboundShipmentPlanRequestItems.member.'.$i.'.QuantityInCase'] = $x['QuantityInCase'];
+                }
                 $i++;
             } else {
                 $this->resetItems();
@@ -166,8 +176,8 @@ class AmazonInboundShipment extends AmazonInboundCore{
     }
     
     /**
-     * 
-     * @param string $s
+     * set the shipment status to be used in the next request
+     * @param string $s "WORKING", "SHIPPED", or "CANCELLED" (updating only)
      */
     public function setStatus($s){
         if (is_string($s) && $s){
@@ -176,13 +186,21 @@ class AmazonInboundShipment extends AmazonInboundCore{
     }
     
     /**
+     * set the shipment id to be used in the next request
+     * @param string $s id
+     */
+    public function setShipmentId($s){
+        if (is_string($s) && $s){
+            $this->options['ShipmentId'] = $s;
+        }
+    }
+    
+    /**
      * Sends a request to Amazon to create an Inbound Shipment
-     * 
-     * TEST THIS BEFORE I MOVE ONTO UPDATING... WHAT HAPPENS IF IT FAILS?
      * @return boolean true on success, false on failure
      */
     public function createShipment(){
-        if (!array_key_exists('InboundShipmentHeader.ShipmentName',$this->options)){
+        if (!array_key_exists('InboundShipmentHeader.ShipFromAddress.Name',$this->options)){
             $this->log("Header must be set in order to make a shipment",'Warning');
             return false;
         }
@@ -211,8 +229,50 @@ class AmazonInboundShipment extends AmazonInboundCore{
         myPrint($xml);
         $verify = (string)$xml->ShipmentId;
         
-        if ($verify != $this->options['InboundShipmentHeader.ShipmentId']){
-            $this->log("Order ID mismatch! ".$this->options['InboundShipmentHeader.ShipmentId']." =/= $verify",'Warning');
+        if ($verify != $this->options['ShipmentId']){
+            $this->log("Order ID mismatch! ".$this->options['ShipmentId']." =/= $verify",'Warning');
+            return false;
+        } else {
+            return true;
+        }
+    }
+    
+    /**
+     * Sends a request to Amazon to create an Inbound Shipment
+     * @return boolean true on success, false on failure
+     */
+    public function updateShipment(){
+        if (!array_key_exists('InboundShipmentHeader.ShipFromAddress.Name',$this->options)){
+            $this->log("Header must be set in order to update a shipment",'Warning');
+            return false;
+        }
+        if (!array_key_exists('InboundShipmentItems.member.1.SellerSKU',$this->options)){
+            $this->log("Items must be set in order to make a shipment",'Warning');
+            return false;
+        }
+        $this->options['Action'] = 'UpdateInboundShipment';
+        
+        $this->options['Timestamp'] = $this->genTime();
+        $url = $this->urlbase.$this->urlbranch;
+        
+        $this->options['Signature'] = $this->_signParameters($this->options, $this->secretKey);
+        $query = $this->_getParametersAsString($this->options);
+        
+        if ($this->mockMode){
+           $xml = $this->fetchMockFile()->UpdateInboundShipmentResult;
+        } else {
+            $this->throttle();
+            $this->log("Making request to Amazon");
+            $response = fetchURL($url,array('Post'=>$query));
+            $this->logRequest();
+
+            $xml = simplexml_load_string($response['body'])->UpdateInboundShipmentPlanResult->InboundShipmentPlans;
+        }
+        myPrint($xml);
+        $verify = (string)$xml->ShipmentId;
+        
+        if ($verify != $this->options['ShipmentId']){
+            $this->log("Order ID mismatch! ".$this->options['ShipmentId']." =/= $verify",'Warning');
             return false;
         } else {
             return true;

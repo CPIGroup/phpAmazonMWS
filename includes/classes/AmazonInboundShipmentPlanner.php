@@ -14,8 +14,10 @@ class AmazonInboundShipmentPlanner extends AmazonInboundCore implements Iterator
      */
     public function __construct($s, $mock = false, $m = null) {
         parent::__construct($s, $mock, $m);
+        include($this->config);
         
         $this->options['Action'] = 'CreateInboundShipmentPlan';
+        
         $this->throttleLimit = $throttleLimitInventory;
         $this->throttleTime = $throttleTimeInventory;
     }
@@ -93,6 +95,27 @@ class AmazonInboundShipmentPlanner extends AmazonInboundCore implements Iterator
      * Array of arrays, each with two fields:
      * 'SellerSKU'
      * 'Quantity'
+     * 'ASIN' (optional)
+     * 'QuantityInCase' (optional)
+     * 'Condition' (optjonal)(Possible values:
+     *      "NewItem"
+     *      "NewWithWarranty"
+     *      "NewOEM"
+     *      "NewOpenBox"
+     *      "UsedLikeNew"
+     *      "UsedVeryGood"
+     *      "UsedGood"
+     *      "UsedAcceptable"
+     *      "UsedPoor"
+     *      "UsedRefurbished"
+     *      "CollectibleLikeNew"
+     *      "CollectibleVeryGood"
+     *      "CollectibleGood"
+     *      "CollectibleAcceptable"
+     *      "CollectiblePoor"
+     *      "RefurbishedWithWarranty"
+     *      "Refurbished"
+     *      "Club")
      * @param array $a array of item arrays
      * @return boolean false if failure
      */
@@ -107,6 +130,9 @@ class AmazonInboundShipmentPlanner extends AmazonInboundCore implements Iterator
             if (array_key_exists('SellerSKU', $x) && array_key_exists('Quantity', $x)){
                 $this->options['InboundShipmentPlanRequestItems.member.'.$i.'.SellerSKU'] = $x['SellerSKU'];
                 $this->options['InboundShipmentPlanRequestItems.member.'.$i.'.Quantity'] = $x['Quantity'];
+                if (array_key_exists('QuantityInCase', $x)){
+                    $this->options['InboundShipmentPlanRequestItems.member.'.$i.'.QuantityInCase'] = $x['QuantityInCase'];
+                }
                 $i++;
             } else {
                 $this->resetItems();

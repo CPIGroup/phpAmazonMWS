@@ -1,6 +1,6 @@
 <?php
 
-class AmazonInboundShipment extends AmazonInboundCore{
+class AmazonShipment extends AmazonInboundCore{
     
     
     /**

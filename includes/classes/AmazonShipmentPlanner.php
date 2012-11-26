@@ -1,6 +1,6 @@
 <?php
 
-class AmazonInboundShipmentPlanner extends AmazonInboundCore implements Iterator{
+class AmazonShipmentPlanner extends AmazonInboundCore implements Iterator{
     private $xmldata;
     private $planList;
     private $i;

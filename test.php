@@ -10,22 +10,22 @@ include('includes/classes.php');
 //$a->setLimits('Modified','-1 hours');
 //$a->fetchOrders();
 
-$a = new AmazonInboundShipmentList('BigKitchen',true,'shiplist.xml');
+$a = new AmazonShipmentList('BigKitchen',true,'shiplist.xml');
 $a->setTimeLimits();
 $a->setIdFilter('Order #5');
 $a->fetchShipments();
-$b = new AmazonInboundShipmentItemList('BigKitchen','5',true,'shipitems.xml');
+$b = new AmazonShipmentItemList('BigKitchen','5',true,'shipitems.xml');
 $b->fetchItems();
 var_dump($b);
 
-//$a = new AmazonInboundShipmentPlanner('BigKitchen',true,'plan.xml');
+//$a = new AmazonShipmentPlanner('BigKitchen',true,'plan.xml');
 //$address = array('Name'=>'Nameo','AddressLine1'=>'Nameworld');
 //$a->setAddress($address);
 //$things = array(array('SellerSKU' => '123', 'Quantity' => '4'));
 //$a->setItems($things);
 //$a->fetchPlan();
 //var_dump($a->getShipmentId());
-//$b = new AmazonInboundShipment('BigKitchen',true,'createship.xml');
+//$b = new AmazonShipment('BigKitchen',true,'createship.xml');
 //$b->usePlan($a->getPlan(0));
 //$b->setShipmentId('FBA63JX44');
 //$b->createShipment();

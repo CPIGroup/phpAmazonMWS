@@ -1,6 +1,6 @@
 <?php
 
-class AmazonInboundShipmentItemList extends AmazonInboundCore implements Iterator{
+class AmazonShipmentItemList extends AmazonInboundCore implements Iterator{
     private $tokenFlag = false;
     private $tokenUseFlag = false;
     private $itemList;

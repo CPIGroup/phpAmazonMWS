@@ -1,6 +1,6 @@
 <?php
 
-class AmazonInboundShipmentList extends AmazonInboundCore implements Iterator{
+class AmazonShipmentList extends AmazonInboundCore implements Iterator{
     private $tokenFlag = false;
     private $tokenUseFlag = false;
     private $shipmentList;
@@ -274,13 +274,13 @@ class AmazonInboundShipmentList extends AmazonInboundCore implements Iterator{
             $a = array();
             $n = 0;
             foreach($this->shipmentList as $x){
-                $a[$n] = new AmazonInboundShipmentItemList($this->storeName,$x['ShipmentId'],$this->mockMode,$this->mockFiles);
+                $a[$n] = new AmazonShipmentItemList($this->storeName,$x['ShipmentId'],$this->mockMode,$this->mockFiles);
                 $a[$n]->setUseToken($token);
                 $a[$n]->fetchItems();
             }
             return $a;
         } else if (is_numeric($i)) {
-            $temp = new AmazonInboundShipmentItemList($this->storeName,$this->shipmentList[$i]['ShipmentId'],$this->mockMode,$this->mockFiles);
+            $temp = new AmazonShipmentItemList($this->storeName,$this->shipmentList[$i]['ShipmentId'],$this->mockMode,$this->mockFiles);
             $temp->setUseToken($token);
             $temp->fetchItems();
             return $temp;

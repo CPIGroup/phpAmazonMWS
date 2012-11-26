@@ -10,7 +10,6 @@ class AmazonItemList extends AmazonOrderCore implements Iterator{
     private $xmldata;
     private $orderId;
     private $index;
-    private $token;
 
     /**
      * AmazonItemLists contain all of the items for a given order

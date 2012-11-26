@@ -186,16 +186,17 @@ class AmazonInboundShipmentList extends AmazonInboundCore implements Iterator{
      */
     public function fetchShipments(){
         $this->options['Timestamp'] = $this->genTime();
-        $this->options['Action'] = 'ListInboundShipments';
         
         if (!array_key_exists('ShipmentStatusList.member.1', $this->options) && !array_key_exists('ShipmentIdList.member.1', $this->options)){
             $this->log("Either status filter or ID filter must be set before requesting a list!",'Warning');
+            return false;
         }
         
         if ($this->tokenFlag && $this->tokenUseFlag){
-            $this->prepareToken();
+            $this->options['Action'] = 'ListInboundShipmentsByNextToken';
         } else {
             unset($this->options['NextToken']);
+            $this->options['Action'] = 'ListInboundShipments';
             $this->index = 0;
             $this->shipmentList = array();
             $this->itemList = array();
@@ -233,7 +234,7 @@ class AmazonInboundShipmentList extends AmazonInboundCore implements Iterator{
         foreach($xml->ShipmentData->children() as $x){
             $this->shipmentList[$this->index] = $this->parseXML($x);
             if($this->itemFlag){
-                $this->itemList[$this->index] = new AmazonInboundShipmentItemList($this->storeName,$this->mockMode,$this->mockFiles);
+                $this->itemList[$this->index] = new AmazonInboundShipmentItemList($this->storeName,$this->getShipmentId($this->index),$this->mockMode,$this->mockFiles);
                 $this->itemList[$this->index]->fetchItems();
             }
             $this->index++;
@@ -249,45 +250,50 @@ class AmazonInboundShipmentList extends AmazonInboundCore implements Iterator{
         
     }
     
+    /**
+     * Reads piece of XML to fill out a single shipment's info
+     * @param SimpleXMLObject $xml
+     * @return array
+     */
     protected function parseXML($xml){
         $a = array();
         
         if (isset($xml->ShipmentId)){
-            $a['ShipmentId'] = $xml->ShipmentId;
+            $a['ShipmentId'] = (string)$xml->ShipmentId;
         }
         if (isset($xml->ShipmentName)){
-            $a['ShipmentName'] = $xml->ShipmentName;
+            $a['ShipmentName'] = (string)$xml->ShipmentName;
         }
         
         //Address
-        $a['ShipFromAddress']['Name'] = $xml->ShipFromAddress->Name;
-        $a['ShipFromAddress']['AddressLine1'] = $xml->ShipFromAddress->AddressLine1;
+        $a['ShipFromAddress']['Name'] = (string)$xml->ShipFromAddress->Name;
+        $a['ShipFromAddress']['AddressLine1'] = (string)$xml->ShipFromAddress->AddressLine1;
         if (isset($xml->ShipFromAddress->AddressLine2)){
-            $a['ShipFromAddress']['AddressLine2'] = $xml->ShipFromAddress->AddressLine2;
+            $a['ShipFromAddress']['AddressLine2'] = (string)$xml->ShipFromAddress->AddressLine2;
         } else {
             $a['ShipFromAddress']['AddressLine2'] = null;
         }
-        $a['ShipFromAddress']['City'] = $xml->ShipFromAddress->City;
+        $a['ShipFromAddress']['City'] = (string)$xml->ShipFromAddress->City;
         if (isset($xml->ShipFromAddress->DistrictOrCounty)){
-            $a['ShipFromAddress']['DistrictOrCounty'] = $xml->ShipFromAddress->DistrictOrCounty;
+            $a['ShipFromAddress']['DistrictOrCounty'] = (string)$xml->ShipFromAddress->DistrictOrCounty;
         } else {
             $a['ShipFromAddress']['DistrictOrCounty'] = null;
         }
-        $a['ShipFromAddress']['StateOrProvidenceCode'] = $xml->ShipFromAddress->StateOrProvidenceCode;
-        $a['ShipFromAddress']['CountryCode'] = $xml->ShipFromAddress->CountryCode;
-        $a['ShipFromAddress']['PostalCode'] = $xml->ShipFromAddress->PostalCode;
+        $a['ShipFromAddress']['StateOrProvidenceCode'] = (string)$xml->ShipFromAddress->StateOrProvidenceCode;
+        $a['ShipFromAddress']['CountryCode'] = (string)$xml->ShipFromAddress->CountryCode;
+        $a['ShipFromAddress']['PostalCode'] = (string)$xml->ShipFromAddress->PostalCode;
         
         if (isset($xml->DestinationFulfillmentCenterId)){
-            $a['DestinationFulfillmentCenterId'] = $xml->DestinationFulfillmentCenterId;
+            $a['DestinationFulfillmentCenterId'] = (string)$xml->DestinationFulfillmentCenterId;
         }
         if (isset($xml->LabelPrepType)){
-            $a['LabelPrepType'] = $xml->LabelPrepType;
+            $a['LabelPrepType'] = (string)$xml->LabelPrepType;
         }
         if (isset($xml->ShipmentStatus)){
-            $a['LabelPrepType'] = $xml->ShipmentStatus;
+            $a['ShipmentStatus'] = (string)$xml->ShipmentStatus;
         }
         
-        $a['AreCasesRequired'] = $xml->AreCasesRequired;
+        $a['AreCasesRequired'] = (string)$xml->AreCasesRequired;
         
         return $a;
     }

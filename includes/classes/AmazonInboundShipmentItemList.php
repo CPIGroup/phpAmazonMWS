@@ -189,6 +189,84 @@ class AmazonInboundShipmentItemList extends AmazonInboundCore implements Iterato
     }
     
     /**
+     * Returns the Shipment ID for the specified entry
+     * @param int $i index, defaults to 0
+     * @return string ShipmentId, or False if Non-numeric index
+     */
+    public function getShipmentId($i = 0){
+        if (is_numeric($i)){
+            return $this->itemList[$i]['ShipmentId'];
+        } else {
+            return false;
+        }
+    }
+    
+    /**
+     * Returns the Seller SKU for the specified entry
+     * @param int $i index, defaults to 0
+     * @return string ShipmentId, or False if Non-numeric index
+     */
+    public function getSellerSKU($i = 0){
+        if (is_numeric($i)){
+            return $this->itemList[$i]['SellerSKU'];
+        } else {
+            return false;
+        }
+    }
+    
+    /**
+     * Returns the Fulfillment Network SKU for the specified entry
+     * @param int $i index, defaults to 0
+     * @return string ShipmentId, or False if Non-numeric index
+     */
+    public function getFulfillmentNetworkSKU($i = 0){
+        if (is_numeric($i)){
+            return $this->itemList[$i]['FulfillmentNetworkSKU'];
+        } else {
+            return false;
+        }
+    }
+    
+    /**
+     * Returns the quantity shipped for the specified entry
+     * @param int $i index, defaults to 0
+     * @return string ShipmentId, or False if Non-numeric index
+     */
+    public function getQuantityShipped($i = 0){
+        if (is_numeric($i)){
+            return $this->itemList[$i]['QuantityShipped'];
+        } else {
+            return false;
+        }
+    }
+    
+    /**
+     * Returns the quantity received for the specified entry
+     * @param int $i index, defaults to 0
+     * @return string ShipmentId, or False if Non-numeric index
+     */
+    public function getQuantityReceived($i = 0){
+        if (is_numeric($i)){
+            return $this->itemList[$i]['QuantityReceived'];
+        } else {
+            return false;
+        }
+    }
+    
+    /**
+     * Returns the quantity in cases for the specified entry
+     * @param int $i index, defaults to 0
+     * @return string ShipmentId, or False if Non-numeric index
+     */
+    public function getQuantityInCase($i = 0){
+        if (is_numeric($i)){
+            return $this->itemList[$i]['QuantityInCase'];
+        } else {
+            return false;
+        }
+    }
+    
+    /**
      * Iterator function
      * @return type
      */

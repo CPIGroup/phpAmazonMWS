@@ -11,7 +11,7 @@ class AmazonShipmentList extends AmazonInboundCore implements Iterator{
      * Fetches a list of shipments from Amazon.
      * @param string $s name of store as seen in config file
      * @param boolean $mock true to enable mock mode
-     * @param array $m list of mock files to use
+     * @param array|string $m list of mock files to use
      */
     public function __construct($s, $mock = false, $m = null) {
         parent::__construct($s, $mock, $m);
@@ -86,7 +86,7 @@ class AmazonShipmentList extends AmazonInboundCore implements Iterator{
     
     /**
      * sets the ID filter to be used in the next request
-     * @param array $s list of shipment IDs, or single ID string
+     * @param array|string $s list of shipment IDs, or single ID
      */
     public function setIdFilter($s){
         if (is_string($s)){
@@ -184,7 +184,11 @@ class AmazonShipmentList extends AmazonInboundCore implements Iterator{
             $this->log("Making request to Amazon");
             $response = fetchURL($url,array('Post'=>$query));
             $this->logRequest();
-
+            
+            if (!$this->checkResponse($response)){
+                return false;
+            }
+            
             $xml = simplexml_load_string($response['body'])->$path;
         }
             
@@ -205,7 +209,6 @@ class AmazonShipmentList extends AmazonInboundCore implements Iterator{
             $this->index++;
         }
         
-        myPrint($this->shipmentList);
         
         if ($this->tokenFlag && $this->tokenUseFlag){
             $this->log("Recursively fetching more shipments for the list");
@@ -267,7 +270,7 @@ class AmazonShipmentList extends AmazonInboundCore implements Iterator{
      * returns array of item lists or a single item list
      * @param boolean $token whether or not to automatically use tokens when fetching items
      * @param integer $i index
-     * @return array AmazonOrderItemList or array of AmazonOrderItemLists
+     * @return array|AmazonOrderItemList AmazonOrderItemList or array of AmazonOrderItemLists
      */
     public function fetchItems($token = false, $i = null){
         if ($i == null){
@@ -290,7 +293,7 @@ class AmazonShipmentList extends AmazonInboundCore implements Iterator{
     /**
      * Returns the Shipment ID for the specified entry
      * @param int $i index, defaults to 0
-     * @return string ShipmentId, or False if Non-numeric index
+     * @return string|boolean ShipmentId, or False if Non-numeric index
      */
     public function getShipmentId($i = 0){
         if (is_numeric($i)){
@@ -303,7 +306,7 @@ class AmazonShipmentList extends AmazonInboundCore implements Iterator{
     /**
      * Returns the Shipment Name for the specified entry
      * @param int $i index, defaults to 0
-     * @return string ShipmentId, or False if Non-numeric index
+     * @return string|boolean ShipmentId, or False if Non-numeric index
      */
     public function getShipmentName($i = 0){
         if (is_numeric($i)){
@@ -316,7 +319,7 @@ class AmazonShipmentList extends AmazonInboundCore implements Iterator{
     /**
      * Returns the entire shipping address for the specified entry
      * @param int $i index, defaults to 0
-     * @return array Address, or False if Non-numeric index
+     * @return array|boolean Address, or False if Non-numeric index
      */
     public function getAddress($i = 0){
         if (is_numeric($i)){
@@ -329,7 +332,7 @@ class AmazonShipmentList extends AmazonInboundCore implements Iterator{
     /**
      * Returns the Destination Fulfillment Center ID for the specified entry
      * @param int $i index, defaults to 0
-     * @return string DestinationFulfillmentCenterId, or False if Non-numeric index
+     * @return string|boolean DestinationFulfillmentCenterId, or False if Non-numeric index
      */
     public function getDestinationFulfillmentCenterId($i = 0){
         if (is_numeric($i)){
@@ -342,7 +345,7 @@ class AmazonShipmentList extends AmazonInboundCore implements Iterator{
     /**
      * Returns the Label Prep Type for the specified entry
      * @param int $i index, defaults to 0
-     * @return string LabelPrepType, or False if Non-numeric index
+     * @return string|boolean LabelPrepType, or False if Non-numeric index
      */
     public function getLabelPrepType($i = 0){
         if (is_numeric($i)){
@@ -355,7 +358,7 @@ class AmazonShipmentList extends AmazonInboundCore implements Iterator{
     /**
      * Returns the Shipment Status for the specified entry
      * @param int $i index, defaults to 0
-     * @return string ShipmentStatus, or False if Non-numeric index
+     * @return string|boolean ShipmentStatus, or False if Non-numeric index
      */
     public function getShipmentStatus($i = 0){
         if (is_numeric($i)){
@@ -368,7 +371,7 @@ class AmazonShipmentList extends AmazonInboundCore implements Iterator{
     /**
      * Returns whether or not cases are required for the specified entry
      * @param int $i index, defaults to 0
-     * @return string "true" or "false", or false if Non-numeric index
+     * @return string|boolean "true" or "false", or false if Non-numeric index
      */
     public function getCasesRequired($i = 0){
         if (is_numeric($i)){

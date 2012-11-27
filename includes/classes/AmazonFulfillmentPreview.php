@@ -8,7 +8,7 @@ class AmazonFulfillmentPreview extends AmazonOutboundCore{
      * Sends a request to Amazon to generate a Fulfillment Shipment Preview.
      * @param string $s name of store as seen in config file
      * @param boolean $mock true to enable mock mode
-     * @param array $m list of mock files to use
+     * @param array|string $m list of mock files to use
      */
     public function __construct($s, $mock = false, $m = null) {
         parent::__construct($s, $mock, $m);
@@ -133,7 +133,7 @@ class AmazonFulfillmentPreview extends AmazonOutboundCore{
     
     /**
      * sets the preferred shipping speeds to be used in the next request
-     * @param array $s array of strings or single string: "Standard", "Expedited", or "Priority"
+     * @param array|string $s array of strings or single string: "Standard", "Expedited", or "Priority"
      * @return boolean false if failure
      */
     public function setShippingSpeeds($s){
@@ -189,7 +189,11 @@ class AmazonFulfillmentPreview extends AmazonOutboundCore{
             $this->log("Making request to Amazon");
             $response = fetchURL($url,array('Post'=>$query));
             $this->logRequest();
-
+            
+            if (!$this->checkResponse($response)){
+                return false;
+            }
+            
             $xml = simplexml_load_string($response['body'])->GetFulfillmentPreviewResult->FulfillmentPreviews;
         }
         
@@ -275,7 +279,7 @@ class AmazonFulfillmentPreview extends AmazonOutboundCore{
      * Returns the estimated shipping weight for the specified entry
      * @param int $i index, defaults to 0
      * @param int $mode 0 = value, 1 = unit, 2 = value & unit
-     * @return string weight value, or False if Non-numeric index
+     * @return string|boolean weight value, or False if Non-numeric index
      */
     public function getEstimatedWeight($i = 0,$mode = 0){
         if (is_numeric($i)){

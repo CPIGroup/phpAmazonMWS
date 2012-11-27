@@ -12,6 +12,7 @@ class AmazonParticipationList extends AmazonSellersCore{
      * Gets list of marketplaces run by seller
      * @param string $s store name, as seen in the config file
      * @param boolean $mock set true to enable mock mode
+     * @param array|string $m list of mock files to use
      */
     public function __construct($s, $mock = false, $m = null) {
         parent::__construct($s, $mock, $m);
@@ -70,7 +71,11 @@ class AmazonParticipationList extends AmazonSellersCore{
             $this->log("Making request to Amazon");
             $response = fetchURL($url,array('Post'=>$query));
             $this->logRequest();
-
+            
+            if (!$this->checkResponse($response)){
+                return false;
+            }
+            
             $xml = simplexml_load_string($response['body'])->$path;
         }
         
@@ -135,7 +140,7 @@ class AmazonParticipationList extends AmazonSellersCore{
     /**
      * Returns the Marketplace ID for the specified entry, defaults to 0
      * @param int $i index
-     * @return string MarketplaceId, or False if Non-numeric index
+     * @return string|boolean MarketplaceId, or False if Non-numeric index
      */
     public function getMarketplaceId($i = 0){
         if (is_numeric($i)){
@@ -148,7 +153,7 @@ class AmazonParticipationList extends AmazonSellersCore{
     /**
      * Returns the Seller ID for the specified entry, defaults to 0
      * @param int $i index
-     * @return string SellerId, or False if Non-numeric index
+     * @return string|boolean SellerId, or False if Non-numeric index
      */
     public function getSellerId($i = 0){
         if (is_numeric($i)){
@@ -174,7 +179,7 @@ class AmazonParticipationList extends AmazonSellersCore{
     /**
      * Returns the name for the specified entry, defaults to 0
      * @param int $i index
-     * @return string name, or False if Non-numeric index
+     * @return string|boolean name, or False if Non-numeric index
      */
     public function getName($i = 0){
         if (is_numeric($i)){
@@ -187,7 +192,7 @@ class AmazonParticipationList extends AmazonSellersCore{
     /**
      * Returns the default country code for the specified entry, defaults to 0
      * @param int $i index
-     * @return string country code, or False if Non-numeric index
+     * @return string|boolean country code, or False if Non-numeric index
      */
     public function getCountry($i = 0){
         if (is_numeric($i)){
@@ -200,7 +205,7 @@ class AmazonParticipationList extends AmazonSellersCore{
     /**
      * Returns the default currency code for the specified entry, defaults to 0
      * @param int $i index
-     * @return string currency code, or False if Non-numeric index
+     * @return string|boolean currency code, or False if Non-numeric index
      */
     public function getCurreny($i = 0){
         if (is_numeric($i)){
@@ -213,7 +218,7 @@ class AmazonParticipationList extends AmazonSellersCore{
     /**
      * Returns the default language code for the specified entry, defaults to 0
      * @param int $i index
-     * @return string language code, or False if Non-numeric index
+     * @return string|boolean language code, or False if Non-numeric index
      */
     public function getLanguage($i = 0){
         if (is_numeric($i)){
@@ -226,7 +231,7 @@ class AmazonParticipationList extends AmazonSellersCore{
     /**
      * Returns the domain name for the specified entry, defaults to 0
      * @param int $i index
-     * @return string language code, or False if Non-numeric index
+     * @return string|boolean language code, or False if Non-numeric index
      */
     public function getDomain($i = 0){
         if (is_numeric($i)){

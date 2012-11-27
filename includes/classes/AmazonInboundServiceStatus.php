@@ -12,6 +12,7 @@ class AmazonInboundServiceStatus extends AmazonInboundCore{
      * A simple object that fetches the status of the Inbound API from Amazon
      * @param string $s store name, as seen in the config file
      * @param boolean $mock set true to enable mock mode
+     * @param array|string $m list of mock files to use
      */
     public function __construct($s, $mock = false, $m = null){
         parent::__construct($s, $mock, $m);
@@ -45,11 +46,9 @@ class AmazonInboundServiceStatus extends AmazonInboundCore{
             $xml = simplexml_load_string($response['body']);
         }
         
-        if ($response['code'] != 200){
-            $this->log("Status not OK: ".$response['code'],'Warning');
-        }
-        
-        
+        if (!$this->checkResponse($response)){
+                return false;
+            }
         
         $this->lastTimestamp = (string)$xml->GetServiceStatusResult->Timestamp;
         $this->status = (string)$xml->GetServiceStatusResult->Status;

@@ -52,8 +52,7 @@ abstract class AmazonCore{
      * AmazonCore constructor sets up key information used in all Amazon requests
      * @param string $s Name for store as seen in config file
      * @param boolean $mock flag for enabling Mock Mode
-     * @param array $m list of mock file URLs to provide to the Mock Server
-     * @throws Exception if key config data is missing
+     * @param array|string $m list of mock file URLs to provide to the Mock Server
      */
     protected function __construct($s, $mock=false, $m = null){
         $this->config = '/var/www/athena/plugins/newAmazon/amazon-config.php';
@@ -108,7 +107,7 @@ abstract class AmazonCore{
     /**
      * Enables (or disables Mock Mode) for the object
      * @param boolean $b true = on, false = off
-     * @param type $files filename(s) of the mock files to use
+     * @param array|string $files filename(s) of the mock files to use
      */
     public function setMock($b = true,$files = null){
         if (is_bool($b)){
@@ -127,7 +126,7 @@ abstract class AmazonCore{
     
     /**
      * Fetches the given mock file, or attempts to
-     * @return SimpleXMLObject file, or false on failure
+     * @return SimpleXMLObject|boolean file, or false on failure
      */
     public function fetchMockFile(){
         if(!is_array($this->mockFiles) || !array_key_exists(0, $this->mockFiles)){
@@ -162,6 +161,69 @@ abstract class AmazonCore{
     public function resetMock(){
         $this->mockIndex = 0;
         $this->log("Mock List index reset to 0");
+    }
+    
+    /**
+     * with MockFiles full of strings/numbers, this will generate a matching fake response
+     * @return boolean|array response array, or false on failure
+     */
+    public function fetchMockResponse(){
+        if(!is_array($this->mockFiles) || !array_key_exists(0, $this->mockFiles)){
+            $this->log("Attempted to retrieve mock responses, but no mock responses present",'Warning');
+            return false;
+        }
+        if(!array_key_exists($this->mockIndex, $this->mockFiles)){
+            $this->resetMock();
+            $this->log("End of Mock List, resetting to 0");
+        }
+        if (!is_numeric($this->mockFiles[$this->mockIndex])){
+            $this->log("fetchMockResponse only works with error code numbers",'Warning');
+            return false;
+        }
+        
+        $r = array();
+        $r['head'] = 'HTTP/1.1 200 OK';
+        $r['body'] = '<?xml version="1.0"?><root></root>';
+        $r['code'] = $this->mockFiles[$this->mockIndex];
+        if ($this->mockFiles[$this->mockIndex] == 200){
+            $r['answer'] = 'OK';
+            $r['ok'] = 1;
+        } else if ($this->mockFiles[$this->mockIndex] == 404){
+            $r['answer'] = 'Not Found';
+            $r['error'] = 'Not Found';
+            $r['ok'] = 0;
+        } else if ($this->mockFiles[$this->mockIndex] == 503){
+            $r['answer'] = 'Service Unavailable';
+            $r['error'] = 'Service Unavailable';
+            $r['ok'] = 0;
+        } else if ($this->mockFiles[$this->mockIndex] == 400){
+            $r['answer'] = 'Bad Request';
+            $r['error'] = 'Bad Request';
+            $r['ok'] = 0;
+        }
+        
+        $r['headarray'] = array();
+        
+        return $r;
+    }
+    
+    /**
+     * checks whether or not the response is OK
+     * @param array $r response array
+     * @return boolean true if OK, false otherwise
+     */
+    protected function checkResponse($r){
+        if (!is_array($r) || !array_key_exists('code', $r)){
+            $this->log("No Response found",'Warning');
+            return false;
+        }
+        if ($r['code'] == 200){
+            return true;
+        } else {
+            $xml = simplexml_load_string($response['body'])->Error;
+            $this->log("Bad Response! ".$r['code'].": ".$xml->Code." - ".$xml->Message,'Urgent');
+            return false;
+        }
     }
     
     /**

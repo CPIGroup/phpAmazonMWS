@@ -10,11 +10,16 @@ include('includes/classes.php');
 //$a->setLimits('Modified','-1 hours');
 //$a->fetchOrders();
 
-$a = new AmazonFulfillmentPreview('BigKitchen',true,'preview.xml');
-$a->setAddress(array());
-$a->setItems(array(array('SellerSKU'=>0,'Quantity'=>0)));
-$a->fetchPreview();
+$a = new AmazonFulfillmentOrderCreator('BigKitchen',true,'preview.xml');
+$a->createOrder();
 myPrint($a);
+
+
+//$a = new AmazonFulfillmentPreview('BigKitchen',true,'preview.xml');
+//$a->setAddress(array());
+//$a->setItems(array(array('SellerSKU'=>0,'Quantity'=>0)));
+//$a->fetchPreview();
+//myPrint($a);
 
 //$a = new AmazonShipmentList('BigKitchen',true,'shiplist.xml');
 //$a->setTimeLimits();

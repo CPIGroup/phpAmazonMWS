@@ -7,7 +7,7 @@ class AmazonFulfillmentOrderCreator extends AmazonOutboundCore{
      * Fetches a plan from Amazon. This is how you get a Shipment ID.
      * @param string $s name of store as seen in config file
      * @param boolean $mock true to enable mock mode
-     * @param array $m list of mock files to use
+     * @param array|string $m list of mock files to use
      */
     public function __construct($s, $mock = false, $m = null) {
         parent::__construct($s, $mock, $m);
@@ -196,7 +196,7 @@ class AmazonFulfillmentOrderCreator extends AmazonOutboundCore{
     
     /**
      * sets the email(s) to be used in the next request
-     * @param array $s array of strings or single string (max 64 chars each)
+     * @param array|string $s array of emails or single email (max 64 chars each)
      * @return boolean false if failure
      */
     public function setEmails($s){
@@ -222,6 +222,129 @@ class AmazonFulfillmentOrderCreator extends AmazonOutboundCore{
             if(preg_match("#NotificationEmailList#",$op)){
                 unset($this->options[$op]);
             }
+        }
+    }
+    
+    /**
+     * Sets the items to be included in the next request
+     * 
+     * Sets the items to be included in the next request, using this format:
+     * Array of arrays, each with the following fields:
+     * 'SellerSKU'
+     * 'SellerFulfillmentOrderItemId'
+     * 'Quantity'
+     * 'GiftMessage' (optional, 512 chars)
+     * 'DisplayableComment' (optional, 250 chars)
+     * 'FulfillmentNetworkSKU' (optional)
+     * 'OrderItemDisposition' (optional) "Sellable" or "Unsellable"
+     * 'PerUnitDeclaredValue' (optional array)
+     *      'CurrencyCode' three digits
+     *      'Value'
+     * @param array $a array of item arrays
+     * @return boolean false if failure
+     */
+    public function setItems($a){
+        if (is_null($a) || is_string($a)){
+            $this->log("Tried to set Items to invalid values",'Warning');
+            return false;
+        }
+        $this->resetItems();
+        $i = 1;
+        foreach ($a as $x){
+            if (is_array($x) && array_key_exists('SellerSKU', $x) && array_key_exists('Quantity', $x)){
+                $this->options['Items.member.'.$i.'.SellerSKU'] = $x['SellerSKU'];
+                $this->options['Items.member.'.$i.'.SellerFulfillmentOrderItemId'] = $x['SellerFulfillmentOrderItemId'];
+                $this->options['Items.member.'.$i.'.Quantity'] = $x['Quantity'];
+                if (array_key_exists('GiftMessage', $x)){
+                    $this->options['Items.member.'.$i.'.GiftMessage'] = $x['GiftMessage'];
+                }
+                if (array_key_exists('Comment', $x)){
+                    $this->options['Items.member.'.$i.'.DisplayableComment'] = $x['DisplayableComment'];
+                }
+                if (array_key_exists('FulfillmentNetworkSKU', $x)){
+                    $this->options['Items.member.'.$i.'.FulfillmentNetworkSKU'] = $x['FulfillmentNetworkSKU'];
+                }
+                if (array_key_exists('OrderItemDisposition', $x)){
+                    $this->options['Items.member.'.$i.'.OrderItemDisposition'] = $x['OrderItemDisposition'];
+                }
+                if (array_key_exists('PerUnitDeclaredValue', $x)){
+                    $this->options['Items.member.'.$i.'.PerUnitDeclaredValue.CurrencyCode'] = $x['PerUnitDeclaredValue']['CurrencyCode'];
+                    $this->options['Items.member.'.$i.'.PerUnitDeclaredValue.Value'] = $x['PerUnitDeclaredValue']['Value'];
+                }
+                
+                $i++;
+            } else {
+                $this->resetItems();
+                $this->log("Tried to set Items with invalid array",'Warning');
+                return false;
+            }
+        }
+    }
+    
+    /**
+     * removes item options
+     */
+    public function resetItems(){
+        foreach($this->options as $op=>$junk){
+            if(preg_match("#Items#",$op)){
+                unset($this->options[$op]);
+            }
+        }
+    }
+    
+    /**
+     * Sends a request to Amazon to create a Fulfillment Order
+     * @return boolean true on success, false on failure
+     */
+    public function createOrder(){
+        if (!array_key_exists('SellerFulfillmentOrderId',$this->options)){
+            $this->log("Seller Fulfillment OrderID must be set in order to create an order",'Warning');
+            return false;
+        }
+        if (!array_key_exists('DisplayableOrderId',$this->options)){
+            $this->log("Displayable Order ID must be set in order to create an order",'Warning');
+            return false;
+        }
+        if (!array_key_exists('DisplayableOrderDateTime',$this->options)){
+            $this->log("Date must be set in order to create an order",'Warning');
+            return false;
+        }
+        if (!array_key_exists('DisplayableOrderComment',$this->options)){
+            $this->log("Comment must be set in order to create an order",'Warning');
+            return false;
+        }
+        if (!array_key_exists('ShippingSpeedCategory',$this->options)){
+            $this->log("Shipping Speed must be set in order to create an order",'Warning');
+            return false;
+        }
+        if (!array_key_exists('DestinationAddress.Name',$this->options)){
+            $this->log("Address must be set in order to create an order",'Warning');
+            return false;
+        }
+        if (!array_key_exists('Items.member.1.SellerSKU',$this->options)){
+            $this->log("Items must be set in order to create an order",'Warning');
+            return false;
+        }
+        
+        $this->options['Timestamp'] = $this->genTime();
+        $url = $this->urlbase.$this->urlbranch;
+        
+        $this->options['Signature'] = $this->_signParameters($this->options, $this->secretKey);
+        $query = $this->_getParametersAsString($this->options);
+        
+        if ($this->mockMode){
+            $response = $this->fetchMockResponse();
+        } else {
+            $this->throttle();
+            $this->log("Making request to Amazon");
+            $response = fetchURL($url,array('Post'=>$query));
+            $this->logRequest();
+            
+        }
+        if (!$this->checkResponse($response)){
+            return false;
+        } else {
+            return true;
         }
     }
     

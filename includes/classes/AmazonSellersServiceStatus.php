@@ -12,6 +12,7 @@ class AmazonSellersServiceStatus extends AmazonSellersCore{
      * A simple object that fetches the status of the Sellers API from Amazon
      * @param string $s store name, as seen in the config file
      * @param boolean $mock set true to enable mock mode
+     * @param array|string $m list of mock files to use
      */
     public function __construct($s, $mock = false, $m = null){
         parent::__construct($s, $mock, $m);
@@ -25,7 +26,6 @@ class AmazonSellersServiceStatus extends AmazonSellersCore{
     
     /**
      * Fetches the status of the service from Amazon
-     * @throws Exception on error, need to change this
      */
     public function fetchServiceStatus(){
         $this->options['Timestamp'] = $this->genTime();
@@ -42,13 +42,12 @@ class AmazonSellersServiceStatus extends AmazonSellersCore{
             $response = fetchURL($url,array('Post'=>$query));
             $this->logRequest();
             
+            if (!$this->checkResponse($response)){
+                return false;
+            }
+            
             $xml = simplexml_load_string($response['body']);
         }
-        
-        if ($response['code'] != 200){
-            $this->log("Status not OK: ".$response['code'],'Warning');
-        }
-        
         
         $this->lastTimestamp = (string)$xml->GetServiceStatusResult->Timestamp;
         $this->status = (string)$xml->GetServiceStatusResult->Status;

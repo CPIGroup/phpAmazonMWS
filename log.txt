@@ -1,1 +1,35 @@
 This is the Amazon log, for Amazon classes to use.
+[Info][2012/11/27 11:15:50 guest@local AmazonOutboundCore.php:10 __construct] Mock Mode set to true
+[Info][2012/11/27 11:15:50 guest@local AmazonOutboundCore.php:10 __construct] Single Mock File set: preview.xml
+[Warning][2012/11/27 11:15:50 guest@local test.php:14 createOrder] Seller Fulfillment OrderID must be set in order to create an order
+[Info][2012/11/27 11:15:50 guest@local test.php:18 fetchServiceStatus] Making request to Amazon
+[Info][2012/11/27 11:15:51 guest@local AmazonOutboundServiceStatus.php:43 logRequest] Logging action to database: GetSergviceStatus
+[Warning][2012/11/27 11:15:51 guest@local test.php:18 fetchServiceStatus] Status not OK: 404
+[Info][2012/11/27 11:16:12 guest@local AmazonOutboundCore.php:10 __construct] Mock Mode set to true
+[Info][2012/11/27 11:16:12 guest@local AmazonOutboundCore.php:10 __construct] Single Mock File set: preview.xml
+[Warning][2012/11/27 11:16:12 guest@local test.php:14 createOrder] Seller Fulfillment OrderID must be set in order to create an order
+[Throttle][2012/11/27 11:16:12 guest@local AmazonOutboundServiceStatus.php:40 throttle] Last request of this type: 2012/11/27 11:15:51, Sleeping for 279 seconds
+[Info][2012/11/27 11:20:51 guest@local test.php:18 fetchServiceStatus] Making request to Amazon
+[Info][2012/11/27 11:20:52 guest@local AmazonOutboundServiceStatus.php:43 logRequest] Logging action to database: GetSergviceStatus
+[Warning][2012/11/27 11:20:52 guest@local test.php:18 fetchServiceStatus] Status not OK: 404
+[Info][2012/11/27 11:20:52 guest@local AmazonOutboundCore.php:10 __construct] Mock Mode set to true
+[Info][2012/11/27 11:20:52 guest@local AmazonOutboundCore.php:10 __construct] Single Mock File set: preview.xml
+[Warning][2012/11/27 11:20:52 guest@local test.php:14 createOrder] Seller Fulfillment OrderID must be set in order to create an order
+[Info][2012/11/27 11:20:52 guest@local test.php:18 fetchServiceStatus] Making request to Amazon
+[Info][2012/11/27 11:20:52 guest@local AmazonOutboundServiceStatus.php:43 logRequest] Logging action to database: GetSergviceStatus
+[Warning][2012/11/27 11:20:52 guest@local test.php:18 fetchServiceStatus] Status not OK: 404
+[Info][2012/11/27 11:20:52 guest@local AmazonOutboundCore.php:10 __construct] Mock Mode set to true
+[Info][2012/11/27 11:20:52 guest@local AmazonOutboundCore.php:10 __construct] Single Mock File set: preview.xml
+[Warning][2012/11/27 11:20:52 guest@local test.php:14 createOrder] Seller Fulfillment OrderID must be set in order to create an order
+[Info][2012/11/27 11:20:52 guest@local test.php:18 fetchServiceStatus] Making request to Amazon
+[Info][2012/11/27 11:20:52 guest@local AmazonOutboundServiceStatus.php:43 logRequest] Logging action to database: GetSergviceStatus
+[Warning][2012/11/27 11:20:53 guest@local test.php:18 fetchServiceStatus] Status not OK: 404
+[Info][2012/11/27 11:20:53 guest@local AmazonOutboundCore.php:10 __construct] Mock Mode set to true
+[Info][2012/11/27 11:20:53 guest@local AmazonOutboundCore.php:10 __construct] Single Mock File set: preview.xml
+[Warning][2012/11/27 11:20:53 guest@local test.php:14 createOrder] Seller Fulfillment OrderID must be set in order to create an order
+[Info][2012/11/27 11:20:53 guest@local test.php:18 fetchServiceStatus] Making request to Amazon
+[Info][2012/11/27 11:20:53 guest@local AmazonOutboundServiceStatus.php:43 logRequest] Logging action to database: GetSergviceStatus
+[Warning][2012/11/27 11:20:53 guest@local test.php:18 fetchServiceStatus] Status not OK: 404
+[Info][2012/11/27 11:23:43 guest@local AmazonOutboundCore.php:10 __construct] Mock Mode set to true
+[Info][2012/11/27 11:23:43 guest@local AmazonOutboundCore.php:10 __construct] Single Mock File set: preview.xml
+[Warning][2012/11/27 11:23:43 guest@local test.php:14 createOrder] Seller Fulfillment OrderID must be set in order to create an order

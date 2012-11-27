@@ -8,6 +8,7 @@ class AmazonOrderSet extends AmazonOrderCore implements Iterator{
      * Amazon Order Set is a variation of Amazon Order that pulls multiple specified orders.
      * @param string $s name of store, as seen in the config file
      * @param boolean $mock set true to enable mock mode
+     * @param array|string $m list of mock files to use
      * @throws Exception if Marketplace ID is missing from config
      */
     public function __construct($s, $o = null, $mock = false, $m = null){
@@ -69,14 +70,16 @@ class AmazonOrderSet extends AmazonOrderCore implements Iterator{
         $query = $this->_getParametersAsString($this->options);
         
         if ($this->mockMode){
-           $xml = $this->fetchMockFile();
+           $xml = $this->fetchMockFile()->GetOrderResult;
         } else {
             $this->throttle();
             $this->log("Making request to Amazon");
             $response = fetchURL($url,array('Post'=>$query));
             $this->logRequest();
 
-            var_dump(simplexml_load_string($response['body']));
+            if (!$this->checkResponse($response)){
+                return false;
+            }
 
             $xml = simplexml_load_string($response['body'])->GetOrderResult;
         }

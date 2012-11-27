@@ -11,8 +11,8 @@ class AmazonOrder extends AmazonOrderCore{
      * @param string $s store name as seen in config
      * @param string $o Order number to automatically set
      * @param SimpleXMLElement $d XML data from Amazon to be parsed
-     * @param array $m
      * @param boolean $mock set true to enable mock mode
+     * @param array|string $m list of mock files to use
      */
     public function __construct($s,$o = null,$d = null, $mock = false, $m = null){
         parent::__construct($s, $mock, $m);
@@ -309,7 +309,6 @@ class AmazonOrder extends AmazonOrderCore{
     
     /**
      * Fetches the specified order from Amazon after setting the necessary parameters
-     * @throws Exception if request fails
      */
     public function fetchOrder(){
         $this->options['Timestamp'] = $this->genTime();
@@ -334,12 +333,13 @@ class AmazonOrder extends AmazonOrderCore{
             $response = fetchURL($url,array('Post'=>$query));
             $this->logRequest();
             
+            if (!$this->checkResponse($response)){
+                return false;
+            }
+            
             $xml = simplexml_load_string($response['body']);
         }
         
-        if ($response['code'] != 200){
-            $this->log("Status not OK: ".$response['code'],'Warning');
-        }
         
         $this->xmldata = $xml->GetOrderResult->Orders->Order;
         $this->parseXML();
@@ -349,7 +349,6 @@ class AmazonOrder extends AmazonOrderCore{
     /**
      * Sets the Amazon Order ID for the next request, in case it was not set in the constructor
      * @param string $id the Amazon Order ID
-     * @throws InvalidArgumentException if the parameter is left empty
      */
     public function setOrderId($id){
         if ($id){

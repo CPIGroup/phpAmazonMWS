@@ -16,6 +16,7 @@ class AmazonItemList extends AmazonOrderCore implements Iterator{
      * @param string $s store name as seen in Config
      * @param string $id order ID to be automatically set
      * @param boolean $mock set true to enable mock mode
+     * @param array|string $m list of mock files to use
      */
     public function __construct($s, $id=null, $mock = false, $m = null){
         parent::__construct($s, $mock, $m);
@@ -41,7 +42,7 @@ class AmazonItemList extends AmazonOrderCore implements Iterator{
     /**
      * Populates the object's data using the stored XML data. Clears existing data
      * @param boolean $reset put TRUE to remove existing data
-     * @return boolean if no XML data
+     * @return boolean false if no XML data
      */
     protected function parseXML($reset = false){
         if (!$this->xmldata){
@@ -129,7 +130,6 @@ class AmazonItemList extends AmazonOrderCore implements Iterator{
     /**
      * Sets the Order ID to be used, in case it was not already set when the object was initiated
      * @param string $id Amazon Order ID
-     * @throws InvalidArgumentException if none given
      */
     public function setOrderId($id){
         if (!is_null($id)){
@@ -141,7 +141,6 @@ class AmazonItemList extends AmazonOrderCore implements Iterator{
 
     /**
      * Retrieves the items from amazon using the pre-defined parameters
-     * @throws Exception if the request to Amazon fails
      */
     public function fetchItems(){
         $this->options['Timestamp'] = $this->genTime();
@@ -166,15 +165,19 @@ class AmazonItemList extends AmazonOrderCore implements Iterator{
 //        $query = $this->genRequest();
 //        myPrint($query);
         
+        $path = $this->options['Action'].'Result';
         if ($this->mockMode){
-           $xml = $this->fetchMockFile();
+           $xml = $this->fetchMockFile()->$path;
         } else {
             $this->throttle();
             $this->log("Making request to Amazon");
             $response = fetchURL($url,array('Post'=>$query));
             $this->logRequest();
-
-            $path = $this->options['Action'].'Result';
+            
+            if (!$this->checkResponse($response)){
+                return false;
+            }
+            
             $xml = simplexml_load_string($response['body'])->$path;
         }
             

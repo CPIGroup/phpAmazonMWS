@@ -7,6 +7,12 @@ class AmazonInventoryList extends AmazonInventoryCore implements Iterator{
     private $index = 0;
     private $i = 0;
     
+    /**
+     * Fetches a list of inventory supplies Amazon.
+     * @param string $s name of store as seen in config file
+     * @param boolean $mock true to enable mock mode
+     * @param array|string $m list of mock files to use
+     */
     public function __construct($s, $mock = false, $m = null) {
         parent::__construct($s, $mock, $m);
         
@@ -69,7 +75,11 @@ class AmazonInventoryList extends AmazonInventoryCore implements Iterator{
             $this->log("Making request to Amazon");
             $response = fetchURL($url,array('Post'=>$query));
             $this->logRequest();
-
+            
+            if (!$this->checkResponse($response)){
+                return false;
+            }
+            
             $xml = simplexml_load_string($response['body'])->$path;
         }
 //        myPrint($xml);
@@ -149,7 +159,7 @@ class AmazonInventoryList extends AmazonInventoryCore implements Iterator{
     
     /**
      * set the SKUs to fetch in the next request
-     * @param array $a array or single string
+     * @param array|string $a array or single string
      */
     public function setSellerSkus($a){
         $this->resetSkus();

@@ -7,7 +7,7 @@ class AmazonShipment extends AmazonInboundCore{
      * Submits a shipment to Amazon or updates it.
      * @param string $s name of store as seen in config file
      * @param boolean $mock true to enable mock mode
-     * @param array $m list of mock files to use
+     * @param array|string $m list of mock files to use
      */
     public function __construct($s, $mock = false, $m = null) {
         parent::__construct($s, $mock, $m);
@@ -216,16 +216,19 @@ class AmazonShipment extends AmazonInboundCore{
         $query = $this->_getParametersAsString($this->options);
         
         if ($this->mockMode){
-           $xml = $this->fetchMockFile()->CreateInboundShipmentResult;
+           $xml = $this->fetchMockFile()->CreateInboundShipmentResult->InboundShipmentPlans;
         } else {
             $this->throttle();
             $this->log("Making request to Amazon");
             $response = fetchURL($url,array('Post'=>$query));
             $this->logRequest();
-
+            
+            if (!$this->checkResponse($response)){
+                return false;
+            }
+            
             $xml = simplexml_load_string($response['body'])->CreateInboundShipmentPlanResult->InboundShipmentPlans;
         }
-        myPrint($xml);
         $verify = (string)$xml->ShipmentId;
         
         if ($verify != $this->options['ShipmentId']){
@@ -258,16 +261,19 @@ class AmazonShipment extends AmazonInboundCore{
         $query = $this->_getParametersAsString($this->options);
         
         if ($this->mockMode){
-           $xml = $this->fetchMockFile()->UpdateInboundShipmentResult;
+           $xml = $this->fetchMockFile()->UpdateInboundShipmentResult->InboundShipmentPlans;
         } else {
             $this->throttle();
             $this->log("Making request to Amazon");
             $response = fetchURL($url,array('Post'=>$query));
             $this->logRequest();
-
+            
+            if (!$this->checkResponse($response)){
+                return false;
+            }
+            
             $xml = simplexml_load_string($response['body'])->UpdateInboundShipmentPlanResult->InboundShipmentPlans;
         }
-        myPrint($xml);
         $verify = (string)$xml->ShipmentId;
         
         if ($verify != $this->options['ShipmentId']){

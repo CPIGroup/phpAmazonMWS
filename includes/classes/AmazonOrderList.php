@@ -14,8 +14,7 @@ class AmazonOrderList extends AmazonOrderCore implements Iterator{
      * Amazon Order Lists pull a set of Orders and turn them into an array of AmazonOrder objects.
      * @param string $s name of store, as seen in the config file
      * @param boolean $mock set true to enable mock mode
-     * @param array $m list of files
-     * @throws Exception if Marketplace ID is missing from config
+     * @param array|string $m list of mock files to use
      */
     public function __construct($s, $mock = false, $m = null){
         parent::__construct($s, $mock, $m);
@@ -114,7 +113,11 @@ class AmazonOrderList extends AmazonOrderCore implements Iterator{
             $this->log("Making request to Amazon");
             $response = fetchURL($url,array('Post'=>$query));
             $this->logRequest();
-
+            
+            if (!$this->checkResponse($response)){
+                return false;
+            }
+            
             $xml = simplexml_load_string($response['body'])->$path;
         }
             
@@ -195,7 +198,7 @@ class AmazonOrderList extends AmazonOrderCore implements Iterator{
      * returns array of item lists or a single item list
      * @param boolean $token whether or not to automatically use tokens when fetching items
      * @param integer $i index
-     * @return array AmazonOrderItemList or array of AmazonOrderItemLists
+     * @return array|AmazonOrderItemList AmazonOrderItemList or array of AmazonOrderItemLists
      */
     public function fetchItems($token = false, $i = null){
         if ($i == null){
@@ -254,7 +257,7 @@ class AmazonOrderList extends AmazonOrderCore implements Iterator{
     
     /**
      * Sets option for status filter of next request
-     * @param array $list array of strings, or a single string
+     * @param array|string $list array of strings, or a single string
      * @throws InvalidArgumentException
      */
     public function setOrderStatusFilter($list){
@@ -299,7 +302,7 @@ class AmazonOrderList extends AmazonOrderCore implements Iterator{
     
     /**
      * Sets option for payment method filter of next request
-     * @param array $list array of strings, or a single string
+     * @param array|string $list array of strings, or a single string
      * @throws InvalidArgumentException
      */
     public function setPaymentMethodFilter($list){
@@ -340,7 +343,7 @@ class AmazonOrderList extends AmazonOrderCore implements Iterator{
      * -FulfillmentChannel
      * -LastUpdatedAfter
      * -LastUpdatedBefore
-     * @param string $filter string or null
+     * @param string|null $filter string or null
      */
     public function setEmailFilter($filter = null){
         if (is_string($filter)){
@@ -367,7 +370,7 @@ class AmazonOrderList extends AmazonOrderCore implements Iterator{
      * -FulfillmentChannel
      * -LastUpdatedAfter
      * -LastUpdatedBefore
-     * @param string $filter string or null
+     * @param string|null $filter string or null
      */
     public function setSellerOrderIdFilter($filter = null){
         if (is_string($filter)){
@@ -386,7 +389,7 @@ class AmazonOrderList extends AmazonOrderCore implements Iterator{
     
     /**
      * Sets the max number of results per page for the next request
-     * @param type $num
+     * @param int $num
      * @throws InvalidArgumentException
      */
     public function setMaxResultsPerPage($num){

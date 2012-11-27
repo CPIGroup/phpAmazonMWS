@@ -61,7 +61,7 @@ class AmazonFulfillmentOrder extends AmazonOutboundCore{
             $this->log("Making request to Amazon");
             $response = fetchURL($url,array('Post'=>$query));
             $this->logRequest();
-            
+            myPrint($response);
             if (!$this->checkResponse($response)){
                 return false;
             }

@@ -6,33 +6,26 @@ xmlns="http://mws.amazonaws.com/FulfillmentOutboundShipment/2010-10-01/">
             <member>
                 <SellerSKU>ssof_dev_drt_afn_item</SellerSKU>
                 <GiftMessage>test_giftwrap_message</GiftMessage>
-                <SellerFulfillmentOrderItemId>test_merchant_order_item_id_2
-                </SellerFulfillmentOrderItemId>
-                <EstimatedShipDateTime>2008-03-08T07:07:53Z
-                </EstimatedShipDateTime>
+                <SellerFulfillmentOrderItemId>test_merchant_order_item_id_2</SellerFulfillmentOrderItemId>
+                <EstimatedShipDateTime>2008-03-08T07:07:53Z</EstimatedShipDateTime>
                 <DisplayableComment>test_displayable_comment</DisplayableComment>
                 <OrderItemDisposition>Sellable</OrderItemDisposition>
                 <UnfulfillableQuantity>0</UnfulfillableQuantity>
                 <CancelledQuantity>1</CancelledQuantity>
                 <Quantity>5</Quantity>
-                <EstimatedArrivalDateTime>2008-03-08T08:07:53Z
-                </EstimatedArrivalDateTime>
+                <EstimatedArrivalDateTime>2008-03-08T08:07:53Z</EstimatedArrivalDateTime>
             </member>
             <member>
                 <SellerSKU>ssof_dev_drt_keep_this_afn_always</SellerSKU>
                 <GiftMessage>test_giftwrap_message</GiftMessage>
-                <SellerFulfillmentOrderItemId>test_merchant_order_item_id_1
-                </SellerFulfillmentOrderItemId>
-                <EstimatedShipDateTime>2008-03-09T07:07:53Z
-                </EstimatedShipDateTime>
-                <DisplayableComment>test_displayable_comment
-                </DisplayableComment>
+                <SellerFulfillmentOrderItemId>test_merchant_order_item_id_1</SellerFulfillmentOrderItemId>
+                <EstimatedShipDateTime>2008-03-09T07:07:53Z</EstimatedShipDateTime>
+                <DisplayableComment>test_displayable_comment</DisplayableComment>
                 <OrderItemDisposition>Sellable</OrderItemDisposition>
                 <UnfulfillableQuantity>2</UnfulfillableQuantity>
                 <CancelledQuantity>1</CancelledQuantity>
                 <Quantity>5</Quantity>
-                <EstimatedArrivalDateTime>2008-03-09T08:07:53Z
-                </EstimatedArrivalDateTime>
+                <EstimatedArrivalDateTime>2008-03-09T08:07:53Z</EstimatedArrivalDateTime>
             </member>
         </FulfillmentOrderItem>
         <FulfillmentOrder>
@@ -40,8 +33,7 @@ xmlns="http://mws.amazonaws.com/FulfillmentOutboundShipment/2010-10-01/">
             <NotificationEmailList>
                 <member>o8c2EXAMPLsfr7o@marketplace.amazon.com</member>
             </NotificationEmailList>
-            <StatusUpdatedDateTime>2006-09-28T23:48:48Z
-            </StatusUpdatedDateTime>
+            <StatusUpdatedDateTime>2006-09-28T23:48:48Z</StatusUpdatedDateTime>
             <SellerFulfillmentOrderId>extern_id_1154539615776
             </SellerFulfillmentOrderId>
             <DestinationAddress>
@@ -55,13 +47,11 @@ xmlns="http://mws.amazonaws.com/FulfillmentOutboundShipment/2010-10-01/">
                 <Line2>Apt. 321</Line2>
             </DestinationAddress>
             <FulfillmentMethod>Consumer</FulfillmentMethod>
-            <DisplayableOrderDateTime>2006-08-02T17:26:56Z
-            </DisplayableOrderDateTime>
+            <DisplayableOrderDateTime>2006-08-02T17:26:56Z</DisplayableOrderDateTime>
             <FulfillmentPolicy>FillOrKill</FulfillmentPolicy>
             <ReceivedDateTime>2006-08-02T17:26:56Z</ReceivedDateTime>
             <DisplayableOrderId>test_displayable_id</DisplayableOrderId>
-            <DisplayableOrderComment>Sample comment.
-            </DisplayableOrderComment>
+            <DisplayableOrderComment>Sample comment.</DisplayableOrderComment>
             <FulfillmentOrderStatus>PROCESSING</FulfillmentOrderStatus>
         </FulfillmentOrder>
         <FulfillmentShipment>
@@ -70,8 +60,7 @@ xmlns="http://mws.amazonaws.com/FulfillmentOutboundShipment/2010-10-01/">
                 <FulfillmentShipmentItem>
                     <member>
                         <SellerSKU>ssof_dev_drt_afn_item</SellerSKU>
-                        <SellerFulfillmentOrderItemId>test_merchant_order_item_id_2
-                        </SellerFulfillmentOrderItemId>
+                        <SellerFulfillmentOrderItemId>test_merchant_order_item_id_2</SellerFulfillmentOrderItemId>
                         <Quantity>2</Quantity>
                         <PackageNumber>0</PackageNumber>
                     </member>
@@ -79,16 +68,14 @@ xmlns="http://mws.amazonaws.com/FulfillmentOutboundShipment/2010-10-01/">
                 <AmazonShipmentId>DnMDLWJWN</AmazonShipmentId>
                 <ShippingDateTime>2006-08-04T07:00:00Z</ShippingDateTime>
                 <FulfillmentCenterId>RNO1</FulfillmentCenterId>
-                <EstimatedArrivalDateTime>2006-08-12T07:00:00Z
-                </EstimatedArrivalDateTime>
+                <EstimatedArrivalDateTime>2006-08-12T07:00:00Z</EstimatedArrivalDateTime>
             </member>
             <member>
                 <FulfillmentShipmentStatus>SHIPPED</FulfillmentShipmentStatus>
                 <FulfillmentShipmentItem>
                     <member>
                         <SellerSKU>ssof_dev_drt_afn_item</SellerSKU>
-                        <SellerFulfillmentOrderItemId>test_merchant_order_item_id_2
-                        </SellerFulfillmentOrderItemId>
+                        <SellerFulfillmentOrderItemId>test_merchant_order_item_id_2</SellerFulfillmentOrderItemId>
                         <Quantity>1</Quantity>
                         <PackageNumber>1</PackageNumber>
                     </member>
@@ -103,8 +90,7 @@ xmlns="http://mws.amazonaws.com/FulfillmentOutboundShipment/2010-10-01/">
                     </member>
                 </FulfillmentShipmentPackage>
                 <FulfillmentCenterId>TST1</FulfillmentCenterId>
-                <EstimatedArrivalDateTime>2006-08-12T07:00:00Z
-                </EstimatedArrivalDateTime>
+                <EstimatedArrivalDateTime>2006-08-12T07:00:00Z</EstimatedArrivalDateTime>
             </member>
         </FulfillmentShipment>
     </GetFulfillmentOrderResult>

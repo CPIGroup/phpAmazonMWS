@@ -10,17 +10,20 @@ include('includes/classes.php');
 //$a->setLimits('Modified','-1 hours');
 //$a->fetchOrders();
 
-$a = new AmazonFulfillmentOrderCreator('BigKitchen',true,'200');
-$a->setFulfillmentOrderId('test');
-$a->setDisplayableOrderId('two');
-$a->setDate('-5 minutes');
-$a->setComment('comment');
-$a->setShippingSpeed('Standard');
-$a->setAddress(array('Name'=>'bob'));
-$a->setItems(array(array('SellerSKU'=>'123','Quantity'=>'99','SellerFulfillmentOrderItemId'=>5)));
-$a->createOrder();
+$a = new AmazonFulfillmentOrder('BigKitchen',5,true,'fulfillmentorder.xml');
+$a->fetchOrder();
 myPrint($a);
 
+//$a = new AmazonFulfillmentOrderCreator('BigKitchen',true,'200');
+//$a->setFulfillmentOrderId('test');
+//$a->setDisplayableOrderId('two');
+//$a->setDate('-5 minutes');
+//$a->setComment('comment');
+//$a->setShippingSpeed('Standard');
+//$a->setAddress(array('Name'=>'bob'));
+//$a->setItems(array(array('SellerSKU'=>'123','Quantity'=>'99','SellerFulfillmentOrderItemId'=>5)));
+//$a->createOrder();
+//myPrint($a);
 
 //$a = new AmazonFulfillmentPreview('BigKitchen',true,'preview.xml');
 //$a->setAddress(array());

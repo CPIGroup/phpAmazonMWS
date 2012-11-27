@@ -220,7 +220,7 @@ abstract class AmazonCore{
         if ($r['code'] == 200){
             return true;
         } else {
-            $xml = simplexml_load_string($response['body'])->Error;
+            $xml = simplexml_load_string($r['body'])->Error;
             $this->log("Bad Response! ".$r['code'].": ".$xml->Code." - ".$xml->Message,'Urgent');
             return false;
         }

@@ -1,1 +1,4 @@
 This is the Amazon log, for Amazon classes to use.
+[Info][2012/11/27 02:31:05 guest@local AmazonOutboundCore.php:10 __construct] Mock Mode set to true
+[Info][2012/11/27 02:31:05 guest@local AmazonOutboundCore.php:10 __construct] Single Mock File set: fulfillmentorder.xml
+[Info][2012/11/27 02:31:05 guest@local AmazonFulfillmentOrder.php:58 fetchMockFile] Fetched Mock File: mock/fulfillmentorder.xml

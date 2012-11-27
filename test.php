@@ -10,7 +10,14 @@ include('includes/classes.php');
 //$a->setLimits('Modified','-1 hours');
 //$a->fetchOrders();
 
-$a = new AmazonFulfillmentOrderCreator('BigKitchen',true,'preview.xml');
+$a = new AmazonFulfillmentOrderCreator('BigKitchen',true,'200');
+$a->setFulfillmentOrderId('test');
+$a->setDisplayableOrderId('two');
+$a->setDate('-5 minutes');
+$a->setComment('comment');
+$a->setShippingSpeed('Standard');
+$a->setAddress(array('Name'=>'bob'));
+$a->setItems(array(array('SellerSKU'=>'123','Quantity'=>'99','SellerFulfillmentOrderItemId'=>5)));
 $a->createOrder();
 myPrint($a);
 

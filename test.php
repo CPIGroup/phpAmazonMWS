@@ -10,8 +10,9 @@ include('includes/classes.php');
 //$a->setLimits('Modified','-1 hours');
 //$a->fetchOrders();
 
-$a = new AmazonFulfillmentOrder('BigKitchen',5,true,'fulfillmentorder.xml');
+$a = new AmazonFulfillmentOrder('BigKitchen',5,true,array('fulfillmentorder.xml',200));
 $a->fetchOrder();
+$a->cancelOrder();
 myPrint($a);
 
 //$a = new AmazonFulfillmentOrderCreator('BigKitchen',true,'200');

@@ -120,7 +120,7 @@ abstract class AmazonCore{
             $this->log("Single Mock File set: $files");
         } else if (is_array($files)){
             $this->mockFiles = $files;
-            $this->log("Mock files set: ".var_dump($files));
+            $this->log("Mock files array set.");
         }
     }
     
@@ -203,7 +203,7 @@ abstract class AmazonCore{
         }
         
         $r['headarray'] = array();
-        
+        $this->log("Returning Mock Response: ".$r['code']);
         return $r;
     }
     

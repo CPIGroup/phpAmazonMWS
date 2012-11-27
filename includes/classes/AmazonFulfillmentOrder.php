@@ -199,5 +199,39 @@ class AmazonFulfillmentOrder extends AmazonOutboundCore{
         }
     }
     
+    /**
+     * Sends a request to Amazon to create a Fulfillment Preview
+     * @return boolean true on success, false on failure
+     */
+    public function cancelOrder(){
+        if (!array_key_exists('SellerFulfillmentOrderId',$this->options)){
+            $this->log("Fulfillment Order ID must be set in order to cancel it!",'Warning');
+            return false;
+        }
+        
+        $this->options['Action'] = 'CancelFulfillmentOrder';
+        
+        $this->options['Timestamp'] = $this->genTime();
+        $url = $this->urlbase.$this->urlbranch;
+        
+        $this->options['Signature'] = $this->_signParameters($this->options, $this->secretKey);
+        $query = $this->_getParametersAsString($this->options);
+        
+        if ($this->mockMode){
+            $response = $this->fetchMockResponse();
+        } else {
+            $this->throttle();
+            $this->log("Making request to Amazon");
+            $response = fetchURL($url,array('Post'=>$query));
+            $this->logRequest();
+            
+        }
+        if (!$this->checkResponse($response)){
+            return false;
+        } else {
+            $this->log("Successfully deleted Fulfillment Order ".$this->options['SellerFulfillmentOrderId']);
+            return true;
+        }
+    }
 }
 ?>

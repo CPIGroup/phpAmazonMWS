@@ -118,7 +118,7 @@ class AmazonFulfillmentOrder extends AmazonOutboundCore{
         if (isset($d->NotificationEmailList)){
             $i = 0;
             foreach($d->NotificationEmailList->children() as $x){
-                $this->order['Details']['StatusUpdatedDateTime'][$i++] = (string)$x;
+                $this->order['Details']['NotificationEmailList'][$i++] = (string)$x;
             }
         }
         

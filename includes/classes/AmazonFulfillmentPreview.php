@@ -2,9 +2,10 @@
 
 class AmazonFulfillmentPreview extends AmazonOutboundCore{
     private $xmldata;
+    private $previewList;
     
     /**
-     * Fetches a plan from Amazon. This is how you get a Shipment ID.
+     * Sends a request to Amazon to generate a Fulfillment Shipment Preview.
      * @param string $s name of store as seen in config file
      * @param boolean $mock true to enable mock mode
      * @param array $m list of mock files to use
@@ -106,7 +107,7 @@ class AmazonFulfillmentPreview extends AmazonOutboundCore{
         $this->resetItems();
         $i = 1;
         foreach ($a as $x){
-            if (array_key_exists('SellerSKU', $x) && array_key_exists('Quantity', $x)){
+            if (is_array($x) && array_key_exists('SellerSKU', $x) && array_key_exists('Quantity', $x)){
                 $this->options['Items.member.'.$i.'.SellerSKU'] = $x['SellerSKU'];
                 $this->options['Items.member.'.$i.'.SellerFulfillmentOrderItemId'] = $x['SellerFulfillmentOrderItemId'];
                 $this->options['Items.member.'.$i.'.Quantity'] = $x['Quantity'];
@@ -182,17 +183,113 @@ class AmazonFulfillmentPreview extends AmazonOutboundCore{
         $query = $this->_getParametersAsString($this->options);
         
         if ($this->mockMode){
-           $xml = $this->fetchMockFile()->GetFulfillmentPreviewResult;
+           $xml = $this->fetchMockFile()->GetFulfillmentPreviewResult->FulfillmentPreviews;
         } else {
             $this->throttle();
             $this->log("Making request to Amazon");
             $response = fetchURL($url,array('Post'=>$query));
             $this->logRequest();
 
-            $xml = simplexml_load_string($response['body'])->GetFulfillmentPreviewResult;
+            $xml = simplexml_load_string($response['body'])->GetFulfillmentPreviewResult->FulfillmentPreviews;
         }
-        myPrint($xml);
         
+        $this->xmldata = $xml;
+        $this->parseXML();
+    }
+    
+    /**
+     * converts XML into arrays
+     */
+    protected function parseXML() {
+        $i = 0;
+        foreach($this->xmldata->children() as $x){
+            if (isset($x->EstimatedShippingWeight)){
+                $this->previewList[$i]['EstimatedShippingWeight']['Unit'] = (string)$x->EstimatedShippingWeight->Unit;
+                $this->previewList[$i]['EstimatedShippingWeight']['Value'] = (string)$x->EstimatedShippingWeight->Value;
+            }
+            $this->previewList[$i]['ShippingSpeedCategory'] = (string)$x->ShippingSpeedCategory;
+            if (isset($x->FulfillmentPreviewShipments)){
+                $j = 0;
+                foreach ($x->FulfillmentPreviewShipments->children() as $y){
+                    $this->previewList[$i]['FulfillmentPreviewShipments'][$j]['LatestShipDate'] = (string)$y->LatestShipDate;
+                    $this->previewList[$i]['FulfillmentPreviewShipments'][$j]['LatestArrivalDate'] = (string)$y->LatestArrivalDate;
+                    $k = 0;
+                    foreach ($y->FulfillmentPreviewItems->children() as $z){
+                        $this->previewList[$i]['FulfillmentPreviewShipments'][$j]['FulfillmentPreviewItems'][$k]['EstimatedShippingWeight']['Unit'] = (string)$z->EstimatedShippingWeight->Unit;
+                        $this->previewList[$i]['FulfillmentPreviewShipments'][$j]['FulfillmentPreviewItems'][$k]['EstimatedShippingWeight']['Value'] = (string)$z->EstimatedShippingWeight->Value;
+                        $this->previewList[$i]['FulfillmentPreviewShipments'][$j]['FulfillmentPreviewItems'][$k]['SellerSKU'] = (string)$z->SellerSKU;
+                        $this->previewList[$i]['FulfillmentPreviewShipments'][$j]['FulfillmentPreviewItems'][$k]['SellerFulfillmentOrderItemId'] = (string)$z->SellerFulfillmentOrderItemId;
+                        $this->previewList[$i]['FulfillmentPreviewShipments'][$j]['FulfillmentPreviewItems'][$k]['ShippingWeightCalculationMethod'] = (string)$z->ShippingWeightCalculationMethod;
+                        $this->previewList[$i]['FulfillmentPreviewShipments'][$j]['FulfillmentPreviewItems'][$k]['Quantity'] = (string)$z->Quantity;
+                    }
+                    $this->previewList[$i]['FulfillmentPreviewShipments'][$j]['EarliestShipDate'] = (string)$y->EarliestShipDate;
+                    $this->previewList[$i]['FulfillmentPreviewShipments'][$j]['EarliestArrivalDate'] = (string)$y->EarliestArrivalDate;
+                    $j++;
+                }
+            }
+            if (isset($x->EstimatedFees)){
+                $j = 0;
+                foreach ($x->EstimatedFees->children() as $y){
+                    $this->previewList[$i]['EstimatedFees'][$j]['CurrencyCode'] = (string)$y->Amount->CurrencyCode;
+                    $this->previewList[$i]['EstimatedFees'][$j]['Value'] = (string)$y->Amount->Value;
+                    $this->previewList[$i]['EstimatedFees'][$j]['Name'] = (string)$y->Name;
+                    $j++;
+                }
+            }
+            if (isset($x->UnfulfillablePreviewItems)){
+                $j = 0;
+                foreach ($x->UnfulfillablePreviewItems->children() as $y){
+                    $this->previewList[$i]['UnfulfillablePreviewItems'][$j]['SellerSKU'] = (string)$y->UnfulfillablePreviewItems->SellerSKU;
+                    $this->previewList[$i]['UnfulfillablePreviewItems'][$j]['SellerFulfillmentOrderItemId'] = (string)$y->UnfulfillablePreviewItems->SellerFulfillmentOrderItemId;
+                    $this->previewList[$i]['UnfulfillablePreviewItems'][$j]['Quantity'] = (string)$y->UnfulfillablePreviewItems->Quantity;
+                    $this->previewList[$i]['UnfulfillablePreviewItems'][$j]['ItemUnfulfillableReasons'] = (string)$y->UnfulfillablePreviewItems->ItemUnfulfillableReasons;
+                    $j++;
+                }
+            }
+            if (isset($x->OrderUnfulfillableReasons)){
+                $j = 0;
+                foreach ($x->OrderUnfulfillableReasons->children() as $y){
+                    $this->previewList[$i]['OrderUnfulfillableReasons'][$j++] = (string)$y;
+                }
+            }
+            $this->previewList[$i]['IsFulfillable'] = (string)$x->IsFulfillable;
+            
+            $i++;
+        }
+    }
+    
+    /**
+     * Returns specified Preview
+     * @param int $i index, defaults to 0
+     * @return array gigantic array of information
+     */
+    public function getPreview($i = 0){
+        if (is_numeric($i)){
+            return $this->previewList[$i];
+        } else {
+            return false;
+        }
+    }
+    
+    /**
+     * Returns the estimated shipping weight for the specified entry
+     * @param int $i index, defaults to 0
+     * @param int $mode 0 = value, 1 = unit, 2 = value & unit
+     * @return string weight value, or False if Non-numeric index
+     */
+    public function getEstimatedWeight($i = 0,$mode = 0){
+        if (is_numeric($i)){
+            if ($mode == 1){
+                return $this->previewList[$i]['EstimatedShippingWeight']['Unit'];
+            } else if ($mode == 2){
+                return $this->previewList[$i]['EstimatedShippingWeight'];
+            } else 
+            {
+                return $this->previewList[$i]['EstimatedShippingWeight']['Value'];
+            }
+        } else {
+            return false;
+        }
     }
 }
 ?>

@@ -10,13 +10,19 @@ include('includes/classes.php');
 //$a->setLimits('Modified','-1 hours');
 //$a->fetchOrders();
 
-$a = new AmazonShipmentList('BigKitchen',true,'shiplist.xml');
-$a->setTimeLimits();
-$a->setIdFilter('Order #5');
-$a->fetchShipments();
-$b = new AmazonShipmentItemList('BigKitchen','5',true,'shipitems.xml');
-$b->fetchItems();
-var_dump($b);
+$a = new AmazonFulfillmentPreview('BigKitchen',true,'preview.xml');
+$a->setAddress(array());
+$a->setItems(array(array('SellerSKU'=>0,'Quantity'=>0)));
+$a->fetchPreview();
+myPrint($a);
+
+//$a = new AmazonShipmentList('BigKitchen',true,'shiplist.xml');
+//$a->setTimeLimits();
+//$a->setIdFilter('Order #5');
+//$a->fetchShipments();
+//$b = new AmazonShipmentItemList('BigKitchen','5',true,'shipitems.xml');
+//$b->fetchItems();
+//var_dump($b);
 
 //$a = new AmazonShipmentPlanner('BigKitchen',true,'plan.xml');
 //$address = array('Name'=>'Nameo','AddressLine1'=>'Nameworld');

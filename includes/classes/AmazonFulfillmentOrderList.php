@@ -202,6 +202,19 @@ class AmazonFulfillmentOrderList extends AmazonOutboundCore implements Iterator{
     }
     
     /**
+     * Returns specified Order
+     * @param int $i index, defaults to 0
+     * @return array array of basic order information, or array of arrays
+     */
+    public function getOrder($i = 0){
+        if (is_numeric($i)){
+            return $this->orderList[$i];
+        } else {
+            return $this->orderList;
+        }
+    }
+    
+    /**
      * Iterator function
      * @return type
      */

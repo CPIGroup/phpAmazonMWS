@@ -22,6 +22,7 @@ class AmazonOrderServiceStatus extends AmazonOrderCore{
         
         $this->throttleLimit = $throttleLimitStatus;
         $this->throttleTime = $throttleTimeStatus;
+        $this->throttleGroup = 'GetServiceStatus';
     }
     
     /**

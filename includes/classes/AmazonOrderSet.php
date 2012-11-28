@@ -9,7 +9,6 @@ class AmazonOrderSet extends AmazonOrderCore implements Iterator{
      * @param string $s name of store, as seen in the config file
      * @param boolean $mock set true to enable mock mode
      * @param array|string $m list of mock files to use
-     * @throws Exception if Marketplace ID is missing from config
      */
     public function __construct($s, $o = null, $mock = false, $m = null){
         parent::__construct($s, $mock, $m);
@@ -19,7 +18,7 @@ class AmazonOrderSet extends AmazonOrderCore implements Iterator{
         if(array_key_exists('marketplaceId', $store[$s])){
             $this->options['MarketplaceId.Id.1'] = $store[$s]['marketplaceId'];
         } else {
-            throw new Exception('Marketplace ID missing.');
+            $this->log("Marketplace ID is missing",'Urgent');
         }
         
         if($o && is_array($o) && !is_string($o)){
@@ -31,6 +30,7 @@ class AmazonOrderSet extends AmazonOrderCore implements Iterator{
         
         $this->throttleLimit = $throttleLimitOrder;
         $this->throttleTime = $throttleTimeOrder;
+        $this->throttleGroup = 'GetOrder';
         
         if ($throttleSafe){
             $this->throttleLimit++;

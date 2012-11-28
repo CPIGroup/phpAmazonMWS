@@ -1,4 +1,4 @@
-<?php
+    <?php
 
 class AmazonParticipationList extends AmazonSellersCore{
     private $tokenFlag;
@@ -20,6 +20,7 @@ class AmazonParticipationList extends AmazonSellersCore{
         
         $this->throttleLimit = $throttleLimitSellers;
         $this->throttleTime = $throttleTimeSellers;
+        $this->throttleGroup = 'ParticipationList';
     }
     
     /**

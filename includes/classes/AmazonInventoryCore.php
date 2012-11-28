@@ -10,6 +10,7 @@ abstract class AmazonInventoryCore extends AmazonCore{
         parent::__construct($s, $mock, $m);
         $this->urlbranch = 'FulfillmentInventory/2010-10-01';
         $this->options['Version'] = '2010-10-01';
+        $this->throttleGroup = 'Inventory';
     }
 }
 ?>

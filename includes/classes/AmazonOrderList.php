@@ -29,7 +29,7 @@ class AmazonOrderList extends AmazonOrderCore implements Iterator{
         
         $this->throttleLimit = $throttleLimitOrderList;
         $this->throttleTime = $throttleTimeOrderList;
-        $this->throttleCount = $this->throttleLimit;
+        $this->throttleGroup = 'ListOrders';
         
         if ($throttleSafe){
             $this->throttleLimit++;
@@ -400,6 +400,14 @@ class AmazonOrderList extends AmazonOrderCore implements Iterator{
         } else {
             throw new InvalidArgumentException();
         }
+    }
+    
+    /**
+     * Returns the list of orders
+     * @return array Array of AmazonOrder objects
+     */
+    public function getList(){
+        return $this->orderList;
     }
     
     /**

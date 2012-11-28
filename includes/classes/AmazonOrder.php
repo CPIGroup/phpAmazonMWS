@@ -25,9 +25,11 @@ class AmazonOrder extends AmazonOrderCore{
             $this->xmldata = $d;
         }
         
+        $this->options['Action'] = 'GetOrder';
+        
         $this->throttleLimit = $throttleLimitOrder;
         $this->throttleTime = $throttleTimeOrder;
-        $this->throttleCount = $this->throttleLimit;
+        $this->throttleGroup = 'GetOrder';
         
         if ($throttleSafe){
             $this->throttleLimit++;
@@ -35,7 +37,6 @@ class AmazonOrder extends AmazonOrderCore{
             $this->throttleCount = $this->throttleLimit;
         }
         
-        //$this->options['Action'] = 'GetOrder';
     }
     
     /**
@@ -312,7 +313,6 @@ class AmazonOrder extends AmazonOrderCore{
      */
     public function fetchOrder(){
         $this->options['Timestamp'] = $this->genTime();
-        $this->options['Action'] = 'GetOrder';
         
         $url = $this->urlbase.$this->urlbranch;
         

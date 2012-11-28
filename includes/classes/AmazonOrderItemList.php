@@ -30,7 +30,7 @@ class AmazonItemList extends AmazonOrderCore implements Iterator{
         
         $this->throttleLimit = $throttleLimitItem;
         $this->throttleTime = $throttleTimeItem;
-        $this->throttleCount = $this->throttleLimit;
+        $this->throttleGroup = 'ListOrderItems';
         
         if ($throttleSafe){
             $this->throttleLimit++;

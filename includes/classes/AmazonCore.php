@@ -39,6 +39,7 @@ abstract class AmazonCore{
     protected $urlbranch;
     protected $throttleLimit;
     protected $throttleTime;
+    protected $throttleGroup;
     protected $storeName;
     protected $secretKey;
     protected $options;
@@ -237,19 +238,15 @@ abstract class AmazonCore{
      * Manages the object's throttling
      */
     protected function throttle(){
-//        echo $this->throttleCount.'-->';
-//        $this->throttleCount--;
-//        if ($this->throttleCount < 1){
-//            sleep($this->throttleTime);
-//            $this->throttleCount++;
-//        }
-//        echo $this->throttleCount.'<br>';
-        //database stuff goes here
         include('/var/www/athena/includes/config.php');
-        //DB_PLUGINS;
+        
+        if (!isset($this->throttleGroup)){
+            $this->throttleGroup = $this->options['Action'];
+            $this->log("Unable to find Throttle Group, setting to ".$this->options['Action'],'Warning');
+        }
         
         $sql = 'SELECT MAX(timestamp) as maxtime FROM `amazonRequestLog` WHERE `type` = ?';
-        $value = array($this->options['Action']); //tokens...
+        $value = array($this->throttleGroup);
         $result = db::executeQuery($sql, $value, DB_PLUGINS)->fetchAll();
         if(!$result){
             return;

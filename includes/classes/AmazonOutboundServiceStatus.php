@@ -22,6 +22,7 @@ class AmazonOutboundServiceStatus extends AmazonOutboundCore{
         
         $this->throttleLimit = $throttleLimitStatus;
         $this->throttleTime = $throttleTimeStatus;
+        $this->throttleGroup = 'GetServiceStatus';
     }
     
     /**

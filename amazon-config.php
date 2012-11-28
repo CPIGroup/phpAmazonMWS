@@ -40,15 +40,27 @@ $throttleTimeStatus = 300;
 //Fetching Sellers Participation
 $throttleLimitSellers = 15;
 $throttleTimeSellers = 60;
-//Fetching Sellers Participation
+//Anything in Inbound/Inventory/Outbound
 $throttleLimitInventory = 30;
 $throttleTimeInventory = 2;
-//Fetching Sellers Participation
+//Products
 $throttleLimitProduct = 20;
 $throttleTimeProductList = 5;
 $throttleTimeProductMatch = 10;
 $throttleTimeProductId = 4;
 $throttleTimeProductPrice = 2;
+//Requesting a Report
+$throttleLimitReportRequest = 15;
+$throttleTimeReportRequest = 60;
+//Fetching a Report Request List
+$throttleLimitReportRequestList = 10;
+$throttleTimeReportRequestList = 45;
+//Using a token with a report request
+$throttleLimitReportToken = 30;
+$throttleTimeReportToken = 2;
+//Fetching a Report List
+$throttleLimitReportList = 10;
+$throttleTimeReportList = 60;
 
 //Safe Throttle Mode
 //Adds extra second onto throttle times to ensure service does not fail

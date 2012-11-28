@@ -48,13 +48,15 @@ class AmazonParticipationList extends AmazonSellersCore{
      * Fetches the participation list from Amazon, using a token if available
      * @param boolean $refresh set false to preserve current list (for internal use)
      */
-    public function fetchParticipationList($refresh = true){
+    public function fetchParticipationList(){
         $this->options['Timestamp'] = $this->genTime();
         if ($this->tokenFlag && $this->tokenUseFlag){
             $this->options['Action'] = 'ListMarketplaceParticipationsByNextToken';
         } else {
             $this->options['Action'] = 'ListMarketplaceParticipations';
             unset($this->options['NextToken']);
+            $this->marketplaceList = array();  
+            $this->participationList = array();
         }
         
         
@@ -91,12 +93,6 @@ class AmazonParticipationList extends AmazonSellersCore{
             $this->tokenFlag = false;
         }
         
-        if ($refresh){
-          $this->marketplaceList = array();  
-          $this->participationList = array();
-        }
-        
-        
         foreach($xmlP->children() as $x){
             $this->marketplaceList[$this->indexP]['MarketplaceId'] = (string)$x->MarketplaceId;
             $this->marketplaceList[$this->indexP]['SellerId'] = (string)$x->SellerId;
@@ -117,7 +113,7 @@ class AmazonParticipationList extends AmazonSellersCore{
         
         if ($this->tokenFlag && $this->tokenUseFlag){
             $this->log("Recursively fetching more Participationseses");
-            $this->fetchParticipationList(false);
+            $this->fetchParticipationList();
         }
         
     }

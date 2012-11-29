@@ -100,6 +100,15 @@ class AmazonReportScheduleManager extends AmazonReportsCore{
      * Sends the report schedule information to Amazon
      */
     public function manageReportSchedule(){
+        if (!array_key_exists('ReportType',$this->options)){
+            $this->log("Report Type must be set in order to manage a report schedule!",'Warning');
+            return false;
+        }
+        if (!array_key_exists('Schedule',$this->options)){
+            $this->log("Schedule must be set in order to manage a report schedule!",'Warning');
+            return false;
+        }
+        
         $this->options['Timestamp'] = $this->genTime();
         
         $url = $this->urlbase.$this->urlbranch;

@@ -1,14 +1,13 @@
 <?php
 
-class AmazonReportList extends AmazonReportsCore implements Iterator{
-    private $tokenFlag;
-    private $tokenUseFlag;
+class AmazonReportScheduleCounter extends AmazonReportsCore implements Iterator{
+    private $count;
     private $index = 0;
     private $i = 0;
     private $reportList;
     
     /**
-     * Sends a report request to Amazon.
+     * Sends a report count request to Amazon.
      * @param string $s name of store as seen in config file
      * @param boolean $mock true to enable mock mode
      * @param array|string $m list of mock files to use
@@ -17,64 +16,15 @@ class AmazonReportList extends AmazonReportsCore implements Iterator{
         parent::__construct($s, $mock, $m);
         include($this->config);
         
-        $this->throttleLimit = $throttleLimitReportList;
-        $this->throttleTime = $throttleTimeReportList;
+        $this->options['Action'] = 'UpdateReportAcknowledgements';
+        
+        $this->throttleLimit = $throttleLimitReportSchedule;
+        $this->throttleTime = $throttleTimeReportSchedule;
+        $this->throttleGroup = 'UpdateReportAcknowledgements';
     }
     
     /**
-     * Returns whether or not the Participation List has a token available
-     * @return boolean
-     */
-    public function hasToken(){
-        return $this->tokenFlag;
-    }
-    
-    /**
-     * Sets whether or not the Participation List should automatically use tokens if it receives one.
-     * @param boolean $b
-     * @return boolean false if invalid paramter
-     */
-    public function setUseToken($b = true){
-        if (is_bool($b)){
-            $this->tokenUseFlag = $b;
-        } else {
-            return false;
-        }
-    }
-    
-    /**
-     * sets the request ID(s) to be used in the next request
-     * @param array|string $s array of Report Request IDs or single ID
-     * @return boolean false if failure
-     */
-    public function setRequestIds($s){
-        if (is_string($s)){
-            $this->resetRequestIds();
-            $this->options['ReportRequestIdList.Id.1'] = $s;
-        } else if (is_array($s)){
-            $this->resetRequestIds();
-            $i = 1;
-            foreach ($s as $x){
-                $this->options['ReportRequestIdList.Id.'.$i] = $x;
-            }
-        } else {
-            return false;
-        }
-    }
-    
-    /**
-     * removes ID options
-     */
-    public function resetRequestIds(){
-        foreach($this->options as $op=>$junk){
-            if(preg_match("#ReportRequestIdList#",$op)){
-                unset($this->options[$op]);
-            }
-        }
-    }
-    
-    /**
-     * sets the report type(s) to be used in the next request
+     * sets the request type(s) to be used in the next request
      * @param array|string $s array of Report Types or single type
      * @return boolean false if failure
      */
@@ -106,19 +56,6 @@ class AmazonReportList extends AmazonReportsCore implements Iterator{
     
     /**
      * Sets the maximum response count for the next request
-     * @param string $s number from 1 to 100
-     * @return boolean false if improper input
-     */
-    public function setMaxCount($s){
-        if (is_numeric($s) && $s >= 1 && $s <= 100){
-            $this->options['MaxCount'] = $s;
-        } else {
-            return false;
-        }
-    }
-    
-    /**
-     * Sets the maximum response count for the next request
      * @param string $s "All", "true", or "false"
      * @return boolean false if improper input
      */
@@ -131,42 +68,21 @@ class AmazonReportList extends AmazonReportsCore implements Iterator{
     }
     
     /**
-     * Sets the Start Time and End Time filters for the report list
-     * @param string $s passed through strtotime, set to null to ignore
-     * @param string $e passed through strtotime
+     * Sends an acknowledgement requst to Amazon and retrieves a list of relevant reports
      */
-    public function setTimeLimits($s = null,$e = null){
-        if ($s && is_string($s)){
-            $times = $this->genTime($s);
-            $this->options['AvailableFromDate'] = $times;
+    public function acknowledgeReports(){
+        if (!array_key_exists('ReportTypeList.Type.1',$this->options)){
+            $this->log("Report Types must be set in order to acknowledge reports!",'Warning');
+            return false;
         }
-        if ($e && is_string($e)){
-            $timee = $this->genTime($e);
-            $this->options['AvailableToDate'] = $timee;
-        }
-    }
-    
-    /**
-     * removes time frame limits
-     */
-    public function resetTimeLimits(){
-        unset($this->options['AvailableFromDate']);
-        unset($this->options['AvailableToDate']);
-    }
-    
-    /**
-     * Fetches the report list from Amazon, using a token if available
-     */
-    public function fetchReportList(){
         $this->options['Timestamp'] = $this->genTime();
-        $this->prepareToken();
         
         $url = $this->urlbase.$this->urlbranch;
         
         $this->options['Signature'] = $this->_signParameters($this->options, $this->secretKey);
         $query = $this->_getParametersAsString($this->options);
         
-        $path = $this->options['Action'].'Result';
+        $path = 'UpdateReportAcknowledgementsResult';
         
         if ($this->mockMode){
            $xml = $this->fetchMockFile()->$path;
@@ -183,47 +99,8 @@ class AmazonReportList extends AmazonReportsCore implements Iterator{
             $xml = simplexml_load_string($response['body'])->$path;
         }
         
-        if ((string)$xml->HasNext == 'true'){
-            $this->tokenFlag = true;
-            $this->options['NextToken'] = (string)$xml->NextToken;
-        } else {
-            unset($this->options['NextToken']);
-            $this->tokenFlag = false;
-        }
-        
         $this->parseXML($xml);
         
-        if ($this->tokenFlag && $this->tokenUseFlag){
-            $this->log("Recursively fetching more Reports");
-            $this->fetchReportList();
-        }
-        
-    }
-    
-    /**
-     * Sets up token stuff
-     */
-    protected function prepareToken(){
-        include($this->config);
-        if ($this->tokenFlag && $this->tokenUseFlag){
-            $this->options['Action'] = 'GetReportListByNextToken';
-            $this->throttleLimit = $throttleLimitReportToken;
-            $this->throttleTime = $throttleTimeReportToken;
-            $this->throttleGroup = 'GetReportListByNextToken';
-            $this->resetRequestIds();
-            $this->resetRequestTypes();
-            $this->resetTimeLimits();
-            unset($this->options['MaxCount']);
-            unset($this->options['Acknowledged']);
-        } else {
-            $this->options['Action'] = 'GetReportList';
-            $this->throttleLimit = $throttleLimitReportList;
-            $this->throttleTime = $throttleTimeReportList;
-            $this->throttleGroup = 'GetReportList';
-            unset($this->options['NextToken']);
-            $this->reportList = array();
-            $this->index = 0;
-        }
     }
     
     /**
@@ -240,8 +117,9 @@ class AmazonReportList extends AmazonReportsCore implements Iterator{
             $this->reportList[$i]['ReportId'] = (string)$x->ReportId;
             $this->reportList[$i]['ReportType'] = (string)$x->ReportType;
             $this->reportList[$i]['ReportRequestId'] = (string)$x->ReportRequestId;
-            $this->reportList[$i]['AcknowledgedDate'] = (string)$x->AcknowledgedDate;
+            $this->reportList[$i]['AvailableToDate'] = (string)$x->AvailableToDate;
             $this->reportList[$i]['Acknowledged'] = (string)$x->Acknowledged;
+            $this->reportList[$i]['AcknowledgedDate'] = (string)$x->AvailableToDate;
             
             $this->index++;
         }
@@ -287,13 +165,13 @@ class AmazonReportList extends AmazonReportsCore implements Iterator{
     }
     
     /**
-     * Returns the date acknowledged for the specified entry, defaults to 0
+     * Returns the date available to for the specified entry, defaults to 0
      * @param int $i index
-     * @return string|boolean date acknowledged, or False if Non-numeric index
+     * @return string|boolean date, or False if Non-numeric index
      */
-    public function getAcknowledgedDate($i = 0){
+    public function getAvailableToDate($i = 0){
         if (is_numeric($i)){
-            return $this->reportList[$i]['AcknowledgedDate'];
+            return $this->reportList[$i]['AvailableToDate'];
         } else {
             return false;
         }
@@ -313,6 +191,31 @@ class AmazonReportList extends AmazonReportsCore implements Iterator{
             }
         } else {
             return false;
+        }
+    }
+    
+    /**
+     * Returns the date acknowledged for the specified entry, defaults to 0
+     * @param int $i index
+     * @return string|boolean date acknowledged, or False if Non-numeric index
+     */
+    public function getAcknowledgedDate($i = 0){
+        if (is_numeric($i)){
+            return $this->reportList[$i]['AcknowledgedDate'];
+        } else {
+            return false;
+        }
+    }
+    
+    /**
+     * gets the count, if it exists
+     * @return string|boolean number, or false on failure
+     */
+    public function getCount(){
+        if (!isset($this->count)){
+            return false;
+        } else {
+            return $this->count;
         }
     }
     

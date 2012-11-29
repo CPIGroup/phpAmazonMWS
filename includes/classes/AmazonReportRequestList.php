@@ -6,6 +6,7 @@ class AmazonReportRequestList extends AmazonReportsCore implements Iterator{
     private $index = 0;
     private $i = 0;
     private $reportList;
+    private $count;
     
     /**
      * Sends a report request to Amazon.
@@ -166,7 +167,6 @@ class AmazonReportRequestList extends AmazonReportsCore implements Iterator{
     
     /**
      * Fetches the report request list from Amazon, using a token if available
-     * @param boolean $refresh set false to preserve current list (for internal use)
      */
     public function fetchReportList(){
         $this->options['Timestamp'] = $this->genTime();
@@ -240,6 +240,10 @@ class AmazonReportRequestList extends AmazonReportsCore implements Iterator{
     protected function parseXML($xml){
         foreach($xml->children() as $key=>$x){
             $i = $this->index;
+            if ($key == 'Count'){
+                $this->count = (string)$x;
+                $this->log("Successfully canceled $this->count report requests.");
+            }
             if ($key != 'ReportRequestInfo'){
                 continue;
             }
@@ -254,6 +258,42 @@ class AmazonReportRequestList extends AmazonReportsCore implements Iterator{
             
             $this->index++;
         }
+    }
+    
+    /**
+     *Cancels the report requests that match the given parameters. Careful!
+     */
+    public function cancelRequests(){
+        $this->options['Action'] = 'CancelReportRequests';
+        $this->throttleGroup = 'CancelReportRequests';
+        $this->options['Timestamp'] = $this->genTime();
+        unset($this->options['MaxCount']);
+        unset($this->options['NextToken']);
+        
+        $url = $this->urlbase.$this->urlbranch;
+        
+        $this->options['Signature'] = $this->_signParameters($this->options, $this->secretKey);
+        $query = $this->_getParametersAsString($this->options);
+        
+        $path = $this->options['Action'].'Result';
+        
+        if ($this->mockMode){
+           $xml = $this->fetchMockFile()->$path;
+        } else {
+            $this->throttle();
+            $this->log("Making request to Amazon");
+            $response = fetchURL($url,array('Post'=>$query));
+            $this->logRequest();
+            
+            if (!$this->checkResponse($response)){
+                return false;
+            }
+            
+            $xml = simplexml_load_string($response['body'])->$path;
+        }
+        
+        $this->parseXML($xml);
+        
     }
     
     /**

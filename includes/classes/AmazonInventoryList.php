@@ -144,7 +144,7 @@ class AmazonInventoryList extends AmazonInventoryCore implements Iterator{
     public function setStartTime($t = null){
         try{
             if ($t){
-                $after = $this->genTime($lower);
+                $after = $this->genTime($t);
             } else {
                 $after = $this->genTime('- 2 min');
             }

@@ -64,6 +64,9 @@ $throttleTimeReportList = 60;
 //Requesting a Report
 $throttleLimitReport = 15;
 $throttleTimeReport = 60;
+//Fetching a Report Request List
+$throttleLimitReportSchedule = 10;
+$throttleTimeReportSchedule = 45;
 
 //Safe Throttle Mode
 //Adds extra second onto throttle times to ensure service does not fail

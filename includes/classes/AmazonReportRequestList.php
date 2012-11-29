@@ -4,6 +4,7 @@ class AmazonReportRequestList extends AmazonReportsCore implements Iterator{
     private $tokenFlag;
     private $tokenUseFlag;
     private $index = 0;
+    private $i = 0;
     private $reportList;
     
     /**
@@ -192,7 +193,7 @@ class AmazonReportRequestList extends AmazonReportsCore implements Iterator{
             $xml = simplexml_load_string($response['body'])->$path;
         }
         
-        if ((string)$xml->NextToken == 'true'){
+        if ((string)$xml->HasNext == 'true'){
             $this->tokenFlag = true;
             $this->options['NextToken'] = (string)$xml->NextToken;
         } else {
@@ -200,6 +201,7 @@ class AmazonReportRequestList extends AmazonReportsCore implements Iterator{
             $this->tokenFlag = false;
         }
         
+        $this->parseXML($xml);
         
         if ($this->tokenFlag && $this->tokenUseFlag){
             $this->log("Recursively fetching more Reports");
@@ -226,15 +228,134 @@ class AmazonReportRequestList extends AmazonReportsCore implements Iterator{
             $this->throttleGroup = 'GetReportRequestList';
             unset($this->options['NextToken']);
             $this->reportList = array();
+            $this->index = 0;
         }
     }
     
     /**
-     * Returns the list of orders
-     * @return array Array of AmazonOrder objects
+     * converts XML to array
+     * @param SimpleXMLObject $xml
+     */
+    protected function parseXML($xml){
+        foreach($xml->children() as $key=>$x){
+            $i = $this->index;
+            if ($key != 'ReportRequestInfo'){
+                continue;
+            }
+            
+            $this->reportList[$i]['ReportRequestId'] = (string)$x->ReportRequestId;
+            $this->reportList[$i]['ReportType'] = (string)$x->ReportType;
+            $this->reportList[$i]['StartDate'] = (string)$x->StartDate;
+            $this->reportList[$i]['EndDate'] = (string)$x->EndDate;
+            $this->reportList[$i]['Scheduled'] = (string)$x->Scheduled;
+            $this->reportList[$i]['SubmittedDate'] = (string)$x->SubmittedDate;
+            $this->reportList[$i]['ReportProcessingStatus'] = (string)$x->ReportProcessingStatus;
+            
+            $this->index++;
+        }
+    }
+    
+    /**
+     * Returns the report request ID for the specified entry, defaults to 0
+     * @param int $i index
+     * @return string|boolean report request ID, or False if Non-numeric index
+     */
+    public function getRequestId($i = 0){
+        if (is_numeric($i)){
+            return $this->reportList[$i]['ReportRequestId'];
+        } else {
+            return false;
+        }
+    }
+    
+    /**
+     * Returns the report type for the specified entry, defaults to 0
+     * @param int $i index
+     * @return string|boolean report type, or False if Non-numeric index
+     */
+    public function getRequestType($i = 0){
+        if (is_numeric($i)){
+            return $this->reportList[$i]['ReportType'];
+        } else {
+            return false;
+        }
+    }
+    
+    /**
+     * Returns the start date for the specified entry, defaults to 0
+     * @param int $i index
+     * @return string|boolean start date, or False if Non-numeric index
+     */
+    public function getStartDate($i = 0){
+        if (is_numeric($i)){
+            return $this->reportList[$i]['StartDate'];
+        } else {
+            return false;
+        }
+    }
+    
+    /**
+     * Returns the end date for the specified entry, defaults to 0
+     * @param int $i index
+     * @return string|boolean end date, or False if Non-numeric index
+     */
+    public function getEndDate($i = 0){
+        if (is_numeric($i)){
+            return $this->reportList[$i]['EndDate'];
+        } else {
+            return false;
+        }
+    }
+    
+    /**
+     * Returns whether or not the specified entry is scheduled, defaults to 0
+     * @param int $i index
+     * @return boolean true or false, or false if Non-numeric index
+     */
+    public function getIsScheduled($i = 0){
+        if (is_numeric($i)){
+            if ($this->reportList[$i]['Scheduled'] == 'true'){
+                return true;
+            } else {
+                return false;
+            }
+        } else {
+            return false;
+        }
+    }
+    
+    /**
+     * Returns the date submitted for the specified entry, defaults to 0
+     * @param int $i index
+     * @return string|boolean date submitted, or False if Non-numeric index
+     */
+    public function getSubmittedDate($i = 0){
+        if (is_numeric($i)){
+            return $this->reportList[$i]['SubmittedDate'];
+        } else {
+            return false;
+        }
+    }
+    
+    /**
+     * Returns the processing status for the specified entry, defaults to 0
+     * @param int $i index
+     * @return string|boolean status, or False if Non-numeric index
+     */
+    public function getStatus($i = 0){
+        if (is_numeric($i)){
+            return $this->reportList[$i]['ReportProcessingStatus'];
+        } else {
+            return false;
+        }
+    }
+    
+    /**
+     * Returns the list of report request arrays
+     * @return array Array of arrays
      */
     public function getList(){
-        return $this->orderList;
+        return $this->reportList;
     }
     
     /**
@@ -242,7 +363,7 @@ class AmazonReportRequestList extends AmazonReportsCore implements Iterator{
      * @return type
      */
     public function current(){
-       return $this->orderList[$this->i]; 
+       return $this->reportList[$this->i]; 
     }
 
     /**
@@ -272,7 +393,7 @@ class AmazonReportRequestList extends AmazonReportsCore implements Iterator{
      * @return type
      */
     public function valid() {
-        return isset($this->orderList[$this->i]);
+        return isset($this->reportList[$this->i]);
     }
     
 }

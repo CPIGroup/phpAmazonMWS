@@ -10,10 +10,14 @@ include('includes/classes.php');
 //$a->setLimits('Modified','-1 hours');
 //$a->fetchOrders();
 
-$a = new AmazonReportRequestList('BigKitchen',true,array('reportlist.xml','reportlist2.xml'));
-$a->setUseToken();
-$a->fetchReportList();
+$a = new AmazonReportRequestCounter('BigKitchen',true,'requestcount.xml');
+$a->fetchCount();
 myPrint($a);
+
+//$a = new AmazonReportRequestList('BigKitchen',true,array('requestlist.xml','requestlist2.xml'));
+//$a->setUseToken();
+//$a->fetchReportList();
+//myPrint($a);
 
 //$a = new AmazonPackageTracker('BigKitchen','5',true,'package.xml');
 //$a->fetchTrackingDetails();

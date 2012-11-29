@@ -15,6 +15,7 @@ class AmazonReportRequestList extends AmazonReportsCore implements Iterator{
      */
     public function __construct($s, $mock = false, $m = null) {
         parent::__construct($s, $mock, $m);
+        include($this->config);
         
         $this->throttleLimit = $throttleLimitReportRequestList;
         $this->throttleTime = $throttleTimeReportRequestList;
@@ -77,12 +78,12 @@ class AmazonReportRequestList extends AmazonReportsCore implements Iterator{
      * @param array|string $s array of Report Types or single type
      * @return boolean false if failure
      */
-    public function setRequestTypes($s){
+    public function setReportTypes($s){
         if (is_string($s)){
-            $this->resetRequestIds();
+            $this->resetReportTypes();
             $this->options['ReportTypeList.Type.1'] = $s;
         } else if (is_array($s)){
-            $this->resetRequestIds();
+            $this->resetReportTypes();
             $i = 1;
             foreach ($s as $x){
                 $this->options['ReportTypeList.Type.'.$i] = $x;
@@ -95,7 +96,7 @@ class AmazonReportRequestList extends AmazonReportsCore implements Iterator{
     /**
      * removes type options
      */
-    public function resetRequestTypes(){
+    public function resetReportTypes(){
         foreach($this->options as $op=>$junk){
             if(preg_match("#ReportTypeList#",$op)){
                 unset($this->options[$op]);
@@ -164,7 +165,7 @@ class AmazonReportRequestList extends AmazonReportsCore implements Iterator{
     }
     
     /**
-     * Fetches the participation list from Amazon, using a token if available
+     * Fetches the report request list from Amazon, using a token if available
      * @param boolean $refresh set false to preserve current list (for internal use)
      */
     public function fetchReportList(){

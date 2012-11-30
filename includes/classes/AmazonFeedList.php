@@ -226,7 +226,7 @@ class AmazonFeedList extends AmazonFeedsCore implements Iterator{
             $this->tokenFlag = false;
         }
         
-        
+        $this->parseXML($xml);
         
         
 //        var_dump($this->supplyList);
@@ -261,6 +261,30 @@ class AmazonFeedList extends AmazonFeedsCore implements Iterator{
             unset($this->options['NextToken']);
             $this->feedList = array();
             $this->index = 0;
+        }
+    }
+    
+    /**
+     * converts XML to array
+     * @param SimpleXMLObject $xml
+     */
+    protected function parseXML($xml){
+        foreach($xml->children() as $key=>$x){
+            $i = $this->index;
+            if ($key == 'Count'){
+                $this->count = (string)$x;
+                $this->log("Successfully canceled $this->count report requests.");
+            }
+            if ($key != 'ReportRequestInfo'){
+                continue;
+            }
+            
+            $this->feedList[$i]['FeedSubmissionId'] = (string)$x->FeedSubmissionId;
+            $this->feedList[$i]['FeedType'] = (string)$x->FeedType;
+            $this->feedList[$i]['SubmittedDate'] = (string)$x->SubmittedDate;
+            $this->feedList[$i]['FeedProcessingStatus'] = (string)$x->FeedProcessingStatus;
+            
+            $this->index++;
         }
     }
     
@@ -352,6 +376,58 @@ class AmazonFeedList extends AmazonFeedsCore implements Iterator{
         unset($this->options['MaxCount']);
         unset($this->options['NextToken']);
         $this->resetFeedStatuses();
+    }
+    
+    /**
+     * Returns the feed submission ID for the specified entry
+     * @param int $i index, defaults to 0
+     * @return string|boolean feed submission ID, or False if Non-numeric index
+     */
+    public function getFeedId($i = 0){
+        if (is_numeric($i)){
+            return $this->feedList[$i]['FeedSubmissionId'];
+        } else {
+            return false;
+        }
+    }
+    
+    /**
+     * Returns the feed type for the specified entry
+     * @param int $i index, defaults to 0
+     * @return string|boolean feed type, or False if Non-numeric index
+     */
+    public function getFeedType($i = 0){
+        if (is_numeric($i)){
+            return $this->feedList[$i]['FeedType'];
+        } else {
+            return false;
+        }
+    }
+    
+    /**
+     * Returns the date submitted for the specified entry
+     * @param int $i index, defaults to 0
+     * @return string|boolean date submitted, or False if Non-numeric index
+     */
+    public function getDateSubmitted($i = 0){
+        if (is_numeric($i)){
+            return $this->feedList[$i]['SubmittedDate'];
+        } else {
+            return false;
+        }
+    }
+    
+    /**
+     * Returns the feed processing status for the specified entry
+     * @param int $i index, defaults to 0
+     * @return string|boolean date submitted, or False if Non-numeric index
+     */
+    public function getFeedStatus($i = 0){
+        if (is_numeric($i)){
+            return $this->feedList[$i]['FeedProcessingStatus'];
+        } else {
+            return false;
+        }
     }
     
     /**

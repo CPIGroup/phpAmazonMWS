@@ -31,7 +31,7 @@ class AmazonPackageTracker extends AmazonReportsCore{
      */
     public function setReportId($n){
         if (is_numeric($n)){
-            $this->options['PackageNumber'] = $n;
+            $this->options['ReportId'] = $n;
         } else {
             return false;
         }
@@ -70,22 +70,16 @@ class AmazonPackageTracker extends AmazonReportsCore{
         
     }
     
-    
-    
-    /*
-     * TODO: Figure out what to do with reports
-     */
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
+    public function saveReport($path){
+        try{
+            $fd = fopen($path, "a");
+            fwrite($this->report);
+            fclose($fd);
+            $this->log("Successfully saved report #".$this->options['ReportId']." at $path");
+        } catch (Exception $e){
+            $this->log("Unable to save report #".$this->options['ReportId']." at $path: $e",'Urgent');
+        }
+    }
     
     /**
      * converts XML into arrays

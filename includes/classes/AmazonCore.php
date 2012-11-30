@@ -228,6 +228,15 @@ abstract class AmazonCore{
     }
     
     /**
+     * Change the config file, for resting purposes
+     * @param type $path
+     */
+    public function changeConfig($path){
+        $this->config = $path;
+        $this->__construct($this->storeName, $this->mockMode, $this->mockFiles);
+    }
+    
+    /**
      * Skeleton function
      */
     protected function parseXML(){

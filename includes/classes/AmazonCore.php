@@ -60,9 +60,9 @@ abstract class AmazonCore{
             $this->config = '/var/www/athena/plugins/newAmazon/amazon-config.php';
         }
         
-        try {
+        if (file_exists($this->config)){
             include($this->config);
-        }catch(Exception $e){
+        } else {
             return false;
         }
         

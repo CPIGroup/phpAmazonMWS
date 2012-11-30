@@ -12,9 +12,9 @@ class AmazonFulfillmentPreview extends AmazonOutboundCore{
      */
     public function __construct($s, $mock = false, $m = null) {
         parent::__construct($s, $mock, $m);
-        try {
+        if (file_exists($this->config)){
             include($this->config);
-        }catch(Exception $e){
+        } else {
             return false;
         }
         

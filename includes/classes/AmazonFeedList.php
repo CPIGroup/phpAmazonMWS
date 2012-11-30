@@ -1,10 +1,10 @@
 <?php
 
-class AmazonProductInfo extends AmazonProductsCore{
+class AmazonFeedList extends AmazonFeedsCore{
     
     
     /**
-     * AmazonProductInfo fetches a list of info from Amazon
+     * AmazonFeedList fetches a list of Feeds from Amazon
      * @param string $s store name as seen in config
      * @param boolean $mock set true to enable mock mode
      * @param array|string $m list of mock files to use
@@ -17,7 +17,8 @@ class AmazonProductInfo extends AmazonProductsCore{
             return false;
         }
         
-        $this->throttleLimit = $throttleLimitProduct;
+        $this->throttleLimit = $throttleLimitFeedList;
+        $this->throttleTime = $throttleTimeFeedList;
         
         if ($throttleSafe){
             $this->throttleLimit++;

@@ -4,12 +4,11 @@
  */
 class AmazonItemList extends AmazonOrderCore implements Iterator{
     private $itemList;
-    private $tokenFlag;
-    private $tokenUseFlag;
-    private $i;
+    private $tokenFlag = false;
+    private $tokenUseFlag = false;
+    private $i = 0;
     private $xmldata;
-    private $orderId;
-    private $index;
+    private $index = 0;
 
     /**
      * AmazonItemLists contain all of the items for a given order
@@ -20,12 +19,15 @@ class AmazonItemList extends AmazonOrderCore implements Iterator{
      */
     public function __construct($s, $id=null, $mock = false, $m = null){
         parent::__construct($s, $mock, $m);
-        include($this->config);
+        try {
+            include($this->config);
+        }catch(Exception $e){
+            return false;
+        }
         
         
         if (!is_null($id)){
             $this->options['AmazonOrderId'] = $id;
-            $this->orderId = $id;
         }
         
         $this->throttleLimit = $throttleLimitItem;
@@ -193,8 +195,8 @@ class AmazonItemList extends AmazonOrderCore implements Iterator{
         
         if (is_null($xml->AmazonOrderId)){
             $this->log("You dun got throttled.",'Warning');
-        } else if ($this->orderId != $xml->AmazonOrderId){
-            $this->log('You grabbed the wrong Order\'s items! - '.$this->orderId.' =/='.$xml->AmazonOrderId,'Warning');
+        } else if ($this->options['AmazonOrderId'] != $xml->AmazonOrderId){
+            $this->log('You grabbed the wrong Order\'s items! - '.$this->options['AmazonOrderId'].' =/='.$xml->AmazonOrderId,'Warning');
         }
         
         $this->xmldata = $xml->OrderItems;

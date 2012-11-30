@@ -56,9 +56,16 @@ abstract class AmazonCore{
      * @param array|string $m list of mock file URLs to provide to the Mock Server
      */
     protected function __construct($s, $mock=false, $m = null){
-        $this->config = '/var/www/athena/plugins/newAmazon/amazon-config.php';
+        if (!isset($this->config)){
+            $this->config = '/var/www/athena/plugins/newAmazon/amazon-config.php';
+        }
         
-        include($this->config);
+        try {
+            include($this->config);
+        }catch(Exception $e){
+            return false;
+        }
+        
         $this->logpath = $logpath;
         
         if(array_key_exists($s, $store)){

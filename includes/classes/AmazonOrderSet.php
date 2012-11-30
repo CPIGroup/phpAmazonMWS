@@ -1,7 +1,7 @@
 <?php
 
 class AmazonOrderSet extends AmazonOrderCore implements Iterator{
-    private $i;
+    private $i = 0;
     private $orderList;
     
     /**
@@ -13,7 +13,11 @@ class AmazonOrderSet extends AmazonOrderCore implements Iterator{
     public function __construct($s, $o = null, $mock = false, $m = null){
         parent::__construct($s, $mock, $m);
         $this->i = 0;
-        include($this->config);
+        try {
+            include($this->config);
+        }catch(Exception $e){
+            return false;
+        }
         
         if(array_key_exists('marketplaceId', $store[$s])){
             $this->options['MarketplaceId.Id.1'] = $store[$s]['marketplaceId'];

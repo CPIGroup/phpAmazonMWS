@@ -12,7 +12,11 @@ class AmazonPackageTracker extends AmazonOutboundCore{
      */
     public function __construct($s, $id = null, $mock = false, $m = null) {
         parent::__construct($s, $mock, $m);
-        include($this->config);
+        try {
+            include($this->config);
+        }catch(Exception $e){
+            return false;
+        }
         
         if($id){
             $this->options['PackageNumber'] = $id;

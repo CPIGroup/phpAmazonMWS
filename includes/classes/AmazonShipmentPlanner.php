@@ -3,7 +3,7 @@
 class AmazonShipmentPlanner extends AmazonInboundCore implements Iterator{
     private $xmldata;
     private $planList;
-    private $i;
+    private $i = 0;
     
     /**
      * Fetches a plan from Amazon. This is how you get a Shipment ID.
@@ -13,7 +13,11 @@ class AmazonShipmentPlanner extends AmazonInboundCore implements Iterator{
      */
     public function __construct($s, $mock = false, $m = null) {
         parent::__construct($s, $mock, $m);
-        include($this->config);
+        try {
+            include($this->config);
+        }catch(Exception $e){
+            return false;
+        }
         
         $this->options['Action'] = 'CreateInboundShipmentPlan';
         

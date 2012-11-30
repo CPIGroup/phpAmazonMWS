@@ -5,8 +5,8 @@ class AmazonFulfillmentOrderList extends AmazonOutboundCore implements Iterator{
     private $orderList;
     private $tokenFlag = false;
     private $tokenUseFlag = false;
-    private $i;
-    private $index;
+    private $i = 0;
+    private $index = 0;
     
     /**
      * Fetches a plan from Amazon. This is how you get a Shipment ID.
@@ -16,7 +16,11 @@ class AmazonFulfillmentOrderList extends AmazonOutboundCore implements Iterator{
      */
     public function __construct($s, $mock = false, $m = null) {
         parent::__construct($s, $mock, $m);
-        include($this->config);
+        try {
+            include($this->config);
+        }catch(Exception $e){
+            return false;
+        }
         
         $this->options['Action'] = 'ListAllFulfillmentOrders';
         

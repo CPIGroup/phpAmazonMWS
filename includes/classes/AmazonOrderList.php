@@ -4,11 +4,11 @@
  */
 class AmazonOrderList extends AmazonOrderCore implements Iterator{
     private $orderList;
-    private $i;
-    private $tokenFlag;
-    private $tokenUseFlag;
-    private $tokenItemFlag;
-    private $index;
+    private $i = 0;
+    private $tokenFlag = false;
+    private $tokenUseFlag = false;
+    private $tokenItemFlag = false;
+    private $index = 0;
 
     /**
      * Amazon Order Lists pull a set of Orders and turn them into an array of AmazonOrder objects.
@@ -18,8 +18,11 @@ class AmazonOrderList extends AmazonOrderCore implements Iterator{
      */
     public function __construct($s, $mock = false, $m = null){
         parent::__construct($s, $mock, $m);
-        $this->i = 0;
-        include($this->config);
+        try {
+            include($this->config);
+        }catch(Exception $e){
+            return false;
+        }
         
         if(array_key_exists('marketplaceId', $store[$s])){
             $this->options['MarketplaceId.Id.1'] = $store[$s]['marketplaceId'];

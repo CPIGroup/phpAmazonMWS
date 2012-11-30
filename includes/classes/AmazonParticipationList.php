@@ -1,8 +1,8 @@
     <?php
 
 class AmazonParticipationList extends AmazonSellersCore{
-    private $tokenFlag;
-    private $tokenUseFlag;
+    private $tokenFlag = false;
+    private $tokenUseFlag = false;
     private $participationList;
     private $marketplaceList;
     private $indexM = 0;
@@ -16,7 +16,11 @@ class AmazonParticipationList extends AmazonSellersCore{
      */
     public function __construct($s, $mock = false, $m = null) {
         parent::__construct($s, $mock, $m);
-        include($this->config);
+        try {
+            include($this->config);
+        }catch(Exception $e){
+            return false;
+        }
         
         $this->throttleLimit = $throttleLimitSellers;
         $this->throttleTime = $throttleTimeSellers;

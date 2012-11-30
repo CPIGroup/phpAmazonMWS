@@ -1,8 +1,8 @@
 <?php
 
 class AmazonInventoryList extends AmazonInventoryCore implements Iterator{
-    private $tokenFlag;
-    private $tokenUseFlag;
+    private $tokenFlag = false;
+    private $tokenUseFlag = false;
     private $supplyList;
     private $index = 0;
     private $i = 0;
@@ -15,6 +15,11 @@ class AmazonInventoryList extends AmazonInventoryCore implements Iterator{
      */
     public function __construct($s, $mock = false, $m = null) {
         parent::__construct($s, $mock, $m);
+        try {
+            include($this->config);
+        }catch(Exception $e){
+            return false;
+        }
         
         $this->throttleLimit = $throttleLimitInventory;
         $this->throttleTime = $throttleTimeInventory;

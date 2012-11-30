@@ -15,7 +15,11 @@ class AmazonShipmentItemList extends AmazonInboundCore implements Iterator{
      */
     public function __construct($s, $id = null, $mock = false, $m = null) {
         parent::__construct($s, $mock, $m);
-        include($this->config);
+        try {
+            include($this->config);
+        }catch(Exception $e){
+            return false;
+        }
         
         if (!is_null($id)){
             $this->options['ShipmentId'] = $id;

@@ -11,7 +11,11 @@ class AmazonShipment extends AmazonInboundCore{
      */
     public function __construct($s, $mock = false, $m = null) {
         parent::__construct($s, $mock, $m);
-        include($this->config);
+        try {
+            include($this->config);
+        }catch(Exception $e){
+            return false;
+        }
         
         $this->options['InboundShipmentHeader.ShipmentStatus'] = 'WORKING';
         

@@ -10,9 +10,16 @@ include('includes/classes.php');
 //$a->setLimits('Modified','-1 hours');
 //$a->fetchOrders();
 
-$a = new AmazonReportRequestList('BigKitchen',true,'requestcancel.xml');
-$a->cancelRequests();
+$a = new AmazonOrderList('BigKitchen',true,'requestcancel.xml');
+echo 'BEFORE: ';
 myPrint($a);
+$a->changeConfig('/var/www/athena/plugins/newAmazon/yo.php');
+echo 'AFTER: ';
+myPrint($a);
+
+//$a = new AmazonReportRequestList('BigKitchen',true,'requestcancel.xml');
+//$a->cancelRequests();
+//myPrint($a);
 
 //$a = new AmazonReportRequestCounter('BigKitchen',true,'requestcount.xml');
 //$a->fetchCount();

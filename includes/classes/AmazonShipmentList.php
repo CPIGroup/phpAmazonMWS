@@ -15,7 +15,11 @@ class AmazonShipmentList extends AmazonInboundCore implements Iterator{
      */
     public function __construct($s, $mock = false, $m = null) {
         parent::__construct($s, $mock, $m);
-        include($this->config);
+        try {
+            include($this->config);
+        }catch(Exception $e){
+            return false;
+        }
         
         $this->throttleLimit = $throttleLimitInventory;
         $this->throttleTime = $throttleTimeInventory;

@@ -1,8 +1,8 @@
 <?php
 
 class AmazonReportRequestList extends AmazonReportsCore implements Iterator{
-    private $tokenFlag;
-    private $tokenUseFlag;
+    private $tokenFlag = false;
+    private $tokenUseFlag = false;
     private $index = 0;
     private $i = 0;
     private $reportList;
@@ -16,7 +16,11 @@ class AmazonReportRequestList extends AmazonReportsCore implements Iterator{
      */
     public function __construct($s, $mock = false, $m = null) {
         parent::__construct($s, $mock, $m);
-        include($this->config);
+        try {
+            include($this->config);
+        }catch(Exception $e){
+            return false;
+        }
         
         $this->throttleLimit = $throttleLimitReportRequestList;
         $this->throttleTime = $throttleTimeReportRequestList;

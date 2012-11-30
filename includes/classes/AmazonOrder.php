@@ -16,7 +16,11 @@ class AmazonOrder extends AmazonOrderCore{
      */
     public function __construct($s,$o = null,$d = null, $mock = false, $m = null){
         parent::__construct($s, $mock, $m);
-        include($this->config);
+        try {
+            include($this->config);
+        }catch(Exception $e){
+            return false;
+        }
         
         if($o){
             $this->options['AmazonOrderId.Id.1'] = $o;

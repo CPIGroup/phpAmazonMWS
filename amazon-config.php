@@ -46,7 +46,7 @@ $throttleTimeInventory = 2;
 //Products
 $throttleLimitProduct = 20;
 $throttleTimeProductList = 5;
-$throttleTimeProductMatch = 10;
+$throttleTimeProductMatch = 1;
 $throttleTimeProductId = 4;
 $throttleTimeProductPrice = 2;
 //Requesting a Report

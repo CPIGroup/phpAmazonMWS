@@ -1,7 +1,7 @@
 <?php
 
 class AmazonFeedResult extends AmazonFeedsCore{
-    
+    private $rawFeed;
     
     /**
      * AmazonFeed object gets the result of a Feed from Amazon
@@ -18,7 +18,7 @@ class AmazonFeedResult extends AmazonFeedsCore{
         }
         
         if($id){
-            $this->options['PackageNumber'] = $id;
+            $this->options['FeedSubmissionId'] = $id;
         }
         
         $this->options['Action'] = 'GetFeedSubmissionResult';
@@ -33,5 +33,67 @@ class AmazonFeedResult extends AmazonFeedsCore{
         }
         
     }
+    
+    /**
+     * Sets the feed submission ID for the next request
+     * @param integer $n
+     * @return boolean false if improper input
+     */
+    public function setFeedId($n){
+        if (is_numeric($n)){
+            $this->options['FeedSubmissionId'] = $n;
+        } else {
+            return false;
+        }
+    }
+    
+    /**
+     * Sends a request to Amazon for a feed
+     * @return boolean false on failure
+     */
+    public function fetchFeedResult(){
+        if (!array_key_exists('FeedSubmissionId',$this->options)){
+            $this->log("Feed Submission ID must be set in order to fetch it!",'Warning');
+            return false;
+        }
+        
+        $this->options['Timestamp'] = $this->genTime();
+        $url = $this->urlbase.$this->urlbranch;
+        
+        $this->options['Signature'] = $this->_signParameters($this->options, $this->secretKey);
+        $query = $this->_getParametersAsString($this->options);
+        
+        if ($this->mockMode){
+           $this->rawFeed = $this->fetchMockFile();
+        } else {
+            $this->throttle();
+            $this->log("Making request to Amazon");
+            $response = fetchURL($url,array('Post'=>$query));
+            $this->logRequest();
+            
+            if (!$this->checkResponse($response)){
+                return false;
+            }
+            
+            $this->rawFeed = simplexml_load_string($response['body']);
+        }
+        
+    }
+    
+    /**
+     * Saves the raw report data to a path you specify
+     * @param string $path filename to save the file in
+     */
+    public function saveFeed($path){
+        try{
+            $fd = fopen($path, "a");
+            fwrite($this->rawFeed);
+            fclose($fd);
+            $this->log("Successfully saved feed #".$this->options['FeedSubmissionId']." at $path");
+        } catch (Exception $e){
+            $this->log("Unable to save feed #".$this->options['FeedSubmissionId']." at $path: $e",'Urgent');
+        }
+    }
+    
 }
 ?>

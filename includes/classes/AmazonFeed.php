@@ -9,16 +9,12 @@ class AmazonFeed extends AmazonFeedsCore{
      * @param boolean $mock set true to enable mock mode
      * @param array|string $m list of mock files to use
      */
-    public function __construct($s, $id = null, $mock = false, $m = null){
+    public function __construct($s, $mock = false, $m = null){
         parent::__construct($s, $mock, $m);
         if (file_exists($this->config)){
             include($this->config);
         } else {
             return false;
-        }
-        
-        if($id){
-            $this->options['PackageNumber'] = $id;
         }
         
         $this->options['Action'] = 'SubmitFeed';

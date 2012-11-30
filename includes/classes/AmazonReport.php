@@ -74,10 +74,14 @@ class AmazonPackageTracker extends AmazonReportsCore{
         
     }
     
+    /**
+     * Saves the raw report data to a path you specify
+     * @param string $path filename to save the file in
+     */
     public function saveReport($path){
         try{
             $fd = fopen($path, "a");
-            fwrite($this->report);
+            fwrite($this->rawreport);
             fclose($fd);
             $this->log("Successfully saved report #".$this->options['ReportId']." at $path");
         } catch (Exception $e){

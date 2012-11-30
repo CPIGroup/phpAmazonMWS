@@ -228,12 +228,20 @@ abstract class AmazonCore{
     }
     
     /**
-     * Change the config file, for resting purposes
-     * @param type $path
+     * Change the config file, for testing purposes
+     * @param string $path
      */
     public function changeConfig($path){
         $this->config = $path;
         $this->__construct($this->storeName, $this->mockMode, $this->mockFiles);
+    }
+    
+    /**
+     * Change the config file, for testing purposes
+     * @param string $path
+     */
+    public function changeLogPath($path){
+        $this->logpath = $path;
     }
     
     /**

@@ -250,13 +250,15 @@ class AmazonReportRequestList extends AmazonReportsCore implements Iterator{
         }
     }
     
+    /**
+     * Modifies the options for cancelling
+     */
     protected function prepareCancel(){
         include($this->config);
         $this->options['Action'] = 'CancelReportRequests';
         $this->throttleLimit = $throttleLimitReportRequestList;
         $this->throttleTime = $throttleTimeReportRequestList;
         $this->throttleGroup = 'CancelReportRequests';
-        $this->options['Timestamp'] = $this->genTime();
         unset($this->options['MaxCount']);
         unset($this->options['NextToken']);
     }
@@ -293,6 +295,7 @@ class AmazonReportRequestList extends AmazonReportsCore implements Iterator{
      */
     public function cancelRequests(){
         $this->prepareCancel();
+        $this->options['Timestamp'] = $this->genTime();
         
         $url = $this->urlbase.$this->urlbranch;
         

@@ -19,6 +19,7 @@ class AmazonProductsServiceStatus extends AmazonProductsCore{
         include($this->config);
         
         $this->options['Action'] = 'GetServiceStatus';
+        unset($this->options['MarketplaceId']);
         
         $this->throttleLimit = $throttleLimitStatus;
         $this->throttleTime = $throttleTimeStatus;

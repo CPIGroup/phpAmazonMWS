@@ -36,7 +36,7 @@ class AmazonFeed extends AmazonFeedsCore{
      */
     public function setFeedContent($s){
         if (is_string($s) && $s){
-            
+            $this->options['FeedContent'] = $s;
         }
     }
     
@@ -46,7 +46,7 @@ class AmazonFeed extends AmazonFeedsCore{
      */
     public function setFeedType($s){
         if (is_string($s) && $s){
-            $this->options['ReportType'] = $s;
+            $this->options['FeedType'] = $s;
         }
         /*
          * List of valid Feed Types:
@@ -138,8 +138,12 @@ class AmazonFeed extends AmazonFeedsCore{
      * Submits a feed to Amazon??????????????????
      */
     public function submitFeed(){
+        if (!array_key_exists('FeedContent',$this->options)){
+            $this->log("Feed's contents must be set in order to submit it!",'Warning');
+            return false;
+        }
         if (!array_key_exists('FeedType',$this->options)){
-            $this->log("Report Type must be set in order to request a report!",'Warning');
+            $this->log("Feed Type must be set in order to submit a feed!",'Warning');
             return false;
         }
         
@@ -157,7 +161,14 @@ class AmazonFeed extends AmazonFeedsCore{
         } else {
             $this->throttle();
             $this->log("Making request to Amazon");
-            $response = fetchURL($url,array('Post'=>$query));
+            $md5 = base64_encode(md5($this->options['FeedContent'],true));
+            $md5 = base64_encode(md5($query));
+            echo 'Normal: ' . md5($this->options['FeedContent']);
+            echo '<br>Base64: ' . base64_encode(md5($this->options['FeedContent'],true));
+            echo '<br>HMAC256: ' . base64_encode(hash_hmac('sha1', $this->options['FeedContent'], $this->secretKey, true));
+            $headers[0] = "Content-MD5:$md5";
+//            $headers[0] = "Content-MD5:1B2M2Y8AsgTpgAmY7PhCfg==";
+            $response = fetchURL($url,array('Header'=>$headers,'Post'=>$query));
             $this->logRequest();
             
             if (!$this->checkResponse($response)){

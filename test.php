@@ -10,12 +10,24 @@ include('includes/classes.php');
 //$a->setLimits('Modified','-1 hours');
 //$a->fetchOrders();
 
-$a = new AmazonOrderList('BigKitchen',true,'requestcancel.xml');
-echo 'BEFORE: ';
-myPrint($a);
-$a->changeConfig('/var/www/athena/plugins/newAmazon/yo.php');
-echo 'AFTER: ';
-myPrint($a);
+$a = new AmazonFeed('BigKitchen');
+$a->setFeedType('_POST_FLAT_FILE_CONVERGENCE_LISTINGS_DATA_'); //harmless: music loading
+$a->setFeedContent('<ok>');
+$a->submitFeed();
+var_dump ($a);
+
+//$a = new AmazonParticipationList('BigKitchen');
+//$a->fetchParticipationList();
+//var_dump ($a);
+//echo 'First reply: ';
+//var_dump($a->getSellerId(0));
+
+//$a = new AmazonOrderList('BigKitchen',true,'requestcancel.xml');
+//echo 'BEFORE: ';
+//myPrint($a);
+//$a->changeConfig('/var/www/athena/plugins/newAmazon/yo.php');
+//echo 'AFTER: ';
+//myPrint($a);
 
 //$a = new AmazonReportRequestList('BigKitchen',true,'requestcancel.xml');
 //$a->cancelRequests();

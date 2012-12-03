@@ -117,5 +117,236 @@ class AmazonProductInfo extends AmazonProductsCore{
         }
     }
     
+    /**
+     * Fetches the competitive pricing list from Amazon
+     */
+    public function fetchCompetitivePricing(){
+        if (!array_key_exists('SellerSKUList.SellerSKU.1',$this->options) && !array_key_exists('ASINList.ASIN.1',$this->options)){
+            $this->log("Ids must be set in order to look them up!",'Warning');
+            return false;
+        }
+        $this->options['Timestamp'] = $this->genTime();
+        $this->prepareCompetitive();
+        
+        $url = $this->urlbase.$this->urlbranch;
+        
+        $this->options['Signature'] = $this->_signParameters($this->options, $this->secretKey);
+        $query = $this->_getParametersAsString($this->options);
+        
+        $path = $this->options['Action'].'Result';
+        
+        if ($this->mockMode){
+           $xml = $this->fetchMockFile()->$path;
+        } else {
+            $this->throttle();
+            $this->log("Making request to Amazon");
+            $response = fetchURL($url,array('Post'=>$query));
+            $this->logRequest();
+            
+            if (!$this->checkResponse($response)){
+                return false;
+            }
+            
+            $xml = simplexml_load_string($response['body'])->$path;
+        }
+        
+        
+        $this->parseXML($xml);
+        
+    }
+    
+    /**
+     * Sets up stuff
+     */
+    protected function prepareCompetitive(){
+        include($this->config);
+        $this->throttleTime = $throttleTimeProductPrice;
+        $this->throttleGroup = 'GetCompetitivePricing';
+        unset($this->options['ExcludeMe']);
+        unset($this->options['ItemCondition']);
+        if (array_key_exists('SellerSKUList.SellerSKU.1',$this->options)){
+            $this->options['Action'] = 'GetCompetitivePricingForSKU';
+            $this->resetASINs();
+        } else if (array_key_exists('ASINList.ASIN.1',$this->options)){
+            $this->options['Action'] = 'GetCompetitivePricingForASIN';
+            $this->resetSKUs();
+        }
+    }
+    
+    /**
+     * Fetches the competitive pricing list from Amazon
+     */
+    public function fetchLowestOffer(){
+        if (!array_key_exists('SellerSKUList.SellerSKU.1',$this->options) && !array_key_exists('ASINList.ASIN.1',$this->options)){
+            $this->log("Ids must be set in order to look them up!",'Warning');
+            return false;
+        }
+        $this->options['Timestamp'] = $this->genTime();
+        $this->prepareLowest();
+        
+        $url = $this->urlbase.$this->urlbranch;
+        
+        $this->options['Signature'] = $this->_signParameters($this->options, $this->secretKey);
+        $query = $this->_getParametersAsString($this->options);
+        
+        $path = $this->options['Action'].'Result';
+        
+        if ($this->mockMode){
+           $xml = $this->fetchMockFile()->$path;
+        } else {
+            $this->throttle();
+            $this->log("Making request to Amazon");
+            $response = fetchURL($url,array('Post'=>$query));
+            $this->logRequest();
+            
+            if (!$this->checkResponse($response)){
+                return false;
+            }
+            
+            $xml = simplexml_load_string($response['body'])->$path;
+        }
+        
+        
+        $this->parseXML($xml);
+        
+    }
+    
+    /**
+     * Sets up stuff
+     */
+    protected function prepareLowest(){
+        include($this->config);
+        $this->throttleTime = $throttleTimeProductPrice;
+        $this->throttleGroup = 'GetLowestOfferListings';
+        if (array_key_exists('SellerSKUList.SellerSKU.1',$this->options)){
+            $this->options['Action'] = 'GetLowestOfferListingsForSKU';
+            $this->resetASINs();
+        } else if (array_key_exists('ASINList.ASIN.1',$this->options)){
+            $this->options['Action'] = 'GetLowestOfferListingsForASIN';
+            $this->resetSKUs();
+        }
+    }
+    
+    /**
+     * Fetches the competitive pricing list from Amazon
+     */
+    public function fetchMyPrice(){
+        if (!array_key_exists('SellerSKUList.SellerSKU.1',$this->options) && !array_key_exists('ASINList.ASIN.1',$this->options)){
+            $this->log("Ids must be set in order to look them up!",'Warning');
+            return false;
+        }
+        $this->options['Timestamp'] = $this->genTime();
+        $this->prepareMyPrice();
+        
+        $url = $this->urlbase.$this->urlbranch;
+        
+        $this->options['Signature'] = $this->_signParameters($this->options, $this->secretKey);
+        $query = $this->_getParametersAsString($this->options);
+        
+        $path = $this->options['Action'].'Result';
+        
+        if ($this->mockMode){
+           $xml = $this->fetchMockFile()->$path;
+        } else {
+            $this->throttle();
+            $this->log("Making request to Amazon");
+            $response = fetchURL($url,array('Post'=>$query));
+            $this->logRequest();
+            
+            if (!$this->checkResponse($response)){
+                return false;
+            }
+            
+            $xml = simplexml_load_string($response['body'])->$path;
+        }
+        
+        
+        $this->parseXML($xml);
+        
+    }
+    
+    /**
+     * Sets up stuff
+     */
+    protected function prepareMyPrice(){
+        include($this->config);
+        $this->throttleTime = $throttleTimeProductPrice;
+        $this->throttleGroup = 'GetMyPrice';
+        unset($this->options['ExcludeMe']);
+        if (array_key_exists('SellerSKUList.SellerSKU.1',$this->options)){
+            $this->options['Action'] = 'GetMyPriceForSKU';
+            $this->resetASINs();
+        } else if (array_key_exists('ASINList.ASIN.1',$this->options)){
+            $this->options['Action'] = 'GetMyPriceForASIN';
+            $this->resetSKUs();
+        }
+    }
+    
+    /**
+     * Fetches the competitive pricing list from Amazon
+     */
+    public function fetchCategories(){
+        if (!array_key_exists('SellerSKUList.SellerSKU.1',$this->options) && !array_key_exists('ASINList.ASIN.1',$this->options)){
+            $this->log("Ids must be set in order to look them up!",'Warning');
+            return false;
+        }
+        $this->options['Timestamp'] = $this->genTime();
+        $this->prepareCategories();
+        
+        $url = $this->urlbase.$this->urlbranch;
+        
+        $this->options['Signature'] = $this->_signParameters($this->options, $this->secretKey);
+        $query = $this->_getParametersAsString($this->options);
+        
+        $path = $this->options['Action'].'Result';
+        
+        if ($this->mockMode){
+           $xml = $this->fetchMockFile()->$path;
+        } else {
+            $this->throttle();
+            $this->log("Making request to Amazon");
+            $response = fetchURL($url,array('Post'=>$query));
+            $this->logRequest();
+            
+            if (!$this->checkResponse($response)){
+                return false;
+            }
+            
+            $xml = simplexml_load_string($response['body'])->$path;
+        }
+        
+        
+        $this->parseXML($xml);
+        
+    }
+    
+    /**
+     * Sets up stuff
+     */
+    protected function prepareCategories(){
+        include($this->config);
+        $this->throttleTime = $throttleTimeProductList;
+        $this->throttleGroup = 'GetProductCategories';
+        unset($this->options['ExcludeMe']);
+        unset($this->options['ItemCondition']);
+        if (array_key_exists('SellerSKUList.SellerSKU.1',$this->options)){
+            $this->options['Action'] = 'GetProductCategoriesForSKU';
+            $this->resetASINs();
+        } else if (array_key_exists('ASINList.ASIN.1',$this->options)){
+            $this->options['Action'] = 'GetProductCategoriesForASIN';
+            $this->resetSKUs();
+        }
+    }
+    
+    /**
+     * converts XML to array
+     * @param SimpleXMLObject $xml
+     */
+    protected function parseXML($xml){
+//        foreach($xml->children() as $key=>$x){
+//            
+//        }
+    }
+    
 }
 ?>

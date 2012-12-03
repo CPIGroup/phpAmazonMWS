@@ -158,7 +158,7 @@ class AmazonReportRequest extends AmazonReportsCore{
     }
     
     /**
-     * Fetches the fulfillment order list from Amazon, using a token if available
+     * sends a report request to Amazon
      */
     public function requestReport(){
         if (!array_key_exists('ReportType',$this->options)){

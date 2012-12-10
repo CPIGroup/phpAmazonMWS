@@ -31,7 +31,7 @@ class AmazonProduct extends AmazonProductsCore{
             return;
         }
         
-        myPrint($xml);
+//        myPrint($xml);
         
         //Identifiers
         foreach($xml->Identifiers->children() as $x){
@@ -203,7 +203,7 @@ class AmazonProduct extends AmazonProductsCore{
             }
         }
         
-        myPrint($this->data);
+//        myPrint($this->data);
     }
     
     /**
@@ -211,6 +211,14 @@ class AmazonProduct extends AmazonProductsCore{
      * @return array Product data
      */
     public function getProduct(){
+        return $this->getData();
+    }
+    
+    /**
+     * Returns product data
+     * @return array Product data
+     */
+    public function getData(){
         return $this->data;
     }
     

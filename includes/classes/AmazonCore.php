@@ -252,6 +252,40 @@ abstract class AmazonCore{
     }
     
     /**
+     * Changes the store
+     * @param string $s
+     */
+    public function changeStore($s){
+        if (file_exists($this->config)){
+            include($this->config);
+        } else {
+            return false;
+        }
+        
+        if(array_key_exists($s, $store)){
+            $this->storeName = $s;
+            if(array_key_exists('merchantId', $store[$s])){
+                $this->options['SellerId'] = $store[$s]['merchantId'];
+            } else {
+                $this->log("Merchant ID is missing!",'Warning');
+            }
+            if(array_key_exists('keyId', $store[$s])){
+                $this->options['AWSAccessKeyId'] = $store[$s]['keyId'];
+            } else {
+                $this->log("Access Key ID is missing!",'Warning');
+            }
+            if(array_key_exists('secretKey', $store[$s])){
+                $this->secretKey = $store[$s]['secretKey'];
+            } else {
+                $this->log("Secret Key is missing!",'Warning');
+            }
+            
+        } else {
+            $this->log("Store $s does not exist!",'Warning');
+        }
+    }
+    
+    /**
      * Skeleton function
      */
     protected function parseXML(){

@@ -10,11 +10,26 @@ include('includes/classes.php');
 //$a->setLimits('Modified','-1 hours');
 //$a->fetchOrders();
 
-$a = new AmazonFeed('BigKitchen');
-$a->setFeedType('_POST_FLAT_FILE_CONVERGENCE_LISTINGS_DATA_'); //harmless: music loading
-$a->setFeedContent('<ok>');
-$a->submitFeed();
+$a = new AmazonProductInfo('BigKitchen');
+//$a->setASINs('B001O1OBFY');
+//$a->fetchLowestOffer();
+$a->setASINs('B0000DDVWV');
+$a->fetchMyPrice();
 var_dump ($a);
+
+//$a = new AmazonProductSearch('BigKitchen','CLASSIC BELGIAN WAFFLEPRO');
+//$a->searchProducts();
+//var_dump ($a);
+
+//$a = new AmazonProductSearch('BigKitchen','platinum');
+//$a->searchProducts();
+//var_dump ($a);
+
+//$a = new AmazonFeed('BigKitchen');
+//$a->setFeedType('_POST_FLAT_FILE_CONVERGENCE_LISTINGS_DATA_'); //harmless: music loading
+//$a->setFeedContent('<ok>');
+//$a->submitFeed();
+//var_dump ($a);
 
 //$a = new AmazonParticipationList('BigKitchen');
 //$a->fetchParticipationList();

@@ -338,15 +338,5 @@ class AmazonProductInfo extends AmazonProductsCore{
         }
     }
     
-    /**
-     * converts XML to array
-     * @param SimpleXMLObject $xml
-     */
-    protected function parseXML($xml){
-//        foreach($xml->children() as $key=>$x){
-//            
-//        }
-    }
-    
 }
 ?>

@@ -81,6 +81,18 @@ class AmazonProductsServiceStatus extends AmazonProductsCore{
         return $this->lastTimestamp;
     }
     
+    /**
+     * nothing
+     */
+    protected function parseXML(){
+    }
+    
+    /**
+     * nothing
+     */
+    public function getProduct(){
+    }
+    
 }
 
 ?>

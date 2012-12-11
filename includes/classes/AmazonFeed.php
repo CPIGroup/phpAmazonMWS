@@ -2,6 +2,8 @@
 
 class AmazonFeed extends AmazonFeedsCore{
     private $response;
+    private $feedContent;
+    private $feedMD5;
     
     /**
      * AmazonFeed object submits a Feed to Amazon
@@ -36,8 +38,25 @@ class AmazonFeed extends AmazonFeedsCore{
      */
     public function setFeedContent($s){
         if (is_string($s) && $s){
-            $this->options['FeedContent'] = $s;
+            file_put_contents('../../temp.xml', $s); //?????
+            $this->loadFeedFile('temp.xml');
         }
+    }
+    
+    /**
+     * sets the feed content
+     * @param string $url file path
+     */
+    public function loadFeedFile($path){
+        if (file_exists($path)){
+            if (strpos($path, '/') == 1){
+                $this->feedContent = $path;
+            } else {
+                $url = '/var/www/athena/plugins/newAmazon/'.$path; //todo: change to current install dir
+                $this->feedContent = $url;
+            }
+        }
+        $this->feedMD5 = base64_encode(md5(file_get_contents($this->feedContent),true));
     }
     
     /**
@@ -61,8 +80,8 @@ class AmazonFeed extends AmazonFeedsCore{
          *      Order Acknowledgement Feed ~ _POST_ORDER_ACKNOWLEDGEMENT_DATA_
          *      Order Fulfillment Feed ~ _POST_ORDER_FULFILLMENT_DATA_
          *      FBA Shipment Injection Fulfillment Feed~  _POST_FULFILLMENT_ORDER_REQUEST_DATA_
-         *      FBA Shipment Injection ~ _POST_FULFILLMENT_ORDER_CANCELLATION
-         *      Cancellation Feed ~ _REQUEST_DATA 
+         *      FBA Shipment Injection ~ _POST_FULFILLMENT_ORDER_CANCELLATION_
+         *      Cancellation Feed ~ _REQUEST_DATA_
          *      Order Adjustment Feed ~ _POST_PAYMENT_ADJUSTMENT_DATA_
          *      Invoice Confirmation Feed ~ _POST_INVOICE_CONFIRMATION_DATA_
          * Tab Delimited Feeds:
@@ -126,19 +145,27 @@ class AmazonFeed extends AmazonFeedsCore{
      * @return boolean false if improper input
      */
     public function setPurge($s = 'true'){
-        if ($s == 'true' || $s == 'false'){
+        if ($s == 'true'){
             $this->options['PurgeAndReplace'] = $s;
             $this->throttleTime = 86400;
-        } else {
+        } else if ($s == 'false'){
+            $this->options['PurgeAndReplace'] = $s;
+            if (file_exists($this->config)){
+                include($this->config);
+                $this->throttleTime = $throttleTimeFeedSubmit;
+            } else {
+                return false;
+            }
+        } {
             return false;
         }
     }
     
     /**
-     * Submits a feed to Amazon??????????????????
+     * Submits a feed to Amazon
      */
     public function submitFeed(){
-        if (!array_key_exists('FeedContent',$this->options)){
+        if (!$this->feedContent){
             $this->log("Feed's contents must be set in order to submit it!",'Warning');
             return false;
         }
@@ -161,21 +188,24 @@ class AmazonFeed extends AmazonFeedsCore{
         } else {
             $this->throttle();
             $this->log("Making request to Amazon");
-            $md5 = base64_encode(md5($this->options['FeedContent'],true));
-            $md5 = base64_encode(md5($query));
-            echo 'Normal: ' . md5($this->options['FeedContent']);
-            echo '<br>Base64: ' . base64_encode(md5($this->options['FeedContent'],true));
-            echo '<br>HMAC256: ' . base64_encode(hash_hmac('sha1', $this->options['FeedContent'], $this->secretKey, true));
-            $headers[0] = "Content-MD5:$md5";
-//            $headers[0] = "Content-MD5:1B2M2Y8AsgTpgAmY7PhCfg==";
-            $response = fetchURL($url,array('Header'=>$headers,'Post'=>$query));
+            $headers = $this->genHeader();
+            $post = $this->genPost();
+            $response = fetchURL("$url?$query",array('Header'=>$headers,'Post'=>$post));
             $this->logRequest();
             
-            if (!$this->checkResponse($response)){
-                return false;
+            myPrint($response);
+            $this->checkResponse($response);
+            
+            //getting Response 100?
+            if ($response['head'] == 'HTTP/1.1 100 Continue'){
+                $body = strstr($response['body'],'<');
+                var_dump($body);
+                $xml = simplexml_load_string($body)->$path;
+            } else {
+                $xml = simplexml_load_string($response['body'])->$path;
             }
             
-            $xml = simplexml_load_string($response['body'])->$path;
+            
         }
         
         $this->parseXML($xml->FeedSubmissionInfo);
@@ -198,6 +228,44 @@ class AmazonFeed extends AmazonFeedsCore{
         $this->response['SubmittedDate'] = (string)$xml->SubmittedDate;
         $this->response['FeedProcessingStatus'] = (string)$xml->FeedProcessingStatus;
         
+        $this->log("Successfully submitted feed #".$this->response['FeedSubmissionId'].' ('.$this->response['FeedType'].')');
+    }
+    
+    /**
+     * Generates array for Header
+     * @return array
+     */
+    protected function genHeader(){
+        $return[0] = "Content-MD5:".$this->feedMD5;
+        return $return;
+    }
+    
+    /**
+     * Generates array for Post
+     * @return array
+     */
+    protected function genPost(){
+        $return['file'] = '@'.$this->feedContent;
+        return $return;
+    }
+    
+    /**
+     * checks whether or not the response is OK, due to '100' response
+     * @param array $r response array
+     */
+    protected function checkResponse($r){
+        if (!is_array($r)){
+            $this->log("No Response found",'Warning');
+            return;
+        }
+        //for dealing with 100 response
+        if (array_key_exists('error', $r) && $r['ok'] == 0){
+            $this->log("Response Not OK! Error: ".$r['error'],'Urgent');
+            return;
+        } else {
+            $this->log("Response OK!");
+            return;
+        }
     }
     
 }

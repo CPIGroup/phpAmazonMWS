@@ -10,12 +10,21 @@ include('includes/classes.php');
 //$a->setLimits('Modified','-1 hours');
 //$a->fetchOrders();
 
-$a = new AmazonProductInfo('BigKitchen');
-//$a->setASINs('B001O1OBFY');
-//$a->fetchLowestOffer();
-$a->setASINs('B0000DDVWV');
-$a->fetchMyPrice();
+$a = new AmazonFeedList('BigKitchen');
+$a->setTimeLimits('-5 hours');
+$a->setMaxCount(50);
+$a->fetchFeedSubmissions();
 var_dump ($a);
+
+//var_dump(base64_encode(md5('',true)));
+//var_dump('1B2M2Y8AsgTpgAmY7PhCfg==');
+
+//$a = new AmazonProductInfo('BigKitchen');
+////$a->setASINs('B001O1OBFY');
+////$a->fetchLowestOffer();
+//$a->setASINs('B0000DDVWV');
+//$a->fetchMyPrice();
+//var_dump ($a);
 
 //$a = new AmazonProductSearch('BigKitchen','CLASSIC BELGIAN WAFFLEPRO');
 //$a->searchProducts();
@@ -27,7 +36,7 @@ var_dump ($a);
 
 //$a = new AmazonFeed('BigKitchen');
 //$a->setFeedType('_POST_FLAT_FILE_CONVERGENCE_LISTINGS_DATA_'); //harmless: music loading
-//$a->setFeedContent('<ok>');
+//$a->loadFeedFile('temp.xml');
 //$a->submitFeed();
 //var_dump ($a);
 

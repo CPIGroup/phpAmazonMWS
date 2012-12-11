@@ -179,8 +179,8 @@ class AmazonFeedList extends AmazonFeedsCore implements Iterator{
      * removes time frame limits
      */
     public function resetTimeLimits(){
-        unset($this->options['AvailableFromDate']);
-        unset($this->options['AvailableToDate']);
+        unset($this->options['SubmittedFromDate']);
+        unset($this->options['SubmittedToDate']);
     }
     
     /**
@@ -191,9 +191,6 @@ class AmazonFeedList extends AmazonFeedsCore implements Iterator{
         $this->options['Timestamp'] = $this->genTime();
         $this->prepareToken();
         
-        if (!isset($this->options['QueryStartDateTime']) && !isset($this->options['SellerSkus.member.1'])){
-            $this->setStartTime();
-        }
         
         
         $url = $this->urlbase.$this->urlbranch;
@@ -275,7 +272,7 @@ class AmazonFeedList extends AmazonFeedsCore implements Iterator{
                 $this->count = (string)$x;
                 $this->log("Successfully canceled $this->count report requests.");
             }
-            if ($key != 'ReportRequestInfo'){
+            if ($key != 'FeedSubmissionInfo'){
                 continue;
             }
             

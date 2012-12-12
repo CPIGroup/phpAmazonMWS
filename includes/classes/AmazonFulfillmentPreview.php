@@ -186,8 +186,9 @@ class AmazonFulfillmentPreview extends AmazonOutboundCore{
         $this->options['Signature'] = $this->_signParameters($this->options, $this->secretKey);
         $query = $this->_getParametersAsString($this->options);
         
+        $path = $this->options['Action'].'Result';
         if ($this->mockMode){
-           $xml = $this->fetchMockFile()->GetFulfillmentPreviewResult->FulfillmentPreviews;
+           $xml = $this->fetchMockFile()->$path->FulfillmentPreviews;
         } else {
             $this->throttle();
             $this->log("Making request to Amazon");
@@ -198,7 +199,7 @@ class AmazonFulfillmentPreview extends AmazonOutboundCore{
                 return false;
             }
             
-            $xml = simplexml_load_string($response['body'])->GetFulfillmentPreviewResult->FulfillmentPreviews;
+            $xml = simplexml_load_string($response['body'])->$path->FulfillmentPreviews;
         }
         
         $this->xmldata = $xml;

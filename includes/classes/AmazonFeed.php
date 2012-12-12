@@ -181,7 +181,7 @@ class AmazonFeed extends AmazonFeedsCore{
         $this->options['Signature'] = $this->_signParameters($this->options, $this->secretKey);
         $query = $this->_getParametersAsString($this->options);
         
-        $path = 'SubmitFeedResult';
+        $path = $this->options['Action'].'Result';
         
         if ($this->mockMode){
            $xml = $this->fetchMockFile()->$path;
@@ -267,6 +267,8 @@ class AmazonFeed extends AmazonFeedsCore{
             return;
         }
     }
+    
+    
     
 }
 ?>

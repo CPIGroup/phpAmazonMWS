@@ -264,8 +264,9 @@ class AmazonShipment extends AmazonInboundCore{
         $this->options['Signature'] = $this->_signParameters($this->options, $this->secretKey);
         $query = $this->_getParametersAsString($this->options);
         
+        $path = $this->options['Action'].'Result';
         if ($this->mockMode){
-           $xml = $this->fetchMockFile()->UpdateInboundShipmentResult->InboundShipmentPlans;
+           $xml = $this->fetchMockFile()->$path->InboundShipmentPlans;
         } else {
             $this->throttle();
             $this->log("Making request to Amazon");
@@ -276,7 +277,7 @@ class AmazonShipment extends AmazonInboundCore{
                 return false;
             }
             
-            $xml = simplexml_load_string($response['body'])->UpdateInboundShipmentPlanResult->InboundShipmentPlans;
+            $xml = simplexml_load_string($response['body'])->$path->InboundShipmentPlans;
         }
         $verify = (string)$xml->ShipmentId;
         

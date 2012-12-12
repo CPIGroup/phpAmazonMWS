@@ -73,8 +73,9 @@ class AmazonOrderSet extends AmazonOrderCore implements Iterator{
         $this->options['Signature'] = $this->_signParameters($this->options, $this->secretKey);
         $query = $this->_getParametersAsString($this->options);
         
+        $path = $this->options['Action'].'Result';
         if ($this->mockMode){
-           $xml = $this->fetchMockFile()->GetOrderResult;
+           $xml = $this->fetchMockFile()->$path;
         } else {
             $this->throttle();
             $this->log("Making request to Amazon");
@@ -85,7 +86,7 @@ class AmazonOrderSet extends AmazonOrderCore implements Iterator{
                 return false;
             }
 
-            $xml = simplexml_load_string($response['body'])->GetOrderResult;
+            $xml = simplexml_load_string($response['body'])->$path;
         }
         
         echo 'the lime must be drawn here';

@@ -103,8 +103,7 @@ class AmazonReportCounter extends AmazonReportsCore{
         $this->options['Signature'] = $this->_signParameters($this->options, $this->secretKey);
         $query = $this->_getParametersAsString($this->options);
         
-        $path = 'GetReportCountResult';
-        
+        $path = $this->options['Action'].'Result';
         if ($this->mockMode){
            $xml = $this->fetchMockFile()->$path;
         } else {

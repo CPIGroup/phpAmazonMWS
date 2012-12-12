@@ -58,8 +58,9 @@ class AmazonFulfillmentOrder extends AmazonOutboundCore{
         $this->options['Signature'] = $this->_signParameters($this->options, $this->secretKey);
         $query = $this->_getParametersAsString($this->options);
         
+        $path = $this->options['Action'].'Result';
         if ($this->mockMode){
-           $xml = $this->fetchMockFile()->GetFulfillmentOrderResult;
+           $xml = $this->fetchMockFile()->$path;
         } else {
             $this->throttle();
             $this->log("Making request to Amazon");
@@ -70,7 +71,7 @@ class AmazonFulfillmentOrder extends AmazonOutboundCore{
                 return false;
             }
             
-            $xml = simplexml_load_string($response['body'])->GetFulfillmentOrderResult;
+            $xml = simplexml_load_string($response['body'])->$path;
         }
         
         $this->xmldata = $xml;

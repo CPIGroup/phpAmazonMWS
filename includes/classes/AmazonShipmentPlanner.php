@@ -172,8 +172,9 @@ class AmazonShipmentPlanner extends AmazonInboundCore implements Iterator{
         $this->options['Signature'] = $this->_signParameters($this->options, $this->secretKey);
         $query = $this->_getParametersAsString($this->options);
         
+        $path = $this->options['Action'].'Result';
         if ($this->mockMode){
-           $xml = $this->fetchMockFile()->CreateInboundShipmentPlanResult->InboundShipmentPlans;
+           $xml = $this->fetchMockFile()->$path->InboundShipmentPlans;
         } else {
             $this->throttle();
             $this->log("Making request to Amazon");
@@ -184,7 +185,7 @@ class AmazonShipmentPlanner extends AmazonInboundCore implements Iterator{
                 return false;
             }
             
-            $xml = simplexml_load_string($response['body'])->CreateInboundShipmentPlanResult->InboundShipmentPlans;
+            $xml = simplexml_load_string($response['body'])->$path->InboundShipmentPlans;
         }
 //        myPrint($xml);
         $this->xmldata = $xml;

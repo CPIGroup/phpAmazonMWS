@@ -183,7 +183,12 @@ abstract class AmazonCore{
      * @param string $path
      */
     public function setLogPath($path){
-        $this->logpath = $path;
+        if (file_exists($path)){
+            $this->logpath = $path;
+        } else {
+            throw new Exception("Log file does not exist! ($path)");
+        }
+        
     }
     
     /**
@@ -194,7 +199,7 @@ abstract class AmazonCore{
         if (file_exists($this->config)){
             include($this->config);
         } else {
-            return false;
+            throw new Exception("Config file does not exist!");
         }
         
         if(array_key_exists($s, $store)){

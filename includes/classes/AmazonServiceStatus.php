@@ -70,6 +70,11 @@ class AmazonServiceStatus extends AmazonCore{
             return false;
         }
         
+        if (is_bool($s)){
+            $this->log("A boolean is not a service",'Warning');
+            return false;
+        }
+        
         switch($s){
             case 'Inbound':
                 $this->urlbranch = 'FulfillmentInboundShipment/'.$versionInbound;

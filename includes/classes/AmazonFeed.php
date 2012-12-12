@@ -34,12 +34,20 @@ class AmazonFeed extends AmazonFeedsCore{
     
     /**
      * sets the feed content
-     * @param string $s ?????????????????
+     * @param string $s contents to put in file
+     * @param string $override path to temporary file, from main plugin directory
      */
-    public function setFeedContent($s){
+    public function setFeedContent($s, $override = null){
         if (is_string($s) && $s){
-            file_put_contents('../../temp.xml', $s); //?????
-            $this->loadFeedFile('temp.xml');
+            if ($override && file_exists($override) && is_writable($override)){
+                file_put_contents('../../'.$override, $s); //?????
+                $this->loadFeedFile($override);
+            } else {
+                file_put_contents('../../temp.xml', $s); //?????
+                $this->loadFeedFile('temp.xml');
+            }
+        } else {
+            return false;
         }
     }
     
@@ -55,8 +63,8 @@ class AmazonFeed extends AmazonFeedsCore{
                 $url = '/var/www/athena/plugins/newAmazon/'.$path; //todo: change to current install dir
                 $this->feedContent = $url;
             }
+            $this->feedMD5 = base64_encode(md5(file_get_contents($this->feedContent),true));
         }
-        $this->feedMD5 = base64_encode(md5(file_get_contents($this->feedContent),true));
     }
     
     /**

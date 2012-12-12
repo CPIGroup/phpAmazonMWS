@@ -1,34 +1,6 @@
 <?php
-/*
- * Plan:
- * Database doubles as look-up table and record cache
- * -unique ID
- * -AmazonOrderID
- * -request type (either ListOrders/token or GetOrder)
- * -XML response, broken down into individual orders
- * -timestamp of request, used for throttling calculations
- * -status of order, used to determine which orders should be updated (eg Shipped is done with)
- * -flag for items for this order were ever retrieved
- * 
- * item table is similar
- * -unique ID
- * -id  corresponding to other table id
- * -timestamp
- * -even though it's dumb, store whether or not token was used via order status
- * -XML response broken into individual items
- * 
- * Need to find a way to connect to the database, check last timestamp of desired request type
- * for retrieving specific order information, check cache first to see if it was already received
- * functionality for updating orders
- * 
- * Get = fetch from cache or ?????
- * I'll probably have to make a new function for this, with a different name
- * 
- * caching is a great idea because it means information retrieval even if Amazon is down
- * 
- * need a function for Updating non-completed orders
- * 
- * oh and I still need Mock powers
+/**
+ * Still need to write this properly
  */
 
 abstract class AmazonCore{
@@ -56,57 +28,9 @@ abstract class AmazonCore{
      * @param array|string $m list of mock file URLs to provide to the Mock Server
      */
     protected function __construct($s, $mock=false, $m = null){
-        if (!isset($this->config)){
-            $this->config = '/var/www/athena/plugins/newAmazon/amazon-config.php';
-        }
-        
-        if (file_exists($this->config)){
-            include($this->config);
-        } else {
-            throw new Exception('Config file does not exist!');
-        }
-        
-        $this->logpath = $logpath;
-        
-        if(array_key_exists($s, $store)){
-            $this->storeName = $s;
-            if(array_key_exists('merchantId', $store[$s])){
-                $this->options['SellerId'] = $store[$s]['merchantId'];
-            } else {
-                $this->log("Merchant ID is missing!",'Warning');
-            }
-            if(array_key_exists('keyId', $store[$s])){
-                $this->options['AWSAccessKeyId'] = $store[$s]['keyId'];
-            } else {
-                $this->log("Access Key ID is missing!",'Warning');
-            }
-            if(array_key_exists('secretKey', $store[$s])){
-                $this->secretKey = $store[$s]['secretKey'];
-            } else {
-                $this->log("Secret Key is missing!",'Warning');
-            }
-            
-        } else {
-            $this->log("Store $s does not exist!",'Warning');
-        }
-        
-        if (is_bool($mock)){
-            $this->mockMode = $mock;
-            if ($mock){
-                $this->log("Mock Mode set to true");
-            }
-            if (is_string($m)){
-                $this->mockFiles = array();
-                $this->mockFiles[0] = $m;
-                $this->log("Single Mock File set: $m");
-            } else if (is_array($m)){
-                $this->mockFiles = $m;
-                $this->log("Mock files array set.");
-            }
-        }
-        
-        
-        $this->urlbase = $serviceURL;
+        $this->setConfig('/var/www/athena/plugins/newAmazon/amazon-config.php');
+        $this->setStore($s);
+        $this->setMock($mock,$m);
         
         $this->options['SignatureVersion'] = 2;
         $this->options['SignatureMethod'] = 'HmacSHA256';
@@ -121,14 +45,14 @@ abstract class AmazonCore{
         if (is_bool($b)){
             $this->mockMode = $b;
             $this->log("Mock Mode set to $b");
-        }
-        if (is_string($files)){
-            $this->mockFiles = array();
-            $this->mockFiles[0] = $files;
-            $this->log("Single Mock File set: $files");
-        } else if (is_array($files)){
-            $this->mockFiles = $files;
-            $this->log("Mock files array set.");
+            if (is_string($files)){
+                $this->mockFiles = array();
+                $this->mockFiles[0] = $files;
+                $this->log("Single Mock File set: $files");
+            } else if (is_array($files)){
+                $this->mockFiles = $files;
+                $this->log("Mock files array set.");
+            }
         }
     }
     
@@ -136,7 +60,7 @@ abstract class AmazonCore{
      * Fetches the given mock file, or attempts to
      * @return SimpleXMLObject|boolean file, or false on failure
      */
-    public function fetchMockFile(){
+    protected function fetchMockFile(){
         if(!is_array($this->mockFiles) || !array_key_exists(0, $this->mockFiles)){
             $this->log("Attempted to retrieve mock files, but no mock files present",'Warning');
             return false;
@@ -166,7 +90,7 @@ abstract class AmazonCore{
     /**
      * Sets mock index back to 0
      */
-    public function resetMock(){
+    protected function resetMock(){
         $this->mockIndex = 0;
         $this->log("Mock List index reset to 0");
     }
@@ -175,7 +99,7 @@ abstract class AmazonCore{
      * with MockFiles full of strings/numbers, this will generate a matching fake response
      * @return boolean|array response array, or false on failure
      */
-    public function fetchMockResponse(){
+    protected function fetchMockResponse(){
         if(!is_array($this->mockFiles) || !array_key_exists(0, $this->mockFiles)){
             $this->log("Attempted to retrieve mock responses, but no mock responses present",'Warning');
             return false;
@@ -235,27 +159,33 @@ abstract class AmazonCore{
     }
     
     /**
-     * Change the config file, for testing purposes
+     * Sets the config file
      * @param string $path
      */
-    public function changeConfig($path){
-        $this->config = $path;
-        $this->__construct($this->storeName, $this->mockMode, $this->mockFiles);
+    public function setConfig($path){
+        if (file_exists($path)){
+            include($path);
+            $this->config = $path;
+            $this->setLogPath($logpath);
+            $this->urlbase = $serviceURL;
+        } else {
+            throw new Exception("Config file does not exist! ($path)");
+        }
     }
     
     /**
-     * Change the config file, for testing purposes
+     * Set the log file path
      * @param string $path
      */
-    public function changeLogPath($path){
+    public function setLogPath($path){
         $this->logpath = $path;
     }
     
     /**
-     * Changes the store    @todo try to recombine or use in construct
+     * Changes the store
      * @param string $s
      */
-    public function changeStore($s){
+    public function setStore($s){
         if (file_exists($this->config)){
             include($this->config);
         } else {
@@ -290,6 +220,7 @@ abstract class AmazonCore{
      */
     protected function parseXML(){
         //@todo you know what I am going to type
+        //I can get rid of this after I fix how Orders deals with it...maybe?
     }
     
     /**
@@ -394,6 +325,8 @@ abstract class AmazonCore{
                 $fd = fopen($this->logpath, "a+");
                 fwrite($fd,$str . "\r\n");
                 fclose($fd);
+            } else {
+                throw new Exception('Error! Cannot write to log! ('.$this->logpath.')');
             }
         } else {
             return false;

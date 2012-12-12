@@ -3,16 +3,9 @@ include('/var/www/athena/includes/header.php');
         
 include('includes/classes.php');
 
-//$a = new AmazonOrderList('BigKitchen');
-//$a->setFetchItems();
-//$a->setUseItemToken();
-////$a->setFulfillmentChannelFilter('AFN');
-//$a->setLimits('Modified','-1 hours');
-//$a->fetchOrders();
-
-//$a = new AmazonServiceStatus('BigKitchen','Inbound');
-//$a->fetchServiceStatus();
-//var_dump ($a);
+$a = new AmazonServiceStatus('BigKitchen','Inbound');
+$a->fetchServiceStatus();
+var_dump ($a);
 
 //$a = new AmazonFeedList('BigKitchen');
 //$a->setTimeLimits('-5 hours');

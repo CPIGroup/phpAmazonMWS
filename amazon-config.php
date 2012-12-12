@@ -20,6 +20,17 @@ $store['BigKitchen']['keyId'] = 'AKIAJBQH4G6FKKUAPU6Q';
 $store['BigKitchen']['secretKey'] = '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';
 
 
+//Version numbers for cores
+$versionFeeds     = '2009-01-01';
+$versionInbound   = '2010-10-01';
+$versionInventory = '2010-10-01';
+$versionOrders    = '2011-01-01';
+$versionOutbound  = '2010-10-01';
+$versionProducts  = '2011-10-01';
+$versionReports   = '2009-01-01';
+$versionSellers   = '2011-07-01';
+
+
 //Location of log file to use
 $logpath = 'log.txt';
 

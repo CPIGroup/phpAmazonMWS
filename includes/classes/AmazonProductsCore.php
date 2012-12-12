@@ -13,11 +13,11 @@ abstract class AmazonProductsCore extends AmazonCore{
         if (file_exists($this->config)){
             include($this->config);
         } else {
-            return false;
+            throw new Exception('Config file does not exist!');
         }
         
-        $this->urlbranch = 'Products/2011-10-01';
-        $this->options['Version'] = '2011-10-01';
+        $this->urlbranch = 'Products/'.$versionProducts;
+        $this->options['Version'] = $versionProducts;
         
         if(array_key_exists('marketplaceId', $store[$s])){
             $this->options['MarketplaceId'] = $store[$s]['marketplaceId'];

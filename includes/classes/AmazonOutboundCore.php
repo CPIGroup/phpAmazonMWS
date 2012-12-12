@@ -8,8 +8,13 @@ abstract class AmazonOutboundCore extends AmazonCore{
      */
     public function __construct($s, $mock = false, $m = null){
         parent::__construct($s, $mock, $m);
-        $this->urlbranch = 'FulfillmentOutboundShipment/2010-10-01';
-        $this->options['Version'] = '2010-10-01';
+        if (file_exists($this->config)){
+            include($this->config);
+        } else {
+            throw new Exception('Config file does not exist!');
+        }
+        $this->urlbranch = 'FulfillmentOutboundShipment/'.$versionOutbound;
+        $this->options['Version'] = $versionOutbound;
         $this->throttleGroup = 'Inventory';
     }
 }

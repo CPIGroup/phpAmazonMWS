@@ -63,7 +63,7 @@ abstract class AmazonCore{
         if (file_exists($this->config)){
             include($this->config);
         } else {
-            return false;
+            throw new Exception('Config file does not exist!');
         }
         
         $this->logpath = $logpath;
@@ -252,7 +252,7 @@ abstract class AmazonCore{
     }
     
     /**
-     * Changes the store
+     * Changes the store    @todo try to recombine or use in construct
      * @param string $s
      */
     public function changeStore($s){
@@ -289,7 +289,7 @@ abstract class AmazonCore{
      * Skeleton function
      */
     protected function parseXML(){
-        
+        //@todo you know what I am going to type
     }
     
     /**
@@ -403,7 +403,7 @@ abstract class AmazonCore{
     /**
      * trying to generate a proper URL
      * 
-     * DEPRECATED?
+     * @DEPRECATED
      * @return string
      */
     public function genRequest(){
@@ -440,7 +440,7 @@ abstract class AmazonCore{
     /**
      * Generates the signature hash for signing the request
      * 
-     * DEPRECATED?
+     * @DEPRECATED
      * @return string has string
      * @throws InvalidArgumentException if no options are detected
      */
@@ -509,7 +509,6 @@ abstract class AmazonCore{
      */
     protected function logRequest(){
         include('/var/www/athena/includes/config.php');
-        DB_PLUGINS;
         
         $sql = "INSERT INTO  `amazonRequestLog` (`id` ,`type` ,`timestamp`)VALUES (NULL ,  ?,  ?)";
         $value = array($this->options['Action'],time());

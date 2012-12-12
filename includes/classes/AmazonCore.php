@@ -44,7 +44,12 @@ abstract class AmazonCore{
     public function setMock($b = true,$files = null){
         if (is_bool($b)){
             $this->mockMode = $b;
-            $this->log("Mock Mode set to $b");
+            if ($b){
+                $mode = 'ON';
+            } else {
+                $mode = 'OFF';
+            }
+            $this->log("Mock Mode set to $mode");
             if (is_string($files)){
                 $this->mockFiles = array();
                 $this->mockFiles[0] = $files;

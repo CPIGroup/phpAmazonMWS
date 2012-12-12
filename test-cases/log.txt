@@ -1,5 +1,1 @@
-This is the Amazon log, for Amazon classes to use.
-[Info][2012/12/12 02:17:21 guest@cli AmazonCore.php:33 setMock] Mock Mode set to 
-[Info][2012/12/12 02:17:22 guest@cli AmazonCore.php:33 setMock] Mock Mode set to 
-[Info][2012/12/12 02:17:22 guest@cli AmazonCore.php:33 setMock] Mock Mode set to 
-[Info][2012/12/12 02:17:22 guest@cli AmazonCore.php:33 setMock] Mock Mode set to 
+This is the Amazon Unit Test log, for Amazon class Unit Tests to use.

@@ -3,8 +3,8 @@
 if (!defined("DB_PHPUNIT"))
     define("DB_PHPUNIT", true);
 
-//if (!defined("SKIP_DB_PHPUNIT"))
-//    define("SKIP_DB_PHPUNIT", true);
+if (!defined("SKIP_DB_PHPUNIT"))
+    define("SKIP_DB_PHPUNIT", true);
 
 //if (!defined("PHPUNIT_DEBUG"))
 //    define("PHPUNIT_DEBUG", true);

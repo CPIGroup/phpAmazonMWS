@@ -69,9 +69,10 @@ abstract class AmazonCore{
     
     /**
      * Fetches the given mock file, or attempts to
+     * @param boolean $load to skip loading simpleXML
      * @return SimpleXMLObject|boolean file, or false on failure
      */
-    protected function fetchMockFile(){
+    protected function fetchMockFile($load = true){
         if(!is_array($this->mockFiles) || !array_key_exists(0, $this->mockFiles)){
             $this->log("Attempted to retrieve mock files, but no mock files present",'Warning');
             return false;
@@ -88,7 +89,12 @@ abstract class AmazonCore{
             
             try{
                 $this->log("Fetched Mock File: $url");
-                return simplexml_load_file($url);
+                if ($load){
+                    $return = simplexml_load_file($url);
+                } else {
+                    $return = file_get_contents($url);
+                }
+                return $return;
             } catch (Exception $e){
                 $this->log("Error when opening Mock File: $url",'Warning');
             }

@@ -70,7 +70,6 @@ class AmazonFeedResultTest extends PHPUnit_Framework_TestCase {
         $o->saveFeed('/var/www/athena/plugins/newAmazon/test-cases/mock/saveFeed.xml');
         $check = $this->parseLog();
         $this->assertEquals('Successfully saved feed #77 at /var/www/athena/plugins/newAmazon/test-cases/mock/saveFeed.xml',$check[0]);
-        var_dump($check);
     }
     
     /**

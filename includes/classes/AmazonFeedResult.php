@@ -71,7 +71,7 @@ class AmazonFeedResult extends AmazonFeedsCore{
         $query = $this->_getParametersAsString($this->options);
         
         if ($this->mockMode){
-           $this->rawFeed = $this->fetchMockFile();
+           $this->rawFeed = $this->fetchMockFile(false);
         } else {
             $this->throttle();
             $this->log("Making request to Amazon");

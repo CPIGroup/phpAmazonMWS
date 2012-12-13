@@ -82,7 +82,7 @@ class AmazonFeedResult extends AmazonFeedsCore{
                 return false;
             }
             
-            $this->rawFeed = simplexml_load_string($response['body']);
+            $this->rawFeed = $response['body'];
         }
         
     }

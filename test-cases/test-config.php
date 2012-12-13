@@ -18,6 +18,9 @@ $store['BigKitchen']['keyId'] = 'AKIAJBQH4G6FKKUAPU6Q';
 //Secret Accress Key for this store
 $store['BigKitchen']['secretKey'] = 'Ccr8G3kGNxmVi+extfVRrZU9X8+QjLmBJkSraNsC';
 
+//Fake store
+$store['bad']['no'] = 'no';
+
 
 //Version numbers for cores
 $versionFeeds     = '2009-01-01';

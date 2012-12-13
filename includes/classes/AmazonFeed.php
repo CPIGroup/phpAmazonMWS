@@ -78,6 +78,8 @@ class AmazonFeed extends AmazonFeedsCore{
     public function setFeedType($s){
         if (is_string($s) && $s){
             $this->options['FeedType'] = $s;
+        } else {
+            return false;
         }
         /*
          * List of valid Feed Types:
@@ -124,14 +126,15 @@ class AmazonFeed extends AmazonFeedsCore{
      * @return boolean false if failure
      */
     public function setMarketplaceIds($s){
-        if (is_string($s)){
+        if ($s && is_string($s)){
             $this->resetMarketplaceIds();
             $this->options['MarketplaceIdList.Id.1'] = $s;
-        } else if (is_array($s)){
+        } else if ($s && is_array($s)){
             $this->resetMarketplaceIds();
             $i = 1;
             foreach ($s as $x){
                 $this->options['MarketplaceIdList.Id.'.$i] = $x;
+                $i++;
             }
         } else {
             return false;
@@ -153,22 +156,24 @@ class AmazonFeed extends AmazonFeedsCore{
      * Sets whether or not the tab delimited feed should completely replace old data
      * 
      * Warning! This has a 24 hour throttling time! Use this parameter only in exceptional cases.
-     * @param string $s "true" or "false"
+     * @param boolean|string $s boolean, or "true" or "false"
      * @return boolean false if improper input
      */
     public function setPurge($s = 'true'){
-        if ($s == 'true'){
-            $this->options['PurgeAndReplace'] = $s;
+        if ($s == 'true' || ($s && is_bool($s))){
+            $this->log("Caution! Purge mode set!",'Warning');
+            $this->options['PurgeAndReplace'] = 'true';
             $this->throttleTime = 86400;
-        } else if ($s == 'false'){
-            $this->options['PurgeAndReplace'] = $s;
+        } else if ($s == 'false' || (!$s && is_bool($s))){
+            $this->log("Purge mode deactivated.");
+            $this->options['PurgeAndReplace'] = 'false';
             if (file_exists($this->config)){
                 include($this->config);
                 $this->throttleTime = $throttleTimeFeedSubmit;
             } else {
                 return false;
             }
-        } {
+        } else {
             return false;
         }
     }
@@ -278,6 +283,14 @@ class AmazonFeed extends AmazonFeedsCore{
             $this->log("Response OK!");
             return;
         }
+    }
+    
+    /**
+     * Returns the response data.
+     * @return array
+     */
+    public function getResponse(){
+        return $this->response;
     }
     
     

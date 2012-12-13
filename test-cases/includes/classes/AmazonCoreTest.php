@@ -29,19 +29,19 @@ class AmazonCoreTest extends PHPUnit_Framework_TestCase {
     }
 
     /**
-        * @return array
-        */
-        public function mockProvider() {
-            return array(
-                array(true,null, 'Mock Mode set to ON'),
-                array(false,null, 'Mock Mode set to OFF'),
-                array(true,'test', 'Mock Mode set to ON','Single Mock File set: test'),
-                array(true,array('test'), 'Mock Mode set to ON','Mock files array set.'),
-                array(false,'test', 'Mock Mode set to OFF','Single Mock File set: test'),
-                array(false,array('test'), 'Mock Mode set to OFF','Mock files array set.'),
-                array('no',null, null),
-            );
-        }
+    * @return array
+    */
+    public function mockProvider() {
+        return array(
+            array(true,null, 'Mock Mode set to ON'),
+            array(false,null, 'Mock Mode set to OFF'),
+            array(true,'test', 'Mock Mode set to ON','Single Mock File set: test'),
+            array(true,array('test'), 'Mock Mode set to ON','Mock files array set.'),
+            array(false,'test', 'Mock Mode set to OFF','Single Mock File set: test'),
+            array(false,array('test'), 'Mock Mode set to OFF','Mock files array set.'),
+            array('no',null, null),
+        );
+    }
     
     /**
      * @covers AmazonCore::setMock
@@ -84,6 +84,22 @@ class AmazonCoreTest extends PHPUnit_Framework_TestCase {
         $check = $this->parseLog();
         $this->assertEquals('Mock Mode set to ON',$check[0]);
         $this->assertEquals('Store no does not exist!',$check[1]);
+        $this->resetLog();
+        $this->object->setStore('bad');
+        $bad = $this->parseLog();
+        $this->assertEquals('Merchant ID is missing!',$bad[0]);
+        $this->assertEquals('Access Key ID is missing!',$bad[1]);
+        $this->assertEquals('Secret Key is missing!',$bad[2]);
+    }
+    
+    public function testGetOptions(){
+        $o = $this->object->getOptions();
+        $this->assertInternalType('array',$o);
+        $this->assertArrayHasKey('SellerId',$o);
+        $this->assertArrayHasKey('AWSAccessKeyId',$o);
+        $this->assertArrayHasKey('SignatureVersion',$o);
+        $this->assertArrayHasKey('SignatureMethod',$o);
+        $this->assertArrayHasKey('Version',$o);
     }
     
     /**

@@ -36,7 +36,7 @@ class AmazonFeedTest extends PHPUnit_Framework_TestCase {
         $this->assertNull($ok);
         $this->assertFileExists('/var/www/athena/plugins/newAmazon/test-cases/test-temp.xml');
         $check = file_get_contents('/var/www/athena/plugins/newAmazon/test-cases/test-temp.xml');
-        $this->assertEquals($check, 'yes');
+        $this->assertEquals('yes',$check);
         $this->assertFalse($this->object->setFeedContent(null));
     }
     

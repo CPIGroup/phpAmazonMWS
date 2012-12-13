@@ -1,5 +1,12 @@
 <?php
-
+/**
+ * This object retrieves feeds from Amazon.
+ * 
+ * This Amazon Feeds Core object can retrieve the results of a
+ * processed feed from Amazon, which can then be saved to a file
+ * specified by the user. In order to fetch feed results, the
+ * feed's ID must be given.
+ */
 class AmazonFeedResult extends AmazonFeedsCore{
     private $rawFeed;
     
@@ -83,15 +90,18 @@ class AmazonFeedResult extends AmazonFeedsCore{
     /**
      * Saves the raw report data to a path you specify
      * @param string $path filename to save the file in
+     * @return boolean false on failure
      */
     public function saveFeed($path){
+        if (!isset($this->rawFeed)){
+            return false;
+        }
         try{
-            $fd = fopen($path, "a");
-            fwrite($this->rawFeed);
-            fclose($fd);
+            file_put_contents($path,$this->rawFeed);
             $this->log("Successfully saved feed #".$this->options['FeedSubmissionId']." at $path");
         } catch (Exception $e){
-            $this->log("Unable to save feed #".$this->options['FeedSubmissionId']." at $path: $e",'Urgent');
+            $this->log("Unable to save feed #".$this->options['FeedSubmissionId']." at $path: ".$e->getMessage(),'Urgent');
+            return false;
         }
     }
     

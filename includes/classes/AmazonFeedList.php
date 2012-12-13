@@ -1,5 +1,13 @@
 <?php
-
+/**
+ * This object receives a list of feeds from Amazon.
+ * 
+ * This Amazon Feeds Core object can receive a list of feed submissions
+ * that were previously sent to Amazon. It can also fetch a count of
+ * said feed submissions, or even cancel them. While no parameters are
+ * required for these functions, filters such as feed ID, feed type, and
+ * time frame can be set to narrow the scope of the list.
+ */
 class AmazonFeedList extends AmazonFeedsCore implements Iterator{
     private $tokenFlag = false;
     private $tokenUseFlag = false;

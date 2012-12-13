@@ -1,5 +1,12 @@
 <?php
-
+/**
+ * This object submits feeds to Amazon.
+ * 
+ * This Amazon Feeds Core object can submit feeds to Amazon.
+ * In order to submit a feed, the feed's contents (a filename)
+ * and feed type must be set. Once the feed has been submitted,
+ * the response from Amazon can be viewed with getResponse().
+ */
 class AmazonFeed extends AmazonFeedsCore{
     private $response;
     private $feedContent;
@@ -290,7 +297,11 @@ class AmazonFeed extends AmazonFeedsCore{
      * @return array
      */
     public function getResponse(){
-        return $this->response;
+        if (isset($this->response)){
+            return $this->response;
+        } else {
+            return false;
+        }
     }
     
     

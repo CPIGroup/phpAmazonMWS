@@ -67,6 +67,7 @@ class AmazonFeedList extends AmazonFeedsCore implements Iterator{
             $i = 1;
             foreach ($s as $x){
                 $this->options['FeedSubmissionIdList.Id.'.$i] = $x;
+                $i++;
             }
         } else {
             return false;
@@ -98,6 +99,7 @@ class AmazonFeedList extends AmazonFeedsCore implements Iterator{
             $i = 1;
             foreach ($s as $x){
                 $this->options['FeedTypeList.Type.'.$i] = $x;
+                $i++;
             }
         } else {
             return false;
@@ -129,6 +131,7 @@ class AmazonFeedList extends AmazonFeedsCore implements Iterator{
             $i = 1;
             foreach ($s as $x){
                 $this->options['FeedProcessingStatusList.Status.'.$i] = $x;
+                $i++;
             }
         } else {
             return false;
@@ -199,7 +202,6 @@ class AmazonFeedList extends AmazonFeedsCore implements Iterator{
         $query = $this->_getParametersAsString($this->options);
         
         $path = $this->options['Action'].'Result';
-        
         if ($this->mockMode){
            $xml = $this->fetchMockFile()->$path;
         } else {
@@ -230,7 +232,7 @@ class AmazonFeedList extends AmazonFeedsCore implements Iterator{
         
         if ($this->tokenFlag && $this->tokenUseFlag){
             $this->log("Recursively fetching more Feeds");
-            $this->fetchInventoryList(false);
+            $this->fetchFeedSubmissions();
         }
         
     }
@@ -297,8 +299,7 @@ class AmazonFeedList extends AmazonFeedsCore implements Iterator{
         $this->options['Signature'] = $this->_signParameters($this->options, $this->secretKey);
         $query = $this->_getParametersAsString($this->options);
         
-        $path = 'GetFeedSubmissionCountResult';
-        
+        $path = $this->options['Action'].'Result';
         if ($this->mockMode){
            $xml = $this->fetchMockFile()->$path;
         } else {
@@ -341,7 +342,6 @@ class AmazonFeedList extends AmazonFeedsCore implements Iterator{
         $query = $this->_getParametersAsString($this->options);
         
         $path = $this->options['Action'].'Result';
-        
         if ($this->mockMode){
            $xml = $this->fetchMockFile()->$path;
         } else {
@@ -381,7 +381,7 @@ class AmazonFeedList extends AmazonFeedsCore implements Iterator{
      * @return string|boolean feed submission ID, or False if Non-numeric index
      */
     public function getFeedId($i = 0){
-        if (is_numeric($i)){
+        if (is_numeric($i) && isset($this->feedList) && is_array($this->feedList)){
             return $this->feedList[$i]['FeedSubmissionId'];
         } else {
             return false;
@@ -394,7 +394,7 @@ class AmazonFeedList extends AmazonFeedsCore implements Iterator{
      * @return string|boolean feed type, or False if Non-numeric index
      */
     public function getFeedType($i = 0){
-        if (is_numeric($i)){
+        if (is_numeric($i) && isset($this->feedList) && is_array($this->feedList)){
             return $this->feedList[$i]['FeedType'];
         } else {
             return false;
@@ -407,7 +407,7 @@ class AmazonFeedList extends AmazonFeedsCore implements Iterator{
      * @return string|boolean date submitted, or False if Non-numeric index
      */
     public function getDateSubmitted($i = 0){
-        if (is_numeric($i)){
+        if (is_numeric($i) && isset($this->feedList) && is_array($this->feedList)){
             return $this->feedList[$i]['SubmittedDate'];
         } else {
             return false;
@@ -420,8 +420,45 @@ class AmazonFeedList extends AmazonFeedsCore implements Iterator{
      * @return string|boolean date submitted, or False if Non-numeric index
      */
     public function getFeedStatus($i = 0){
-        if (is_numeric($i)){
+        if (is_numeric($i) && isset($this->feedList) && is_array($this->feedList)){
             return $this->feedList[$i]['FeedProcessingStatus'];
+        } else {
+            return false;
+        }
+    }
+    
+    /**
+     * Returns the full info for the specified entry
+     * @param int $i index, defaults to 0
+     * @return array|boolean array, or False if Non-numeric index
+     */
+    public function getFeedInfo($i = 0){
+        if (is_numeric($i) && isset($this->feedList) && is_array($this->feedList)){
+            return $this->feedList[$i];
+        } else {
+            return false;
+        }
+    }
+    
+    /**
+     * Returns the full list
+     * @return array|boolean false if not set yet
+     */
+    public function getFeedList(){
+        if (isset($this->feedList)){
+            return $this->feedList;
+        } else {
+            return false;
+        }
+    }
+    
+    /**
+     * Returns the feed count from either countFeeds or cancelFeeds
+     * @return number|boolean false if not set yet
+     */
+    public function getFeedCount(){
+        if (isset($this->count)){
+            return $this->count;
         } else {
             return false;
         }

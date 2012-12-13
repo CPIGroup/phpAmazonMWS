@@ -90,4 +90,9 @@ $throttleTimeFeedList = 45;
 $throttleLimitFeedResult = 15;
 $throttleTimeFeedResult = 60;
 
+//Safe Throttle Mode
+//Adds extra second onto throttle times to ensure service does not fail
+//due to errors in timing
+$throttleSafe = false;
+
 ?>

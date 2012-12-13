@@ -67,7 +67,6 @@ class AmazonFeedTest extends PHPUnit_Framework_TestCase {
         $o3 = $this->object->getOptions();
         $this->assertArrayNotHasKey('MarketplaceIdList.Id.2',$o3);
         $this->assertFalse($this->object->setMarketplaceIds(null));
-        
     }
     
     /**
@@ -105,6 +104,7 @@ class AmazonFeedTest extends PHPUnit_Framework_TestCase {
         $this->object->setMock(true,'submitFeed.xml');
         
         $this->assertFalse($this->object->submitFeed()); //nothing set yet
+        $this->assertFalse($this->object->getResponse()); //no response yet either
         
         $this->object->setFeedContent('yes','/var/www/athena/plugins/newAmazon/test-cases/test-temp.xml');
         $this->assertFalse($this->object->submitFeed()); //no feed type set yet

@@ -1,6 +1,6 @@
-[Info][2012/12/13 10:22:50 guest@cli AmazonFeedTest.php:105 setMock] Mock Mode set to ON
-[Info][2012/12/13 10:22:50 guest@cli AmazonFeedTest.php:105 setMock] Single Mock File set: submitFeed.xml
-[Warning][2012/12/13 10:22:50 guest@cli AmazonFeedTest.php:107 submitFeed] Feed's contents must be set in order to submit it!
-[Warning][2012/12/13 10:22:50 guest@cli AmazonFeedTest.php:110 submitFeed] Feed Type must be set in order to submit a feed!
-[Info][2012/12/13 10:22:50 guest@cli AmazonFeed.php:204 fetchMockFile] Fetched Mock File: mock/submitFeed.xml
-[Info][2012/12/13 10:22:50 guest@cli AmazonFeed.php:228 parseXML] Successfully submitted feed #1234567890 (_MOCK_FEED_)
+[Info][2012/12/13 01:47:17 guest@cli AmazonFeedTest.php:104 setMock] Mock Mode set to ON
+[Info][2012/12/13 01:47:17 guest@cli AmazonFeedTest.php:104 setMock] Single Mock File set: submitFeed.xml
+[Warning][2012/12/13 01:47:17 guest@cli AmazonFeedTest.php:106 submitFeed] Feed's contents must be set in order to submit it!
+[Warning][2012/12/13 01:47:17 guest@cli AmazonFeedTest.php:110 submitFeed] Feed Type must be set in order to submit a feed!
+[Info][2012/12/13 01:47:17 guest@cli AmazonFeed.php:211 fetchMockFile] Fetched Mock File: mock/submitFeed.xml
+[Info][2012/12/13 01:47:17 guest@cli AmazonFeed.php:235 parseXML] Successfully submitted feed #1234567890 (_MOCK_FEED_)

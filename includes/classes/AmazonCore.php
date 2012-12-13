@@ -1,6 +1,12 @@
 <?php
 /**
- * Still need to write this properly
+ * The main core of the Amazon class.
+ * 
+ * The Amazon classes are divided up into groups, with each group
+ * having its own abstract core class. This core is the class that
+ * each of the other cores extend from. It contains a number of
+ * functions shared by all cores, such as logging, throttling, and
+ * signature generation.
  */
 
 abstract class AmazonCore{
@@ -74,7 +80,8 @@ abstract class AmazonCore{
             $this->resetMock();
             $this->log("End of Mock List, resetting to 0");
         }
-        $url = 'mock/'.$this->mockFiles[$this->mockIndex++];
+        $url = 'mock/'.$this->mockFiles[$this->mockIndex];
+        $this->mockIndex++;
         
         
         if(file_exists($url)){
@@ -283,7 +290,7 @@ abstract class AmazonCore{
     /**
      * Resets throttle count
      * 
-     * DEPRECATED?
+     * @DEPRECATED
      */
     protected function throttleReset(){
         $this->throttleCount = $this->throttleLimit;
@@ -291,6 +298,7 @@ abstract class AmazonCore{
     
     /**
      * Returns all information for sake of convenience
+     * @DEPRECATED
      * @return array All information in an associative array
      */
     public function getAllDetails(){

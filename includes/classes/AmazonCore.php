@@ -344,6 +344,14 @@ abstract class AmazonCore{
     }
     
     /**
+     * Returns options array, for debugging or recording purposes
+     * @return array
+     */
+    public function getOptions(){
+        return $this->options;
+    }
+    
+    /**
      * trying to generate a proper URL
      * 
      * @DEPRECATED

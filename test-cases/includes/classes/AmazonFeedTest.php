@@ -27,45 +27,20 @@ class AmazonFeedTest extends PHPUnit_Framework_TestCase {
     protected function tearDown() {
         
     }
-
-    /**
-        * @return array
-        */
-        public function mockProvider() {
-            return array(
-                array(true,null, 'Mock Mode set to ON'),
-                array(false,null, 'Mock Mode set to OFF'),
-                array(true,'test', 'Mock Mode set to ON','Single Mock File set: test'),
-                array(true,array('test'), 'Mock Mode set to ON','Mock files array set.'),
-                array(false,'test', 'Mock Mode set to OFF','Single Mock File set: test'),
-                array(false,array('test'), 'Mock Mode set to OFF','Mock files array set.'),
-                array('no',null, null),
-            );
-        }
     
-    /**
-     * @covers AmazonCore::setMock
-     * @dataProvider mockProvider
-     */
-    public function testSetMock($a, $b, $c, $d = null) {
-        $this->resetLog();
-        $this->object->setMock($a, $b);
-        $check = $this->parseLog();
-        $this->assertEquals($c,$check[0]);
-        if ($d){
-            $this->assertEquals($d,$check[1]);
-        }
-    }
-
     /**
      * 
      */
     public function testSetFeedContent() {
-        $ok = $this->object->setFeedContent('yes','test-cases/test-temp.xml');
+        $ok = $this->object->setFeedContent('yes','/var/www/athena/plugins/newAmazon/test-cases/test-temp.xml');
         $this->assertNull($ok);
-        $this->assertFileExists('../../test-cases/test-temp.xml');
-        $check = file_get_contents('../../test-cases/test-temp.xml');
+        $this->assertFileExists('/var/www/athena/plugins/newAmazon/test-cases/test-temp.xml');
+        $check = file_get_contents('/var/www/athena/plugins/newAmazon/test-cases/test-temp.xml');
         $this->assertEquals($check, 'yes');
+        $o = $this->object->getOptions();
+        var_dump($o);
+        
+        $this->assertFalse($this->object->setFeedContent(null));
     }
     
     /**

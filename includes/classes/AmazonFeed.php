@@ -40,10 +40,14 @@ class AmazonFeed extends AmazonFeedsCore{
     public function setFeedContent($s, $override = null){
         if (is_string($s) && $s){
             if ($override && file_exists($override) && is_writable($override)){
-                file_put_contents('../../'.$override, $s); //?????
+                if (strpos($override, '/') == 0){
+                    file_put_contents($override, $s);
+                } else {
+                    file_put_contents('../../'.$override, $s);
+                }
                 $this->loadFeedFile($override);
             } else {
-                file_put_contents('../../temp.xml', $s); //?????
+                file_put_contents('../../temp.xml', $s);
                 $this->loadFeedFile('temp.xml');
             }
         } else {
@@ -57,7 +61,7 @@ class AmazonFeed extends AmazonFeedsCore{
      */
     public function loadFeedFile($path){
         if (file_exists($path)){
-            if (strpos($path, '/') == 1){
+            if (strpos($path, '/') == 0){
                 $this->feedContent = $path;
             } else {
                 $url = '/var/www/athena/plugins/newAmazon/'.$path; //todo: change to current install dir

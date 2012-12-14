@@ -87,6 +87,18 @@ class AmazonFulfillmentOrder extends AmazonOutboundCore{
      * converts XML into arrays
      */
     protected function parseXML($xml) {
+        if (!$xml){
+            return false;
+        }
+        if (!$xml->FulfillmentOrder){
+            return false;
+        }
+        if (!$xml->FulfillmentOrderItem){
+            return false;
+        }
+        if (!$xml->FulfillmentShipment){
+            return false;
+        }
         //Section 1: ShipmentOrder
         $d = $xml->FulfillmentOrder;
         $this->order['Details']['SellerFulfillmentOrderId'] = (string)$d->SellerFulfillmentOrderId;

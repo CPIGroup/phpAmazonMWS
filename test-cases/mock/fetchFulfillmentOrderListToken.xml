@@ -1,0 +1,36 @@
+<?xml version="1.0"?>
+<ListAllFulfillmentOrdersResponse xmlns="http://mws.amazonaws.com/FulfillmentOutboundShipment/2010-10-01/">
+    <ListAllFulfillmentOrdersResult>
+        <NextToken>Token!</NextToken>
+        <FulfillmentOrders>
+            <member>
+                <ShippingSpeedCategory>Standard</ShippingSpeedCategory>
+                <StatusUpdatedDateTime>2011-01-28T23:48:48Z</StatusUpdatedDateTime>
+                <NotificationEmailList>
+                    <member>o8c2EXAMPLsfr7o@marketplace.amazon.com</member>
+                </NotificationEmailList>
+                <SellerFulfillmentOrderId>extern_id_1154539615776</SellerFulfillmentOrderId>
+                <DestinationAddress>
+                    <PostalCode>98101</PostalCode>
+                    <PhoneNumber>321-098-7654</PhoneNumber>
+                    <Name>Jane Adams</Name>
+                    <CountryCode>US</CountryCode>
+                    <Line1>123 Oak St.</Line1>
+                    <StateOrProvinceCode>WA</StateOrProvinceCode>
+                    <City>Seattle</City>
+                    <Line2>Apt. 321</Line2>
+                </DestinationAddress>
+                <FulfillmentMethod>Consumer</FulfillmentMethod>
+                <DisplayableOrderDateTime>2011-02-05T17:26:56Z</DisplayableOrderDateTime>
+                <FulfillmentPolicy>FillOrKill</FulfillmentPolicy>
+                <ReceivedDateTime>2011-02-06T17:26:56Z</ReceivedDateTime>
+                <DisplayableOrderId>test_displayable_id</DisplayableOrderId>
+                <DisplayableOrderComment>Sample comment text.</DisplayableOrderComment>
+                <FulfillmentOrderStatus>PROCESSING</FulfillmentOrderStatus>
+            </member>
+        </FulfillmentOrders>
+    </ListAllFulfillmentOrdersResult>
+    <ResponseMetadata>
+        <RequestId>7e9c8d48-8e79-11df-929f-87c80302f8f6</RequestId>
+    </ResponseMetadata>
+</ListAllFulfillmentOrdersResponse>

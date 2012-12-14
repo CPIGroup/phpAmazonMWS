@@ -263,10 +263,10 @@ abstract class AmazonCore{
     /**
      * Skeleton function
      */
-    protected function parseXML(){
-        //@todo you know what I am going to type
-        //I can get rid of this after I fix how Orders deals with it...maybe?
-    }
+//    protected function parseXML(){
+//        //@todo you know what I am going to type
+//        //I can get rid of this after I fix how Orders deals with it...maybe?
+//    }
     
     /**
      * Manages the object's throttling

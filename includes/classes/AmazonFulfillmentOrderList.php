@@ -1,7 +1,13 @@
 <?php
-
+/**
+ * Fetches a list of fulfillment orders from Amazon.
+ * 
+ * This Amazon Outbound Core object can retrieve a list of
+ * previously created fulfillment orders. While no parameters
+ * are required, filters for start time and method are available.
+ * This object can use tokens when retrieving the list.
+ */
 class AmazonFulfillmentOrderList extends AmazonOutboundCore implements Iterator{
-    private $xmldata;
     private $orderList;
     private $tokenFlag = false;
     private $tokenUseFlag = false;
@@ -49,7 +55,7 @@ class AmazonFulfillmentOrderList extends AmazonOutboundCore implements Iterator{
      */
     public function setMethodFilter($s){
         if ($s == 'Consumer' || $s == 'Removal'){
-            $this->options['FulfillmentMethod'] = s;
+            $this->options['FulfillmentMethod'] = $s;
         } else {
             return false;
         }
@@ -71,7 +77,6 @@ class AmazonFulfillmentOrderList extends AmazonOutboundCore implements Iterator{
     public function setUseToken($b = true){
         if (is_bool($b)){
             $this->tokenUseFlag = $b;
-            $this->tokenItemFlag = $b;
         } else {
             return false;
         }
@@ -82,16 +87,7 @@ class AmazonFulfillmentOrderList extends AmazonOutboundCore implements Iterator{
      */
     public function fetchOrderList(){
         $this->options['Timestamp'] = $this->genTime();
-        if ($this->tokenFlag && $this->tokenUseFlag){
-            $this->options['Action'] = 'ListAllFulfillmentOrdersByNextToken';
-            unset($this->options['QueryStartDateTime']);
-            unset($this->options['FulfillmentMethod']);
-        } else {
-            $this->options['Action'] = 'ListAllFulfillmentOrders';
-            unset($this->options['NextToken']);
-            $this->orderList = array();
-            $this->index = 0;
-        }
+        $this->prepareToken();
         
         
         $url = $this->urlbase.$this->urlbranch;
@@ -125,8 +121,7 @@ class AmazonFulfillmentOrderList extends AmazonOutboundCore implements Iterator{
         }
         
         
-        $this->xmldata = $xml->FulfillmentOrders;
-        $this->parseXML();
+        $this->parseXML($xml->FulfillmentOrders);
         
         if ($this->tokenFlag && $this->tokenUseFlag){
             $this->log("Recursively fetching more Orders");
@@ -136,13 +131,29 @@ class AmazonFulfillmentOrderList extends AmazonOutboundCore implements Iterator{
     }
     
     /**
+     * prepares the function for using tokens
+     */
+    protected function prepareToken(){
+        if ($this->tokenFlag && $this->tokenUseFlag){
+            $this->options['Action'] = 'ListAllFulfillmentOrdersByNextToken';
+            unset($this->options['QueryStartDateTime']);
+            unset($this->options['FulfillmentMethod']);
+        } else {
+            $this->options['Action'] = 'ListAllFulfillmentOrders';
+            unset($this->options['NextToken']);
+            $this->orderList = array();
+            $this->index = 0;
+        }
+    }
+    
+    /**
      * converts the XML to arrays
      */
-    protected function parseXML(){
-        if (!$this->xmldata){
+    protected function parseXML($xml){
+        if (!$xml){
             return false;
         }
-        foreach($this->xmldata->children() as $x){
+        foreach($xml->children() as $x){
             $i = $this->index;
             $this->orderList[$i]['SellerFulfillmentOrderId'] = (string)$x->SellerFulfillmentOrderId;
             $this->orderList[$i]['DisplayableOrderId'] = (string)$x->DisplayableOrderId;
@@ -199,6 +210,7 @@ class AmazonFulfillmentOrderList extends AmazonOutboundCore implements Iterator{
         $i = 0;
         foreach($this->orderList as $x){
             $list[$i] = new AmazonFulfillmentOrder($this->storeName,$x['SellerFulfillmentOrderId'],$this->mockMode,$this->mockFiles);
+            $list[$i]->mockIndex = $this->mockIndex;
             $list[$i]->fetchOrder();
             $i++;
         }
@@ -208,9 +220,12 @@ class AmazonFulfillmentOrderList extends AmazonOutboundCore implements Iterator{
     /**
      * Returns specified Order
      * @param int $i index, defaults to 0
-     * @return array array of basic order information, or array of arrays
+     * @return array|boolean array of basic order information, or array of arrays, or false if not set yet
      */
-    public function getOrder($i = 0){
+    public function getOrder($i = null){
+        if (!isset($this->orderList)){
+            return false;
+        }
         if (is_numeric($i)){
             return $this->orderList[$i];
         } else {

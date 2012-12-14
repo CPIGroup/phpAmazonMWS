@@ -6,7 +6,8 @@
  * that were previously sent to Amazon. It can also fetch a count of
  * said feed submissions, or even cancel them. While no parameters are
  * required for these functions, filters such as feed ID, feed type, and
- * time frame can be set to narrow the scope of the list.
+ * time frame can be set to narrow the scope of the list. This object
+ * can use tokens when retrieving the list.
  */
 class AmazonFeedList extends AmazonFeedsCore implements Iterator{
     private $tokenFlag = false;

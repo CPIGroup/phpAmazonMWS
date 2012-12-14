@@ -1,22 +1,22 @@
-[Info][2012/12/14 09:24:54 guest@cli AmazonFulfillmentOrderTest.php:194 setMock] Mock Mode set to ON
-[Info][2012/12/14 09:24:54 guest@cli AmazonFulfillmentOrderTest.php:194 setMock] Mock files array set.
-[Warning][2012/12/14 09:24:54 guest@cli AmazonFulfillmentOrder.php:231 fetchMockResponse] Attempted to retrieve mock responses, but no mock responses present
-[Warning][2012/12/14 09:24:54 guest@cli AmazonFulfillmentOrder.php:239 checkResponse] No Response found
-[Info][2012/12/14 09:24:54 guest@cli AmazonFulfillmentOrderTest.php:196 setMock] Mock Mode set to ON
-[Info][2012/12/14 09:24:54 guest@cli AmazonFulfillmentOrderTest.php:196 setMock] Single Mock File set: oopsafile.xml
-[Warning][2012/12/14 09:24:54 guest@cli AmazonFulfillmentOrder.php:231 fetchMockResponse] fetchMockResponse only works with response code numbers
-[Warning][2012/12/14 09:24:54 guest@cli AmazonFulfillmentOrder.php:239 checkResponse] No Response found
-[Info][2012/12/14 09:24:54 guest@cli AmazonFulfillmentOrderTest.php:199 setMock] Mock Mode set to ON
-[Info][2012/12/14 09:24:54 guest@cli AmazonFulfillmentOrderTest.php:199 setMock] Mock files array set.
-[Info][2012/12/14 09:24:54 guest@cli AmazonFulfillmentOrder.php:231 fetchMockResponse] Returning Mock Response: 404
-[Urgent][2012/12/14 09:24:54 guest@cli AmazonFulfillmentOrder.php:239 checkResponse] Bad Response! 404 Not Found: Not Found - Not Found
-[Info][2012/12/14 09:24:54 guest@cli AmazonFulfillmentOrder.php:231 fetchMockResponse] Returning Mock Response: 503
-[Urgent][2012/12/14 09:24:54 guest@cli AmazonFulfillmentOrder.php:239 checkResponse] Bad Response! 503 Service Unavailable: Service Unavailable - Service Unavailable
-[Info][2012/12/14 09:24:54 guest@cli AmazonFulfillmentOrder.php:231 fetchMockResponse] Returning Mock Response: 400
-[Urgent][2012/12/14 09:24:54 guest@cli AmazonFulfillmentOrder.php:239 checkResponse] Bad Response! 400 Bad Request: Bad Request - Bad Request
-[Info][2012/12/14 09:24:54 guest@cli AmazonFulfillmentOrder.php:231 fetchMockResponse] Returning Mock Response: 200
-[Info][2012/12/14 09:24:54 guest@cli AmazonFulfillmentOrderTest.php:203 cancelOrder] Successfully deleted Fulfillment Order 777
-[Info][2012/12/14 09:24:54 guest@cli AmazonFulfillmentOrder.php:231 fetchMockResponse] End of Mock List, resetting to 0
-[Info][2012/12/14 09:24:54 guest@cli AmazonCore.php:135 resetMock] Mock List index reset to 0
-[Info][2012/12/14 09:24:54 guest@cli AmazonFulfillmentOrder.php:231 fetchMockResponse] Returning Mock Response: 404
-[Urgent][2012/12/14 09:24:54 guest@cli AmazonFulfillmentOrder.php:239 checkResponse] Bad Response! 404 Not Found: Not Found - Not Found
+[Info][2012/12/14 11:04:33 guest@cli AmazonFulfillmentOrderTest.php:194 setMock] Mock Mode set to ON
+[Info][2012/12/14 11:04:33 guest@cli AmazonFulfillmentOrderTest.php:194 setMock] Mock files array set.
+[Warning][2012/12/14 11:04:33 guest@cli AmazonFulfillmentOrder.php:231 fetchMockResponse] Attempted to retrieve mock responses, but no mock responses present
+[Warning][2012/12/14 11:04:33 guest@cli AmazonFulfillmentOrder.php:239 checkResponse] No Response found
+[Info][2012/12/14 11:04:33 guest@cli AmazonFulfillmentOrderTest.php:196 setMock] Mock Mode set to ON
+[Info][2012/12/14 11:04:33 guest@cli AmazonFulfillmentOrderTest.php:196 setMock] Single Mock File set: oopsafile.xml
+[Warning][2012/12/14 11:04:33 guest@cli AmazonFulfillmentOrder.php:231 fetchMockResponse] fetchMockResponse only works with response code numbers
+[Warning][2012/12/14 11:04:33 guest@cli AmazonFulfillmentOrder.php:239 checkResponse] No Response found
+[Info][2012/12/14 11:04:33 guest@cli AmazonFulfillmentOrderTest.php:199 setMock] Mock Mode set to ON
+[Info][2012/12/14 11:04:33 guest@cli AmazonFulfillmentOrderTest.php:199 setMock] Mock files array set.
+[Info][2012/12/14 11:04:33 guest@cli AmazonFulfillmentOrder.php:231 fetchMockResponse] Returning Mock Response: 404
+[Urgent][2012/12/14 11:04:33 guest@cli AmazonFulfillmentOrder.php:239 checkResponse] Bad Response! 404 Not Found: Not Found - Not Found
+[Info][2012/12/14 11:04:33 guest@cli AmazonFulfillmentOrder.php:231 fetchMockResponse] Returning Mock Response: 503
+[Urgent][2012/12/14 11:04:33 guest@cli AmazonFulfillmentOrder.php:239 checkResponse] Bad Response! 503 Service Unavailable: Service Unavailable - Service Unavailable
+[Info][2012/12/14 11:04:33 guest@cli AmazonFulfillmentOrder.php:231 fetchMockResponse] Returning Mock Response: 400
+[Urgent][2012/12/14 11:04:33 guest@cli AmazonFulfillmentOrder.php:239 checkResponse] Bad Response! 400 Bad Request: Bad Request - Bad Request
+[Info][2012/12/14 11:04:33 guest@cli AmazonFulfillmentOrder.php:231 fetchMockResponse] Returning Mock Response: 200
+[Info][2012/12/14 11:04:33 guest@cli AmazonFulfillmentOrderTest.php:203 cancelOrder] Successfully deleted Fulfillment Order 777
+[Info][2012/12/14 11:04:33 guest@cli AmazonFulfillmentOrder.php:231 fetchMockResponse] End of Mock List, resetting to 0
+[Info][2012/12/14 11:04:33 guest@cli AmazonCore.php:135 resetMock] Mock List index reset to 0
+[Info][2012/12/14 11:04:33 guest@cli AmazonFulfillmentOrder.php:231 fetchMockResponse] Returning Mock Response: 404
+[Urgent][2012/12/14 11:04:33 guest@cli AmazonFulfillmentOrder.php:239 checkResponse] Bad Response! 404 Not Found: Not Found - Not Found

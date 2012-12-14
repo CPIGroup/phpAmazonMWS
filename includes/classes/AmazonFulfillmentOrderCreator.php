@@ -1,9 +1,16 @@
 <?php
-
+/**
+ * Submits a request to create a fulfillment order to Amazon.
+ * 
+ * This Amazon Outbound Core object can submit a request to Amazon to
+ * create a new Fulfillment Order. In order to create an order,
+ * a Shipment ID is needed. Shipment IDs are given by Amazon by
+ * using the AmazonFulfillmentPreview object.
+ */
 class AmazonFulfillmentOrderCreator extends AmazonOutboundCore{
     
     /**
-     * Fetches a plan from Amazon. This is how you get a Shipment ID.
+     * Creates a fulfillment order. You need a Shipment ID.
      * @param string $s name of store as seen in config file
      * @param boolean $mock true to enable mock mode
      * @param array|string $m list of mock files to use
@@ -112,7 +119,7 @@ class AmazonFulfillmentOrderCreator extends AmazonOutboundCore{
      * @return boolean false on failure
      */
     public function setAddress($a){
-        if (is_null($a) || is_string($a)){
+        if (is_null($a) || is_string($a) || !$a){
             $this->log("Tried to set address to invalid values",'Warning');
             return false;
         }
@@ -169,7 +176,7 @@ class AmazonFulfillmentOrderCreator extends AmazonOutboundCore{
     public function setFulfillmentPolicy($s){
         if (is_string($s)){
             if ($s == 'FillOrKill' || $s == 'FillAll' || $s == 'FillAllAvailable'){
-                $this->options['ShippingSpeedCategory'] = $s;
+                $this->options['FulfillmentPolicy'] = $s;
             } else {
                 $this->log("Tried to set fulfillment policy to invalid value",'Warning');
                 return false;
@@ -206,11 +213,12 @@ class AmazonFulfillmentOrderCreator extends AmazonOutboundCore{
         if (is_string($s)){
             $this->resetEmails();
             $this->options['NotificationEmailList.member.1'] = $s;
-        } else if (is_array($s)){
+        } else if (is_array($s) && $s){
             $this->resetEmails();
             $i = 1;
             foreach ($s as $x){
                 $this->options['NotificationEmailList.member.'.$i] = $x;
+                $i++;
             }
         } else {
             return false;
@@ -218,7 +226,7 @@ class AmazonFulfillmentOrderCreator extends AmazonOutboundCore{
     }
     
     /**
-     * removes speed options
+     * removes email options
      */
     public function resetEmails(){
         foreach($this->options as $op=>$junk){
@@ -247,7 +255,7 @@ class AmazonFulfillmentOrderCreator extends AmazonOutboundCore{
      * @return boolean false if failure
      */
     public function setItems($a){
-        if (is_null($a) || is_string($a)){
+        if (is_null($a) || is_string($a) || !$a){
             $this->log("Tried to set Items to invalid values",'Warning');
             return false;
         }
@@ -262,7 +270,7 @@ class AmazonFulfillmentOrderCreator extends AmazonOutboundCore{
                     $this->options['Items.member.'.$i.'.GiftMessage'] = $x['GiftMessage'];
                 }
                 if (array_key_exists('Comment', $x)){
-                    $this->options['Items.member.'.$i.'.DisplayableComment'] = $x['DisplayableComment'];
+                    $this->options['Items.member.'.$i.'.DisplayableComment'] = $x['Comment'];
                 }
                 if (array_key_exists('FulfillmentNetworkSKU', $x)){
                     $this->options['Items.member.'.$i.'.FulfillmentNetworkSKU'] = $x['FulfillmentNetworkSKU'];

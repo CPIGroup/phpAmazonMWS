@@ -1,7 +1,12 @@
 <?php
-
+/**
+ * Fetches a fulfillment shipment template from Amazon.
+ * 
+ * This Amazon Outbound Core object retrieves fulfillment shipment previews,
+ * which Amazon generates from the parameters sent. This is how you get
+ * Shipment IDs, which are needed for dealing with fulfillment orders.
+ */
 class AmazonFulfillmentPreview extends AmazonOutboundCore{
-    private $xmldata;
     private $previewList;
     
     /**
@@ -43,7 +48,7 @@ class AmazonFulfillmentPreview extends AmazonOutboundCore{
      * @return boolean false on failure
      */
     public function setAddress($a){
-        if (is_null($a) || is_string($a)){
+        if (is_null($a) || is_string($a) || !$a){
             $this->log("Tried to set address to invalid values",'Warning');
             return false;
         }
@@ -104,14 +109,14 @@ class AmazonFulfillmentPreview extends AmazonOutboundCore{
      * @return boolean false if failure
      */
     public function setItems($a){
-        if (is_null($a) || is_string($a)){
+        if (is_null($a) || is_string($a) || !$a){
             $this->log("Tried to set Items to invalid values",'Warning');
             return false;
         }
         $this->resetItems();
         $i = 1;
         foreach ($a as $x){
-            if (is_array($x) && array_key_exists('SellerSKU', $x) && array_key_exists('Quantity', $x)){
+            if (is_array($x) && array_key_exists('SellerSKU', $x) && array_key_exists('SellerFulfillmentOrderItemId', $x) && array_key_exists('Quantity', $x)){
                 $this->options['Items.member.'.$i.'.SellerSKU'] = $x['SellerSKU'];
                 $this->options['Items.member.'.$i.'.SellerFulfillmentOrderItemId'] = $x['SellerFulfillmentOrderItemId'];
                 $this->options['Items.member.'.$i.'.Quantity'] = $x['Quantity'];
@@ -149,6 +154,7 @@ class AmazonFulfillmentPreview extends AmazonOutboundCore{
             $i = 1;
             foreach ($s as $x){
                 $this->options['ShippingSpeedCategories.'.$i] = $x;
+                $i++;
             }
         } else {
             return false;
@@ -202,16 +208,18 @@ class AmazonFulfillmentPreview extends AmazonOutboundCore{
             $xml = simplexml_load_string($response['body'])->$path->FulfillmentPreviews;
         }
         
-        $this->xmldata = $xml;
-        $this->parseXML();
+        $this->parseXML($xml);
     }
     
     /**
      * converts XML into arrays
      */
-    protected function parseXML() {
+    protected function parseXML($xml) {
+        if (!$xml){
+            return false;
+        }
         $i = 0;
-        foreach($this->xmldata->children() as $x){
+        foreach($xml->children() as $x){
             if (isset($x->EstimatedShippingWeight)){
                 $this->previewList[$i]['EstimatedShippingWeight']['Unit'] = (string)$x->EstimatedShippingWeight->Unit;
                 $this->previewList[$i]['EstimatedShippingWeight']['Value'] = (string)$x->EstimatedShippingWeight->Value;
@@ -230,6 +238,7 @@ class AmazonFulfillmentPreview extends AmazonOutboundCore{
                         $this->previewList[$i]['FulfillmentPreviewShipments'][$j]['FulfillmentPreviewItems'][$k]['SellerFulfillmentOrderItemId'] = (string)$z->SellerFulfillmentOrderItemId;
                         $this->previewList[$i]['FulfillmentPreviewShipments'][$j]['FulfillmentPreviewItems'][$k]['ShippingWeightCalculationMethod'] = (string)$z->ShippingWeightCalculationMethod;
                         $this->previewList[$i]['FulfillmentPreviewShipments'][$j]['FulfillmentPreviewItems'][$k]['Quantity'] = (string)$z->Quantity;
+                        $k++;
                     }
                     $this->previewList[$i]['FulfillmentPreviewShipments'][$j]['EarliestShipDate'] = (string)$y->EarliestShipDate;
                     $this->previewList[$i]['FulfillmentPreviewShipments'][$j]['EarliestArrivalDate'] = (string)$y->EarliestArrivalDate;
@@ -248,17 +257,18 @@ class AmazonFulfillmentPreview extends AmazonOutboundCore{
             if (isset($x->UnfulfillablePreviewItems)){
                 $j = 0;
                 foreach ($x->UnfulfillablePreviewItems->children() as $y){
-                    $this->previewList[$i]['UnfulfillablePreviewItems'][$j]['SellerSKU'] = (string)$y->UnfulfillablePreviewItems->SellerSKU;
-                    $this->previewList[$i]['UnfulfillablePreviewItems'][$j]['SellerFulfillmentOrderItemId'] = (string)$y->UnfulfillablePreviewItems->SellerFulfillmentOrderItemId;
-                    $this->previewList[$i]['UnfulfillablePreviewItems'][$j]['Quantity'] = (string)$y->UnfulfillablePreviewItems->Quantity;
-                    $this->previewList[$i]['UnfulfillablePreviewItems'][$j]['ItemUnfulfillableReasons'] = (string)$y->UnfulfillablePreviewItems->ItemUnfulfillableReasons;
+                    $this->previewList[$i]['UnfulfillablePreviewItems'][$j]['SellerSKU'] = (string)$y->SellerSKU;
+                    $this->previewList[$i]['UnfulfillablePreviewItems'][$j]['SellerFulfillmentOrderItemId'] = (string)$y->SellerFulfillmentOrderItemId;
+                    $this->previewList[$i]['UnfulfillablePreviewItems'][$j]['Quantity'] = (string)$y->Quantity;
+                    $this->previewList[$i]['UnfulfillablePreviewItems'][$j]['ItemUnfulfillableReasons'] = (string)$y->ItemUnfulfillableReasons;
                     $j++;
                 }
             }
             if (isset($x->OrderUnfulfillableReasons)){
                 $j = 0;
                 foreach ($x->OrderUnfulfillableReasons->children() as $y){
-                    $this->previewList[$i]['OrderUnfulfillableReasons'][$j++] = (string)$y;
+                    $this->previewList[$i]['OrderUnfulfillableReasons'][$j] = (string)$y;
+                    $j++;
                 }
             }
             $this->previewList[$i]['IsFulfillable'] = (string)$x->IsFulfillable;
@@ -272,11 +282,14 @@ class AmazonFulfillmentPreview extends AmazonOutboundCore{
      * @param int $i index, defaults to 0
      * @return array gigantic array of information
      */
-    public function getPreview($i = 0){
+    public function getPreview($i = null){
+        if (!isset($this->previewList)){
+            return false;
+        }
         if (is_numeric($i)){
             return $this->previewList[$i];
         } else {
-            return false;
+            return $this->previewList;
         }
     }
     
@@ -287,7 +300,10 @@ class AmazonFulfillmentPreview extends AmazonOutboundCore{
      * @return string|boolean weight value, or False if Non-numeric index
      */
     public function getEstimatedWeight($i = 0,$mode = 0){
-        if (is_numeric($i)){
+        if (!isset($this->previewList)){
+            return false;
+        }
+        if (is_numeric($i) && $i >= 0){
             if ($mode == 1){
                 return $this->previewList[$i]['EstimatedShippingWeight']['Unit'];
             } else if ($mode == 2){

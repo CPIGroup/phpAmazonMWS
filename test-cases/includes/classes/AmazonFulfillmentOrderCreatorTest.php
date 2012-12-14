@@ -54,7 +54,7 @@ class AmazonFulfillmentOrderCreatorTest extends PHPUnit_Framework_TestCase {
         $this->assertArrayHasKey('DisplayableOrderDateTime',$o);
     }
     
-    public function testComment(){
+    public function testSetComment(){
         $this->assertFalse($this->object->setComment(null)); //can't be nothing
         $this->assertFalse($this->object->setComment(5)); //can't be an int
         $this->assertNull($this->object->setComment('A comment.'));

@@ -1,11 +1,17 @@
 <?php
-
+/**
+ * Fetches a fulfillment order from Amazon.
+ * 
+ * This Amazon Outbound Core object can retrieve a fulfillment order
+ * from Amazon, or cancel it. In order to fetch or cancel an order,
+ * a Shipment ID is needed. Shipment IDs are given by Amazon by
+ * using the AmazonFulfillmentPreview object.
+ */
 class AmazonFulfillmentOrder extends AmazonOutboundCore{
-    private $xmldata;
     private $order;
     
     /**
-     * Fetches a plan from Amazon. This is how you get a Shipment ID.
+     * Fetches an order from Amazon. You need a Shipment ID.
      * @param string $s name of store as seen in config file
      * @param string $id Order number to automatically set
      * @param boolean $mock true to enable mock mode
@@ -20,7 +26,7 @@ class AmazonFulfillmentOrder extends AmazonOutboundCore{
         }
         
         if($id){
-            $this->options['SellerFulfillmentOrderId'] = $o;
+            $this->setOrderId($id);
         }
         
         $this->throttleLimit = $throttleLimitInventory;
@@ -74,16 +80,15 @@ class AmazonFulfillmentOrder extends AmazonOutboundCore{
             $xml = simplexml_load_string($response['body'])->$path;
         }
         
-        $this->xmldata = $xml;
-        $this->parseXML();
+        $this->parseXML($xml);
     }
     
     /**
      * converts XML into arrays
      */
-    protected function parseXML() {
+    protected function parseXML($xml) {
         //Section 1: ShipmentOrder
-        $d = $this->xmldata->FulfillmentOrder;
+        $d = $xml->FulfillmentOrder;
         $this->order['Details']['SellerFulfillmentOrderId'] = (string)$d->SellerFulfillmentOrderId;
         $this->order['Details']['DisplayableOrderId'] = (string)$d->DisplayableOrderId;
         $this->order['Details']['DisplayableOrderDateTime'] = (string)$d->DisplayableOrderDateTime;
@@ -129,7 +134,7 @@ class AmazonFulfillmentOrder extends AmazonOutboundCore{
         
         //Section 2: Order Items
         $i = 0;
-        foreach($this->xmldata->FulfillmentOrderItem->children() as $x){
+        foreach($xml->FulfillmentOrderItem->children() as $x){
             $this->order['Items'][$i]['SellerSKU'] = (string)$x->SellerSKU;
             $this->order['Items'][$i]['SellerFulfillmentOrderItemId'] = (string)$x->SellerFulfillmentOrderItemId;
             $this->order['Items'][$i]['Quantity'] = (string)$x->Quantity;
@@ -162,7 +167,7 @@ class AmazonFulfillmentOrder extends AmazonOutboundCore{
         
         //Section 3: Order Shipments
         $i = 0;
-        foreach($this->xmldata->FulfillmentShipment->children() as $x){
+        foreach($xml->FulfillmentShipment->children() as $x){
             $this->order['Shipments'][$i]['AmazonShipmentId'] = (string)$x->AmazonShipmentId;
             $this->order['Shipments'][$i]['FulfillmentCenterId'] = (string)$x->FulfillmentCenterId;
             $this->order['Shipments'][$i]['FulfillmentShipmentStatus'] = (string)$x->FulfillmentShipmentStatus;
@@ -236,6 +241,18 @@ class AmazonFulfillmentOrder extends AmazonOutboundCore{
         } else {
             $this->log("Successfully deleted Fulfillment Order ".$this->options['SellerFulfillmentOrderId']);
             return true;
+        }
+    }
+    
+    /**
+     * Returns the giant array of info about the shipment
+     * @return array|boolean array, or false if not yet set
+     */
+    public function getOrder(){
+        if (isset($this->order)){
+            return $this->order;
+        } else {
+            return false;
         }
     }
 }

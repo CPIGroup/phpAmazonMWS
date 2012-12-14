@@ -1,6 +1,6 @@
 <?php
 /**
- * This object retrieves feeds from Amazon.
+ * Retrieves feeds from Amazon.
  * 
  * This Amazon Feeds Core object can retrieve the results of a
  * processed feed from Amazon, which can then be saved to a file

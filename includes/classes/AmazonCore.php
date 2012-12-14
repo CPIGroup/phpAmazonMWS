@@ -49,6 +49,7 @@ abstract class AmazonCore{
      */
     public function setMock($b = true,$files = null){
         if (is_bool($b)){
+            $this->resetMock(true);
             $this->mockMode = $b;
             if ($b){
                 $mode = 'ON';
@@ -63,6 +64,10 @@ abstract class AmazonCore{
             } else if (is_array($files)){
                 $this->mockFiles = $files;
                 $this->log("Mock files array set.");
+            } else if (is_numeric($files)){
+                $this->mockFiles = array();
+                $this->mockFiles[0] = $files;
+                $this->log("Single Mock Response set: $files");
             }
         }
     }
@@ -78,8 +83,8 @@ abstract class AmazonCore{
             return false;
         }
         if(!array_key_exists($this->mockIndex, $this->mockFiles)){
-            $this->resetMock();
             $this->log("End of Mock List, resetting to 0");
+            $this->resetMock();
         }
         $url = 'mock/'.$this->mockFiles[$this->mockIndex];
         $this->mockIndex++;
@@ -107,10 +112,13 @@ abstract class AmazonCore{
     
     /**
      * Sets mock index back to 0
+     * @param boolean $mute set to true to prevent logging
      */
-    protected function resetMock(){
+    protected function resetMock($mute = false){
         $this->mockIndex = 0;
-        $this->log("Mock List index reset to 0");
+        if (!$mute){
+            $this->log("Mock List index reset to 0");
+        }
     }
     
     /**
@@ -123,11 +131,11 @@ abstract class AmazonCore{
             return false;
         }
         if(!array_key_exists($this->mockIndex, $this->mockFiles)){
-            $this->resetMock();
             $this->log("End of Mock List, resetting to 0");
+            $this->resetMock();
         }
         if (!is_numeric($this->mockFiles[$this->mockIndex])){
-            $this->log("fetchMockResponse only works with error code numbers",'Warning');
+            $this->log("fetchMockResponse only works with response code numbers",'Warning');
             return false;
         }
         
@@ -135,22 +143,36 @@ abstract class AmazonCore{
         $r['head'] = 'HTTP/1.1 200 OK';
         $r['body'] = '<?xml version="1.0"?><root></root>';
         $r['code'] = $this->mockFiles[$this->mockIndex];
-        if ($this->mockFiles[$this->mockIndex] == 200){
+        $this->mockIndex++;
+        if ($r['code'] == 200){
             $r['answer'] = 'OK';
             $r['ok'] = 1;
-        } else if ($this->mockFiles[$this->mockIndex] == 404){
+        } else if ($r['code'] == 404){
             $r['answer'] = 'Not Found';
             $r['error'] = 'Not Found';
             $r['ok'] = 0;
-        } else if ($this->mockFiles[$this->mockIndex] == 503){
+        } else if ($r['code'] == 503){
             $r['answer'] = 'Service Unavailable';
             $r['error'] = 'Service Unavailable';
             $r['ok'] = 0;
-        } else if ($this->mockFiles[$this->mockIndex] == 400){
+        } else if ($r['code'] == 400){
             $r['answer'] = 'Bad Request';
             $r['error'] = 'Bad Request';
             $r['ok'] = 0;
         }
+        
+        if ($r['code'] != 200){
+            $r['body'] = '<?xml version="1.0"?>
+<ErrorResponse xmlns="http://mws.amazonaws.com/doc/2009-01-01/">
+  <Error>
+    <Type>Sender</Type>
+    <Code>'.$r['error'].'</Code>
+    <Message>'.$r['answer'].'</Message>
+  </Error>
+  <RequestID>123</RequestID>
+</ErrorResponse>';
+        }
+        
         
         $r['headarray'] = array();
         $this->log("Returning Mock Response: ".$r['code']);
@@ -171,7 +193,7 @@ abstract class AmazonCore{
             return true;
         } else {
             $xml = simplexml_load_string($r['body'])->Error;
-            $this->log("Bad Response! ".$r['code'].": ".$xml->Code." - ".$xml->Message,'Urgent');
+            $this->log("Bad Response! ".$r['code']." ".$r['error'].": ".$xml->Code." - ".$xml->Message,'Urgent');
             return false;
         }
     }

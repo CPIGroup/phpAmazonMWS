@@ -1,6 +1,6 @@
 <?php
 /**
- * This object submits feeds to Amazon.
+ * Submits feeds to Amazon.
  * 
  * This Amazon Feeds Core object can submit feeds to Amazon.
  * In order to submit a feed, the feed's contents (a filename)

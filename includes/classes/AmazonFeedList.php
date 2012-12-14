@@ -1,6 +1,6 @@
 <?php
 /**
- * This object receives a list of feeds from Amazon.
+ * Receives a list of feeds from Amazon.
  * 
  * This Amazon Feeds Core object can receive a list of feed submissions
  * that were previously sent to Amazon. It can also fetch a count of

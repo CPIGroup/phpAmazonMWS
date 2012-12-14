@@ -1,10 +1,16 @@
 <?php
-
+/**
+ * Core class for Amazon Inbound Shipment API.
+ * 
+ * This is the core class for all objects in the Amazon Inbound section.
+ * It contains no functions in itself other than the constructor.
+ */
 abstract class AmazonInboundCore extends AmazonCore{
     /**
      * For organization's sake @todo Mock Mode stuck on
-     * @param type $s
-     * @param type $mock
+     * @param string $s
+     * @param boolean $mock
+     * @param string|array $m
      */
     public function __construct($s, $mock = false, $m = null){
         $mock = true; //Mock Mode is stuck on while developing this core

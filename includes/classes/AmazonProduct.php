@@ -14,7 +14,7 @@ class AmazonProduct extends AmazonProductsCore{
         if (file_exists($this->config)){
             include($this->config);
         } else {
-            return false;
+            throw new Exception('Config file does not exist!');
         }
         
         $this->throttleLimit = $throttleLimitProduct;

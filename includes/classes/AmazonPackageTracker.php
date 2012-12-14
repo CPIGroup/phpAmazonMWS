@@ -1,7 +1,11 @@
 <?php
-
+/**
+ * Fetches package tracking info from Amazon.
+ * 
+ * This Amazon Outbound Core object retrieves package tracking data
+ * from Amazon. A package number is required for this.
+ */
 class AmazonPackageTracker extends AmazonOutboundCore{
-    private $xmldata;
     private $details;
     
     /**
@@ -15,11 +19,11 @@ class AmazonPackageTracker extends AmazonOutboundCore{
         if (file_exists($this->config)){
             include($this->config);
         } else {
-            return false;
+            throw new Exception('Config file does not exist!');
         }
         
         if($id){
-            $this->options['PackageNumber'] = $id;
+            $this->setPackageNumber($id);
         }
         
         $this->options['Action'] = 'GetPackageTrackingDetails';
@@ -73,15 +77,13 @@ class AmazonPackageTracker extends AmazonOutboundCore{
             $xml = simplexml_load_string($response['body'])->$path;
         }
         
-        $this->xmldata = $xml;
-        $this->parseXML();
+        $this->parseXML($xml);
     }
     
     /**
      * converts XML into arrays
      */
-    protected function parseXML() {
-        $d = $this->xmldata;
+    protected function parseXML($d) {
         $this->details['PackageNumber'] = (string)$d->PackageNumber;
         $this->details['TrackingNumber'] = (string)$d->TrackingNumber;
         $this->details['CarrierCode'] = (string)$d->CarrierCode;
@@ -101,12 +103,12 @@ class AmazonPackageTracker extends AmazonOutboundCore{
         foreach($d->TrackingEvents->children() as $y){
             $this->details['TrackingEvents'][$i]['EventDate'] = (string)$y->EventDate;
             //Address
-                $this->details['TrackingEvents'][$i]['EventAddress']['City'] = (string)$d->ShipToAddress->City;
-                $this->details['TrackingEvents'][$i]['EventAddress']['State'] = (string)$d->ShipToAddress->State;
-                $this->details['TrackingEvents'][$i]['EventAddress']['Country'] = (string)$d->ShipToAddress->Country;
+                $this->details['TrackingEvents'][$i]['EventAddress']['City'] = (string)$y->EventAddress->City;
+                $this->details['TrackingEvents'][$i]['EventAddress']['State'] = (string)$y->EventAddress->State;
+                $this->details['TrackingEvents'][$i]['EventAddress']['Country'] = (string)$y->EventAddress->Country;
             //End of Address
             $this->details['TrackingEvents'][$i]['EventCode'] = (string)$y->EventCode;
-            $j++;
+            $i++;
         }
         
         $this->details['AdditionalLocationInfo'] = (string)$d->AdditionalLocationInfo;
@@ -115,10 +117,15 @@ class AmazonPackageTracker extends AmazonOutboundCore{
     
     /**
      * returns all of the details
-     * @return array all of the details
+     * @return array|boolean all of the details, or false if not set yet
      */
     public function getDetails(){
-        return $this->details;
+        if (isset($this->details)){
+            return $this->details;
+        } else {
+            return false;
+        }
+        
     }
     
 }

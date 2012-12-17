@@ -310,9 +310,6 @@ class AmazonInventoryListTest extends PHPUnit_Framework_TestCase {
         $this->assertEquals('Single Mock File set: fetchInventoryListToken.xml',$check[1]);
         $this->assertEquals('Fetched Mock File: mock/fetchInventoryListToken.xml',$check[2]);
         
-        $o = $this->object->getOptions();
-        $this->assertEquals('ListInventorySupply',$o['Action']);
-        
         $this->assertTrue($this->object->hasToken());
         $o = $this->object->getOptions();
         $this->assertEquals('ListInventorySupply',$o['Action']);
@@ -322,7 +319,7 @@ class AmazonInventoryListTest extends PHPUnit_Framework_TestCase {
         $this->assertArrayNotHasKey(1,$r);
     }
     
-    public function testFetchOrderListToken2(){
+    public function testFetchInventoryListToken2(){
         $this->resetLog();
         $this->object->setMock(true,array('fetchInventoryListToken.xml','fetchInventoryListToken2.xml'));
         

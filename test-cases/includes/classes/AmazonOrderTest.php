@@ -65,7 +65,7 @@ class AmazonOrderTest extends PHPUnit_Framework_TestCase {
         
         $this->assertFalse($this->object->fetchOrder()); //no order ID set yet
         
-        $this->object->setOrderId('777');
+        $this->object->setOrderId('058-1233752-8214740');
         $this->assertNull($this->object->fetchOrder()); //now it is good
         
         $o = $this->object->getOptions();
@@ -370,12 +370,51 @@ class AmazonOrderTest extends PHPUnit_Framework_TestCase {
      * @depends testFetchOrder
      */
     public function testFetchItems($o){
-//        $this->assertFalse(true);
-//        $o->setMock(true,'fetchOrder.xml');
-//        $get = $o->fetchItems();
-//        $this->assertEquals(0.5,$get);
-//        
-//        $this->assertFalse($this->object->fetchItems()); //not fetched yet for this object
+        $o->setMock(true,'fetchOrderItems.xml');
+        $obj = $o->fetchItems();
+        $get = $obj->getItems();
+        
+        $x = array();
+        $x1 = array();
+        $x1['ASIN'] = 'BT0093TELA';
+        $x1['SellerSKU'] = 'CBA_OTF_1';
+        $x1['OrderItemId'] = '68828574383266';
+        $x1['Title'] = 'Example item name';
+        $x1['QuantityOrdered'] = '1';
+        $x1['QuantityShipped'] = '1';
+        $x1['GiftMessageText'] = 'For you!';
+        $x1['GiftWrapLevel'] = 'Classic';
+        $x1['ItemPrice']['Amount'] = '25.99';
+        $x1['ItemPrice']['CurrencyCode'] = 'USD';
+        $x1['ShippingPrice']['Amount'] = '1.26';
+        $x1['ShippingPrice']['CurrencyCode'] = 'USD';
+        $x1['CODFee']['Amount'] = '10.00';
+        $x1['CODFee']['CurrencyCode'] = 'USD';
+        $x1['CODFeeDiscount']['Amount'] = '1.00';
+        $x1['CODFeeDiscount']['CurrencyCode'] = 'USD';
+        $x1['ItemTax'] = $x1['CODFeeDiscount'];
+        $x1['ShippingTax'] = $x1['CODFeeDiscount'];
+        $x1['GiftWrapTax'] = $x1['CODFeeDiscount'];
+        $x1['ShippingDiscount'] = $x1['CODFeeDiscount'];
+        $x1['PromotionDiscount'] = $x1['CODFeeDiscount'];
+        $x1['GiftWrapPrice']['Amount'] = '1.99';
+        $x1['GiftWrapPrice']['CurrencyCode'] = 'USD';
+        $x[0] = $x1;
+        $x2 = array();
+        $x2['ASIN'] = 'BCTU1104UEFB';
+        $x2['SellerSKU'] = 'CBA_OTF_5';
+        $x2['OrderItemId'] = '79039765272157';
+        $x2['Title'] = 'Example item name';
+        $x2['QuantityOrdered'] = '2';
+        $x2['ItemPrice']['Amount'] = '17.95';
+        $x2['ItemPrice']['CurrencyCode'] = 'USD';
+        $x2['PromotionIds'][0] = 'FREESHIP';
+        $x[1] = $x2;
+        
+        $this->assertEquals($x,$get);
+        
+        $this->assertFalse($o->fetchItems(5)); //not a boolean
+        $this->assertFalse($this->object->fetchItems()); //not fetched yet for this object
     }
     
     /**

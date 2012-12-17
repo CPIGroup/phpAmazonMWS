@@ -3,7 +3,8 @@
  * Gets the details for a single object from Amazon.
  * 
  * This Amazon Order Core object retrieves (or simply contains) the data
- * for a single order on Amazon.
+ * for a single order on Amazon. In order to fetch this data, an Amazon
+ * Order ID is required.
  */
 class AmazonOrder extends AmazonOrderCore{
     private $data;
@@ -98,7 +99,7 @@ class AmazonOrder extends AmazonOrderCore{
      * @return AmazonOrderItemList container for order's items
      */
     public function fetchItems($token = false){
-        if (!is_bool($token)){
+        if (!is_bool($token) || !isset($this->data['AmazonOrderId'])){
             return false;
         }
         $items = new AmazonOrderItemList($this->storeName,$this->data['AmazonOrderId'],$this->mockMode,$this->mockFiles);

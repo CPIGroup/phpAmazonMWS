@@ -2,12 +2,11 @@
 /**
  * AmazonItemLists contain all of the items for a given order
  */
-class AmazonItemList extends AmazonOrderCore implements Iterator{
+class AmazonOrderItemList extends AmazonOrderCore implements Iterator{
     private $itemList;
     private $tokenFlag = false;
     private $tokenUseFlag = false;
     private $i = 0;
-    private $xmldata;
     private $index = 0;
 
     /**
@@ -27,7 +26,7 @@ class AmazonItemList extends AmazonOrderCore implements Iterator{
         
         
         if (!is_null($id)){
-            $this->options['AmazonOrderId'] = $id;
+            $this->setOrderId($id);
         }
         
         $this->throttleLimit = $throttleLimitItem;
@@ -37,107 +36,32 @@ class AmazonItemList extends AmazonOrderCore implements Iterator{
         if ($throttleSafe){
             $this->throttleLimit++;
             $this->throttleTime++;
-            $this->throttleCount = $this->throttleLimit;
         }
     }
-    
+
     /**
-     * Populates the object's data using the stored XML data. Clears existing data
-     * @param boolean $reset put TRUE to remove existing data
-     * @return boolean false if no XML data
+     * Sets whether or not the ItemList should automatically use tokens if it receives one.
+     * @param boolean $b
+     * @return boolean false if invalid paramter
      */
-    protected function parseXML($reset = false){
-        if (!$this->xmldata){
+    public function setUseToken($b = true){
+        if (is_bool($b)){
+            $this->tokenUseFlag = $b;
+        } else {
             return false;
         }
-        if ($reset){
-            $this->itemList = array();
-            $this->index = 0;
-        }
-        
-        
-        foreach($this->xmldata->children() as $item){
-            $n = $this->index++;
-            
-            $this->itemList[$n]['ASIN'] = (string)$item->ASIN;
-            $this->itemList[$n]['SellerSKU'] = (string)$item->SellerSKU;
-            $this->itemList[$n]['OrderItemId'] = (string)$item->OrderItemId;
-            $this->itemList[$n]['Title'] = (string)$item->Title;
-            $this->itemList[$n]['QuantityOrdered'] = (string)$item->QuantityOrdered;
-            $this->itemList[$n]['QuantityShipped'] = (string)$item->QuantityShipped;
-            $this->itemList[$n]['GiftMessageText'] = (string)$item->GiftMessageText;
-            $this->itemList[$n]['GiftWrapLevel'] = (string)$item->GiftWrapLevel;
-
-            if (isset($item->ItemPrice)){
-                $this->itemList[$n]['ItemPrice'] = array();
-                $this->itemList[$n]['ItemPrice']['Amount'] = (string)$item->ItemPrice->Amount;
-                $this->itemList[$n]['ItemPrice']['CurrencyCode'] = (string)$item->ItemPrice->CurrencyCode;
-            }
-
-            if (isset($item->ShippingPrice)){
-                $this->itemList[$n]['ShippingPrice'] = array();
-                $this->itemList[$n]['ShippingPrice']['Amount'] = (string)$item->ShippingPrice->Amount;
-                $this->itemList[$n]['ShippingPrice']['CurrencyCode'] = (string)$item->ShippingPrice->CurrencyCode;
-            }
-            
-            if (isset($item->GiftWrapPrice)){
-                $this->itemList[$n]['GiftWrapPrice'] = array();
-                $this->itemList[$n]['GiftWrapPrice']['Amount'] = (string)$item->GiftWrapPrice->Amount;
-                $this->itemList[$n]['GiftWrapPrice']['CurrencyCode'] = (string)$item->GiftWrapPrice->CurrencyCode;
-            }
-            
-            if (isset($item->ItemTax)){
-                $this->itemList[$n]['ItemTax'] = array();
-                $this->itemList[$n]['ItemTax']['Amount'] = (string)$item->ItemTax->Amount;
-                $this->itemList[$n]['ItemTax']['CurrencyCode'] = (string)$item->ItemTax->CurrencyCode;
-            }
-            
-            if (isset($item->ShippingTax)){
-                $this->itemList[$n]['ShippingTax'] = array();
-                $this->itemList[$n]['ShippingTax']['Amount'] = (string)$item->ShippingTax->Amount;
-                $this->itemList[$n]['ShippingTax']['CurrencyCode'] = (string)$item->ShippingTax->CurrencyCode;
-            }
-            
-            if (isset($item->GiftWrapTax)){
-                $this->itemList[$n]['GiftWrapTax'] = array();
-                $this->itemList[$n]['GiftWrapTax']['Amount'] = (string)$item->GiftWrapTax->Amount;
-                $this->itemList[$n]['GiftWrapTax']['CurrencyCode'] = (string)$item->GiftWrapTax->CurrencyCode;
-            }
-            
-            if (isset($item->ShippingDiscount)){
-                $this->itemList[$n]['ShippingDiscount'] = array();
-                $this->itemList[$n]['ShippingDiscount']['Amount'] = (string)$item->ShippingDiscount->Amount;
-                $this->itemList[$n]['ShippingDiscount']['CurrencyCode'] = (string)$item->ShippingDiscount->CurrencyCode;
-            }
-            
-            if (isset($item->PromotionDiscount)){
-                $this->itemList[$n]['PromotionDiscount'] = array();
-                $this->itemList[$n]['PromotionDiscount']['Amount'] = (string)$item->PromotionDiscount->Amount;
-                $this->itemList[$n]['PromotionDiscount']['CurrencyCode'] = (string)$item->PromotionDiscount->CurrencyCode;
-            }
-
-            if (isset($item->PromotionIds)){
-                $this->itemList[$n]['PromotionIds'] = array();
-
-                $i = 0;
-                foreach($item->PromotionIds->children() as $x){
-                    $this->itemList[$n]['PromotionIds'][$i] = (string)$x;
-                    $i++;
-                }
-            }
-        }
-            
     }
     
     /**
      * Sets the Order ID to be used, in case it was not already set when the object was initiated
      * @param string $id Amazon Order ID
+     * @return boolean false if invalid paramter
      */
     public function setOrderId($id){
-        if (!is_null($id)){
+        if (is_string($id) || is_numeric($id)){
             $this->options['AmazonOrderId'] = $id;
         } else {
-            $this->log("Attempted to set AmazonOrderId to null",'Warning');
+            return false;
         }
     }
 
@@ -146,26 +70,12 @@ class AmazonItemList extends AmazonOrderCore implements Iterator{
      */
     public function fetchItems(){
         $this->options['Timestamp'] = $this->genTime();
-        $this->options['Action'] = 'ListOrderItems';
-        
-        if($this->tokenFlag && $this->tokenUseFlag){
-            $this->prepareToken();
-        } else {
-            unset($this->options['NextToken']);
-            $this->index = 0;
-            $this->itemList = array();
-        }
+        $this->prepareToken();
         
         $url = $this->urlbase.$this->urlbranch;
         
         $this->options['Signature'] = $this->_signParameters($this->options, $this->secretKey);
         $query = $this->_getParametersAsString($this->options);
-//        myPrint($this->options);
-//        myPrint($query);
-        
-//        myPrint($this->options);
-//        $query = $this->genRequest();
-//        myPrint($query);
         
         $path = $this->options['Action'].'Result';
         if ($this->mockMode){
@@ -194,15 +104,14 @@ class AmazonItemList extends AmazonOrderCore implements Iterator{
         
         
         if (is_null($xml->AmazonOrderId)){
-            $this->log("You dun got throttled.",'Warning');
-        } else if ($this->options['AmazonOrderId'] != $xml->AmazonOrderId){
-            $this->log('You grabbed the wrong Order\'s items! - '.$this->options['AmazonOrderId'].' =/='.$xml->AmazonOrderId,'Warning');
+            $this->log("You just got throttled.",'Warning');
+            return false;
+        } else if ($this->options['AmazonOrderId'] && $this->options['AmazonOrderId'] != $xml->AmazonOrderId){
+            $this->log('You grabbed the wrong Order\'s items! - '.$this->options['AmazonOrderId'].' =/= '.$xml->AmazonOrderId,'Urgent');
+            return false;
         }
         
-        $this->xmldata = $xml->OrderItems;
-        
-        $this->parseXML();
-        
+        $this->parseXML($xml->OrderItems);
         
         if ($this->tokenFlag && $this->tokenUseFlag){
             $this->log("Recursively fetching more items");
@@ -215,13 +124,94 @@ class AmazonItemList extends AmazonOrderCore implements Iterator{
      * @return boolean returns false if no token to use
      */
     protected function prepareToken(){
-        if (!$this->tokenFlag){
-            return false;
-        } else {
+        if ($this->tokenFlag && $this->tokenUseFlag){
             $this->options['Action'] = 'ListOrderItemsByNextToken';
             //When using tokens, only the NextToken option should be used
             unset($this->options['AmazonOrderId']);
+        } else {
+            $this->options['Action'] = 'ListOrderItems';
+            unset($this->options['NextToken']);
+            $this->index = 0;
+            $this->itemList = array();
         }
+    }
+    
+    /**
+     * Populates the object's data using the stored XML data. Clears existing data
+     * @return boolean false if no XML data
+     */
+    protected function parseXML($xml){
+        if (!$xml){
+            return false;
+        }
+        
+        foreach($xml->children() as $item){
+            $n = $this->index;
+            
+            $this->itemList[$n]['ASIN'] = (string)$item->ASIN;
+            $this->itemList[$n]['SellerSKU'] = (string)$item->SellerSKU;
+            $this->itemList[$n]['OrderItemId'] = (string)$item->OrderItemId;
+            $this->itemList[$n]['Title'] = (string)$item->Title;
+            $this->itemList[$n]['QuantityOrdered'] = (string)$item->QuantityOrdered;
+            if (isset($item->QuantityShipped)){
+                $this->itemList[$n]['QuantityShipped'] = (string)$item->QuantityShipped;
+            }
+            if (isset($item->GiftMessageText)){
+                $this->itemList[$n]['GiftMessageText'] = (string)$item->GiftMessageText;
+            }
+            if (isset($item->GiftWrapLevel)){
+                $this->itemList[$n]['GiftWrapLevel'] = (string)$item->GiftWrapLevel;
+            }
+            if (isset($item->ItemPrice)){
+                $this->itemList[$n]['ItemPrice']['Amount'] = (string)$item->ItemPrice->Amount;
+                $this->itemList[$n]['ItemPrice']['CurrencyCode'] = (string)$item->ItemPrice->CurrencyCode;
+            }
+            if (isset($item->ShippingPrice)){
+                $this->itemList[$n]['ShippingPrice']['Amount'] = (string)$item->ShippingPrice->Amount;
+                $this->itemList[$n]['ShippingPrice']['CurrencyCode'] = (string)$item->ShippingPrice->CurrencyCode;
+            }
+            if (isset($item->GiftWrapPrice)){
+                $this->itemList[$n]['GiftWrapPrice']['Amount'] = (string)$item->GiftWrapPrice->Amount;
+                $this->itemList[$n]['GiftWrapPrice']['CurrencyCode'] = (string)$item->GiftWrapPrice->CurrencyCode;
+            }
+            if (isset($item->ItemTax)){
+                $this->itemList[$n]['ItemTax']['Amount'] = (string)$item->ItemTax->Amount;
+                $this->itemList[$n]['ItemTax']['CurrencyCode'] = (string)$item->ItemTax->CurrencyCode;
+            }
+            if (isset($item->ShippingTax)){
+                $this->itemList[$n]['ShippingTax']['Amount'] = (string)$item->ShippingTax->Amount;
+                $this->itemList[$n]['ShippingTax']['CurrencyCode'] = (string)$item->ShippingTax->CurrencyCode;
+            }
+            if (isset($item->GiftWrapTax)){
+                $this->itemList[$n]['GiftWrapTax']['Amount'] = (string)$item->GiftWrapTax->Amount;
+                $this->itemList[$n]['GiftWrapTax']['CurrencyCode'] = (string)$item->GiftWrapTax->CurrencyCode;
+            }
+            if (isset($item->ShippingDiscount)){
+                $this->itemList[$n]['ShippingDiscount']['Amount'] = (string)$item->ShippingDiscount->Amount;
+                $this->itemList[$n]['ShippingDiscount']['CurrencyCode'] = (string)$item->ShippingDiscount->CurrencyCode;
+            }
+            if (isset($item->PromotionDiscount)){
+                $this->itemList[$n]['PromotionDiscount']['Amount'] = (string)$item->PromotionDiscount->Amount;
+                $this->itemList[$n]['PromotionDiscount']['CurrencyCode'] = (string)$item->PromotionDiscount->CurrencyCode;
+            }
+            if (isset($item->CODFee)){
+                $this->itemList[$n]['CODFee']['Amount'] = (string)$item->CODFee->Amount;
+                $this->itemList[$n]['CODFee']['CurrencyCode'] = (string)$item->CODFee->CurrencyCode;
+            }
+            if (isset($item->CODFeeDiscount)){
+                $this->itemList[$n]['CODFeeDiscount']['Amount'] = (string)$item->CODFeeDiscount->Amount;
+                $this->itemList[$n]['CODFeeDiscount']['CurrencyCode'] = (string)$item->CODFeeDiscount->CurrencyCode;
+            }
+            if (isset($item->PromotionIds)){
+                $i = 0;
+                foreach($item->PromotionIds->children() as $x){
+                    $this->itemList[$n]['PromotionIds'][$i] = (string)$x;
+                    $i++;
+                }
+            }
+            $this->index++;
+        }
+            
     }
     
     /**
@@ -231,281 +221,306 @@ class AmazonItemList extends AmazonOrderCore implements Iterator{
     public function hasToken(){
         return $this->tokenFlag;
     }
-
+    
     /**
-     * Sets whether or not the ItemList should automatically use tokens if it receives one. This includes item tokens
-     * @param boolean $b
-     * @return boolean false if invalid paramter
+     * Returns entire list of items or single item
+     * @param string $i id of item to get
+     * @return array list of item arrays or single item
      */
-    public function setUseToken($b){
-        if (is_bool($b)){
-            $this->tokenUseFlag = $b;
+    public function getItems($i = null){
+        if (isset($this->itemList)){
+            if (is_numeric($i)){
+                return $this->itemList[$i];
+            } else {
+                return $this->itemList;
+            }
         } else {
             return false;
         }
     }
     
     /**
-     * Returns entire list of items
-     * @return array list of item arrays
-     */
-    public function getItemList(){
-        return $this->itemList;
-    }
-    
-    /**
-     * Returns the Order ID, which is the same for all items in the list
-     * @return string
-     */
-    public function getAmazonOrderId(){
-        return $this->itemList[0]['AmazonOrderId'];
-    }
-    
-    /**
      * Returns ASIN of specified item, defaults to first if none given
      * @param string $i id of item to get
-     * @return string
+     * @return string|boolean false if not yet set
      */
     public function getASIN($i = 0){
-        return $this->itemList[$i]['ASIN'];
+        if (isset($this->itemList[$i]['ASIN'])){
+            return $this->itemList[$i]['ASIN'];
+        } else {
+            return false;
+        }
+        
     }
     
     /**
      * Returns Seller SKU of specified item, defaults to first if none given
      * @param string $i id of item to get
-     * @return string
+     * @return string|boolean false if not yet set
      */
     public function getSellerSKU($i = 0){
-        return $this->itemList[$i]['SellerSKU'];
+        if (isset($this->itemList[$i]['SellerSKU'])){
+            return $this->itemList[$i]['SellerSKU'];
+        } else {
+            return false;
+        }
     }
     
     /**
      * Returns Order Item ID of specified item, defaults to first if none given
      * @param string $i id of item to get
-     * @return string
+     * @return string|boolean false if not yet set
      */
     public function getOrderItemId($i = 0){
-        return $this->itemList[$i]['OrderItemId'];
+        if (isset($this->itemList[$i]['OrderItemId'])){
+            return $this->itemList[$i]['OrderItemId'];
+        } else {
+            return false;
+        }
     }
     
     /**
      * Returns Title of specified item, defaults to first if none given
      * @param string $i id of item to get
-     * @return string
+     * @return string|boolean false if not yet set
      */
     public function getTitle($i = 0){
-        return $this->itemList[$i]['Title'];
+        if (isset($this->itemList[$i]['Title'])){
+            return $this->itemList[$i]['Title'];
+        } else {
+            return false;
+        }
     }
     
     /**
      * Returns quantity ordered of specified item, defaults to first if none given
      * @param string $i id of item to get
-     * @return string
+     * @return string|boolean false if not yet set
      */
-    public function QuantityOrdered($i = 0){
-        return $this->itemList[$i]['QuantityOrdered'];
+    public function getQuantityOrdered($i = 0){
+        if (isset($this->itemList[$i]['QuantityOrdered'])){
+            return $this->itemList[$i]['QuantityOrdered'];
+        } else {
+            return false;
+        }
     }
     
     /**
      * Returns quantity shipped of specified item, defaults to first if none given
      * @param string $i id of item to get
-     * @return string
+     * @return string|boolean false if not yet set
      */
     public function getQuantityShipped($i = 0){
-        return $this->itemList[$i]['QuantityShipped'];
+        if (isset($this->itemList[$i]['QuantityShipped'])){
+            return $this->itemList[$i]['QuantityShipped'];
+        } else {
+            return false;
+        }
     }
     
     /**
      * Calculates percent of items shipped
      * @param string $i id of item to get
-     * @return float decimal number from 0 to 1
+     * @return float|boolean decimal number from 0 to 1, false if not yet set
      */
     public function getPercentShipped($i = 0){
         if ($this->itemList[$i]['QuantityOrdered'] == 0){
             return false;
         }
-        return $this->itemList[$i]['QuantityShipped']/$this->itemList[$i]['QuantityOrdered'];
+        if (isset($this->itemList[$i]['QuantityOrdered']) && isset($this->itemList[$i]['QuantityShipped'])){
+            return $this->itemList[$i]['QuantityShipped']/$this->itemList[$i]['QuantityOrdered'];
+        } else {
+            return false;
+        }
     }
     
     /**
      * Returns text for gift message of specified item, defaults to first if none given
      * @param string $i id of item to get
-     * @return string
+     * @return string|boolean false if not yet set
      */
     public function getGiftMessageText($i = 0){
-        return $this->itemList[$i]['GiftMessageText'];
+        if (isset($this->itemList[$i]['GiftMessageText'])){
+            return $this->itemList[$i]['GiftMessageText'];
+        } else {
+            return false;
+        }
     }
     
     /**
      * Returns quantity shipped of specified item, defaults to first if none given
      * @param string $i id of item to get
-     * @return string
+     * @return string|boolean false if not yet set
      */
     public function getGiftWrapLevel($i = 0){
-        return $this->itemList[$i]['GiftWrapLevel'];
+        if (isset($this->itemList[$i]['GiftWrapLevel'])){
+            return $this->itemList[$i]['GiftWrapLevel'];
+        } else {
+            return false;
+        }
     }
     
     /**
      * Returns item price of specified item, defaults to first if none given
      * @param string $i id of item to get
-     * @return array contains Amount and Currency Code
+     * @param boolean $only set to true to get only the amount
+     * @return array|boolean contains Amount and Currency Code, false if not yet set
      */
-    public function getItemPrice($i = 0){
-        return $this->itemList[$i]['ItemPrice'];
-    }
-    
-    /**
-     * Returns price amount of specified item, defaults to first if none given
-     * @param string $i id of item to get
-     * @return string
-     */
-    public function getItemPriceAmount($i = 0){
-        return $this->itemList[$i]['QuantityShipped']['Amount'];
+    public function getItemPrice($i = 0, $only = false){
+        if (isset($this->itemList[$i]['ItemPrice'])){
+            if ($only){
+                return $this->itemList[$i]['ItemPrice']['Amount'];
+            } else {
+                return $this->itemList[$i]['ItemPrice'];
+            }
+        } else {
+            return false;
+        }
     }
     
     /**
      * Returns shipping price of specified item, defaults to first if none given
      * @param string $i id of item to get
-     * @return array contains Amount and Currency Code
+     * @param boolean $only set to true to get only the amount
+     * @return array|boolean contains Amount and Currency Code, false if not yet set
      */
-    public function getShippingPrice($i = 0){
-        return $this->itemList[$i]['ShippingPrice'];
-    }
-    
-    /**
-     * Returns shipping price amount of specified item, defaults to first if none given
-     * @param string $i id of item to get
-     * @return string
-     */
-    public function getShippingPriceAmount($i = 0){
-        return $this->itemList[$i]['ShippingPrice']['Amount'];
+    public function getShippingPrice($i = 0, $only = false){
+        if (isset($this->itemList[$i]['ShippingPrice'])){
+            if ($only){
+                return $this->itemList[$i]['ShippingPrice']['Amount'];
+            } else {
+                return $this->itemList[$i]['ShippingPrice'];
+            }
+        } else {
+            return false;
+        }
     }
     
     /**
      * Returns wrapping price of specified item, defaults to first if none given
      * @param string $i id of item to get
-     * @return array contains Amount and Currency Code
+     * @param boolean $only set to true to get only the amount
+     * @return array|boolean contains Amount and Currency Code, false if not yet set
      */
-    public function getGiftWrapPrice($i = 0){
-        return $this->itemList[$i]['GiftWrapPrice'];
-    }
-    
-    /**
-     * Returns wrapping price amount of specified item, defaults to first if none given
-     * @param string $i id of item to get
-     * @return string
-     */
-    public function getGiftWrapPriceAmount($i = 0){
-        return $this->itemList[$i]['GiftWrapPrice']['Amount'];
+    public function getGiftWrapPrice($i = 0, $only = false){
+        if (isset($this->itemList[$i]['GiftWrapPrice'])){
+            if ($only){
+                return $this->itemList[$i]['GiftWrapPrice']['Amount'];
+            } else {
+                return $this->itemList[$i]['GiftWrapPrice'];
+            }
+        } else {
+            return false;
+        }
     }
     
     /**
      * Returns item tax of specified item, defaults to first if none given
      * @param string $i id of item to get
-     * @return array contains Amount and Currency Code
+     * @param boolean $only set to true to get only the amount
+     * @return array|boolean contains Amount and Currency Code, false if not yet set
      */
-    public function getItemTax($i = 0){
-        return $this->itemList[$i]['ItemTax'];
-    }
-    
-    /**
-     * Returns item tax amount of specified item, defaults to first if none given
-     * @param string $i id of item to get
-     * @return string
-     */
-    public function getItemTaxAmount($i = 0){
-        return $this->itemList[$i]['ItemTax']['Amount'];
+    public function getItemTax($i = 0, $only = false){
+        if (isset($this->itemList[$i]['ItemTax'])){
+            if ($only){
+                return $this->itemList[$i]['ItemTax']['Amount'];
+            } else {
+                return $this->itemList[$i]['ItemTax'];
+            }
+        } else {
+            return false;
+        }
     }
     
     /**
      * Returns shipping tax of specified item, defaults to first if none given
      * @param string $i id of item to get
-     * @return array contains Amount and Currency Code
+     * @param boolean $only set to true to get only the amount
+     * @return array|boolean contains Amount and Currency Code, false if not yet set
      */
-    public function getShippingTax($i = 0){
-        return $this->itemList[$i]['ShippingTax'];
-    }
-    
-    /**
-     * Returns shipping tax amount of specified item, defaults to first if none given
-     * @param string $i id of item to get
-     * @return string
-     */
-    public function getShippingTaxAmount($i = 0){
-        return $this->itemList[$i]['ShippingTax']['Amount'];
+    public function getShippingTax($i = 0, $only = false){
+        if (isset($this->itemList[$i]['ShippingTax'])){
+            if ($only){
+                return $this->itemList[$i]['ShippingTax']['Amount'];
+            } else {
+                return $this->itemList[$i]['ShippingTax'];
+            }
+        } else {
+            return false;
+        }
     }
     
     /**
      * Returns wrapping tax of specified item, defaults to first if none given
      * @param string $i id of item to get
-     * @return array contains Amount and Currency Code
+     * @param boolean $only set to true to get only the amount
+     * @return array|boolean contains Amount and Currency Code, false if not yet set
      */
-    public function getGiftWrapTax($i = 0){
-        return $this->itemList[$i]['GiftWrapTax'];
-    }
-    
-    /**
-     * Returns wrapping tax amount of specified item, defaults to first if none given
-     * @param string $i id of item to get
-     * @return string
-     */
-    public function getGiftWrapTaxAmount($i = 0){
-        return $this->itemList[$i]['GiftWrapTax']['Amount'];
-    }
-    
-    /**
-     * Returns item tax of specified item, defaults to first if none given
-     * @param string $i id of item to get
-     * @return array contains Amount and Currency Code
-     */
-    public function getShippingDiscount($i = 0){
-        return $this->itemList[$i]['ShippingDiscount'];
-    }
-    
-    /**
-     * Returns item tax amount of specified item, defaults to first if none given
-     * @param string $i id of item to get
-     * @return string
-     */
-    public function getShippingDiscountAmount($i = 0){
-        return $this->itemList[$i]['ShippingDiscount']['Amount'];
+    public function getGiftWrapTax($i = 0, $only = false){
+        if (isset($this->itemList[$i]['GiftWrapTax'])){
+            if ($only){
+                return $this->itemList[$i]['GiftWrapTax']['Amount'];
+            } else {
+                return $this->itemList[$i]['GiftWrapTax'];
+            }
+        } else {
+            return false;
+        }
     }
     
     /**
      * Returns item tax of specified item, defaults to first if none given
      * @param string $i id of item to get
-     * @return array contains Amount and Currency Code
+     * @param boolean $only set to true to get only the amount
+     * @return array|boolean contains Amount and Currency Code, false if not yet set
      */
-    public function getPromotionDiscount($i = 0){
-        return $this->itemList[$i]['PromotionDiscount'];
+    public function getShippingDiscount($i = 0, $only = false){
+        if (isset($this->itemList[$i]['ShippingDiscount'])){
+            if ($only){
+                return $this->itemList[$i]['ShippingDiscount']['Amount'];
+            } else {
+                return $this->itemList[$i]['ShippingDiscount'];
+            }
+        } else {
+            return false;
+        }
     }
     
     /**
-     * Returns item tax amount of specified item, defaults to first if none given
+     * Returns item tax of specified item, defaults to first if none given
      * @param string $i id of item to get
-     * @return string
+     * @param boolean $only set to true to get only the amount
+     * @return array|boolean contains Amount and Currency Code, false if not yet set
      */
-    public function getPromotionDiscountAmount($i = 0){
-        return $this->itemList[$i]['PromotionDiscount']['Amount'];
-    }
-    
-    /**
-     * Returns list of promotions for specified item, defaults to first if none given
-     * @param string $i id of item to get
-     * @return array
-     */
-    public function getPromotionIds($i = 0){
-        return $this->itemList[$i]['PromotionIds'];
+    public function getPromotionDiscount($i = 0, $only = false){
+        if (isset($this->itemList[$i]['PromotionDiscount'])){
+            if ($only){
+                return $this->itemList[$i]['PromotionDiscount']['Amount'];
+            } else {
+                return $this->itemList[$i]['PromotionDiscount'];
+            }
+        } else {
+            return false;
+        }
     }
     
     /**
      * Returns specified promotion ID for specified item, both default to first if none given
      * @param string $i id of item to get
      * @param integer $j index of promotion to get 
-     * @return type
+     * @return string|boolean false if not yet set
      */
-    public function getPromotionId($i = 0, $j = 0){
-        return $this->itemList[$i]['PromotionIds'][$j];
+    public function getPromotionIds($i = 0, $j = null){
+        if (isset($this->itemList[$i]['PromotionIds'])){
+            if (isset($this->itemList[$i]['PromotionIds'][$j])){
+                return $this->itemList[$i]['PromotionIds'][$j];
+            } else {
+                return $this->itemList[$i]['PromotionIds'];
+            }
+        } else {
+            return false;
+        }
+        
     }
     
     /**

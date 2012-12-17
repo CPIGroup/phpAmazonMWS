@@ -1,10 +1,16 @@
 <?php
-
+/**
+ * Core class for Amazon Orders API.
+ * 
+ * This is the core class for the only object in the Amazon Orders section.
+ * It contains no functions in itself other than the constructor.
+ */
 abstract class AmazonOrderCore extends AmazonCore{
     /**
      * For organization's sake
-     * @param type $s
-     * @param type $mock
+     * @param string $s
+     * @param boolean $mock
+     * @param string|array $m
      */
     public function __construct($s, $mock = false, $m = null){
         parent::__construct($s, $mock, $m);

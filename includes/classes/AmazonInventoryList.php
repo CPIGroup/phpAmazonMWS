@@ -164,6 +164,10 @@ class AmazonInventoryList extends AmazonInventoryCore implements Iterator{
         
     }
     
+    /**
+     * Makes the preparations necessary for using tokens
+     * @return boolean returns false if no token to use
+     */
     private function prepareToken(){
         if ($this->tokenFlag && $this->tokenUseFlag){
             $this->options['Action'] = 'ListInventorySupplyByNextToken';
@@ -178,6 +182,10 @@ class AmazonInventoryList extends AmazonInventoryCore implements Iterator{
         }
     }
     
+    /**
+     * Populates the object's data using the stored XML data. Clears existing data
+     * @return boolean false if no XML data
+     */
     protected function parseXML($xml){
         if (!$xml){
             return false;

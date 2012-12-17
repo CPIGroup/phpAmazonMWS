@@ -1,1 +1,1 @@
-[Info][2012/12/14 04:58:31 guest@cli AmazonCore.php:39 setMock] Mock Mode set to ON
+[Info][2012/12/17 09:44:31 guest@cli AmazonCore.php:39 setMock] Mock Mode set to ON

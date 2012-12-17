@@ -299,75 +299,54 @@ class AmazonInventoryListTest extends PHPUnit_Framework_TestCase {
         $this->assertFalse($this->object->getSupplyType()); //not fetched yet for this object
     }
     
+    public function testFetchInventoryListToken1(){
+        $this->resetLog();
+        $this->object->setMock(true,'fetchInventoryListToken.xml'); //no token
+        $this->object->setResponseGroup('Detailed');
+        
+        //without using token
+        $this->assertNull($this->object->fetchInventoryList());
+        $check = $this->parseLog();
+        $this->assertEquals('Single Mock File set: fetchInventoryListToken.xml',$check[1]);
+        $this->assertEquals('Fetched Mock File: mock/fetchInventoryListToken.xml',$check[2]);
+        
+        $o = $this->object->getOptions();
+        $this->assertEquals('ListInventorySupply',$o['Action']);
+        
+        $this->assertTrue($this->object->hasToken());
+        $o = $this->object->getOptions();
+        $this->assertEquals('ListInventorySupply',$o['Action']);
+        $r = $this->object->getSupply(null);
+        $this->assertArrayHasKey(0,$r);
+        $this->assertEquals('SampleSKU1',$r[0]['SellerSKU']);
+        $this->assertArrayNotHasKey(1,$r);
+    }
     
-    
-    
-//    public function testGetFullList(){
-//        $this->resetLog();
-//        $this->object->setMock(true,array('fetchFulfillmentOrderList.xml','fetchFulfillmentOrder.xml','fetchFulfillmentOrder.xml')); //need files for orders
-//        $this->assertNull($this->object->fetchOrderList());
-//        
-//        $o = $this->object->getOptions();
-//        $this->assertEquals('ListAllFulfillmentOrders',$o['Action']);
-//        
-//        $r = $this->object->getFullList();
-//        $this->assertArrayHasKey(0,$r);
-//        $this->assertInternalType('object',$r[0]);
-//        $this->assertInternalType('object',$r[1]);
-//        $this->assertInternalType('array',$r[0]->getOrder());
-//        $this->assertInternalType('array',$r[1]->getOrder());
-//        
-//        $check = $this->parseLog();
-//        $this->assertEquals('Mock files array set.',$check[1]);
-//        $this->assertEquals('Fetched Mock File: mock/fetchFulfillmentOrderList.xml',$check[2]);
-//        $this->assertEquals('Mock Mode set to ON',$check[3]);
-//        $this->assertEquals('Mock files array set.',$check[4]);
-//        $this->assertEquals('Fetched Mock File: mock/fetchFulfillmentOrder.xml',$check[5]);
-//        $this->assertEquals('Mock Mode set to ON',$check[6]);
-//        $this->assertEquals('Mock files array set.',$check[7]);
-//        $this->assertEquals('Fetched Mock File: mock/fetchFulfillmentOrder.xml',$check[8]);
-//    }
-//    
-//    public function testFetchOrderListToken1(){
-//        $this->resetLog();
-//        $this->object->setMock(true,array('fetchFulfillmentOrderListToken.xml'));
-//        
-//        //without using token
-//        $this->assertNull($this->object->fetchOrderList());
-//        $check = $this->parseLog();
-//        $this->assertEquals('Mock files array set.',$check[1]);
-//        $this->assertEquals('Fetched Mock File: mock/fetchFulfillmentOrderListToken.xml',$check[2]);
-//        $this->assertTrue($this->object->hasToken());
-//        $o = $this->object->getOptions();
-//        $this->assertEquals('ListAllFulfillmentOrders',$o['Action']);
-//        $r = $this->object->getOrder(null);
-//        $this->assertArrayHasKey(0,$r);
-//        $this->assertEquals('extern_id_1154539615776',$r[0]['SellerFulfillmentOrderId']);
-//        $this->assertArrayNotHasKey(1,$r);
-//    }
-//    
-//    public function testFetchOrderListToken2(){
-//        $this->resetLog();
-//        $this->object->setMock(true,array('fetchFulfillmentOrderListToken.xml','fetchFulfillmentOrderListToken2.xml'));
-//        
-//        //with using token
-//        $this->object->setUseToken();
-//        $this->assertNull($this->object->fetchOrderList());
-//        $check = $this->parseLog();
-//        $this->assertEquals('Mock files array set.',$check[1]);
-//        $this->assertEquals('Fetched Mock File: mock/fetchFulfillmentOrderListToken.xml',$check[2]);
-//        $this->assertEquals('Recursively fetching more Orders',$check[3]);
-//        $this->assertEquals('Fetched Mock File: mock/fetchFulfillmentOrderListToken2.xml',$check[4]);
-//        $this->assertFalse($this->object->hasToken());
-//        $o = $this->object->getOptions();
-//        $this->assertEquals('ListAllFulfillmentOrdersByNextToken',$o['Action']);
-//        $r = $this->object->getOrder(null);
-//        $this->assertArrayHasKey(0,$r);
-//        $this->assertArrayHasKey(1,$r);
-//        $this->assertEquals('extern_id_1154539615776',$r[0]['SellerFulfillmentOrderId']);
-//        $this->assertEquals('external-order-ebaytime1154557376014',$r[1]['SellerFulfillmentOrderId']);
-//        $this->assertNotEquals($r[0],$r[1]);
-//    }
+    public function testFetchOrderListToken2(){
+        $this->resetLog();
+        $this->object->setMock(true,array('fetchInventoryListToken.xml','fetchInventoryListToken2.xml'));
+        
+        //with using token
+        $this->object->setUseToken();
+        $this->assertNull($this->object->fetchInventoryList());
+        $check = $this->parseLog();
+        $this->assertEquals('Mock files array set.',$check[1]);
+        $this->assertEquals('Fetched Mock File: mock/fetchInventoryListToken.xml',$check[2]);
+        $this->assertEquals('Recursively fetching more Inventory Supplies',$check[3]);
+        $this->assertEquals('Fetched Mock File: mock/fetchInventoryListToken2.xml',$check[4]);
+        $this->assertFalse($this->object->hasToken());
+        $o = $this->object->getOptions();
+        $this->assertEquals('ListInventorySupplyByNextToken',$o['Action']);
+        $this->assertArrayNotHasKey('QueryStartDateTime',$o);
+        $this->assertArrayNotHasKey('ResponseGroup',$o);
+        $r = $this->object->getSupply(null);
+        $this->assertArrayHasKey(0,$r);
+        $this->assertArrayHasKey(1,$r);
+        $this->assertEquals('SampleSKU1',$r[0]['SellerSKU']);
+        $this->assertEquals('SampleSKU2',$r[1]['SellerSKU']);
+        $this->assertEquals(2,count($r));
+        $this->assertNotEquals($r[0],$r[1]);
+    }
     
     /**
      * Resets log for next test

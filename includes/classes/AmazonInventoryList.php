@@ -118,12 +118,11 @@ class AmazonInventoryList extends AmazonInventoryCore implements Iterator{
      * Fetches the participation list from Amazon, using a token if available
      */
     public function fetchInventoryList(){
-        $this->options['Timestamp'] = $this->genTime();
-        $this->prepareToken();
-        
         if (!isset($this->options['QueryStartDateTime']) && !isset($this->options['SellerSkus.member.1'])){
             $this->setStartTime();
         }
+        $this->prepareToken();
+        $this->options['Timestamp'] = $this->genTime();
         
         
         $url = $this->urlbase.$this->urlbranch;
@@ -158,8 +157,6 @@ class AmazonInventoryList extends AmazonInventoryCore implements Iterator{
         
         $this->parseXML($xml->InventorySupplyList);
         
-//        var_dump($this->supplyList);
-        
         if ($this->tokenFlag && $this->tokenUseFlag){
             $this->log("Recursively fetching more Inventory Supplies");
             $this->fetchInventoryList();
@@ -170,6 +167,9 @@ class AmazonInventoryList extends AmazonInventoryCore implements Iterator{
     private function prepareToken(){
         if ($this->tokenFlag && $this->tokenUseFlag){
             $this->options['Action'] = 'ListInventorySupplyByNextToken';
+            unset($this->options['QueryStartDateTime']);
+            unset($this->options['ResponseGroup']);
+            $this->resetSkus();
         } else {
             $this->options['Action'] = 'ListInventorySupply';
             unset($this->options['NextToken']);

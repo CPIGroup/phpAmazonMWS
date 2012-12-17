@@ -1,20 +1,22 @@
 <?php
 /**
- * AmazonOrder object gets the details for a single object from Amazon
+ * Gets the details for a single object from Amazon.
+ * 
+ * This Amazon Order Core object retrieves (or simply contains) the data
+ * for a single order on Amazon.
  */
 class AmazonOrder extends AmazonOrderCore{
     private $data;
-    private $xmldata;
 
     /**
      * AmazonOrder object gets the details for a single object from Amazon
      * @param string $s store name as seen in config
-     * @param string $o Order number to automatically set
-     * @param SimpleXMLElement $d XML data from Amazon to be parsed
+     * @param string $id Order number to automatically set
+     * @param SimpleXMLElement $data XML data from Amazon to be parsed
      * @param boolean $mock set true to enable mock mode
      * @param array|string $m list of mock files to use
      */
-    public function __construct($s,$o = null,$d = null, $mock = false, $m = null){
+    public function __construct($s, $id = null, $data = null, $mock = false, $m = null){
         parent::__construct($s, $mock, $m);
         if (file_exists($this->config)){
             include($this->config);
@@ -22,11 +24,11 @@ class AmazonOrder extends AmazonOrderCore{
             throw new Exception('Config file does not exist!');
         }
         
-        if($o){
-            $this->options['AmazonOrderId.Id.1'] = $o;
+        if($id){
+            $this->setOrderId($id);
         }
-        if ($d) {
-            $this->xmldata = $d;
+        if ($data) {
+            $this->parseXML($data);
         }
         
         $this->options['Action'] = 'GetOrder';
@@ -38,102 +40,213 @@ class AmazonOrder extends AmazonOrderCore{
         if ($throttleSafe){
             $this->throttleLimit++;
             $this->throttleTime++;
-            $this->throttleCount = $this->throttleLimit;
         }
         
+    }
+    
+    /**
+     * Sets the Amazon Order ID for the next request, in case it was not set in the constructor
+     * @param string $id the Amazon Order ID
+     */
+    public function setOrderId($id){
+        if (is_string($id) || is_numeric($id)){
+            $this->options['AmazonOrderId.Id.1'] = $id;
+        } else {
+            $this->log("Attempted to set AmazonOrderId to invalid value",'Warning');
+            return false;
+        }
+    }
+    
+    /**
+     * Fetches the specified order from Amazon after setting the necessary parameters
+     */
+    public function fetchOrder(){
+        if (!array_key_exists('AmazonOrderId.Id.1',$this->options)){
+            $this->log("Order ID must be set in order to fetch it!",'Warning');
+            return false;
+        }
+        
+        $this->options['Timestamp'] = $this->genTime();
+        
+        $url = $this->urlbase.$this->urlbranch;
+        
+        $this->options['Signature'] = $this->_signParameters($this->options, $this->secretKey);
+        $query = $this->_getParametersAsString($this->options);
+        
+        if ($this->mockMode){
+            $xml = $this->fetchMockFile();
+        } else {
+            $this->throttle();
+            $this->log("Making request to Amazon");
+            $response = fetchURL($url,array('Post'=>$query));
+            $this->logRequest();
+            
+            if (!$this->checkResponse($response)){
+                return false;
+            }
+            
+            $xml = simplexml_load_string($response['body']);
+        }
+        
+        $this->parseXML($xml->GetOrderResult->Orders->Order);
+    
+    }
+
+    /**
+     * Fetches items for the order
+     * @param boolean $token whether or not to automatically use item tokens
+     * @return AmazonOrderItemList container for order's items
+     */
+    public function fetchItems($token = false){
+        if (!is_bool($token)){
+            return false;
+        }
+        $items = new AmazonOrderItemList($this->storeName,$this->data['AmazonOrderId'],$this->mockMode,$this->mockFiles);
+        $items->mockIndex = $this->mockIndex;
+        $items->setUseToken($token);
+        $items->fetchItems();
+        return $items;
     }
     
     /**
      * Populates the object's data using the stored XML data. Clears existing data
      * @return boolean if no XML data
      */
-    protected function parseXML(){
-        if (!$this->xmldata){
+    protected function parseXML($xml){
+        if (!$xml){
             return false;
         }
-        $this->data = array();
-        $this->data['AmazonOrderId'] = (string)$this->xmldata->AmazonOrderId;
-        $this->data['SellerOrderId'] = (string)$this->xmldata->SellerOrderId;
-        $this->data['PurchaseDate'] = (string)$this->xmldata->PurchaseDate;
-        $this->data['LastUpdateDate'] = (string)$this->xmldata->LastUpdateDate;
-        $this->data['OrderStatus'] = (string)$this->xmldata->OrderStatus;
-        $this->data['FulfillmentChannel'] = (string)$this->xmldata->FulfillmentChannel;
-        $this->data['SalesChannel'] = (string)$this->xmldata->SalesChannel;
-        $this->data['OrderChannel'] = (string)$this->xmldata->OrderChannel;
-        $this->data['ShipServiceLevel'] = (string)$this->xmldata->ShipServiceLevel;
-        
-        if (isset($this->xmldata->ShippingAddress)){
-            $this->data['ShippingAddress'] = array();
-            $this->data['ShippingAddress']['Phone'] = (string)$this->xmldata->ShippingAddress->Phone;
-            $this->data['ShippingAddress']['PostalCode'] = (string)$this->xmldata->ShippingAddress->PostalCode;
-            $this->data['ShippingAddress']['Name'] = (string)$this->xmldata->ShippingAddress->Name;
-            $this->data['ShippingAddress']['CountryCode'] = (string)$this->xmldata->ShippingAddress->CountryCode;
-            $this->data['ShippingAddress']['StateOrRegion'] = (string)$this->xmldata->ShippingAddress->StateOrRegion;
-            $this->data['ShippingAddress']['AddressLine1'] = (string)$this->xmldata->ShippingAddress->AddressLine1;
-            $this->data['ShippingAddress']['AddressLine2'] = (string)$this->xmldata->ShippingAddress->AddressLine2;
-            $this->data['ShippingAddress']['AddressLine3'] = (string)$this->xmldata->ShippingAddress->AddressLine3;
-            $this->data['ShippingAddress']['City'] = (string)$this->xmldata->ShippingAddress->City;
+        $d = array();
+        $d['AmazonOrderId'] = (string)$xml->AmazonOrderId;
+        if (isset($xml->SellerOrderId)){
+            $d['SellerOrderId'] = (string)$xml->SellerOrderId;
         }
-        
-        
-        
-        if (isset($this->xmldata->OrderTotal)){
-            $this->data['OrderTotal'] = array();
-            $this->data['OrderTotal']['Amount'] = (string)$this->xmldata->OrderTotal->Amount;
-            $this->data['OrderTotal']['CurrencyCode'] = (string)$this->xmldata->OrderTotal->CurrencyCode;
+        $d['PurchaseDate'] = (string)$xml->PurchaseDate;
+        $d['LastUpdateDate'] = (string)$xml->LastUpdateDate;
+        $d['OrderStatus'] = (string)$xml->OrderStatus;
+        if (isset($xml->FulfillmentChannel)){
+            $d['FulfillmentChannel'] = (string)$xml->FulfillmentChannel;
         }
-        
-        $this->data['NumberOfItemsShipped'] = (string)$this->xmldata->NumberOfItemsShipped;
-        $this->data['NumberOfItemsUnshipped'] = (string)$this->xmldata->NumberOfItemsUnshipped;
-        
-        if (isset($this->xmldata->PaymentExecutionDetail)){
-            $this->data['PaymentExecutionDetail'] = array();
+        if (isset($xml->SalesChannel)){
+            $d['SalesChannel'] = (string)$xml->SalesChannel;
+        }
+        if (isset($xml->OrderChannel)){
+            $d['OrderChannel'] = (string)$xml->OrderChannel;
+        }
+        if (isset($xml->ShipServiceLevel)){
+            $d['ShipServiceLevel'] = (string)$xml->ShipServiceLevel;
+        }
+        if (isset($xml->ShippingAddress)){
+            $d['ShippingAddress'] = array();
+            $d['ShippingAddress']['Name'] = (string)$xml->ShippingAddress->Name;
+            $d['ShippingAddress']['AddressLine1'] = (string)$xml->ShippingAddress->AddressLine1;
+            $d['ShippingAddress']['AddressLine2'] = (string)$xml->ShippingAddress->AddressLine2;
+            $d['ShippingAddress']['AddressLine3'] = (string)$xml->ShippingAddress->AddressLine3;
+            $d['ShippingAddress']['City'] = (string)$xml->ShippingAddress->City;
+            $d['ShippingAddress']['County'] = (string)$xml->ShippingAddress->County;
+            $d['ShippingAddress']['District'] = (string)$xml->ShippingAddress->District;
+            $d['ShippingAddress']['StateOrRegion'] = (string)$xml->ShippingAddress->StateOrRegion;
+            $d['ShippingAddress']['PostalCode'] = (string)$xml->ShippingAddress->PostalCode;
+            $d['ShippingAddress']['CountryCode'] = (string)$xml->ShippingAddress->CountryCode;
+            $d['ShippingAddress']['Phone'] = (string)$xml->ShippingAddress->Phone;
+        }
+        if (isset($xml->OrderTotal)){
+            $d['OrderTotal'] = array();
+            $d['OrderTotal']['Amount'] = (string)$xml->OrderTotal->Amount;
+            $d['OrderTotal']['CurrencyCode'] = (string)$xml->OrderTotal->CurrencyCode;
+        }
+        if (isset($xml->NumberOfItemsShipped)){
+            $d['NumberOfItemsShipped'] = (string)$xml->NumberOfItemsShipped;
+        }
+        if (isset($xml->NumberOfItemsUnshipped)){
+            $d['NumberOfItemsUnshipped'] = (string)$xml->NumberOfItemsUnshipped;
+        }
+        if (isset($xml->PaymentExecutionDetail)){
+            $d['PaymentExecutionDetail'] = array();
             
             $i = 0;
-            foreach($this->xmldata->PaymentExecutionDetail->children() as $x){
-                $this->data['PaymentExecutionDetail']['Payment'.$i]['Amount'] = (string)$x->Payment->Amount;
-                $this->data['PaymentExecutionDetail']['Payment'.$i]['CurrencyCode'] = (string)$x->Payment->CurrencyCode;
-                $this->data['PaymentExecutionDetail']['Payment'.$i]['SubPaymentMethod'] = (string)$x->SubPaymentMethod;
+            foreach($xml->PaymentExecutionDetail->children() as $x){
+                $d['PaymentExecutionDetail'][$i]['Amount'] = (string)$x->Payment->Amount;
+                $d['PaymentExecutionDetail'][$i]['CurrencyCode'] = (string)$x->Payment->CurrencyCode;
+                $d['PaymentExecutionDetail'][$i]['SubPaymentMethod'] = (string)$x->SubPaymentMethod;
                 $i++;
             }
         }
+        if (isset($xml->PaymentMethod)){
+            $d['PaymentMethod'] = (string)$xml->PaymentMethod;
+        }
+        $d['MarketplaceId'] = (string)$xml->MarketplaceId;
+        if (isset($xml->BuyerName)){
+            $d['BuyerName'] = (string)$xml->BuyerName;
+        }
+        if (isset($xml->BuyerEmail)){
+            $d['BuyerEmail'] = (string)$xml->BuyerEmail;
+        }
+        if (isset($xml->ShipServiceLevelCategory)){
+            $d['ShipServiceLevelCategory'] = (string)$xml->ShipServiceLevelCategory;
+        }
         
-        $this->data['MarketplaceId'] = (string)$this->xmldata->MarketplaceId;
-        $this->data['BuyerName'] = (string)$this->xmldata->BuyerName;
-        $this->data['BuyerEmail'] = (string)$this->xmldata->BuyerEmail;
-        $this->data['ShipServiceLevelCategory'] = (string)$this->xmldata->ShipServiceLevelCategory;
+        $this->data = $d;
+    }
+    
+    /**
+     * returns all data
+     * @return array|boolean entire set of data, or false on failure
+     */
+    public function getData(){
+        if (isset($this->data) && $this->data){
+            return $this->data;
+        } else {
+            return false;
+        }
     }
     
     /**
      * Returns the Amazon Order ID for the Order
-     * @return string Amazon's Order ID
+     * @return string|boolean Amazon's Order ID, or false if not set yet
      */
     public function getAmazonOrderId(){
-        return $this->data['AmazonOrderId'];
+        if (isset($this->data['AmazonOrderId'])){
+            return $this->data['AmazonOrderId'];
+        } else {
+            return false;
+        }
     }
     
     /**
      * Returns the Seller ID for the Order
-     * @return string Seller-defined Order ID
+     * @return string|boolean Seller-defined Order ID, or false if not set yet
      */
     public function getSellerOrderId(){
-        return $this->data['SellerOrderId'];
+        if (isset($this->data['SellerOrderId'])){
+            return $this->data['SellerOrderId'];
+        } else {
+            return false;
+        }
     }
     
     /**
      * Returns the purchase date of the Order
-     * @return dateTime timestamp
+     * @return dateTime timestamp, or false if not set yet
      */
     public function getPurchaseDate(){
-        return $this->data['PurchaseDate'];
+        if (isset($this->data['PurchaseDate'])){
+            return $this->data['PurchaseDate'];
+        } else {
+            return false;
+        }
     }
     
     /**
      * Returns the timestamp of the last modification date
-     * @return dateTime timestamp
+     * @return dateTime timestamp, or false if not set yet
      */
     public function getLastUpdateDate(){
-        return $this->data['LastUpdateDate'];
+        if (isset($this->data['LastUpdateDate'])){
+            return $this->data['LastUpdateDate'];
+        } else {
+            return false;
+        }
     }
     
     /**
@@ -147,42 +260,62 @@ class AmazonOrder extends AmazonOrderCore{
      * -InvoiceUnconfirmed (China only)
      * -Canceled
      * -Unfulfillable
-     * @return string order status
+     * @return string order status, or false if not set yet
      */
     public function getOrderStatus(){
-        return $this->data['OrderStatus'];
+        if (isset($this->data['OrderStatus'])){
+            return $this->data['OrderStatus'];
+        } else {
+            return false;
+        }
     }
     
     /**
      * Returns the Fulfillment Channel (AFN or MFN)
-     * @return string either AFN or MFN
+     * @return string either AFN or MFN, or false if not set yet
      */
     public function getFulfillmentChannel(){
-        return $this->data['FulfillmentChannel'];
+        if (isset($this->data['FulfillmentChannel'])){
+            return $this->data['FulfillmentChannel'];
+        } else {
+            return false;
+        }
     }
     
     /**
      * Returns the Sales Channel Channel of the Order
-     * @return string
+     * @return string channel, or false if not set yet
      */
     public function getSalesChannel(){
-        return $this->data['SalesChannel'];
+        if (isset($this->data['SalesChannel'])){
+            return $this->data['SalesChannel'];
+        } else {
+            return false;
+        }
     }
     
     /**
      * Returns the Order Channel of the first item in the Order.
-     * @return string
+     * @return string channel, or false if not set yet
      */
     public function getOrderChannel(){
-        return $this->data['OrderChannel'];
+        if (isset($this->data['OrderChannel'])){
+            return $this->data['OrderChannel'];
+        } else {
+            return false;
+        }
     }
     
     /**
      * Returns the shipment service level of the Order
-     * @return string
+     * @return string service level, or false if not set yet
      */
     public function getShipServiceLevel(){
-        return $this->data['ShipServiceLevel'];
+        if (isset($this->data['ShipServiceLevel'])){
+            return $this->data['ShipServiceLevel'];
+        } else {
+            return false;
+        }
     }
     
     /**
@@ -200,10 +333,14 @@ class AmazonOrder extends AmazonOrderCore{
      * -PostalCode
      * -CountryCode
      * -Phone
-     * @return array Address array
+     * @return array Address array, or false if not set yet
      */
     public function getShippingAddress(){
-        return $this->data['ShippingAddress'];
+        if (isset($this->data['ShippingAddress'])){
+            return $this->data['ShippingAddress'];
+        } else {
+            return false;
+        }
     }
     
     /**
@@ -212,34 +349,50 @@ class AmazonOrder extends AmazonOrderCore{
      * Returns an associative array with the following fields:
      * -Amount
      * -CurrencyCode
-     * @return array
+     * @return array order total data, or false if not set yet
      */
     public function getOrderTotal(){
-        return $this->data['OrderTotal'];
+        if (isset($this->data['OrderTotal'])){
+            return $this->data['OrderTotal'];
+        } else {
+            return false;
+        }
     }
     
     /**
      * Returns just the total cost of the Order
-     * @return string String of order total
+     * @return string String of order total, or false if not set yet
      */
     public function getOrderTotalAmount(){
-        return $this->data['OrderTotal']['Amount'];
+        if (isset($this->data['OrderTotal']) && isset($this->data['OrderTotal']['Amount'])){
+            return $this->data['OrderTotal']['Amount'];
+        } else {
+            return false;
+        }
     }
 
     /**
      * Returns the number of items in the Order that have been shipped
-     * @return integer
+     * @return integer non-negative integer, or false if not set yet
      */
     public function getNumberofItemsShipped(){
-        return $this->data['NumberOfItemsShipped'];
+        if (isset($this->data['NumberOfItemsShipped'])){
+            return $this->data['NumberOfItemsShipped'];
+        } else {
+            return false;
+        }
     }
     
     /**
      * Returns the number of items in the Order that have yet to be shipped
-     * @return integer
+     * @return integer non-negative integer, or false if not set yet
      */
     public function getNumberOfItemsUnshipped(){
-        return $this->data['NumberOfItemsUnshipped'];
+        if (isset($this->data['NumberOfItemsUnshipped'])){
+            return $this->data['NumberOfItemsUnshipped'];
+        } else {
+            return false;
+        }
     }
     
     /**
@@ -248,42 +401,62 @@ class AmazonOrder extends AmazonOrderCore{
      * Returns an associative array...
      * ...
      * ...
-     * @return array
+     * @return array payment data, or false if not set yet
      */
     public function getPaymentExecutionDetail(){
-        return $this->data['PaymentExecutionDetail'];
+        if (isset($this->data['PaymentExecutionDetail'])){
+            return $this->data['PaymentExecutionDetail'];
+        } else {
+            return false;
+        }
     }
     
     /**
      * Returns the payment method (either COD, CVS, or Other) of the Order
-     * @return string COD, CVS, or Other
+     * @return string COD, CVS, or Other, or false if not set yet
      */    
     public function getPaymentMethod(){
-        return $this->data['PaymentMethod'];
+        if (isset($this->data['PaymentMethod'])){
+            return $this->data['PaymentMethod'];
+        } else {
+            return false;
+        }
     }
     
     /**
      * Returns the ID of the Marketplace in which the Order was placed
-     * @return string
+     * @return string Marketplace ID, or false if not set yet
      */
     public function getMarketplaceId(){
-        return $this->data['MarketplaceId'];
+        if (isset($this->data['MarketplaceId'])){
+            return $this->data['MarketplaceId'];
+        } else {
+            return false;
+        }
     }
     
     /**
      * Returns the name of the buyer
-     * @return string
+     * @return string name, or false if not set yet
      */
     public function getBuyerName(){
-        return $this->data['BuyerName'];
+        if (isset($this->data['BuyerName'])){
+            return $this->data['BuyerName'];
+        } else {
+            return false;
+        }
     }
     
     /**
      * Returns the email address of the buyer
-     * @return string
+     * @return string email, or false if not set yet
      */
     public function getBuyerEmail(){
-        return $this->data['BuyerEmail'];
+        if (isset($this->data['BuyerEmail'])){
+            return $this->data['BuyerEmail'];
+        } else {
+            return false;
+        }
     }
     
     /**
@@ -294,88 +467,28 @@ class AmazonOrder extends AmazonOrderCore{
      * -NextDay
      * -SecondDay
      * -Standard
-     * @return type
+     * @return string value, or false if not set yet
      */
     public function getShipServiceLevelCategory(){
-        return $this->data['ShipServiceLevelCategory'];
+        if (isset($this->data['ShipServiceLevelCategory'])){
+            return $this->data['ShipServiceLevelCategory'];
+        } else {
+            return false;
+        }
     }
     
     /**
      * Returns the ratio of shipped items to unshipped items
-     * @return float Decimal number from 0 to 1
+     * @return float Decimal number from 0 to 1, or false if not set yet
      */
     public function getPercentShipped(){
-        if (array_key_exists('NumberOfItemsShipped',$this->data) && array_key_exists('NumberOfItemsUnshipped',$this->data)){
-            $ratio = $this->data['NumberOfItemsShipped'] / $this->data['NumberOfItemsUnshipped'];
-        }
-        
-        return $ratio;
-    }
-    
-    /**
-     * Fetches the specified order from Amazon after setting the necessary parameters
-     */
-    public function fetchOrder(){
-        $this->options['Timestamp'] = $this->genTime();
-        
-        $url = $this->urlbase.$this->urlbranch;
-        
-        $this->options['Signature'] = $this->_signParameters($this->options, $this->secretKey);
-        $query = $this->_getParametersAsString($this->options);
-//        myPrint($this->options);
-//        myPrint($query);
-        
-//        myPrint($this->options);
-//        $query = $this->genRequest();
-//        myPrint($query);
-        
-        if ($this->mockMode){
-            $xml = $this->fetchMockFile();
+        if (isset($this->data['NumberOfItemsShipped']) && isset($this->data['NumberOfItemsUnshipped'])){
+            $total = $this->data['NumberOfItemsShipped'] + $this->data['NumberOfItemsUnshipped'];
+            $ratio = $this->data['NumberOfItemsShipped'] / $total;
+            return $ratio;
         } else {
-            $this->throttle();
-            $this->log("Making request to Amazon");
-            $response = fetchURL($url,array('Post'=>$query));
-            $this->logRequest();
-            
-            if (!$this->checkResponse($response)){
-                return false;
-            }
-            
-            $xml = simplexml_load_string($response['body']);
-        }
-        
-        
-        $this->xmldata = $xml->GetOrderResult->Orders->Order;
-        $this->parseXML();
-    
-    }
-    
-    /**
-     * Sets the Amazon Order ID for the next request, in case it was not set in the constructor
-     * @param string $id the Amazon Order ID
-     */
-    public function setOrderId($id){
-        if ($id){
-            $this->options['AmazonOrderId.Id.1'] = $id;
-        } else {
-            $this->log("Attempted to set AmazonOrderId to nothing",'Warning');
             return false;
         }
-    }
-
-    /**
-     * Fetches items for the order
-     * @param boolean $token whether or not to automatically use item tokens
-     * @return AmazonOrderItemList container for order's items
-     */
-    public function fetchItems($token = false){
-        if (!is_bool($token)){
-            return false;
-        }
-        $items = new AmazonOrderItemList($this->storeName,$this->data['AmazonOrderId'],$this->mockMode,$this->mockFiles);
-        $items->setUseToken($token);
-        $items->fetchItems();
-        return $items;
     }
 }
 

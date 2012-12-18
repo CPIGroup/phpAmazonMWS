@@ -113,7 +113,6 @@ class AmazonProduct extends AmazonProductsCore{
         //CompetitivePricing
         if ($xml->CompetitivePricing){
             //CompetitivePrices
-            myPrint($xml->CompetitivePricing->CompetitivePrices);
             foreach($xml->CompetitivePricing->CompetitivePrices->children() as $pset){
                 $pnum = (string)$pset->CompetitivePriceId;
                 $temp = (array)$pset->attributes();

@@ -1,5 +1,10 @@
 <?php
-
+/**
+ * Core class for Amazon Products API.
+ * 
+ * This is the core class for all objects in the Amazon Products section.
+ * It contains a few methods that all Amazon Products Core objects use.
+ */
 abstract class AmazonProductsCore extends AmazonCore{
     protected $productList;
     
@@ -32,14 +37,21 @@ abstract class AmazonProductsCore extends AmazonCore{
      * @param SimpleXMLObject $xml
      */
     protected function parseXML($xml){
-        if ($xml->Products){
+        $path = $this->options['Action'].'Result';
+        foreach($xml->children() as $x){
+            if($x->getName() == 'ResponseMetadata'){
+                continue;
+            }
+            $temp = (array)$x->attributes();
+            if (isset($temp['@attributes']['status']) && $temp['@attributes']['status'] != 'Success'){
+                $this->log("Warning: product return was not successful",'Warning');
+            }
             $i = 0;
-            foreach($xml->Products->children() as $x){
-                $this->productList[$i] = new AmazonProduct($this->storeName, $x, $this->mockMode, $this->mockFiles);
+            foreach($x->Products->children() as $z){
+                $this->productList[$i] = new AmazonProduct($this->storeName, $z, $this->mockMode, $this->mockFiles);
                 $i++;
             }
-        } else if ($xml->Product) {
-            $this->productList[0] = new AmazonProduct($this->storeName, $xml->Product, $this->mockMode, $this->mockFiles);
+            
         }
     }
     
@@ -49,7 +61,10 @@ abstract class AmazonProductsCore extends AmazonCore{
      * @return AmazonProduct|array Product (or list of Products)
      */
     public function getProduct($num = null){
-        if ($num && is_numeric($num)){
+        if (!isset($this->productList)){
+            return false;
+        }
+        if (is_numeric($num)){
             return $this->productList[$num];
         } else {
             return $this->productList;

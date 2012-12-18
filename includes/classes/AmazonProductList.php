@@ -1,7 +1,12 @@
 <?php
-
-class AmazonProductList extends AmazonProductsCore{
-    private $productList;
+/**
+ * Fetches list of products from Amazon
+ * 
+ * This Amazon Products Core object retrieves a list of products from Amazon
+ * that match the given product IDs. In order to do this, both the ID type
+ * and product ID(s) must be given.
+ */
+class AmazonProductList extends AmazonProductsCore implements Iterator{
     private $i = 0;
     
     /**
@@ -33,7 +38,7 @@ class AmazonProductList extends AmazonProductsCore{
     
     /**
      * Sets the ID type for the next request
-     * @param string $s 
+     * @param string $s "ASIN", "SellerSKU", "UPC", "EAN", "ISBN", or "JAN"
      * @return boolean false if improper input
      */
     public function setIdType($s){
@@ -58,6 +63,7 @@ class AmazonProductList extends AmazonProductsCore{
             $i = 1;
             foreach ($s as $x){
                 $this->options['IdList.Id.'.$i] = $x;
+                $i++;
             }
         } else {
             return false;
@@ -94,10 +100,8 @@ class AmazonProductList extends AmazonProductsCore{
         $this->options['Signature'] = $this->_signParameters($this->options, $this->secretKey);
         $query = $this->_getParametersAsString($this->options);
         
-        $path = $this->options['Action'].'Result';
-        
         if ($this->mockMode){
-           $xml = $this->fetchMockFile()->$path;
+           $xml = $this->fetchMockFile();
         } else {
             $this->throttle();
             $this->log("Making request to Amazon");
@@ -108,11 +112,10 @@ class AmazonProductList extends AmazonProductsCore{
                 return false;
             }
             
-            $xml = simplexml_load_string($response['body'])->$path;
+            $xml = simplexml_load_string($response['body']);
         }
         
         $this->parseXML($xml);
-        
     }
     
     /**

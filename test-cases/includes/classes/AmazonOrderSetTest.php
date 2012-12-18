@@ -92,11 +92,8 @@ class AmazonOrderSetTest extends PHPUnit_Framework_TestCase {
         $this->object->setMock(true,array('fetchOrder.xml','fetchOrderItems.xml'));
         $this->object->setOrderIds('058-1233752-8214740');
         $this->object->fetchOrders();
-        var_dump($this->parseLog());
         $this->resetLog();
         $get = $this->object->fetchItems();
-        
-        var_dump($this->object);
         
         $this->assertInternalType('array',$get);
         $this->assertEquals(1,count($get));

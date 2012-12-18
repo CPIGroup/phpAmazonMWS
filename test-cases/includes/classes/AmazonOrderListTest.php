@@ -291,7 +291,6 @@ class AmazonOrderListTest extends PHPUnit_Framework_TestCase {
         $this->assertInternalType('object',$get[2]);
         
         $getOne = $this->object->fetchItems('string', 0); //$token will be set to false
-        var_dump($this->parseLog());
         $this->assertInternalType('object',$getOne);
         
         $o = new AmazonOrderList('BigKitchen', null, true);

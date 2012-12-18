@@ -2,6 +2,7 @@
 
 class AmazonOrderSet extends AmazonOrderCore implements Iterator{
     private $i = 0;
+    private $index = 0;
     private $orderList;
     
     /**
@@ -25,11 +26,8 @@ class AmazonOrderSet extends AmazonOrderCore implements Iterator{
             $this->log("Marketplace ID is missing",'Urgent');
         }
         
-        if($o && is_array($o) && !is_string($o)){
-            $k = 1;
-            foreach ($o as $id){
-                $this->options['AmazonOrderId.Id.'.$k++] = $id;
-            }
+        if($o){
+            $this->setOrderIds($o);
         }
         
         $this->throttleLimit = $throttleLimitOrder;
@@ -47,24 +45,44 @@ class AmazonOrderSet extends AmazonOrderCore implements Iterator{
      * @param array $id the Amazon Order ID
      */
     public function setOrderIds($o){
-        if($o && is_array($o) && !is_string($o)){
-            foreach($this->options as $op=>$junk){
+        if($o){
+            $this->resetOrderIds();
+            if(is_string($o)){
+                $this->options['AmazonOrderId.Id.1'] = $o;
+            } else if(is_array($o)){
+                $k = 1;
+                foreach ($o as $id){
+                    $this->options['AmazonOrderId.Id.'.$k] = $id;
+                    $k++;
+                }
+            } else {
+                return false;
+            }
+        } else {
+            return false;
+        }
+    }
+    
+    /**
+     * unsets Order ID options
+     */
+    private function resetOrderIds(){
+        foreach($this->options as $op=>$junk){
                 if(preg_match("#AmazonOrderId.Id.#",$op)){
                     unset($this->options[$op]);
                 }
             }
-            
-            $k = 1;
-            foreach ($o as $id){
-                $this->options['AmazonOrderId.Id.'.$k++] = $id;
-            }
-        }
     }
     
     /**
      * Fetches orders from Amazon using the pre-set parameters and putting them in an array of AmazonOrder objects
      */
     public function fetchOrders(){
+        if (!array_key_exists('AmazonOrderId.Id.1',$this->options)){
+            $this->log("Order IDs must be set in order to fetch them!",'Warning');
+            return false;
+        }
+        
         $this->options['Timestamp'] = $this->genTime();
         $this->options['Action'] = 'GetOrder';
         
@@ -89,20 +107,19 @@ class AmazonOrderSet extends AmazonOrderCore implements Iterator{
             $xml = simplexml_load_string($response['body'])->$path;
         }
         
-        echo 'the lime must be drawn here';
-        var_dump($xml);
+        $this->parseXML($xml);
         
+    }
+    
+    protected function parseXML($xml){
         foreach($xml->Orders->children() as $key => $order){
             if ($key != 'Order'){
                 break;
             }
-            $this->orderList[$this->index] = new AmazonOrder($this->storeName,null,$order);
-            $this->orderList[$this->index]->parseXML();
+            $this->orderList[$this->index] = new AmazonOrder($this->storeName,null,$order,$this->mockMode,$this->mockFiles);
+            $this->orderList[$this->index]->mockIndex = $this->mockIndex;
             $this->index++;
         }
-        
-        myPrint($this->orderList);
-        
     }
     
     /**
@@ -112,14 +129,31 @@ class AmazonOrderSet extends AmazonOrderCore implements Iterator{
      * @return array AmazonOrderItemList or array of AmazonOrderItemLists
      */
     public function fetchItems($token = false, $i = null){
-        if ($i == null){
+        if (!isset($this->orderList)){
+            return false;
+        }
+        if (!is_bool($token)){
+            $token = false;
+        }
+         if (is_int($i)) {
+            return $this->orderList[$i]->fetchItems($token);
+        } else {
             $a = array();
             foreach($this->orderList as $x){
                 $a[] = $x->fetchItems($token);
             }
             return $a;
-        } else if (is_numeric($i)) {
-            return $this->orderList[$i]->fetchItems($token);
+        }
+    }
+    /**
+     * returns all orders
+     * @return array|boolean entire set of data, or false on failure
+     */
+    public function getOrders(){
+        if (isset($this->orderList) && $this->orderList){
+            return $this->orderList;
+        } else {
+            return false;
         }
     }
     

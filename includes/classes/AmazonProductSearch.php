@@ -1,5 +1,12 @@
 <?php
-
+/**
+ * Fetches a list of products from Amazon using a search query.
+ * 
+ * This Amazon Products Core object retrieves a list of products from Amazon
+ * that match the given search query. In order to search, a query is required.
+ * The search context (ex: Kitchen, MP3 Downloads) can be specified as an
+ * optional parameter.
+ */
 class AmazonProductSearch extends AmazonProductsCore{
     
     
@@ -19,7 +26,7 @@ class AmazonProductSearch extends AmazonProductsCore{
         }
         
         if($q){
-            $this->options['Query'] = $q;
+            $this->setQuery($q);
         }
         
         $this->options['Action'] = 'ListMatchingProducts';
@@ -121,10 +128,8 @@ class AmazonProductSearch extends AmazonProductsCore{
         $this->options['Signature'] = $this->_signParameters($this->options, $this->secretKey);
         $query = $this->_getParametersAsString($this->options);
         
-        $path = $this->options['Action'].'Result';
-        
         if ($this->mockMode){
-           $xml = $this->fetchMockFile()->$path;
+           $xml = $this->fetchMockFile();
         } else {
             $this->throttle();
             $this->log("Making request to Amazon");
@@ -135,7 +140,7 @@ class AmazonProductSearch extends AmazonProductsCore{
                 return false;
             }
             
-            $xml = simplexml_load_string($response['body'])->$path;
+            $xml = simplexml_load_string($response['body']);
         }
         
         $this->parseXML($xml);

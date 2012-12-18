@@ -413,7 +413,10 @@ class AmazonOrderTest extends PHPUnit_Framework_TestCase {
         
         $this->assertEquals($x,$get);
         
-        $this->assertFalse($o->fetchItems(5)); //not a boolean
+        $alt = $o->fetchItems(5); //boolean changed to false
+        $altget = $alt->getItems();
+        $this->assertEquals($x,$altget);
+        
         $this->assertFalse($this->object->fetchItems()); //not fetched yet for this object
     }
     

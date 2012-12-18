@@ -170,7 +170,6 @@ class AmazonFulfillmentPreviewTest extends PHPUnit_Framework_TestCase {
         $this->assertArrayNotHasKey('Items.member.1.Quantity',$o3);
     }
     
-    
     public function testSetShippingSpeeds(){
         $this->assertFalse($this->object->setShippingSpeeds(null)); //can't be nothing
         $this->assertFalse($this->object->setShippingSpeeds(5)); //can't be an int
@@ -197,7 +196,6 @@ class AmazonFulfillmentPreviewTest extends PHPUnit_Framework_TestCase {
         $o3 = $this->object->getOptions();
         $this->assertArrayNotHasKey('ShippingSpeedCategories.1',$o3);
     }
-    
     
     public function testFetchPreview(){
         $this->resetLog();

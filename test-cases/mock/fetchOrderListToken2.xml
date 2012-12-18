@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+<ListOrdersByNextTokenResponse xmlns="https://mws.amazonservices.com/Orders/2011-01-01">
+    <ListOrdersByNextTokenResult>
+        <LastUpdatedBefore>2010-10-05T18%3A12%3A20.687Z</LastUpdatedBefore>
+        <Orders>
+            <Order>
+                <ShipmentServiceLevelCategory>Standard</ShipmentServiceLevelCategory>
+                <FulfillmentChannel>MFN</FulfillmentChannel>
+                <OrderStatus>Pending</OrderStatus>
+                <ShipServiceLevel>Std US Dom</ShipServiceLevel>
+                <LastUpdateDate>2012-10-12T20:34:00Z</LastUpdateDate>
+                <PurchaseDate>2012-10-12T20:33:16Z</PurchaseDate>
+                <NumberOfItemsUnshipped>0</NumberOfItemsUnshipped>
+                <MarketplaceId>ATVPDKIKX0DER</MarketplaceId>
+                <SalesChannel>Amazon.com</SalesChannel>
+                <NumberOfItemsShipped>0</NumberOfItemsShipped>
+                <AmazonOrderId>123-9876543-6543212</AmazonOrderId>
+                <PaymentMethod>Other</PaymentMethod>
+            </Order>
+        </Orders>
+    </ListOrdersByNextTokenResult>
+    <ResponseMetadata>
+        <RequestId>88faca76-b600-46d2-b53c-0c8c4533e43a</RequestId>
+    </ResponseMetadata>
+</ListOrdersByNextTokenResponse>

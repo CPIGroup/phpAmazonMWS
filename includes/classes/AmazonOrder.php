@@ -99,8 +99,11 @@ class AmazonOrder extends AmazonOrderCore{
      * @return AmazonOrderItemList container for order's items
      */
     public function fetchItems($token = false){
-        if (!is_bool($token) || !isset($this->data['AmazonOrderId'])){
+        if (!isset($this->data['AmazonOrderId'])){
             return false;
+        }
+        if (!is_bool($token)){
+            $token = false;
         }
         $items = new AmazonOrderItemList($this->storeName,$this->data['AmazonOrderId'],$this->mockMode,$this->mockFiles);
         $items->mockIndex = $this->mockIndex;

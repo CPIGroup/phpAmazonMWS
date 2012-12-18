@@ -1,6 +1,10 @@
 <?php
 /**
- * AmazonItemLists contain all of the items for a given order
+ * Gets all of the items for a given order.
+ * 
+ * This Amazon Orders Core object can retrieve the list of items associated
+ * with a specific order. Before any items can be retrieved, an Order ID is
+ * required. This object can use tokens when retrieving the list.
  */
 class AmazonOrderItemList extends AmazonOrderCore implements Iterator{
     private $itemList;

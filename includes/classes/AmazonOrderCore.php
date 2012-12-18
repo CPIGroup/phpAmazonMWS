@@ -2,7 +2,7 @@
 /**
  * Core class for Amazon Orders API.
  * 
- * This is the core class for the only object in the Amazon Orders section.
+ * This is the core class for all objects in the Amazon Orders section.
  * It contains no functions in itself other than the constructor.
  */
 abstract class AmazonOrderCore extends AmazonCore{

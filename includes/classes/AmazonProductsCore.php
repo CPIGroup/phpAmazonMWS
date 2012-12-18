@@ -5,8 +5,9 @@ abstract class AmazonProductsCore extends AmazonCore{
     
     /**
      * For organization's sake
-     * @param type $s
-     * @param type $mock
+     * @param string $s
+     * @param boolean $mock
+     * @param string|array $m
      */
     public function __construct($s, $mock = false, $m = null){
         parent::__construct($s, $mock, $m);
@@ -34,13 +35,11 @@ abstract class AmazonProductsCore extends AmazonCore{
         if ($xml->Products){
             $i = 0;
             foreach($xml->Products->children() as $x){
-                $this->productList[$i] = new AmazonProduct($this->storeName, $this->mockMode, $this->mockFiles);
-                $this->productList[$i]->loadXML($x);
+                $this->productList[$i] = new AmazonProduct($this->storeName, $x, $this->mockMode, $this->mockFiles);
                 $i++;
             }
         } else if ($xml->Product) {
-            $this->productList[0] = new AmazonProduct($this->storeName, $this->mockMode, $this->mockFiles);
-            $this->productList[0]->loadXML($xml->Product);
+            $this->productList[0] = new AmazonProduct($this->storeName, $xml->Product, $this->mockMode, $this->mockFiles);
         }
     }
     

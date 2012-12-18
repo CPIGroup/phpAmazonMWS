@@ -1,20 +1,29 @@
 <?php
-
+/**
+ * Contains Amazon product data.
+ * 
+ * This Amazon Products Core object acts as a container for data fetched by
+ * other Products Core objects. It has no Amazon functions in itself.
+ */
 class AmazonProduct extends AmazonProductsCore{
     protected $data;
     
     /**
-     * AmazonProduct acts as a container for various results from other classes. Currently, has no Amazon functions
+     * AmazonProduct acts as a container for various results from other classes.
      * @param string $s store name as seen in config
      * @param boolean $mock set true to enable mock mode
      * @param array|string $m list of mock files to use
      */
-    public function __construct($s, $mock = false, $m = null){
+    public function __construct($s, $data = null, $mock = false, $m = null){
         parent::__construct($s, $mock, $m);
         if (file_exists($this->config)){
             include($this->config);
         } else {
             throw new Exception('Config file does not exist!');
+        }
+        
+        if ($data){
+            $this->loadXML($data);
         }
         
         $this->throttleLimit = $throttleLimitProduct;
@@ -219,7 +228,11 @@ class AmazonProduct extends AmazonProductsCore{
      * @return array Product data
      */
     public function getData(){
-        return $this->data;
+        if (isset($this->data)){
+            return $this->data;
+        } else {
+            return false;
+        }
     }
     
 }

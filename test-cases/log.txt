@@ -1,1 +1,2 @@
-[Info][2012/12/19 11:15:33 guest@cli AmazonCore.php:39 setMock] Mock Mode set to ON
+[Info][2012/12/19 11:49:54 guest@cli AmazonCore.php:39 setMock] Mock Mode set to ON
+[Info][2012/12/19 11:49:54 guest@cli AmazonReportTest.php:77 saveReport] Successfully saved report #777 at /var/www/athena/plugins/newAmazon/test-cases/mock/saveReport.xml

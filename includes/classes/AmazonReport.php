@@ -1,11 +1,16 @@
 <?php
-
-class AmazonPackageTracker extends AmazonReportsCore{
+/**
+ * Fetches a report from Amazon
+ * 
+ * This Amazon Reports Core object retrieves the results of a report from Amazon.
+ * In order to do this, a report ID is required. The results of the report can
+ * then be saved to a file.
+ */
+class AmazonReport extends AmazonReportsCore{
     private $rawreport;
-    private $report;
     
     /**
-     * Fetches a plan from Amazon. This is how you get a Shipment ID.
+     * Fetches a report from Amazon.
      * @param string $s name of store as seen in config file
      * @param boolean $mock true to enable mock mode
      * @param array|string $m list of mock files to use
@@ -19,7 +24,7 @@ class AmazonPackageTracker extends AmazonReportsCore{
         }
         
         if($id){
-            $this->options['ReportId'] = $id;
+            $this->setReportId($id);
         }
         
         $this->options['Action'] = 'GetReport';
@@ -58,7 +63,7 @@ class AmazonPackageTracker extends AmazonReportsCore{
         $query = $this->_getParametersAsString($this->options);
         
         if ($this->mockMode){
-           $this->rawreport = $this->fetchMockFile();
+           $this->rawreport = $this->fetchMockFile(false);
         } else {
             $this->throttle();
             $this->log("Making request to Amazon");
@@ -69,7 +74,7 @@ class AmazonPackageTracker extends AmazonReportsCore{
                 return false;
             }
             
-            $this->rawreport = simplexml_load_string($response['body']);
+            $this->rawreport = $response['body'];
         }
         
     }
@@ -79,58 +84,15 @@ class AmazonPackageTracker extends AmazonReportsCore{
      * @param string $path filename to save the file in
      */
     public function saveReport($path){
+        if (!isset($this->rawreport)){
+            return false;
+        }
         try{
-            $fd = fopen($path, "a");
-            fwrite($this->rawreport);
-            fclose($fd);
+            file_put_contents($path, $this->rawreport);
             $this->log("Successfully saved report #".$this->options['ReportId']." at $path");
         } catch (Exception $e){
             $this->log("Unable to save report #".$this->options['ReportId']." at $path: $e",'Urgent');
         }
-    }
-    
-    /**
-     * converts XML into arrays
-     */
-    protected function parseXML() {
-//        $d = $this->xmldata;
-//        $this->report['PackageNumber'] = (string)$d->PackageNumber;
-//        $this->report['TrackingNumber'] = (string)$d->TrackingNumber;
-//        $this->report['CarrierCode'] = (string)$d->CarrierCode;
-//        $this->report['CarrierPhoneNumber'] = (string)$d->CarrierPhoneNumber;
-//        $this->report['CarrierURL'] = (string)$d->CarrierURL;
-//        $this->report['ShipDate'] = (string)$d->ShipDate;
-//        //Address
-//            $this->report['ShipToAddress']['City'] = (string)$d->ShipToAddress->City;
-//            $this->report['ShipToAddress']['State'] = (string)$d->ShipToAddress->State;
-//            $this->report['ShipToAddress']['Country'] = (string)$d->ShipToAddress->Country;
-//        //End of Address
-//        $this->report['CurrentStatus'] = (string)$d->CurrentStatus;
-//        $this->report['SignedForBy'] = (string)$d->SignedForBy;
-//        $this->report['EstimatedArrivalDate'] = (string)$d->EstimatedArrivalDate;
-//        
-//        $i = 0;
-//        foreach($d->TrackingEvents->children() as $y){
-//            $this->report['TrackingEvents'][$i]['EventDate'] = (string)$y->EventDate;
-//            //Address
-//                $this->report['TrackingEvents'][$i]['EventAddress']['City'] = (string)$d->ShipToAddress->City;
-//                $this->report['TrackingEvents'][$i]['EventAddress']['State'] = (string)$d->ShipToAddress->State;
-//                $this->report['TrackingEvents'][$i]['EventAddress']['Country'] = (string)$d->ShipToAddress->Country;
-//            //End of Address
-//            $this->report['TrackingEvents'][$i]['EventCode'] = (string)$y->EventCode;
-//            $j++;
-//        }
-//        
-//        $this->report['AdditionalLocationInfo'] = (string)$d->AdditionalLocationInfo;
-        
-    }
-    
-    /**
-     * returns all of the details
-     * @return array all of the details
-     */
-    public function getReport(){
-        return $this->report;
     }
     
 }

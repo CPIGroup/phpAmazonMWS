@@ -26,6 +26,8 @@ class AmazonProduct extends AmazonProductsCore{
             $this->loadXML($data);
         }
         
+        unset($this->productList);
+        
         $this->throttleLimit = $throttleLimitProduct;
         
     }

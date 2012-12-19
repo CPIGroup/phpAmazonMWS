@@ -4,7 +4,7 @@
  * 
  * This Amazon Reports Core object retrieves a list of available on Amazon.
  * No parameters are required, but a number of filters are available to
- * narrow the returned list.
+ * narrow the returned list. It can also retrieve a count of the feeds.
  * This object can use tokens when retrieving the list.
  */
 class AmazonReportList extends AmazonReportsCore implements Iterator{
@@ -265,6 +265,52 @@ class AmazonReportList extends AmazonReportsCore implements Iterator{
     }
     
     /**
+     * Fetches the count from Amazon
+     */
+    public function fetchCount(){
+        $this->options['Timestamp'] = $this->genTime();
+        $this->prepareCount();
+        
+        $url = $this->urlbase.$this->urlbranch;
+        
+        $this->options['Signature'] = $this->_signParameters($this->options, $this->secretKey);
+        $query = $this->_getParametersAsString($this->options);
+        
+        $path = $this->options['Action'].'Result';
+        if ($this->mockMode){
+           $xml = $this->fetchMockFile()->$path;
+        } else {
+            $this->throttle();
+            $this->log("Making request to Amazon");
+            $response = fetchURL($url,array('Post'=>$query));
+            $this->logRequest();
+            
+            if (!$this->checkResponse($response)){
+                return false;
+            }
+            
+            $xml = simplexml_load_string($response['body'])->$path;
+        }
+        
+        $this->count = (string)$xml->Count;
+        
+    }
+    
+    /**
+     * Sets up token stuff
+     */
+    protected function prepareCount(){
+        include($this->config);
+        $this->options['Action'] = 'GetReportCount';
+        $this->throttleLimit = $throttleLimitReportRequestList;
+        $this->throttleTime = $throttleTimeReportRequestList;
+        $this->throttleGroup = 'GetReportCount';
+        unset($this->options['NextToken']);
+        unset($this->options['MaxCount']);
+        $this->resetRequestIds();
+    }
+    
+    /**
      * Returns the report ID for the specified entry, defaults to 0
      * @param int $i index
      * @return string|boolean report ID, or False if Non-numeric index
@@ -357,6 +403,18 @@ class AmazonReportList extends AmazonReportsCore implements Iterator{
             return $this->reportList[$i];
         } else {
             return $this->reportList;
+        }
+    }
+    
+    /**
+     * gets the count, if it exists
+     * @return array|boolean Response array, or false on failure
+     */
+    public function getCount(){
+        if (isset($this->count)){
+            return $this->count;
+        } else {
+            return false;
         }
     }
     

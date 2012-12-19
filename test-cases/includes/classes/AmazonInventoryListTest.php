@@ -73,7 +73,6 @@ class AmazonInventoryListTest extends PHPUnit_Framework_TestCase {
         $o = $this->object->getOptions();
         $this->assertArrayHasKey('ResponseGroup',$o);
         $this->assertEquals('Detailed',$o['ResponseGroup']);
-        
     }
     
     public function testFetchInventoryList(){

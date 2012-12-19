@@ -298,6 +298,37 @@ class AmazonReportListTest extends PHPUnit_Framework_TestCase {
         $this->assertFalse($this->object->getList()); //not fetched yet for this object
     }
     
+    public function testFetchCount(){
+        $this->resetLog();
+        $this->object->setRequestIds('123456');
+        $this->object->setMaxCount(77);
+        $this->object->setMock(true,'fetchReportCount.xml');
+        $this->assertNull($this->object->fetchCount());
+        
+        $o = $this->object->getOptions();
+        $this->assertEquals('GetReportCount',$o['Action']);
+        $this->assertArrayNotHasKey('ReportRequestIdList.Id.1',$o);
+        $this->assertArrayNotHasKey('MaxCount',$o);
+        
+        $check = $this->parseLog();
+        $this->assertEquals('Single Mock File set: fetchReportCount.xml',$check[1]);
+        $this->assertEquals('Fetched Mock File: mock/fetchReportCount.xml',$check[2]);
+        
+        $this->assertFalse($this->object->hasToken());
+        
+        return $this->object;
+    }
+    
+    /**
+     * @depends testFetchCount
+     */
+    public function testGetCount($o){
+        $get = $o->getCount();
+        $this->assertEquals('166',$get);
+        
+        $this->assertFalse($this->object->getCount()); //not fetched yet for this object
+    }
+    
     /**
      * Resets log for next test
      */

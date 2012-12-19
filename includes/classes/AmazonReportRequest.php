@@ -31,6 +31,8 @@ class AmazonReportRequest extends AmazonReportsCore{
     public function setReportType($s){
         if (is_string($s) && $s){
             $this->options['ReportType'] = $s;
+        } else {
+            return false;
         }
         /*
          * List of valid Report Types:
@@ -118,11 +120,16 @@ class AmazonReportRequest extends AmazonReportsCore{
     
     /**
      * set whether or not the report should return the Sales Channel column
-     * @param string $s "true" or "false"
+     * @param string $s "true" or "false", or null
+     * @return boolean false if improper input
      */
     public function setShowSalesChannel($s){
-        if (is_string($s) && $s){
-            $this->options['ReportOptions=ShowSalesChannel'] = $s;
+        if ($s == 'true' || (is_bool($s) && $s == true)){
+            $this->options['ReportOptions=ShowSalesChannel'] = 'true';
+        } else if ($s == 'false' || (is_bool($s) && $s == false)){
+            $this->options['ReportOptions=ShowSalesChannel'] = 'false';
+        } else {
+            return false;
         }
     }
     
@@ -140,6 +147,7 @@ class AmazonReportRequest extends AmazonReportsCore{
             $i = 1;
             foreach ($s as $x){
                 $this->options['MarketplaceIdList.Id.'.$i] = $x;
+                $i++;
             }
         } else {
             return false;
@@ -189,7 +197,7 @@ class AmazonReportRequest extends AmazonReportsCore{
             $xml = simplexml_load_string($response['body'])->$path;
         }
         
-        $this->parseXML($xml);
+        $this->parseXML($xml->ReportRequestInfo);
         
     }
     
@@ -219,10 +227,94 @@ class AmazonReportRequest extends AmazonReportsCore{
      * @return array|boolean Response array, or false on failure
      */
     public function getResponse(){
-        if (!isset($this->response) || !isset($this->response['ReportRequestId'])){
-            return false;
-        } else {
+        if (isset($this->response)){
             return $this->response;
+        } else {
+            return false;
+        }
+    }
+    
+    /**
+     * Returns the report request ID for the response
+     * @return string|boolean report request ID, or False if not set yet
+     */
+    public function getReportRequestId(){
+        if (isset($this->response)){
+            return $this->response['ReportRequestId'];
+        } else {
+            return false;
+        }
+    }
+    
+    /**
+     * Returns the report type for the response
+     * @return string|boolean report type, or False if not set yet
+     */
+    public function getReportType(){
+        if (isset($this->response)){
+            return $this->response['ReportType'];
+        } else {
+            return false;
+        }
+    }
+    
+    /**
+     * Returns the report type for the response
+     * @return string|boolean report type, or False if not set yet
+     */
+    public function getStartDate(){
+        if (isset($this->response)){
+            return $this->response['StartDate'];
+        } else {
+            return false;
+        }
+    }
+    
+    /**
+     * Returns the report type for the response
+     * @return string|boolean report type, or False if not set yet
+     */
+    public function getEndDate(){
+        if (isset($this->response)){
+            return $this->response['EndDate'];
+        } else {
+            return false;
+        }
+    }
+    
+    /**
+     * Returns the report type for the response
+     * @return string|boolean report type, or False if not set yet
+     */
+    public function getIsScheduled(){
+        if (isset($this->response)){
+            return $this->response['Scheduled'];
+        } else {
+            return false;
+        }
+    }
+    
+    /**
+     * Returns the report type for the response
+     * @return string|boolean report type, or False if not set yet
+     */
+    public function getSubmittedDate(){
+        if (isset($this->response)){
+            return $this->response['SubmittedDate'];
+        } else {
+            return false;
+        }
+    }
+    
+    /**
+     * Returns the report type for the response
+     * @return string|boolean report type, or False if not set yet
+     */
+    public function getStatus(){
+        if (isset($this->response)){
+            return $this->response['ReportProcessingStatus'];
+        } else {
+            return false;
         }
     }
     

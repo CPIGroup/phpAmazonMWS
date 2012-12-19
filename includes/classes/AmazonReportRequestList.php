@@ -1,5 +1,13 @@
 <?php
-
+/**
+ * Fetches a list of report requests from Amazon.
+ * 
+ * This Amazon Reports Core Object retrieves a list of previously requested
+ * reports from Amazon. No parameters are required, but a number of filters
+ * are available to narrow the list of report requests that are returned.
+ * This object can also count the number of report requests. This object can
+ * use tokens when retrieving the list.
+ */
 class AmazonReportRequestList extends AmazonReportsCore implements Iterator{
     private $tokenFlag = false;
     private $tokenUseFlag = false;
@@ -9,7 +17,7 @@ class AmazonReportRequestList extends AmazonReportsCore implements Iterator{
     private $count;
     
     /**
-     * Sends a report request to Amazon.
+     * Fetches a list of report requests from Amazon.
      * @param string $s name of store as seen in config file
      * @param boolean $mock true to enable mock mode
      * @param array|string $m list of mock files to use
@@ -61,6 +69,7 @@ class AmazonReportRequestList extends AmazonReportsCore implements Iterator{
             $i = 1;
             foreach ($s as $x){
                 $this->options['ReportRequestIdList.Id.'.$i] = $x;
+                $i++;
             }
         } else {
             return false;
@@ -92,6 +101,7 @@ class AmazonReportRequestList extends AmazonReportsCore implements Iterator{
             $i = 1;
             foreach ($s as $x){
                 $this->options['ReportTypeList.Type.'.$i] = $x;
+                $i++;
             }
         } else {
             return false;
@@ -116,13 +126,14 @@ class AmazonReportRequestList extends AmazonReportsCore implements Iterator{
      */
     public function setReportStatuses($s){
         if (is_string($s)){
-            $this->resetRequestIds();
+            $this->resetReportStatuses();
             $this->options['ReportProcessingStatusList.Status.1'] = $s;
         } else if (is_array($s)){
-            $this->resetRequestIds();
+            $this->resetReportStatuses();
             $i = 1;
             foreach ($s as $x){
                 $this->options['ReportProcessingStatusList.Status.'.$i] = $x;
+                $i++;
             }
         } else {
             return false;
@@ -146,7 +157,7 @@ class AmazonReportRequestList extends AmazonReportsCore implements Iterator{
      * @return boolean false if improper input
      */
     public function setMaxCount($s){
-        if (is_numeric($s) && $s >= 1 && $s <= 100){
+        if (is_int($s) && $s >= 1 && $s <= 100){
             $this->options['MaxCount'] = $s;
         } else {
             return false;
@@ -180,7 +191,7 @@ class AmazonReportRequestList extends AmazonReportsCore implements Iterator{
     /**
      * Fetches the report request list from Amazon, using a token if available
      */
-    public function fetchReportList(){
+    public function fetchRequestList(){
         $this->options['Timestamp'] = $this->genTime();
         $this->prepareToken();
         
@@ -190,7 +201,6 @@ class AmazonReportRequestList extends AmazonReportsCore implements Iterator{
         $query = $this->_getParametersAsString($this->options);
         
         $path = $this->options['Action'].'Result';
-        
         if ($this->mockMode){
            $xml = $this->fetchMockFile()->$path;
         } else {
@@ -217,8 +227,8 @@ class AmazonReportRequestList extends AmazonReportsCore implements Iterator{
         $this->parseXML($xml);
         
         if ($this->tokenFlag && $this->tokenUseFlag){
-            $this->log("Recursively fetching more Reports");
-            $this->fetchReportList();
+            $this->log("Recursively fetching more Report Requests");
+            $this->fetchRequestList();
         }
         
     }
@@ -234,7 +244,7 @@ class AmazonReportRequestList extends AmazonReportsCore implements Iterator{
             $this->throttleTime = $throttleTimeReportToken;
             $this->throttleGroup = 'GetReportRequestListByNextToken';
             $this->resetRequestIds();
-            $this->resetRequestTypes();
+            $this->resetReportTypes();
             $this->resetReportStatuses();
             unset($this->options['MaxCount']);
             unset($this->options['RequestedFromDate']);
@@ -268,6 +278,10 @@ class AmazonReportRequestList extends AmazonReportsCore implements Iterator{
      * @param SimpleXMLObject $xml
      */
     protected function parseXML($xml){
+        if (!xml){
+            return false;
+        }
+        
         foreach($xml->children() as $key=>$x){
             $i = $this->index;
             if ($key == 'Count'){
@@ -285,6 +299,9 @@ class AmazonReportRequestList extends AmazonReportsCore implements Iterator{
             $this->reportList[$i]['Scheduled'] = (string)$x->Scheduled;
             $this->reportList[$i]['SubmittedDate'] = (string)$x->SubmittedDate;
             $this->reportList[$i]['ReportProcessingStatus'] = (string)$x->ReportProcessingStatus;
+            $this->reportList[$i]['GeneratedReportId'] = (string)$x->GeneratedReportId;
+            $this->reportList[$i]['StartedProcessingDate'] = (string)$x->StartedProcessingDate;
+            $this->reportList[$i]['CompletedProcessingDate'] = (string)$x->CompletedProcessingDate;
             
             $this->index++;
         }
@@ -294,8 +311,8 @@ class AmazonReportRequestList extends AmazonReportsCore implements Iterator{
      *Cancels the report requests that match the given parameters. Careful!
      */
     public function cancelRequests(){
-        $this->prepareCancel();
         $this->options['Timestamp'] = $this->genTime();
+        $this->prepareCancel();
         
         $url = $this->urlbase.$this->urlbranch;
         
@@ -324,12 +341,61 @@ class AmazonReportRequestList extends AmazonReportsCore implements Iterator{
     }
     
     /**
+     * Fetches the count from Amazon
+     */
+    public function fetchCount(){
+        $this->options['Timestamp'] = $this->genTime();
+        $this->prepareCount();
+        
+        $url = $this->urlbase.$this->urlbranch;
+        
+        $this->options['Signature'] = $this->_signParameters($this->options, $this->secretKey);
+        $query = $this->_getParametersAsString($this->options);
+        
+        $path = $this->options['Action'].'Result';
+        if ($this->mockMode){
+           $xml = $this->fetchMockFile()->$path;
+        } else {
+            $this->throttle();
+            $this->log("Making request to Amazon");
+            $response = fetchURL($url,array('Post'=>$query));
+            $this->logRequest();
+            
+            if (!$this->checkResponse($response)){
+                return false;
+            }
+            
+            $xml = simplexml_load_string($response['body'])->$path;
+        }
+        
+        $this->count = (string)$xml->Count;
+        
+    }
+    
+    /**
+     * Sets up token stuff
+     */
+    protected function prepareCount(){
+        include($this->config);
+        $this->options['Action'] = 'GetReportRequestCount';
+        $this->throttleLimit = $throttleLimitReportRequestList;
+        $this->throttleTime = $throttleTimeReportRequestList;
+        $this->throttleGroup = 'GetReportRequestCount';
+        unset($this->options['NextToken']);
+        unset($this->options['MaxCount']);
+        $this->resetRequestIds();
+    }
+    
+    /**
      * Returns the report request ID for the specified entry, defaults to 0
      * @param int $i index
      * @return string|boolean report request ID, or False if Non-numeric index
      */
     public function getRequestId($i = 0){
-        if (is_numeric($i)){
+        if (!isset($this->reportList)){
+            return false;
+        }
+        if (is_int($i)){
             return $this->reportList[$i]['ReportRequestId'];
         } else {
             return false;
@@ -342,7 +408,10 @@ class AmazonReportRequestList extends AmazonReportsCore implements Iterator{
      * @return string|boolean report type, or False if Non-numeric index
      */
     public function getReportType($i = 0){
-        if (is_numeric($i)){
+        if (!isset($this->reportList)){
+            return false;
+        }
+        if (is_int($i)){
             return $this->reportList[$i]['ReportType'];
         } else {
             return false;
@@ -355,7 +424,10 @@ class AmazonReportRequestList extends AmazonReportsCore implements Iterator{
      * @return string|boolean start date, or False if Non-numeric index
      */
     public function getStartDate($i = 0){
-        if (is_numeric($i)){
+        if (!isset($this->reportList)){
+            return false;
+        }
+        if (is_int($i)){
             return $this->reportList[$i]['StartDate'];
         } else {
             return false;
@@ -368,7 +440,10 @@ class AmazonReportRequestList extends AmazonReportsCore implements Iterator{
      * @return string|boolean end date, or False if Non-numeric index
      */
     public function getEndDate($i = 0){
-        if (is_numeric($i)){
+        if (!isset($this->reportList)){
+            return false;
+        }
+        if (is_int($i)){
             return $this->reportList[$i]['EndDate'];
         } else {
             return false;
@@ -381,12 +456,11 @@ class AmazonReportRequestList extends AmazonReportsCore implements Iterator{
      * @return boolean true or false, or false if Non-numeric index
      */
     public function getIsScheduled($i = 0){
-        if (is_numeric($i)){
-            if ($this->reportList[$i]['Scheduled'] == 'true'){
-                return true;
-            } else {
-                return false;
-            }
+        if (!isset($this->reportList)){
+            return false;
+        }
+        if (is_int($i)){
+            return $this->reportList[$i]['Scheduled'];
         } else {
             return false;
         }
@@ -398,7 +472,10 @@ class AmazonReportRequestList extends AmazonReportsCore implements Iterator{
      * @return string|boolean date submitted, or False if Non-numeric index
      */
     public function getSubmittedDate($i = 0){
-        if (is_numeric($i)){
+        if (!isset($this->reportList)){
+            return false;
+        }
+        if (is_int($i)){
             return $this->reportList[$i]['SubmittedDate'];
         } else {
             return false;
@@ -411,7 +488,10 @@ class AmazonReportRequestList extends AmazonReportsCore implements Iterator{
      * @return string|boolean status, or False if Non-numeric index
      */
     public function getStatus($i = 0){
-        if (is_numeric($i)){
+        if (!isset($this->reportList)){
+            return false;
+        }
+        if (is_int($i)){
             return $this->reportList[$i]['ReportProcessingStatus'];
         } else {
             return false;
@@ -419,11 +499,80 @@ class AmazonReportRequestList extends AmazonReportsCore implements Iterator{
     }
     
     /**
-     * Returns the list of report request arrays
-     * @return array Array of arrays
+     * Returns the processing status for the specified entry, defaults to 0
+     * @param int $i index
+     * @return string|boolean status, or False if Non-numeric index
      */
-    public function getList(){
-        return $this->reportList;
+    public function getReportId($i = 0){
+        if (!isset($this->reportList)){
+            return false;
+        }
+        if (is_int($i)){
+            return $this->reportList[$i]['GeneratedReportId'];
+        } else {
+            return false;
+        }
+    }
+    
+    /**
+     * Returns the processing status for the specified entry, defaults to 0
+     * @param int $i index
+     * @return string|boolean status, or False if Non-numeric index
+     */
+    public function getDateProcessingStarted($i = 0){
+        if (!isset($this->reportList)){
+            return false;
+        }
+        if (is_int($i)){
+            return $this->reportList[$i]['StartedProcessingDate'];
+        } else {
+            return false;
+        }
+    }
+    
+    /**
+     * Returns the processing status for the specified entry, defaults to 0
+     * @param int $i index
+     * @return string|boolean status, or False if Non-numeric index
+     */
+    public function getDateProcessingCompleted($i = 0){
+        if (!isset($this->reportList)){
+            return false;
+        }
+        if (is_int($i)){
+            return $this->reportList[$i]['CompletedProcessingDate'];
+        } else {
+            return false;
+        }
+    }
+    
+    /**
+     * Returns the list of report request arrays, or specific list item
+     * @param int $i index
+     * @return array Array or array of arrays, false if not set yet
+     */
+    public function getList($i = null){
+        if (!isset($this->reportList)){
+            return false;
+        }
+        if (is_int($i)){
+            return $this->reportList[$i];
+        } else {
+            return $this->reportList;
+        }
+        
+    }
+    
+    /**
+     * gets the count, if it exists
+     * @return array|boolean false if not set yet
+     */
+    public function getCount(){
+        if (isset($this->count)){
+            return $this->count;
+        } else {
+            return false;
+        }
     }
     
     /**

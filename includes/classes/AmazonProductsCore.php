@@ -7,6 +7,7 @@
  */
 abstract class AmazonProductsCore extends AmazonCore{
     protected $productList;
+    protected $index = 0;
     
     /**
      * For organization's sake
@@ -37,7 +38,13 @@ abstract class AmazonProductsCore extends AmazonCore{
      * @param SimpleXMLObject $xml
      */
     protected function parseXML($xml){
-        $path = $this->options['Action'].'Result';
+        if (!$xml){
+            return false;
+        }
+//        if (){
+//
+//        }
+        
         foreach($xml->children() as $x){
             if($x->getName() == 'ResponseMetadata'){
                 continue;
@@ -46,12 +53,25 @@ abstract class AmazonProductsCore extends AmazonCore{
             if (isset($temp['@attributes']['status']) && $temp['@attributes']['status'] != 'Success'){
                 $this->log("Warning: product return was not successful",'Warning');
             }
-            $i = 0;
-            foreach($x->Products->children() as $z){
-                $this->productList[$i] = new AmazonProduct($this->storeName, $z, $this->mockMode, $this->mockFiles);
-                $i++;
+            if (isset($x->Products)){
+                foreach($x->Products->children() as $z){
+                    $this->productList[$this->index] = new AmazonProduct($this->storeName, $z, $this->mockMode, $this->mockFiles);
+                    $this->index++;
+                }
+            } else if ($x->getName() == 'GetProductCategoriesForSKUResult' || $x->getName() == 'GetProductCategoriesForASINResult'){
+                $this->productList[$this->index] = new AmazonProduct($this->storeName, $x, $this->mockMode, $this->mockFiles);
+                $this->index++;
+            } else {
+                foreach($x->children() as $z){
+                    if($z->getName() != 'Product'){
+                        $this->productList[$z->getName()] = (string)$z;
+                        $this->log("Special case: ".$z->getName());
+                    } else {
+                        $this->productList[$this->index] = new AmazonProduct($this->storeName, $z, $this->mockMode, $this->mockFiles);
+                        $this->index++;
+                    }
+                }
             }
-            
         }
     }
     

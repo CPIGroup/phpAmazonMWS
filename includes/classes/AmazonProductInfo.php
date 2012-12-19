@@ -1,5 +1,13 @@
 <?php
-
+/**
+ * Fetches various information about products from Amazon.
+ * 
+ * This Amazon Products Core object retrieves a list of various product info
+ * using the given IDs. The information this object can retrieve includes
+ * competitive pricing, lowest prices, your own price, and product categories.
+ * At least one ID (SKU or ASIN) is required in order to fetch info. A couple of
+ * optional parameters are also available for some of the functions.
+ */
 class AmazonProductInfo extends AmazonProductsCore{
     
     
@@ -41,6 +49,7 @@ class AmazonProductInfo extends AmazonProductsCore{
             $i = 1;
             foreach ($s as $x){
                 $this->options['SellerSKUList.SellerSKU.'.$i] = $x;
+                $i++;
             }
         } else {
             return false;
@@ -74,6 +83,7 @@ class AmazonProductInfo extends AmazonProductsCore{
             $i = 1;
             foreach ($s as $x){
                 $this->options['ASINList.ASIN.'.$i] = $x;
+                $i++;
             }
         } else {
             return false;
@@ -110,8 +120,10 @@ class AmazonProductInfo extends AmazonProductsCore{
      * @return boolean false if improper input
      */
     public function setExcludeSelf($s = 'true'){
-        if ($s == 'true' || $s == 'false'){
-            $this->options['ExcludeMe'] = $s;
+        if ($s == 'true' || (is_bool($s) && $s == true)){
+            $this->options['ExcludeMe'] = 'true';
+        } else if ($s == 'false' || (is_bool($s) && $s == false)){
+            $this->options['ExcludeMe'] = 'false';
         } else {
             return false;
         }
@@ -122,7 +134,7 @@ class AmazonProductInfo extends AmazonProductsCore{
      */
     public function fetchCompetitivePricing(){
         if (!array_key_exists('SellerSKUList.SellerSKU.1',$this->options) && !array_key_exists('ASINList.ASIN.1',$this->options)){
-            $this->log("Ids must be set in order to look them up!",'Warning');
+            $this->log("Product IDs must be set in order to look them up!",'Warning');
             return false;
         }
         $this->options['Timestamp'] = $this->genTime();
@@ -133,10 +145,8 @@ class AmazonProductInfo extends AmazonProductsCore{
         $this->options['Signature'] = $this->_signParameters($this->options, $this->secretKey);
         $query = $this->_getParametersAsString($this->options);
         
-        $path = $this->options['Action'].'Result';
-        
         if ($this->mockMode){
-           $xml = $this->fetchMockFile()->$path;
+           $xml = $this->fetchMockFile();
         } else {
             $this->throttle();
             $this->log("Making request to Amazon");
@@ -147,9 +157,8 @@ class AmazonProductInfo extends AmazonProductsCore{
                 return false;
             }
             
-            $xml = simplexml_load_string($response['body'])->$path;
+            $xml = simplexml_load_string($response['body']);
         }
-        
         
         $this->parseXML($xml);
         
@@ -178,7 +187,7 @@ class AmazonProductInfo extends AmazonProductsCore{
      */
     public function fetchLowestOffer(){
         if (!array_key_exists('SellerSKUList.SellerSKU.1',$this->options) && !array_key_exists('ASINList.ASIN.1',$this->options)){
-            $this->log("Ids must be set in order to look them up!",'Warning');
+            $this->log("Product IDs must be set in order to look them up!",'Warning');
             return false;
         }
         $this->options['Timestamp'] = $this->genTime();
@@ -189,10 +198,8 @@ class AmazonProductInfo extends AmazonProductsCore{
         $this->options['Signature'] = $this->_signParameters($this->options, $this->secretKey);
         $query = $this->_getParametersAsString($this->options);
         
-        $path = $this->options['Action'].'Result';
-        
         if ($this->mockMode){
-           $xml = $this->fetchMockFile()->$path;
+           $xml = $this->fetchMockFile();
         } else {
             $this->throttle();
             $this->log("Making request to Amazon");
@@ -203,7 +210,7 @@ class AmazonProductInfo extends AmazonProductsCore{
                 return false;
             }
             
-            $xml = simplexml_load_string($response['body'])->$path;
+            $xml = simplexml_load_string($response['body']);
         }
         
         
@@ -232,7 +239,7 @@ class AmazonProductInfo extends AmazonProductsCore{
      */
     public function fetchMyPrice(){
         if (!array_key_exists('SellerSKUList.SellerSKU.1',$this->options) && !array_key_exists('ASINList.ASIN.1',$this->options)){
-            $this->log("Ids must be set in order to look them up!",'Warning');
+            $this->log("Product IDs must be set in order to look them up!",'Warning');
             return false;
         }
         $this->options['Timestamp'] = $this->genTime();
@@ -243,10 +250,8 @@ class AmazonProductInfo extends AmazonProductsCore{
         $this->options['Signature'] = $this->_signParameters($this->options, $this->secretKey);
         $query = $this->_getParametersAsString($this->options);
         
-        $path = $this->options['Action'].'Result';
-        
         if ($this->mockMode){
-           $xml = $this->fetchMockFile()->$path;
+           $xml = $this->fetchMockFile();
         } else {
             $this->throttle();
             $this->log("Making request to Amazon");
@@ -257,7 +262,7 @@ class AmazonProductInfo extends AmazonProductsCore{
                 return false;
             }
             
-            $xml = simplexml_load_string($response['body'])->$path;
+            $xml = simplexml_load_string($response['body']);
         }
         
         
@@ -287,7 +292,7 @@ class AmazonProductInfo extends AmazonProductsCore{
      */
     public function fetchCategories(){
         if (!array_key_exists('SellerSKUList.SellerSKU.1',$this->options) && !array_key_exists('ASINList.ASIN.1',$this->options)){
-            $this->log("Ids must be set in order to look them up!",'Warning');
+            $this->log("Product IDs must be set in order to look them up!",'Warning');
             return false;
         }
         $this->options['Timestamp'] = $this->genTime();
@@ -298,10 +303,8 @@ class AmazonProductInfo extends AmazonProductsCore{
         $this->options['Signature'] = $this->_signParameters($this->options, $this->secretKey);
         $query = $this->_getParametersAsString($this->options);
         
-        $path = $this->options['Action'].'Result';
-        
         if ($this->mockMode){
-           $xml = $this->fetchMockFile()->$path;
+           $xml = $this->fetchMockFile();
         } else {
             $this->throttle();
             $this->log("Making request to Amazon");
@@ -312,9 +315,8 @@ class AmazonProductInfo extends AmazonProductsCore{
                 return false;
             }
             
-            $xml = simplexml_load_string($response['body'])->$path;
+            $xml = simplexml_load_string($response['body']);
         }
-        
         
         $this->parseXML($xml);
         

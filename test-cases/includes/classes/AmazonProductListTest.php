@@ -99,6 +99,7 @@ class AmazonProductListTest extends PHPUnit_Framework_TestCase {
         $x = array();
         $x[0] = $o->getProduct(0);
         $x[1] = $o->getProduct(1);
+        $x[2] = $o->getProduct(2);
         
         $this->assertEquals($x, $list);
         

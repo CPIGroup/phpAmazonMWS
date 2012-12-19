@@ -36,16 +36,23 @@ class AmazonProduct extends AmazonProductsCore{
      */
     public function loadXML($xml){
         $this->data = array();
+        
+        //Categories first
+        if ($xml->getName() == 'GetProductCategoriesForSKUResult' || $xml->getName() == 'GetProductCategoriesForASINResult'){
+            $this->loadCategories($xml);
+            return;
+        }
+        
         if ($xml->getName() != 'Product'){
             return;
         }
         
-//        myPrint($xml);
-        
         //Identifiers
-        foreach($xml->Identifiers->children() as $x){
-            foreach($x->children() as $z){
-                $this->data['Identifiers'][$x->getName()][$z->getName()] = (string)$z;
+        if ($xml->Identifiers){
+            foreach($xml->Identifiers->children() as $x){
+                foreach($x->children() as $z){
+                    $this->data['Identifiers'][$x->getName()][$z->getName()] = (string)$z;
+                }
             }
         }
         
@@ -211,7 +218,42 @@ class AmazonProduct extends AmazonProductsCore{
             }
         }
         
-//        myPrint($this->data);
+        
+        
+    }
+    
+    /**
+     * Takes in XML data for Categories and parses it for the object to use
+     * @param SimpleXMLObject $xml
+     */
+    protected function loadCategories($xml){
+        //Categories
+        if (!$xml->Self){
+            return false;
+        }
+        $cnum = 0;
+        foreach($xml->children() as $x){
+            $this->data['Categories'][$cnum] = $this->genHierarchy($x);
+            $cnum++;
+        }
+    }
+    
+    /**
+     * Recursively builds the hierarchy array
+     * @param SimpleXMLObject $xml
+     * @return array
+     */
+    protected function genHierarchy($xml){
+        if (!$xml){
+            return false;
+        }
+        $a = array();
+        $a['ProductCategoryId'] = (string)$xml->ProductCategoryId;
+        $a['ProductCategoryName'] = (string)$xml->ProductCategoryName;
+        if ($xml->Parent){
+            $a['Parent'] = $this->genHierarchy($xml->Parent);
+        }
+        return $a;
     }
     
     /**

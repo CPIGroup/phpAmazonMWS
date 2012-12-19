@@ -1,5 +1,12 @@
 <?php
-
+/**
+ * Fetches list of reports available from Amazon.
+ * 
+ * This Amazon Reports Core object retrieves a list of available on Amazon.
+ * No parameters are required, but a number of filters are available to
+ * narrow the returned list.
+ * This object can use tokens when retrieving the list.
+ */
 class AmazonReportList extends AmazonReportsCore implements Iterator{
     private $tokenFlag = false;
     private $tokenUseFlag = false;
@@ -60,6 +67,7 @@ class AmazonReportList extends AmazonReportsCore implements Iterator{
             $i = 1;
             foreach ($s as $x){
                 $this->options['ReportRequestIdList.Id.'.$i] = $x;
+                $i++;
             }
         } else {
             return false;
@@ -91,6 +99,7 @@ class AmazonReportList extends AmazonReportsCore implements Iterator{
             $i = 1;
             foreach ($s as $x){
                 $this->options['ReportTypeList.Type.'.$i] = $x;
+                $i++;
             }
         } else {
             return false;
@@ -114,7 +123,7 @@ class AmazonReportList extends AmazonReportsCore implements Iterator{
      * @return boolean false if improper input
      */
     public function setMaxCount($s){
-        if (is_numeric($s) && $s >= 1 && $s <= 100){
+        if (is_int($s) && $s >= 1 && $s <= 100){
             $this->options['MaxCount'] = $s;
         } else {
             return false;
@@ -123,12 +132,16 @@ class AmazonReportList extends AmazonReportsCore implements Iterator{
     
     /**
      * Sets the maximum response count for the next request
-     * @param string $s "All", "true", or "false"
+     * @param string $s "true" or "false"
      * @return boolean false if improper input
      */
     public function setAcknowledgedFilter($s){
-        if ($s == 'All' || $s == 'true' || $s == 'false'){
-            $this->options['Acknowledged'] = $s;
+        if ($s == 'true' || (is_bool($s) && $s == true)){
+            $this->options['Acknowledged'] = 'true';
+        } else if ($s == 'false' || (is_bool($s) && $s == false)){
+            $this->options['Acknowledged'] = 'false';
+        } else if ($s == null){
+            unset($this->options['Acknowledged']);
         } else {
             return false;
         }
@@ -215,7 +228,7 @@ class AmazonReportList extends AmazonReportsCore implements Iterator{
             $this->throttleTime = $throttleTimeReportToken;
             $this->throttleGroup = 'GetReportListByNextToken';
             $this->resetRequestIds();
-            $this->resetRequestTypes();
+            $this->resetReportTypes();
             $this->resetTimeLimits();
             unset($this->options['MaxCount']);
             unset($this->options['Acknowledged']);
@@ -244,7 +257,7 @@ class AmazonReportList extends AmazonReportsCore implements Iterator{
             $this->reportList[$i]['ReportId'] = (string)$x->ReportId;
             $this->reportList[$i]['ReportType'] = (string)$x->ReportType;
             $this->reportList[$i]['ReportRequestId'] = (string)$x->ReportRequestId;
-            $this->reportList[$i]['AcknowledgedDate'] = (string)$x->AcknowledgedDate;
+            $this->reportList[$i]['AvailableDate'] = (string)$x->AvailableDate;
             $this->reportList[$i]['Acknowledged'] = (string)$x->Acknowledged;
             
             $this->index++;
@@ -257,7 +270,10 @@ class AmazonReportList extends AmazonReportsCore implements Iterator{
      * @return string|boolean report ID, or False if Non-numeric index
      */
     public function getReportId($i = 0){
-        if (is_numeric($i)){
+        if (!isset($this->reportList)){
+            return false;
+        }
+        if (is_int($i)){
             return $this->reportList[$i]['ReportId'];
         } else {
             return false;
@@ -270,7 +286,10 @@ class AmazonReportList extends AmazonReportsCore implements Iterator{
      * @return string|boolean report type, or False if Non-numeric index
      */
     public function getReportType($i = 0){
-        if (is_numeric($i)){
+        if (!isset($this->reportList)){
+            return false;
+        }
+        if (is_int($i)){
             return $this->reportList[$i]['ReportType'];
         } else {
             return false;
@@ -283,7 +302,10 @@ class AmazonReportList extends AmazonReportsCore implements Iterator{
      * @return string|boolean report request ID, or False if Non-numeric index
      */
     public function getReportRequestId($i = 0){
-        if (is_numeric($i)){
+        if (!isset($this->reportList)){
+            return false;
+        }
+        if (is_int($i)){
             return $this->reportList[$i]['ReportRequestId'];
         } else {
             return false;
@@ -295,9 +317,12 @@ class AmazonReportList extends AmazonReportsCore implements Iterator{
      * @param int $i index
      * @return string|boolean date acknowledged, or False if Non-numeric index
      */
-    public function getAcknowledgedDate($i = 0){
-        if (is_numeric($i)){
-            return $this->reportList[$i]['AcknowledgedDate'];
+    public function getAvailableDate($i = 0){
+        if (!isset($this->reportList)){
+            return false;
+        }
+        if (is_int($i)){
+            return $this->reportList[$i]['AvailableDate'];
         } else {
             return false;
         }
@@ -309,12 +334,11 @@ class AmazonReportList extends AmazonReportsCore implements Iterator{
      * @return boolean true or false, or false if Non-numeric index
      */
     public function getIsAcknowledged($i = 0){
-        if (is_numeric($i)){
-            if ($this->reportList[$i]['Acknowledged'] == 'true'){
-                return true;
-            } else {
-                return false;
-            }
+        if (!isset($this->reportList)){
+            return false;
+        }
+        if (is_int($i)){
+            return $this->reportList[$i]['Acknowledged'];
         } else {
             return false;
         }
@@ -322,10 +346,18 @@ class AmazonReportList extends AmazonReportsCore implements Iterator{
     
     /**
      * Returns the list of report arrays
+     * @param int $i index
      * @return array Array of arrays
      */
-    public function getList(){
-        return $this->reportList;
+    public function getList($i = null){
+        if (!isset($this->reportList)){
+            return false;
+        }
+        if (is_int($i)){
+            return $this->reportList[$i];
+        } else {
+            return $this->reportList;
+        }
     }
     
     /**

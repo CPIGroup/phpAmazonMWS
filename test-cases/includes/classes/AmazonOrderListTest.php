@@ -16,7 +16,7 @@ class AmazonOrderListTest extends PHPUnit_Framework_TestCase {
      */
     protected function setUp() {
         $this->resetLog();
-        $this->object = new AmazonOrderList('BigKitchen', null, true);
+        $this->object = new AmazonOrderList('BigKitchen', true);
         $this->object->setConfig('/var/www/athena/plugins/newAmazon/test-cases/test-config.php');
     }
 
@@ -54,8 +54,8 @@ class AmazonOrderListTest extends PHPUnit_Framework_TestCase {
         $this->assertFalse($this->object->setLimits('wrong'));
         $this->assertFalse($this->object->setLimits('Created',array(5)));
         $check = $this->parseLog();
-        $this->assertEquals('First parameter should be either "Created" or "Modified".',$check[0]);
-        $this->assertEquals('The parameters given broke strtotime().',$check[1]);
+        $this->assertEquals('First parameter should be either "Created" or "Modified".',$check[1]);
+        $this->assertEquals('The parameters given broke strtotime().',$check[2]);
     }
     
     public function testSetOrderStatusFilter(){
@@ -72,7 +72,7 @@ class AmazonOrderListTest extends PHPUnit_Framework_TestCase {
         $this->assertEquals('Two',$o['OrderStatus.Status.2']);
         $this->assertArrayHasKey('OrderStatus.Status.3',$o);
         $this->assertEquals('Three',$o['OrderStatus.Status.3']);
-//        
+        
         $this->assertNull($this->object->setOrderStatusFilter('Four')); //will cause reset
         $o2 = $this->object->getOptions();
         $this->assertArrayHasKey('OrderStatus.Status.1',$o2);

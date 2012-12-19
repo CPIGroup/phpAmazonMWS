@@ -41,9 +41,6 @@ abstract class AmazonProductsCore extends AmazonCore{
         if (!$xml){
             return false;
         }
-//        if (){
-//
-//        }
         
         foreach($xml->children() as $x){
             if($x->getName() == 'ResponseMetadata'){

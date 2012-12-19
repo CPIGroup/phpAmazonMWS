@@ -1,23 +1,33 @@
 <?php
-
-class AmazonReportScheduleCounter extends AmazonReportsCore implements Iterator{
+/**
+ * Acknowledges reports on Amazon.
+ * 
+ * This Amazon Reports Core object updates the acknowledgement status of
+ * reports on Amazon. In order to do this, at least one Report ID is
+ * required. A list of the affected reports is returned.
+ */
+class AmazonReportAcknowledger extends AmazonReportsCore implements Iterator{
     private $count;
     private $index = 0;
     private $i = 0;
     private $reportList;
     
     /**
-     * Sends a report count request to Amazon.
+     * Sends a report acknowledgement request to Amazon.
      * @param string $s name of store as seen in config file
      * @param boolean $mock true to enable mock mode
      * @param array|string $m list of mock files to use
      */
-    public function __construct($s, $mock = false, $m = null) {
+    public function __construct($s, $id, $mock = false, $m = null) {
         parent::__construct($s, $mock, $m);
         if (file_exists($this->config)){
             include($this->config);
         } else {
             throw new Exception('Config file does not exist!');
+        }
+        
+        if ($id){
+            $this->setReportIds($id);
         }
         
         $this->options['Action'] = 'UpdateReportAcknowledgements';
@@ -28,19 +38,20 @@ class AmazonReportScheduleCounter extends AmazonReportsCore implements Iterator{
     }
     
     /**
-     * sets the request type(s) to be used in the next request
-     * @param array|string $s array of Report Types or single type
+     * sets the request ID(s) to be used in the next request
+     * @param array|string $s array of Report IDs or single ID
      * @return boolean false if failure
      */
-    public function setReportTypes($s){
+    public function setReportIds($s){
         if (is_string($s)){
-            $this->resetReportTypes();
-            $this->options['ReportTypeList.Type.1'] = $s;
+            $this->resetReportIds();
+            $this->options['ReportIdList.Id.1'] = $s;
         } else if (is_array($s)){
-            $this->resetReportTypes();
+            $this->resetReportIds();
             $i = 1;
             foreach ($s as $x){
-                $this->options['ReportTypeList.Type.'.$i] = $x;
+                $this->options['ReportIdList.Id.'.$i] = $x;
+                $i++;
             }
         } else {
             return false;
@@ -48,11 +59,11 @@ class AmazonReportScheduleCounter extends AmazonReportsCore implements Iterator{
     }
     
     /**
-     * removes type options
+     * removes report ID options
      */
-    public function resetReportTypes(){
+    protected function resetReportIds(){
         foreach($this->options as $op=>$junk){
-            if(preg_match("#ReportTypeList#",$op)){
+            if(preg_match("#ReportIdList#",$op)){
                 unset($this->options[$op]);
             }
         }
@@ -60,12 +71,14 @@ class AmazonReportScheduleCounter extends AmazonReportsCore implements Iterator{
     
     /**
      * Sets the maximum response count for the next request
-     * @param string $s "All", "true", or "false"
+     * @param string $s "true" or "false", or null
      * @return boolean false if improper input
      */
     public function setAcknowledgedFilter($s){
-        if ($s == 'All' || $s == 'true' || $s == 'false'){
-            $this->options['Acknowledged'] = $s;
+        if ($s == 'true' || (is_bool($s) && $s == true)){
+            $this->options['Acknowledged'] = 'true';
+        } else if ($s == 'false' || (is_bool($s) && $s == false)){
+            $this->options['Acknowledged'] = 'false';
         } else {
             return false;
         }
@@ -75,8 +88,8 @@ class AmazonReportScheduleCounter extends AmazonReportsCore implements Iterator{
      * Sends an acknowledgement requst to Amazon and retrieves a list of relevant reports
      */
     public function acknowledgeReports(){
-        if (!array_key_exists('ReportTypeList.Type.1',$this->options)){
-            $this->log("Report Types must be set in order to acknowledge reports!",'Warning');
+        if (!array_key_exists('ReportIdList.Id.1',$this->options)){
+            $this->log("Report IDs must be set in order to acknowledge reports!",'Warning');
             return false;
         }
         $this->options['Timestamp'] = $this->genTime();
@@ -111,8 +124,14 @@ class AmazonReportScheduleCounter extends AmazonReportsCore implements Iterator{
      * @param SimpleXMLObject $xml
      */
     protected function parseXML($xml){
+        if (!$xml){
+            return false;
+        }
         foreach($xml->children() as $key=>$x){
             $i = $this->index;
+            if ($key == 'Count'){
+                $this->count = (string)$x;
+            }
             if ($key != 'ReportInfo'){
                 continue;
             }
@@ -120,9 +139,9 @@ class AmazonReportScheduleCounter extends AmazonReportsCore implements Iterator{
             $this->reportList[$i]['ReportId'] = (string)$x->ReportId;
             $this->reportList[$i]['ReportType'] = (string)$x->ReportType;
             $this->reportList[$i]['ReportRequestId'] = (string)$x->ReportRequestId;
-            $this->reportList[$i]['AvailableToDate'] = (string)$x->AvailableToDate;
+            $this->reportList[$i]['AvailableDate'] = (string)$x->AvailableDate;
             $this->reportList[$i]['Acknowledged'] = (string)$x->Acknowledged;
-            $this->reportList[$i]['AcknowledgedDate'] = (string)$x->AvailableToDate;
+            $this->reportList[$i]['AcknowledgedDate'] = (string)$x->AcknowledgedDate;
             
             $this->index++;
         }
@@ -134,7 +153,10 @@ class AmazonReportScheduleCounter extends AmazonReportsCore implements Iterator{
      * @return string|boolean report ID, or False if Non-numeric index
      */
     public function getReportId($i = 0){
-        if (is_numeric($i)){
+        if (!isset($this->reportList)){
+            return false;
+        }
+        if (is_int($i)){
             return $this->reportList[$i]['ReportId'];
         } else {
             return false;
@@ -147,7 +169,10 @@ class AmazonReportScheduleCounter extends AmazonReportsCore implements Iterator{
      * @return string|boolean report type, or False if Non-numeric index
      */
     public function getReportType($i = 0){
-        if (is_numeric($i)){
+        if (!isset($this->reportList)){
+            return false;
+        }
+        if (is_int($i)){
             return $this->reportList[$i]['ReportType'];
         } else {
             return false;
@@ -160,7 +185,10 @@ class AmazonReportScheduleCounter extends AmazonReportsCore implements Iterator{
      * @return string|boolean report request ID, or False if Non-numeric index
      */
     public function getReportRequestId($i = 0){
-        if (is_numeric($i)){
+        if (!isset($this->reportList)){
+            return false;
+        }
+        if (is_int($i)){
             return $this->reportList[$i]['ReportRequestId'];
         } else {
             return false;
@@ -172,9 +200,12 @@ class AmazonReportScheduleCounter extends AmazonReportsCore implements Iterator{
      * @param int $i index
      * @return string|boolean date, or False if Non-numeric index
      */
-    public function getAvailableToDate($i = 0){
-        if (is_numeric($i)){
-            return $this->reportList[$i]['AvailableToDate'];
+    public function getAvailableDate($i = 0){
+        if (!isset($this->reportList)){
+            return false;
+        }
+        if (is_int($i)){
+            return $this->reportList[$i]['AvailableDate'];
         } else {
             return false;
         }
@@ -186,12 +217,11 @@ class AmazonReportScheduleCounter extends AmazonReportsCore implements Iterator{
      * @return boolean true or false, or false if Non-numeric index
      */
     public function getIsAcknowledged($i = 0){
-        if (is_numeric($i)){
-            if ($this->reportList[$i]['Acknowledged'] == 'true'){
-                return true;
-            } else {
-                return false;
-            }
+        if (!isset($this->reportList)){
+            return false;
+        }
+        if (is_int($i)){
+            return $this->reportList[$i]['Acknowledged'];
         } else {
             return false;
         }
@@ -203,7 +233,10 @@ class AmazonReportScheduleCounter extends AmazonReportsCore implements Iterator{
      * @return string|boolean date acknowledged, or False if Non-numeric index
      */
     public function getAcknowledgedDate($i = 0){
-        if (is_numeric($i)){
+        if (!isset($this->reportList)){
+            return false;
+        }
+        if (is_int($i)){
             return $this->reportList[$i]['AcknowledgedDate'];
         } else {
             return false;
@@ -215,19 +248,27 @@ class AmazonReportScheduleCounter extends AmazonReportsCore implements Iterator{
      * @return string|boolean number, or false on failure
      */
     public function getCount(){
-        if (!isset($this->count)){
-            return false;
-        } else {
+        if (isset($this->count)){
             return $this->count;
+        } else {
+            return false;
         }
     }
     
     /**
      * Returns the list of report arrays
+     * @param int $i index
      * @return array Array of arrays
      */
-    public function getList(){
-        return $this->reportList;
+    public function getList($i = null){
+        if (!isset($this->reportList)){
+            return false;
+        }
+        if (is_int($i)){
+            return $this->reportList[$i];
+        } else {
+            return $this->reportList;
+        }
     }
     
     /**

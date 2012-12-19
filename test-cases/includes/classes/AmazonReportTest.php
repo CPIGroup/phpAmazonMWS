@@ -81,43 +81,6 @@ class AmazonReportTest extends PHPUnit_Framework_TestCase {
         $this->assertFalse($this->object->saveReport('here')); //not fetched yet for this object
     }
     
-//    /**
-//     * @depends testFetchTrackingDetails
-//     */
-//    public function testGetDetails($o){
-//        $get = $o->getDetails();
-//        $this->assertInternalType('array',$get);
-//        
-//        $x = array();
-//        $x['PackageNumber'] = '42343';
-//        $x['TrackingNumber'] = '3A18351E0390447173';
-//        $x['CarrierCode'] = 'UPS';
-//        $x['CarrierPhoneNumber'] = '206-000-0000';
-//        $x['CarrierURL'] = 'http://www.ups.com/';
-//        $x['ShipDate'] = '2012-03-09T10:27:10Z';
-//        $x['ShipToAddress']['City'] = 'Seattle';
-//        $x['ShipToAddress']['State'] = 'WA';
-//        $x['ShipToAddress']['Country'] = 'US';
-//        $x['CurrentStatus'] = 'DELIVERED';
-//        $x['SignedForBy'] = 'John';
-//        $x['EstimatedArrivalDate'] = '2012-03-09T10:00:00Z';
-//        $x['TrackingEvents'][0]['EventDate'] = '2012-03-09T08:48:53Z';
-//        $x['TrackingEvents'][0]['EventAddress']['City'] = 'Reno';
-//        $x['TrackingEvents'][0]['EventAddress']['State'] = 'NV';
-//        $x['TrackingEvents'][0]['EventAddress']['Country'] = 'US';
-//        $x['TrackingEvents'][0]['EventCode'] = 'EVENT_202';
-//        $x['TrackingEvents'][1]['EventDate'] = '2012-03-10T10:27:10Z';
-//        $x['TrackingEvents'][1]['EventAddress']['City'] = 'Seattle';
-//        $x['TrackingEvents'][1]['EventAddress']['State'] = 'WA';
-//        $x['TrackingEvents'][1]['EventAddress']['Country'] = 'US';
-//        $x['TrackingEvents'][1]['EventCode'] = 'EVENT_301';
-//        $x['AdditionalLocationInfo'] = 'FRONT_DESK';
-//        
-//        $this->assertEquals($x,$get);
-//        
-//        $this->assertFalse($this->object->getDetails()); //not fetched yet for this object
-//    }
-    
     /**
      * Resets log for next test
      */

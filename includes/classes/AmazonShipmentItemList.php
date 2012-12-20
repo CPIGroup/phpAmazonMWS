@@ -1,5 +1,11 @@
 <?php
-
+/**
+ * Fetches a list of shipment items from Amazon.
+ * 
+ * This Amazon Inbound Core object retrieves a list of items for the given
+ * shipment from Amazon. In order to get the list, a shipment ID is required.
+ * An optional paramter is available to narrow the returned items.
+ */
 class AmazonShipmentItemList extends AmazonInboundCore implements Iterator{
     private $tokenFlag = false;
     private $tokenUseFlag = false;
@@ -8,7 +14,7 @@ class AmazonShipmentItemList extends AmazonInboundCore implements Iterator{
     private $i = 0;
     
     /**
-     * Fetches a list of shipments from Amazon.
+     * Fetches a list of items from Amazon.
      * @param string $s name of store as seen in config file
      * @param boolean $mock true to enable mock mode
      * @param array|string $m list of mock files to use
@@ -21,8 +27,8 @@ class AmazonShipmentItemList extends AmazonInboundCore implements Iterator{
             throw new Exception('Config file does not exist!');
         }
         
-        if (!is_null($id)){
-            $this->options['ShipmentId'] = $id;
+        if ($id){
+            $this->setShipmentId($id);
         }
         
         $this->throttleLimit = $throttleLimitInventory;
@@ -105,22 +111,14 @@ class AmazonShipmentItemList extends AmazonInboundCore implements Iterator{
      * Fetches shipment items from Amazon using the pre-set parameters
      */
     public function fetchItems(){
-        $this->options['Timestamp'] = $this->genTime();
-        
-        
         if (!array_key_exists('ShipmentId', $this->options)){
             $this->log("Shipment ID must be set before requesting items!",'Warning');
             return false;
         }
         
-        if ($this->tokenFlag && $this->tokenUseFlag){
-            $this->options['Action'] = 'ListInboundShipmentItemsByNextToken';
-        } else {
-            unset($this->options['NextToken']);
-            $this->options['Action'] = 'ListInboundShipmentItems';
-            $this->index = 0;
-            $this->itemList = array();
-        }
+        $this->prepareToken();
+        
+        $this->options['Timestamp'] = $this->genTime();
         
         $url = $this->urlbase.$this->urlbranch;
         
@@ -142,10 +140,6 @@ class AmazonShipmentItemList extends AmazonInboundCore implements Iterator{
             
             $xml = simplexml_load_string($response['body'])->$path;
         }
-            
-        
-        echo 'the lime must be drawn here';
-        var_dump($xml);
         
         if ($xml->NextToken){
             $this->tokenFlag = true;
@@ -155,19 +149,28 @@ class AmazonShipmentItemList extends AmazonInboundCore implements Iterator{
             $this->tokenFlag = false;
         }
         
-        foreach($xml->ItemData->children() as $x){
-            $this->itemList[$this->index] = $this->parseXML($x);
-            $this->index++;
-        }
-        
-        myPrint($this->itemList);
+        $this->parseXML($xml);
         
         if ($this->tokenFlag && $this->tokenUseFlag){
-            $this->log("Recursively fetching more shipments for the list");
+            $this->log("Recursively fetching more shipment items");
             $this->fetchItems();
         }
         
         
+    }
+    
+    /**
+     * sets up stuff
+     */
+    protected function prepareToken(){
+        if ($this->tokenFlag && $this->tokenUseFlag){
+            $this->options['Action'] = 'ListInboundShipmentItemsByNextToken';
+        } else {
+            unset($this->options['NextToken']);
+            $this->options['Action'] = 'ListInboundShipmentItems';
+            $this->index = 0;
+            $this->itemList = array();
+        }
     }
     
     /**
@@ -176,24 +179,30 @@ class AmazonShipmentItemList extends AmazonInboundCore implements Iterator{
      * @return array
      */
     protected function parseXML($xml){
+        if (!$xml){
+            return false;
+        }
         $a = array();
-        
-        if (isset($xml->ShipmentId)){
-            $a['ShipmentId'] = (string)$xml->ShipmentId;
+        foreach($xml->ItemData->children() as $x){
+
+            if (isset($x->ShipmentId)){
+                $a['ShipmentId'] = (string)$x->ShipmentId;
+            }
+            $a['SellerSKU'] = (string)$x->SellerSKU;
+            if (isset($x->FulfillmentNetworkSKU)){
+                $a['FulfillmentNetworkSKU'] = (string)$x->FulfillmentNetworkSKU;
+            }
+            $a['QuantityShipped'] = (string)$x->QuantityShipped;
+            if (isset($x->QuantityReceived)){
+                $a['QuantityReceived'] = (string)$x->QuantityReceived;
+            }
+            if (isset($x->QuantityInCase)){
+                $a['QuantityInCase'] = (string)$x->QuantityInCase;
+            }
+            
+            $this->itemList[$this->index] = $a;
+            $this->index++;
         }
-        $a['SellerSKU'] = (string)$xml->SellerSKU;
-        if (isset($xml->FulfillmentNetworkSKU)){
-            $a['FulfillmentNetworkSKU'] = (string)$xml->FulfillmentNetworkSKU;
-        }
-        $a['QuantityShipped'] = (string)$xml->QuantityShipped;
-        if (isset($xml->QuantityReceived)){
-            $a['QuantityReceived'] = (string)$xml->QuantityReceived;
-        }
-        if (isset($xml->QuantityInCase)){
-            $a['QuantityInCase'] = (string)$xml->QuantityInCase;
-        }
-        
-        return $a;
     }
     
     /**
@@ -202,7 +211,10 @@ class AmazonShipmentItemList extends AmazonInboundCore implements Iterator{
      * @return string|boolean ShipmentId, or False if Non-numeric index
      */
     public function getShipmentId($i = 0){
-        if (is_numeric($i)){
+        if (!isset($this->itemList)){
+            return false;
+        }
+        if (is_int($i)){
             return $this->itemList[$i]['ShipmentId'];
         } else {
             return false;
@@ -215,7 +227,10 @@ class AmazonShipmentItemList extends AmazonInboundCore implements Iterator{
      * @return string|boolean ShipmentId, or False if Non-numeric index
      */
     public function getSellerSKU($i = 0){
-        if (is_numeric($i)){
+        if (!isset($this->itemList)){
+            return false;
+        }
+        if (is_int($i)){
             return $this->itemList[$i]['SellerSKU'];
         } else {
             return false;
@@ -228,7 +243,10 @@ class AmazonShipmentItemList extends AmazonInboundCore implements Iterator{
      * @return string|boolean ShipmentId, or False if Non-numeric index
      */
     public function getFulfillmentNetworkSKU($i = 0){
-        if (is_numeric($i)){
+        if (!isset($this->itemList)){
+            return false;
+        }
+        if (is_int($i)){
             return $this->itemList[$i]['FulfillmentNetworkSKU'];
         } else {
             return false;
@@ -241,7 +259,10 @@ class AmazonShipmentItemList extends AmazonInboundCore implements Iterator{
      * @return string|boolean ShipmentId, or False if Non-numeric index
      */
     public function getQuantityShipped($i = 0){
-        if (is_numeric($i)){
+        if (!isset($this->itemList)){
+            return false;
+        }
+        if (is_int($i)){
             return $this->itemList[$i]['QuantityShipped'];
         } else {
             return false;
@@ -254,7 +275,10 @@ class AmazonShipmentItemList extends AmazonInboundCore implements Iterator{
      * @return string|boolean ShipmentId, or False if Non-numeric index
      */
     public function getQuantityReceived($i = 0){
-        if (is_numeric($i)){
+        if (!isset($this->itemList)){
+            return false;
+        }
+        if (is_int($i)){
             return $this->itemList[$i]['QuantityReceived'];
         } else {
             return false;
@@ -267,10 +291,29 @@ class AmazonShipmentItemList extends AmazonInboundCore implements Iterator{
      * @return string|boolean ShipmentId, or False if Non-numeric index
      */
     public function getQuantityInCase($i = 0){
-        if (is_numeric($i)){
+        if (!isset($this->itemList)){
+            return false;
+        }
+        if (is_int($i)){
             return $this->itemList[$i]['QuantityInCase'];
         } else {
             return false;
+        }
+    }
+    
+    /**
+     * Returns all info of the given index, or whole list
+     * @param integer $i
+     * @return array|boolean false if not set yet
+     */
+    public function getItems($i = null){
+        if (!isset($this->itemList)){
+            return false;
+        }
+        if (is_int($i)){
+            return $this->itemList[$i];
+        } else {
+            return $this->itemList;
         }
     }
     

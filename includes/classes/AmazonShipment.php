@@ -1,5 +1,12 @@
 <?php
-
+/**
+ * Submits a shipment to Amazon or updates it.
+ * 
+ * This Amazon Inbound Core object submits a request to create an inbound
+ * shipment with Amazon. It can also update existing shipments. In order to
+ * create or update a shipment, information from a Shipment Plan is required.
+ * Use the AmazonShipmentPlanner object to retrieve this information.
+ */
 class AmazonShipment extends AmazonInboundCore{
     private $shipmentId;
     

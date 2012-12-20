@@ -1,7 +1,12 @@
 <?php
-
+/**
+ *  Fetches an inbound shipment plan from Amazon.
+ * 
+ * This Amazon Inbound Core object retrieves a newly-generated inbound shipment
+ * plan from Amazon using the provided information. In order to generate a
+ * shipment plan, an address and a list of items are required.
+ */
 class AmazonShipmentPlanner extends AmazonInboundCore implements Iterator{
-    private $xmldata;
     private $planList;
     private $i = 0;
     

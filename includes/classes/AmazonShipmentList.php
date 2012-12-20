@@ -1,5 +1,11 @@
 <?php
-
+/**
+ * Fetches a list of shipments from Amazon.
+ * 
+ * This Amazon Inbound Core Object retrieves a list of shipments from Amazon.
+ * In order to this, either a list of IDs or a list of statuses are required.
+ * This object can use tokens when fetching the list.
+ */
 class AmazonShipmentList extends AmazonInboundCore implements Iterator{
     private $tokenFlag = false;
     private $tokenUseFlag = false;
@@ -70,7 +76,8 @@ class AmazonShipmentList extends AmazonInboundCore implements Iterator{
             $this->resetStatusFilter();
             $i = 1;
             foreach($s as $x){
-                $this->options['ShipmentStatusList.member.'.$i++] = $x;
+                $this->options['ShipmentStatusList.member.'.$i] = $x;
+                $i++;
             }
         } else {
             return false;
@@ -100,7 +107,8 @@ class AmazonShipmentList extends AmazonInboundCore implements Iterator{
             $this->resetIdFilter();
             $i = 1;
             foreach($s as $x){
-                $this->options['ShipmentIdList.member.'.$i++] = $x;
+                $this->options['ShipmentIdList.member.'.$i] = $x;
+                $i++;
             }
         } else {
             return false;
@@ -159,21 +167,13 @@ class AmazonShipmentList extends AmazonInboundCore implements Iterator{
      * Fetches shipments from Amazon using the pre-set parameters
      */
     public function fetchShipments(){
-        $this->options['Timestamp'] = $this->genTime();
-        
         if (!array_key_exists('ShipmentStatusList.member.1', $this->options) && !array_key_exists('ShipmentIdList.member.1', $this->options)){
             $this->log("Either status filter or ID filter must be set before requesting a list!",'Warning');
             return false;
         }
+        $this->options['Timestamp'] = $this->genTime();
         
-        if ($this->tokenFlag && $this->tokenUseFlag){
-            $this->options['Action'] = 'ListInboundShipmentsByNextToken';
-        } else {
-            unset($this->options['NextToken']);
-            $this->options['Action'] = 'ListInboundShipments';
-            $this->index = 0;
-            $this->shipmentList = array();
-        }
+        $this->prepareToken();
         
         $url = $this->urlbase.$this->urlbranch;
         
@@ -195,10 +195,6 @@ class AmazonShipmentList extends AmazonInboundCore implements Iterator{
             
             $xml = simplexml_load_string($response['body'])->$path;
         }
-            
-        
-        echo 'the lime must be drawn here';
-        var_dump($xml);
         
         if ($xml->NextToken){
             $this->tokenFlag = true;
@@ -208,14 +204,10 @@ class AmazonShipmentList extends AmazonInboundCore implements Iterator{
             $this->tokenFlag = false;
         }
         
-        foreach($xml->ShipmentData->children() as $x){
-            $this->shipmentList[$this->index] = $this->parseXML($x);
-            $this->index++;
-        }
-        
+        $this->parseXML($xml);
         
         if ($this->tokenFlag && $this->tokenUseFlag){
-            $this->log("Recursively fetching more shipments for the list");
+            $this->log("Recursively fetching more shipments");
             $this->fetchShipments();
         }
         
@@ -223,51 +215,71 @@ class AmazonShipmentList extends AmazonInboundCore implements Iterator{
     }
     
     /**
+     * sets up stuff
+     */
+    protected function prepareToken(){
+        if ($this->tokenFlag && $this->tokenUseFlag){
+            $this->options['Action'] = 'ListInboundShipmentsByNextToken';
+        } else {
+            unset($this->options['NextToken']);
+            $this->options['Action'] = 'ListInboundShipments';
+            $this->index = 0;
+            $this->shipmentList = array();
+        }
+    }
+    
+    /**
      * Reads piece of XML to fill out a single shipment's info
      * @param SimpleXMLObject $xml
-     * @return array
+     * @return boolean false on failure
      */
     protected function parseXML($xml){
-        $a = array();
-        
-        if (isset($xml->ShipmentId)){
-            $a['ShipmentId'] = (string)$xml->ShipmentId;
+        if (!$xml){
+            return false;
         }
-        if (isset($xml->ShipmentName)){
-            $a['ShipmentName'] = (string)$xml->ShipmentName;
+        foreach($xml->ShipmentData->children() as $x){
+            $a = array();
+
+            if (isset($x->ShipmentId)){
+                $a['ShipmentId'] = (string)$x->ShipmentId;
+            }
+            if (isset($x->ShipmentName)){
+                $a['ShipmentName'] = (string)$x->ShipmentName;
+            }
+
+            //Address
+            $a['ShipFromAddress']['Name'] = (string)$x->ShipFromAddress->Name;
+            $a['ShipFromAddress']['AddressLine1'] = (string)$x->ShipFromAddress->AddressLine1;
+            if (isset($x->ShipFromAddress->AddressLine2)){
+                $a['ShipFromAddress']['AddressLine2'] = (string)$x->ShipFromAddress->AddressLine2;
+            } else {
+                $a['ShipFromAddress']['AddressLine2'] = null;
+            }
+            $a['ShipFromAddress']['City'] = (string)$x->ShipFromAddress->City;
+            if (isset($x->ShipFromAddress->DistrictOrCounty)){
+                $a['ShipFromAddress']['DistrictOrCounty'] = (string)$x->ShipFromAddress->DistrictOrCounty;
+            } else {
+                $a['ShipFromAddress']['DistrictOrCounty'] = null;
+            }
+            $a['ShipFromAddress']['StateOrProvinceCode'] = (string)$x->ShipFromAddress->StateOrProvinceCode;
+            $a['ShipFromAddress']['CountryCode'] = (string)$x->ShipFromAddress->CountryCode;
+            $a['ShipFromAddress']['PostalCode'] = (string)$x->ShipFromAddress->PostalCode;
+
+            if (isset($x->DestinationFulfillmentCenterId)){
+                $a['DestinationFulfillmentCenterId'] = (string)$x->DestinationFulfillmentCenterId;
+            }
+            if (isset($x->LabelPrepType)){
+                $a['LabelPrepType'] = (string)$x->LabelPrepType;
+            }
+            if (isset($x->ShipmentStatus)){
+                $a['ShipmentStatus'] = (string)$x->ShipmentStatus;
+            }
+
+            $a['AreCasesRequired'] = (string)$x->AreCasesRequired;
+            
+            $this->shipmentList[$this->index] = $a;
+            $this->index++;
         }
-        
-        //Address
-        $a['ShipFromAddress']['Name'] = (string)$xml->ShipFromAddress->Name;
-        $a['ShipFromAddress']['AddressLine1'] = (string)$xml->ShipFromAddress->AddressLine1;
-        if (isset($xml->ShipFromAddress->AddressLine2)){
-            $a['ShipFromAddress']['AddressLine2'] = (string)$xml->ShipFromAddress->AddressLine2;
-        } else {
-            $a['ShipFromAddress']['AddressLine2'] = null;
-        }
-        $a['ShipFromAddress']['City'] = (string)$xml->ShipFromAddress->City;
-        if (isset($xml->ShipFromAddress->DistrictOrCounty)){
-            $a['ShipFromAddress']['DistrictOrCounty'] = (string)$xml->ShipFromAddress->DistrictOrCounty;
-        } else {
-            $a['ShipFromAddress']['DistrictOrCounty'] = null;
-        }
-        $a['ShipFromAddress']['StateOrProvidenceCode'] = (string)$xml->ShipFromAddress->StateOrProvidenceCode;
-        $a['ShipFromAddress']['CountryCode'] = (string)$xml->ShipFromAddress->CountryCode;
-        $a['ShipFromAddress']['PostalCode'] = (string)$xml->ShipFromAddress->PostalCode;
-        
-        if (isset($xml->DestinationFulfillmentCenterId)){
-            $a['DestinationFulfillmentCenterId'] = (string)$xml->DestinationFulfillmentCenterId;
-        }
-        if (isset($xml->LabelPrepType)){
-            $a['LabelPrepType'] = (string)$xml->LabelPrepType;
-        }
-        if (isset($xml->ShipmentStatus)){
-            $a['ShipmentStatus'] = (string)$xml->ShipmentStatus;
-        }
-        
-        $a['AreCasesRequired'] = (string)$xml->AreCasesRequired;
-        
-        return $a;
     }
     
     /**
@@ -276,21 +288,29 @@ class AmazonShipmentList extends AmazonInboundCore implements Iterator{
      * @param integer $i index
      * @return array|AmazonOrderItemList AmazonOrderItemList or array of AmazonOrderItemLists
      */
-    public function fetchItems($token = false, $i = null){
-        if ($i == null){
+    public function fetchItems($i = null, $token = false){
+        if (!isset($this->shipmentList)){
+            return false;
+        }
+        if (is_null($i)){
             $a = array();
             $n = 0;
             foreach($this->shipmentList as $x){
                 $a[$n] = new AmazonShipmentItemList($this->storeName,$x['ShipmentId'],$this->mockMode,$this->mockFiles);
                 $a[$n]->setUseToken($token);
+                $a[$n]->mockIndex = $this->mockIndex;
                 $a[$n]->fetchItems();
+                $n++;
             }
             return $a;
-        } else if (is_numeric($i)) {
+        } else if (is_int($i)) {
             $temp = new AmazonShipmentItemList($this->storeName,$this->shipmentList[$i]['ShipmentId'],$this->mockMode,$this->mockFiles);
             $temp->setUseToken($token);
+            $temp->mockIndex = $this->mockIndex;
             $temp->fetchItems();
             return $temp;
+        } else {
+            return false;
         }
     }
     
@@ -300,7 +320,10 @@ class AmazonShipmentList extends AmazonInboundCore implements Iterator{
      * @return string|boolean ShipmentId, or False if Non-numeric index
      */
     public function getShipmentId($i = 0){
-        if (is_numeric($i)){
+        if (!isset($this->shipmentList)){
+            return false;
+        }
+        if (is_int($i)){
             return $this->shipmentList[$i]['ShipmentId'];
         } else {
             return false;
@@ -313,7 +336,10 @@ class AmazonShipmentList extends AmazonInboundCore implements Iterator{
      * @return string|boolean ShipmentId, or False if Non-numeric index
      */
     public function getShipmentName($i = 0){
-        if (is_numeric($i)){
+        if (!isset($this->shipmentList)){
+            return false;
+        }
+        if (is_int($i)){
             return $this->shipmentList[$i]['ShipmentName'];
         } else {
             return false;
@@ -326,7 +352,10 @@ class AmazonShipmentList extends AmazonInboundCore implements Iterator{
      * @return array|boolean Address, or False if Non-numeric index
      */
     public function getAddress($i = 0){
-        if (is_numeric($i)){
+        if (!isset($this->shipmentList)){
+            return false;
+        }
+        if (is_int($i)){
             return $this->shipmentList[$i]['ShipFromAddress'];
         } else {
             return false;
@@ -339,7 +368,10 @@ class AmazonShipmentList extends AmazonInboundCore implements Iterator{
      * @return string|boolean DestinationFulfillmentCenterId, or False if Non-numeric index
      */
     public function getDestinationFulfillmentCenterId($i = 0){
-        if (is_numeric($i)){
+        if (!isset($this->shipmentList)){
+            return false;
+        }
+        if (is_int($i)){
             return $this->shipmentList[$i]['DestinationFulfillmentCenterId'];
         } else {
             return false;
@@ -352,7 +384,10 @@ class AmazonShipmentList extends AmazonInboundCore implements Iterator{
      * @return string|boolean LabelPrepType, or False if Non-numeric index
      */
     public function getLabelPrepType($i = 0){
-        if (is_numeric($i)){
+        if (!isset($this->shipmentList)){
+            return false;
+        }
+        if (is_int($i)){
             return $this->shipmentList[$i]['LabelPrepType'];
         } else {
             return false;
@@ -365,7 +400,10 @@ class AmazonShipmentList extends AmazonInboundCore implements Iterator{
      * @return string|boolean ShipmentStatus, or False if Non-numeric index
      */
     public function getShipmentStatus($i = 0){
-        if (is_numeric($i)){
+        if (!isset($this->shipmentList)){
+            return false;
+        }
+        if (is_int($i)){
             return $this->shipmentList[$i]['ShipmentStatus'];
         } else {
             return false;
@@ -377,11 +415,30 @@ class AmazonShipmentList extends AmazonInboundCore implements Iterator{
      * @param int $i index, defaults to 0
      * @return string|boolean "true" or "false", or false if Non-numeric index
      */
-    public function getCasesRequired($i = 0){
-        if (is_numeric($i)){
+    public function getIfCasesRequired($i = 0){
+        if (!isset($this->shipmentList)){
+            return false;
+        }
+        if (is_int($i)){
             return $this->shipmentList[$i]['AreCasesRequired'];
         } else {
             return false;
+        }
+    }
+    
+    /**
+     * Returns all info of the given index, or whole list
+     * @param integer $i
+     * @return array|boolean false if not set yet
+     */
+    public function getShipment($i = null){
+        if (!isset($this->shipmentList)){
+            return false;
+        }
+        if (is_int($i)){
+            return $this->shipmentList[$i];
+        } else {
+            return $this->shipmentList;
         }
     }
     

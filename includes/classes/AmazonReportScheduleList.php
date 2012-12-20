@@ -1,14 +1,23 @@
 <?php
-
+/**
+ * Fetches list of report schedules from Amazon.
+ * 
+ * This Amazon Reports Core object retrieves a list of previously submitted
+ * report schedules on Amazon. An optional filter is available for narrowing
+ * the types of reports that are returned. This object can also retrieve a
+ * count of the scheudles in the same manner. This object can use tokens when
+ * retrieving the list.
+ */
 class AmazonReportScheduleList extends AmazonReportsCore implements Iterator{
     private $tokenFlag = false;
     private $tokenUseFlag = false;
     private $index = 0;
     private $i = 0;
     private $scheduleList;
+    private $count;
     
     /**
-     * Sends a report request to Amazon.
+     * Gets a list of report schedules from Amazon.
      * @param string $s name of store as seen in config file
      * @param boolean $mock true to enable mock mode
      * @param array|string $m list of mock files to use
@@ -60,6 +69,7 @@ class AmazonReportScheduleList extends AmazonReportsCore implements Iterator{
             $i = 1;
             foreach ($s as $x){
                 $this->options['ReportTypeList.Type.'.$i] = $x;
+                $i++;
             }
         } else {
             return false;
@@ -133,7 +143,7 @@ class AmazonReportScheduleList extends AmazonReportsCore implements Iterator{
             $this->throttleLimit = $throttleLimitReportToken;
             $this->throttleTime = $throttleTimeReportToken;
             $this->throttleGroup = 'GetReportScheduleListByNextToken';
-            $this->resetRequestTypes();
+            $this->resetReportTypes();
         } else {
             $this->options['Action'] = 'GetReportScheduleList';
             $this->throttleLimit = $throttleLimitReportSchedule;
@@ -150,6 +160,9 @@ class AmazonReportScheduleList extends AmazonReportsCore implements Iterator{
      * @param SimpleXMLObject $xml
      */
     protected function parseXML($xml){
+        if (!$xml){
+            return false;
+        }
         foreach($xml->children() as $key=>$x){
             $i = $this->index;
             if ($key != 'ReportSchedule'){
@@ -165,12 +178,59 @@ class AmazonReportScheduleList extends AmazonReportsCore implements Iterator{
     }
     
     /**
+     * Fetches the count from Amazon
+     */
+    public function fetchCount(){
+        $this->options['Timestamp'] = $this->genTime();
+        $this->prepareCount();
+        
+        $url = $this->urlbase.$this->urlbranch;
+        
+        $this->options['Signature'] = $this->_signParameters($this->options, $this->secretKey);
+        $query = $this->_getParametersAsString($this->options);
+        
+        $path = $this->options['Action'].'Result';
+        if ($this->mockMode){
+           $xml = $this->fetchMockFile()->$path;
+        } else {
+            $this->throttle();
+            $this->log("Making request to Amazon");
+            $response = fetchURL($url,array('Post'=>$query));
+            $this->logRequest();
+            
+            if (!$this->checkResponse($response)){
+                return false;
+            }
+            
+            $xml = simplexml_load_string($response['body'])->$path;
+        }
+        
+        $this->count = (string)$xml->Count;
+        
+    }
+    
+    /**
+     * Sets up token stuff
+     */
+    protected function prepareCount(){
+        include($this->config);
+        $this->options['Action'] = 'GetReportScheduleCount';
+        $this->throttleLimit = $throttleLimitReportSchedule;
+        $this->throttleTime = $throttleTimeReportSchedule;
+        $this->throttleGroup = 'GetReportScheduleCount';
+        unset($this->options['NextToken']);
+    }
+    
+    /**
      * Returns the report type for the specified entry
      * @param int $i index, defaults to 0
      * @return string|boolean report type, or False if Non-numeric index
      */
     public function getReportType($i = 0){
-        if (is_numeric($i)){
+        if (!isset($this->scheduleList)){
+            return false;
+        }
+        if (is_int($i)){
             return $this->scheduleList[$i]['ReportType'];
         } else {
             return false;
@@ -183,7 +243,10 @@ class AmazonReportScheduleList extends AmazonReportsCore implements Iterator{
      * @return string|boolean schedule, or False if Non-numeric index
      */
     public function getSchedule($i = 0){
-        if (is_numeric($i)){
+        if (!isset($this->scheduleList)){
+            return false;
+        }
+        if (is_int($i)){
             return $this->scheduleList[$i]['Schedule'];
         } else {
             return false;
@@ -196,7 +259,10 @@ class AmazonReportScheduleList extends AmazonReportsCore implements Iterator{
      * @return string|boolean date scheduled, or False if Non-numeric index
      */
     public function getScheduledDate($i = 0){
-        if (is_numeric($i)){
+        if (!isset($this->scheduleList)){
+            return false;
+        }
+        if (is_int($i)){
             return $this->scheduleList[$i]['ScheduledDate'];
         } else {
             return false;
@@ -205,10 +271,30 @@ class AmazonReportScheduleList extends AmazonReportsCore implements Iterator{
     
     /**
      * Returns the list of report arrays
+     * @param int $i index, defaults to null
      * @return array Array of arrays
      */
-    public function getList(){
-        return $this->scheduleList;
+    public function getList($i = null){
+        if (!isset($this->scheduleList)){
+            return false;
+        }
+        if (is_int($i)){
+            return $this->scheduleList[$i];
+        } else {
+            return $this->scheduleList;
+        }
+    }
+    
+    /**
+     * gets the count, if it exists
+     * @return string|boolean number, or false on failure
+     */
+    public function getCount(){
+        if (isset($this->count)){
+            return $this->count;
+        } else {
+            return false;
+        }
     }
     
     /**

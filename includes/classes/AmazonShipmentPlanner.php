@@ -42,7 +42,7 @@ class AmazonShipmentPlanner extends AmazonInboundCore implements Iterator{
      * @return boolean false on failure
      */
     public function setAddress($a){
-        if (is_null($a) || is_string($a)){
+        if (!$a || is_null($a) || is_string($a)){
             $this->log("Tried to set address to invalid values",'Warning');
             return false;
         }
@@ -56,8 +56,8 @@ class AmazonShipmentPlanner extends AmazonInboundCore implements Iterator{
         if (array_key_exists('DistrictOrCounty', $a)){
             $this->options['ShipFromAddress.DistrictOrCounty'] = $a['DistrictOrCounty'];
         }
-        if (array_key_exists('StateOrProvidenceCode', $a)){
-            $this->options['ShipFromAddress.StateOrProvidenceCode'] = $a['StateOrProvidenceCode'];
+        if (array_key_exists('StateOrProvinceCode', $a)){
+            $this->options['ShipFromAddress.StateOrProvinceCode'] = $a['StateOrProvinceCode'];
         }
         $this->options['ShipFromAddress.CountryCode'] = $a['CountryCode'];
         if (array_key_exists('PostalCode', $a)){
@@ -76,7 +76,7 @@ class AmazonShipmentPlanner extends AmazonInboundCore implements Iterator{
         unset($this->options['ShipFromAddress.AddressLine2']);
         unset($this->options['ShipFromAddress.City']);
         unset($this->options['ShipFromAddress.DistrictOrCounty']);
-        unset($this->options['ShipFromAddress.StateOrProvidenceCode']);
+        unset($this->options['ShipFromAddress.StateOrProvinceCode']);
         unset($this->options['ShipFromAddress.CountryCode']);
         unset($this->options['ShipFromAddress.PostalCode']);
     }
@@ -86,8 +86,14 @@ class AmazonShipmentPlanner extends AmazonInboundCore implements Iterator{
      * @param string $s "SELLER_LABEL", "AMAZON_LABEL_ONLY", "AMAZON_LABEL_PREFERRED"
      */
     public function setLabelPreference($s){
-        if (is_string($s)){
-            $this->options['LabelPrepPreference'] = $s;
+        if (is_string($s) && $s){
+            if ($s == 'SELLER_LABEL' || $s == 'AMAZON_LABEL_ONLY' || $s == 'AMAZON_LABEL_PREFERRED'){
+                $this->options['LabelPrepPreference'] = $s;
+            } else {
+                return false;
+            }
+        } else {
+            return false;
         }
     }
     
@@ -123,7 +129,7 @@ class AmazonShipmentPlanner extends AmazonInboundCore implements Iterator{
      * @return boolean false if failure
      */
     public function setItems($a){
-        if (is_null($a) || is_string($a)){
+        if (!$a || is_null($a) || is_string($a)){
             $this->log("Tried to set Items to invalid values",'Warning');
             return false;
         }
@@ -135,6 +141,9 @@ class AmazonShipmentPlanner extends AmazonInboundCore implements Iterator{
                 $this->options['InboundShipmentPlanRequestItems.member.'.$i.'.Quantity'] = $x['Quantity'];
                 if (array_key_exists('QuantityInCase', $x)){
                     $this->options['InboundShipmentPlanRequestItems.member.'.$i.'.QuantityInCase'] = $x['QuantityInCase'];
+                }
+                if (array_key_exists('Condition', $x)){
+                    $this->options['InboundShipmentPlanRequestItems.member.'.$i.'.Condition'] = $x['Condition'];
                 }
                 $i++;
             } else {
@@ -156,6 +165,10 @@ class AmazonShipmentPlanner extends AmazonInboundCore implements Iterator{
         }
     }
     
+    /**
+     * fetches generated shipment plan from amazon
+     * @return boolean false on failure
+     */
     public function fetchPlan(){
         if (!array_key_exists('ShipFromAddress.Name',$this->options)){
             $this->log("Address must be set in order to make a plan",'Warning');
@@ -187,21 +200,19 @@ class AmazonShipmentPlanner extends AmazonInboundCore implements Iterator{
             
             $xml = simplexml_load_string($response['body'])->$path->InboundShipmentPlans;
         }
-//        myPrint($xml);
-        $this->xmldata = $xml;
         
-        $this->parseXML();
-        
-        
-        
+        $this->parseXML($xml);
     }
     
     /**
      * converts the XMLdata
      */
-    protected function parseXML() {
+    protected function parseXML($xml) {
+        if (!$xml){
+            return false;
+        }
         $i = 0;
-        foreach($this->xmldata->children() as $x){
+        foreach($xml->children() as $x){
             foreach($x->ShipToAddress->children() as $y => $z){
                 $this->planList[$i]['ShipToAddress'][$y] = (string)$z;
                 
@@ -213,6 +224,7 @@ class AmazonShipmentPlanner extends AmazonInboundCore implements Iterator{
             foreach($x->Items->children() as $y => $z){
                 $this->planList[$i]['Items'][$j]['SellerSKU'] = (string)$z->SellerSKU;
                 $this->planList[$i]['Items'][$j]['Quantity'] = (string)$z->Quantity;
+                $this->planList[$i]['Items'][$j]['FulfillmentNetworkSKU'] = (string)$z->FulfillmentNetworkSKU;
                 $j++;
                 
             }
@@ -224,8 +236,16 @@ class AmazonShipmentPlanner extends AmazonInboundCore implements Iterator{
      * Returns the plan because why not
      * @return SimpleXMLObject
      */
-    public function getPlan($i = 0){
-        return $this->planList[$i];
+    public function getPlan($i = null){
+        if (!isset($this->planList)){
+            return false;
+        } else {
+            if (is_int($i)){
+                return $this->planList[$i];
+            } else {
+                return $this->planList;
+            }
+        }
     }
     
     /**
@@ -233,14 +253,14 @@ class AmazonShipmentPlanner extends AmazonInboundCore implements Iterator{
      * @return array|boolean list of shipping IDs, or false on failure
      */
     public function getShipmentIdList(){
-        if (!is_array($this->planList)){
-            $this->log("No plan list defined yet",'Warning');
+        if (!isset($this->planList)){
             return false;
         }
         $a = array();
         foreach($this->planList as $x){
             $a[] = $x['ShipmentId'];
         }
+        return $a;
     }
     
     /**
@@ -249,15 +269,12 @@ class AmazonShipmentPlanner extends AmazonInboundCore implements Iterator{
      * @return string|boolean single Shipment ID or false on failure
      */
     public function getShipmentId($i = 0){
-        if (is_numeric($i)){
-            if (isset($this->planList[$i]['ShipmentId'])){
-                return $this->planList[$i]['ShipmentId'];
-            } else {
-                $this->log("Shipment ID not found!",'Warning');
-                return false;
-            }
+        if (!isset($this->planList)){
+            return false;
+        }
+        if (is_int($i)){
+            return $this->planList[$i]['ShipmentId'];
         } else {
-            $this->log("Invalid index for shipping ID: $i",'Warning');
             return false;
         }
     }

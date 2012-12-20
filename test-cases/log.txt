@@ -1,1 +1,8 @@
-[Info][2012/12/20 11:09:45 guest@cli AmazonCore.php:39 setMock] Mock Mode set to ON
+[Info][2012/12/20 02:52:34 guest@cli AmazonCore.php:39 setMock] Mock Mode set to ON
+[Warning][2012/12/20 02:52:34 guest@cli AmazonShipmentTest.php:273 updateShipment] Shipment ID must be set in order to update it
+[Warning][2012/12/20 02:52:34 guest@cli AmazonShipmentTest.php:276 updateShipment] Header must be set in order to update a shipment
+[Warning][2012/12/20 02:52:34 guest@cli AmazonShipmentTest.php:286 updateShipment] Items must be set in order to update a shipment
+[Info][2012/12/20 02:52:34 guest@cli AmazonShipmentTest.php:288 setMock] Mock Mode set to ON
+[Info][2012/12/20 02:52:34 guest@cli AmazonShipmentTest.php:288 setMock] Single Mock File set: updateShipment.xml
+[Info][2012/12/20 02:52:34 guest@cli AmazonShipment.php:275 fetchMockFile] Fetched Mock File: mock/updateShipment.xml
+[Info][2012/12/20 02:52:34 guest@cli AmazonShipmentTest.php:289 updateShipment] Successfully updated Shipment #FBA63J76R

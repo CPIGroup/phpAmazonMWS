@@ -1,11 +1,21 @@
 <?php
-
-class AmazonReportScheduleManager extends AmazonReportsCore{
+/**
+ * Manages report schedules with Amazon.
+ * 
+ * This Amazon Reports Core object sends a request to Amazon to modify the
+ * existing report schedules and create new ones. To do this, a report type
+ * and schedule are required. Only one report schedule can be modified at a time.
+ * Amazon will return a count of the number of report schedules affected,
+ * which will usually be 1.
+ */
+class AmazonReportScheduleManager extends AmazonReportsCore implements Iterator{
     private $scheduleList;
     private $count;
+    private $i = 0;
+    private $index = 0;
     
     /**
-     * Sends a report request to Amazon.
+     * Manages report schedules.
      * @param string $s name of store as seen in config file
      * @param boolean $mock true to enable mock mode
      * @param array|string $m list of mock files to use
@@ -30,7 +40,7 @@ class AmazonReportScheduleManager extends AmazonReportsCore{
      * @return boolean false if improper input
      */
     public function setReportType($s){
-        if (is_numeric($s) && $s >= 1 && $s <= 100){
+        if (is_string($s)){
             $this->options['ReportType'] = $s;
         } else {
             return false;
@@ -55,7 +65,7 @@ class AmazonReportScheduleManager extends AmazonReportsCore{
      * @return boolean false if improper input
      */
     public function setSchedule($s){
-        if (is_numeric($s) && $s >= 1 && $s <= 100){
+        if (is_string($s)){
             $this->options['Schedule'] = $s;
         } else {
             return false;
@@ -92,7 +102,6 @@ class AmazonReportScheduleManager extends AmazonReportsCore{
                 $after = $this->genTime('- 2 min');
             }
             $this->options['ScheduledDate'] = $after;
-            $this->resetSkus();
             
         } catch (Exception $e){
             $this->log("Parameter should be a timestamp, instead $t",'Warning');
@@ -146,13 +155,13 @@ class AmazonReportScheduleManager extends AmazonReportsCore{
      */
     protected function parseXML($xml){
         foreach($xml->children() as $key=>$x){
-            $i = $this->index;
             if ($key == 'Count'){
                 $this->count = (string)$x;
             }
             if ($key != 'ReportSchedule'){
                 continue;
             }
+            $i = $this->index;
             
             /*
              * after I know what this is,
@@ -175,7 +184,10 @@ class AmazonReportScheduleManager extends AmazonReportsCore{
      * @return string|boolean report type, or False if Non-numeric index
      */
     public function getReportType($i = 0){
-        if (is_numeric($i)){
+        if (!isset($this->scheduleList)){
+            return false;
+        }
+        if (is_int($i)){
             return $this->scheduleList[$i]['ReportType'];
         } else {
             return false;
@@ -188,7 +200,10 @@ class AmazonReportScheduleManager extends AmazonReportsCore{
      * @return string|boolean schedule, or False if Non-numeric index
      */
     public function getSchedule($i = 0){
-        if (is_numeric($i)){
+        if (!isset($this->scheduleList)){
+            return false;
+        }
+        if (is_int($i)){
             return $this->scheduleList[$i]['Schedule'];
         } else {
             return false;
@@ -201,7 +216,10 @@ class AmazonReportScheduleManager extends AmazonReportsCore{
      * @return string|boolean date scheduled, or False if Non-numeric index
      */
     public function getScheduledDate($i = 0){
-        if (is_numeric($i)){
+        if (!isset($this->scheduleList)){
+            return false;
+        }
+        if (is_int($i)){
             return $this->scheduleList[$i]['ScheduledDate'];
         } else {
             return false;
@@ -210,10 +228,18 @@ class AmazonReportScheduleManager extends AmazonReportsCore{
     
     /**
      * Returns the list of report arrays
+     * @param int $i index, defaults to null
      * @return array Array of arrays
      */
-    public function getList(){
-        return $this->scheduleList;
+    public function getList($i = null){
+        if (!isset($this->scheduleList)){
+            return false;
+        }
+        if (is_int($i)){
+            return $this->scheduleList[$i];
+        } else {
+            return $this->scheduleList;
+        }
     }
     
     /**
@@ -221,11 +247,49 @@ class AmazonReportScheduleManager extends AmazonReportsCore{
      * @return string|boolean number, or false on failure
      */
     public function getCount(){
-        if (!isset($this->count)){
-            return false;
-        } else {
+        if (isset($this->count)){
             return $this->count;
+        } else {
+            return false;
         }
+    }
+    
+    /**
+     * Iterator function
+     * @return type
+     */
+    public function current(){
+       return $this->scheduleList[$this->i]; 
+    }
+
+    /**
+     * Iterator function
+     */
+    public function rewind(){
+        $this->i = 0;
+    }
+
+    /**
+     * Iterator function
+     * @return type
+     */
+    public function key() {
+        return $this->i;
+    }
+
+    /**
+     * Iterator function
+     */
+    public function next() {
+        $this->i++;
+    }
+
+    /**
+     * Iterator function
+     * @return type
+     */
+    public function valid() {
+        return isset($this->scheduleList[$this->i]);
     }
     
 }

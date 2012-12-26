@@ -5,7 +5,7 @@
  * This Amazon Feeds Core object can submit feeds to Amazon.
  * In order to submit a feed, the feed's contents (a filename)
  * and feed type must be set. Once the feed has been submitted,
- * the response from Amazon can be viewed with getResponse().
+ * the response from Amazon can be viewed with <i>getResponse</i>.
  */
 class AmazonFeed extends AmazonFeedsCore{
     private $response;
@@ -13,10 +13,15 @@ class AmazonFeed extends AmazonFeedsCore{
     private $feedMD5;
     
     /**
-     * AmazonFeed object submits a Feed to Amazon
-     * @param string $s store name as seen in config
-     * @param boolean $mock set true to enable mock mode
-     * @param array|string $m list of mock files to use
+     * AmazonFeed submits a Feed to Amazon.
+     * 
+     * The parameters are passed to the parent constructor, which are
+     * in turn passed to the AmazonCore constructor. See it for more information
+     * on these parameters and common methods.
+     * @param string $s <p>Name for the store you want to use.</p>
+     * @param boolean $mock [optional] <p>This is a flag for enabling Mock Mode.
+     * This defaults to <b>FALSE</b>.</p>
+     * @param array|string $m [optional] <p>The files (or file) to use in Mock Mode.</p>
      */
     public function __construct($s, $mock = false, $m = null){
         parent::__construct($s, $mock, $m);
@@ -40,9 +45,14 @@ class AmazonFeed extends AmazonFeedsCore{
     }
     
     /**
-     * sets the feed content
-     * @param string $s contents to put in file
-     * @param string $override path to temporary file, from main plugin directory
+     * Sets the feed content. (Required*)
+     * 
+     * This method creates a temporary file using the data you provide. It is
+     * recommended that you use <i>loadFeedFile</i> instead, as there is a good
+     * chance the data you provide here will be overwritten later.
+     * @param string $s <p>The contents to put in the file.</p>
+     * @param string $override [optional] <p>The path to a file you want to write to.
+     * It can be relative or absolute.</p>
      */
     public function setFeedContent($s, $override = null){
         if (is_string($s) && $s){
@@ -63,8 +73,12 @@ class AmazonFeed extends AmazonFeedsCore{
     }
     
     /**
-     * sets the feed content
-     * @param string $url file path
+     * Sets the Feed Content. (Required)
+     * 
+     * This method sets the file path to be sent in the next request. This
+     * parameter is required in order to submit a feed to Amazon.
+     * @param string $url <p>The path to a file you want to use.
+     * It can be relative or absolute.</p>
      */
     public function loadFeedFile($path){
         if (file_exists($path)){
@@ -79,8 +93,14 @@ class AmazonFeed extends AmazonFeedsCore{
     }
     
     /**
-     * set the feed type to be used in the next request
-     * @param string $s value from specific list, see comment inside
+     * Sets the Feed Type. (Required)
+     * 
+     * This method sets the Feed Type to be sent in the next request. This tells
+     * Amazon how the Feed should be processsed.
+     * This parameter is required in order to submit a feed to Amazon.
+     * @param string $s <p>A value from the list of valid Feed Types.
+     * See the comment inside the function for the complete list.</p>
+     * @return boolean <p><b>FALSE</b> if improper input</p>
      */
     public function setFeedType($s){
         if (is_string($s) && $s){
@@ -128,9 +148,15 @@ class AmazonFeed extends AmazonFeedsCore{
     }
     
     /**
-     * sets the request ID(s) to be used in the next request
-     * @param array|string $s array of Report Request IDs or single ID (max: 5)
-     * @return boolean false if failure
+     * Sets the request ID(s). (Optional)
+     * 
+     * This method sets the list of Marketplace IDs to be sent in the next request.
+     * Setting this parameter tells Amazon to apply the Feed to more than one
+     * Marketplace. These should be IDs for Marketplaces that you are registered
+     * to sell in. If this is not set, Amazon will only use the first Marketplace
+     * you are registered for.
+     * @param array|string $s <p>A list of Marketplace IDs, or a single ID string.</p>
+     * @return boolean <p><b>FALSE</b> if improper input</p>
      */
     public function setMarketplaceIds($s){
         if ($s && is_string($s)){
@@ -149,7 +175,10 @@ class AmazonFeed extends AmazonFeedsCore{
     }
     
     /**
-     * removes ID options
+     * Removes ID options.
+     * 
+     * Use this in case you change your mind and want to remove the Marketplace ID
+     * paramters you previously set.
      */
     public function resetMarketplaceIds(){
         foreach($this->options as $op=>$junk){
@@ -160,11 +189,17 @@ class AmazonFeed extends AmazonFeedsCore{
     }
     
     /**
-     * Sets whether or not the tab delimited feed should completely replace old data
+     * Turns on or off Purge mode. (Optional)
      * 
-     * Warning! This has a 24 hour throttling time! Use this parameter only in exceptional cases.
-     * @param boolean|string $s boolean, or "true" or "false"
-     * @return boolean false if improper input
+     * 
+     * <b>Warning! This parameter can only be used once every 24 hours!</b>
+     * 
+     * This method sets whether or not the tab delimited feed you provide should
+     * completely replace old data. Use this parameter only in exceptional cases.
+     * If this is not set, Amazon assumes it to be false.
+     * @param boolean|string $s [optional] <p>The value "true" or "false", either as
+     * a boolean or a string. It defaults to "true".</p>
+     * @return boolean <p><b>FALSE</b> if improper input</p>
      */
     public function setPurge($s = 'true'){
         if ($s == 'true' || ($s && is_bool($s))){
@@ -186,7 +221,13 @@ class AmazonFeed extends AmazonFeedsCore{
     }
     
     /**
-     * Submits a feed to Amazon
+     * Submits a feed to Amazon.
+     * 
+     * Submits a <i>SubmitFeed</i> request to Amazon. In order to do this, both
+     * the feed's contents and feed type are required. The request will not be
+     * sent if either of these are not set. Amazon will send a response back,
+     * which can be retrieved using <i>getResponse</i>.
+     * @return boolean <p><b>FALSE</b> if something goes wrong</p>
      */
     public function submitFeed(){
         if (!$this->feedContent){
@@ -217,13 +258,11 @@ class AmazonFeed extends AmazonFeedsCore{
             $response = fetchURL("$url?$query",array('Header'=>$headers,'Post'=>$post));
             $this->logRequest();
             
-            myPrint($response);
             $this->checkResponse($response);
             
             //getting Response 100?
             if ($response['head'] == 'HTTP/1.1 100 Continue'){
                 $body = strstr($response['body'],'<');
-                var_dump($body);
                 $xml = simplexml_load_string($body)->$path;
             } else {
                 $xml = simplexml_load_string($response['body'])->$path;
@@ -237,9 +276,11 @@ class AmazonFeed extends AmazonFeedsCore{
     }
     
     /**
-     * loads XML response into array
-     * @param SimpleXMLObject $xml XML from response
-     * @return boolean false on failure
+     * Parses XML response into array.
+     * 
+     * This is what reads the response XML and converts it into an array.
+     * @param SimpleXMLObject $xml <p>The XML response from Amazon.</p>
+     * @return boolean <p><b>FALSE</b> if no XML data is found</p>
      */
     protected function parseXML($xml){
         if (!$xml){
@@ -256,7 +297,9 @@ class AmazonFeed extends AmazonFeedsCore{
     }
     
     /**
-     * Generates array for Header
+     * Generates array for Header.
+     * 
+     * This method creates the Header array to use with cURL. It contains the Content MD5.
      * @return array
      */
     protected function genHeader(){
@@ -265,7 +308,9 @@ class AmazonFeed extends AmazonFeedsCore{
     }
     
     /**
-     * Generates array for Post
+     * Generates array for Post.
+     * 
+     * This method creates the Post array to use with cURL. It contains the Feed Content file path.
      * @return array
      */
     protected function genPost(){
@@ -274,8 +319,15 @@ class AmazonFeed extends AmazonFeedsCore{
     }
     
     /**
-     * checks whether or not the response is OK, due to '100' response
-     * @param array $r response array
+     * Checks whether or not the response is OK.
+     * 
+     * Verifies whether or not the HTTP response has the 200 OK code. If the code
+     * is not 200, the incident and error message returned are logged. This method
+     * is different than the ones used by other objects due to Amazon sending
+     * 100 Continue responses in addition to the usual response.
+     * @param array $r <p>The HTTP response array. Expects the array to have
+     * the fields <i>code</i>, <i>body</i>, and <i>error</i>.</p>
+     * @return boolean <p><b>TRUE</b> if the status is 200 OK, <b>FALSE</b> otherwise.</p>
      */
     protected function checkResponse($r){
         if (!is_array($r)){
@@ -293,7 +345,15 @@ class AmazonFeed extends AmazonFeedsCore{
     }
     
     /**
-     * Returns the response data.
+     * Returns the response data in array.
+     * 
+     * It will contain the following fields:
+     * <ul>
+     * <li><b>FeedSubmissionId</b> - Unique ID for the feed submission</li>
+     * <li><b>FeedType</b> - Same as the feed type you gave</li>
+     * <li><b>SubmittedDate</b> - The timestamp for when the Feed was received</li>
+     * <li><b>FeedProcessingStatus</b> - The status of the feed, likely "_SUBMITTED_"</li>
+     * </ul>
      * @return array
      */
     public function getResponse(){

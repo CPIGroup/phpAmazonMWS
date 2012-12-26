@@ -1,6 +1,6 @@
 <?php
 /**
- * Gets the details for a single object from Amazon.
+ * Gets the details for a single order from Amazon.
  * 
  * This Amazon Order Core object retrieves (or simply contains) the data
  * for a single order on Amazon. In order to fetch this data, an Amazon
@@ -10,12 +10,19 @@ class AmazonOrder extends AmazonOrderCore{
     private $data;
 
     /**
-     * AmazonOrder object gets the details for a single object from Amazon
-     * @param string $s store name as seen in config
-     * @param string $id Order number to automatically set
-     * @param SimpleXMLElement $data XML data from Amazon to be parsed
-     * @param boolean $mock set true to enable mock mode
-     * @param array|string $m list of mock files to use
+     * AmazonOrder object gets the details for a single object from Amazon.
+     * 
+     * The parameters are passed to the parent constructor, which are
+     * in turn passed to the AmazonCore constructor. See it for more information
+     * on these parameters and common methods.
+     * Please note that two extra parameters come before the usual Mock Mode parameters,
+     * so be careful when setting up the object.
+     * @param string $s <p>Name for the store you want to use.</p>
+     * @param string $id [optional] <p>The Order ID to set for the object.</p>
+     * @param SimpleXMLElement $data [optional] <p>XML data from Amazon to be parsed.</p>
+     * @param boolean $mock [optional] <p>This is a flag for enabling Mock Mode.
+     * This defaults to <b>FALSE</b>.</p>
+     * @param array|string $m [optional] <p>The files (or file) to use in Mock Mode.</p>
      */
     public function __construct($s, $id = null, $data = null, $mock = false, $m = null){
         parent::__construct($s, $mock, $m);
@@ -46,8 +53,12 @@ class AmazonOrder extends AmazonOrderCore{
     }
     
     /**
-     * Sets the Amazon Order ID for the next request, in case it was not set in the constructor
-     * @param string $id the Amazon Order ID
+     * Sets the Amazon Order ID. (Required)
+     * 
+     * This method sets the Amazon Order ID to be sent in the next request.
+     * This parameter is required for fetching the order from Amazon.
+     * @param string $s <p>either string or number</p>
+     * @return boolean <p><b>FALSE</b> if improper input</p>
      */
     public function setOrderId($id){
         if (is_string($id) || is_numeric($id)){
@@ -59,7 +70,13 @@ class AmazonOrder extends AmazonOrderCore{
     }
     
     /**
-     * Fetches the specified order from Amazon after setting the necessary parameters
+     * Fetches the specified order from Amazon.
+     * 
+     * Submits a <i>GetOrder</i> request to Amazon. In order to do this,
+     * an Amazon order ID is required. Amazon will send
+     * the data back as a response, which can be retrieved using <i>getData</i>.
+     * Other methods are available for fetching specific values from the order.
+     * @return boolean <p><b>FALSE</b> if something goes wrong</p>
      */
     public function fetchOrder(){
         if (!array_key_exists('AmazonOrderId.Id.1',$this->options)){
@@ -94,9 +111,11 @@ class AmazonOrder extends AmazonOrderCore{
     }
 
     /**
-     * Fetches items for the order
-     * @param boolean $token whether or not to automatically use item tokens
-     * @return AmazonOrderItemList container for order's items
+     * Fetches items for the order from Amazon.
+     * 
+     * See the <i>AmazonOrderItemList</i> class for more information on the returned object.
+     * @param boolean $token [optional] <p>whether or not to automatically use item tokens in the request</p>
+     * @return AmazonOrderItemList <p>container for order's items</p>
      */
     public function fetchItems($token = false){
         if (!isset($this->data['AmazonOrderId'])){
@@ -113,8 +132,11 @@ class AmazonOrder extends AmazonOrderCore{
     }
     
     /**
-     * Populates the object's data using the stored XML data. Clears existing data
-     * @return boolean if no XML data
+     * Parses XML response into array.
+     * 
+     * This is what reads the response XML and converts it into an array.
+     * @param SimpleXMLObject $xml <p>The XML response from Amazon.</p>
+     * @return boolean <p><b>FALSE</b> if no XML data is found</p>
      */
     protected function parseXML($xml){
         if (!$xml){
@@ -194,8 +216,32 @@ class AmazonOrder extends AmazonOrderCore{
     }
     
     /**
-     * returns all data
-     * @return array|boolean entire set of data, or false on failure
+     * Returns the full set of data for the order.
+     * 
+     * This method will return <b>FALSE</b> if the order data has not yet been filled.
+     * The array returned will have the following fields:
+     * <ul>
+     * <li><b>AmazonOrderId</b> - unique ID for the order, which you sent in the first place</li>
+     * <li><b>SellerOrderId</b> (optional) - your unique ID for the order</li>
+     * <li><b>PurchaseDate</b> - time in ISO8601 date format</li>
+     * <li><b>LastUpdateDate</b> - time in ISO8601 date format</li>
+     * <li><b>OrderStatus</b> - the current status of the order, see <i>getOrderStatus</i> for more details</li>
+     * <li><b>MarketplaceId</b> - the marketplace in which the order was placed</li>
+     * <li><b>FulfillmentChannel</b> (optional) - "AFN" or "MFN"</li>
+     * <li><b>SalesChannel</b> (optional) - sales channel for the first item in the order</li>
+     * <li><b>OrderChannel</b> (optional) - order channel for the first item in the order</li>
+     * <li><b>ShipServiceLevel</b> (optional) - shipment service level of the order</li>
+     * <li><b>ShippingAddress</b> (optional) - array, see <i>getShippingAddress</i> for more details</li>
+     * <li><b>OrderTotal</b> (optional) - array with the fields <b>Amount</b> and <b>CurrencyCode</b></li>
+     * <li><b>NumberOfItemsShipped</b> (optional) - number of items shipped</li>
+     * <li><b>NumberOfItemsUnshipped</b> (optional) - number of items not shipped</li>
+     * <li><b>PaymentExecutionDetail</b> (optional) - multi-dimensional array, see <i>getPaymentExecutionDetail</i> for more details</li>
+     * <li><b>PaymentMethod</b> (optional) - "COD", "CVS", or "Other"</li>
+     * <li><b>BuyerName</b> (optional) - name of the buyer</li>
+     * <li><b>BuyerEmail</b> (optional) - Amazon-generated email for the buyer</li>
+     * <li><b>ShipServiceLevelCategory</b> (optional) - "Expedited", "NextDay", "SecondDay", or "Standard"</li>
+     * </ul>
+     * @return array|boolean <p>array of data, or <b>FALSE</b> if data not filled yet</p>
      */
     public function getData(){
         if (isset($this->data) && $this->data){
@@ -206,8 +252,10 @@ class AmazonOrder extends AmazonOrderCore{
     }
     
     /**
-     * Returns the Amazon Order ID for the Order
-     * @return string|boolean Amazon's Order ID, or false if not set yet
+     * Returns the Amazon Order ID for the Order.
+     * 
+     * This method will return <b>FALSE</b> if the order ID has not been set yet.
+     * @return string|boolean <p>single value, or <b>FALSE</b> if order ID not set yet</p>
      */
     public function getAmazonOrderId(){
         if (isset($this->data['AmazonOrderId'])){
@@ -218,8 +266,10 @@ class AmazonOrder extends AmazonOrderCore{
     }
     
     /**
-     * Returns the Seller ID for the Order
-     * @return string|boolean Seller-defined Order ID, or false if not set yet
+     * Returns the seller-defined ID for the Order.
+     * 
+     * This method will return <b>FALSE</b> if the order ID has not been set yet.
+     * @return string|boolean <p>single value, or <b>FALSE</b> if order ID not set yet</p>
      */
     public function getSellerOrderId(){
         if (isset($this->data['SellerOrderId'])){
@@ -230,8 +280,10 @@ class AmazonOrder extends AmazonOrderCore{
     }
     
     /**
-     * Returns the purchase date of the Order
-     * @return dateTime timestamp, or false if not set yet
+     * Returns the purchase date of the Order.
+     * 
+     * This method will return <b>FALSE</b> if the timestamp has not been set yet.
+     * @return string|boolean <p>timestamp, or <b>FALSE</b> if timestamp not set yet</p>
      */
     public function getPurchaseDate(){
         if (isset($this->data['PurchaseDate'])){
@@ -242,8 +294,10 @@ class AmazonOrder extends AmazonOrderCore{
     }
     
     /**
-     * Returns the timestamp of the last modification date
-     * @return dateTime timestamp, or false if not set yet
+     * Returns the timestamp of the last modification date.
+     * 
+     * This method will return <b>FALSE</b> if the timestamp has not been set yet.
+     * @return string|boolean <p>timestamp, or <b>FALSE</b> if timestamp not set yet</p>
      */
     public function getLastUpdateDate(){
         if (isset($this->data['LastUpdateDate'])){
@@ -254,17 +308,19 @@ class AmazonOrder extends AmazonOrderCore{
     }
     
     /**
-     * Returns the status of the Order
+     * Returns the status of the Order.
      * 
-     * Returns the status of the Order. Possible Order Statuses are:
-     * -Pending
-     * -Unshipped
-     * -Partially Shipped
-     * -Shipped
-     * -InvoiceUnconfirmed (China only)
-     * -Canceled
-     * -Unfulfillable
-     * @return string order status, or false if not set yet
+     * This method will return <b>FALSE</b> if the order status has not been set yet.
+     * Possible Order Statuses are:
+     * <ul>
+     * <li>Pending</li>
+     * <li>Unshipped</li>
+     * <li>Partially Shipped</li>
+     * <li>Shipped</li>
+     * <li>Cancelled</li>
+     * <li>Unfulfillable</li>
+     * </ul>
+     * @return string|boolean <p>single value, or <b>FALSE</b> if status not set yet</p>
      */
     public function getOrderStatus(){
         if (isset($this->data['OrderStatus'])){
@@ -275,8 +331,10 @@ class AmazonOrder extends AmazonOrderCore{
     }
     
     /**
-     * Returns the Fulfillment Channel (AFN or MFN)
-     * @return string either AFN or MFN, or false if not set yet
+     * Returns the Fulfillment Channel.
+     * 
+     * This method will return <b>FALSE</b> if the fulfillment channel has not been set yet.
+     * @return string|boolean <p>"AFN" or "MFN", or <b>FALSE</b> if channel not set yet</p>
      */
     public function getFulfillmentChannel(){
         if (isset($this->data['FulfillmentChannel'])){
@@ -287,8 +345,10 @@ class AmazonOrder extends AmazonOrderCore{
     }
     
     /**
-     * Returns the Sales Channel Channel of the Order
-     * @return string channel, or false if not set yet
+     * Returns the Sales Channel of the Order.
+     * 
+     * This method will return <b>FALSE</b> if the sales channel has not been set yet.
+     * @return string|boolean <p>single value, or <b>FALSE</b> if channel not set yet</p>
      */
     public function getSalesChannel(){
         if (isset($this->data['SalesChannel'])){
@@ -300,7 +360,9 @@ class AmazonOrder extends AmazonOrderCore{
     
     /**
      * Returns the Order Channel of the first item in the Order.
-     * @return string channel, or false if not set yet
+     * 
+     * This method will return <b>FALSE</b> if the order channel has not been set yet.
+     * @return string|boolean <p>single value, or <b>FALSE</b> if channel not set yet</p>
      */
     public function getOrderChannel(){
         if (isset($this->data['OrderChannel'])){
@@ -311,8 +373,10 @@ class AmazonOrder extends AmazonOrderCore{
     }
     
     /**
-     * Returns the shipment service level of the Order
-     * @return string service level, or false if not set yet
+     * Returns the shipment service level of the Order.
+     * 
+     * This method will return <b>FALSE</b> if the shipment service level has not been set yet.
+     * @return string|boolean <p>single value, or <b>FALSE</b> if level not set yet</p>
      */
     public function getShipServiceLevel(){
         if (isset($this->data['ShipServiceLevel'])){
@@ -325,19 +389,22 @@ class AmazonOrder extends AmazonOrderCore{
     /**
      * Returns an array containing all of the address information.
      * 
-     * Returns an associative array of the address information, with the following fields:
-     * -Name
-     * -AddressLine1
-     * -AddressLine2
-     * -AddressLine3
-     * -City
-     * -County
-     * -District
-     * -StateOrRegion
-     * -PostalCode
-     * -CountryCode
-     * -Phone
-     * @return array Address array, or false if not set yet
+     * This method will return <b>FALSE</b> if the address has not been set yet.
+     * The returned array will have the following fields:
+     * <ul>
+     * <li><b>Name</b></li>
+     * <li><b>AddressLine1</b></li>
+     * <li><b>AddressLine2</b></li>
+     * <li><b>AddressLine3</b></li>
+     * <li><b>City</b></li>
+     * <li><b>County</b></li>
+     * <li><b>District</b></li>
+     * <li><b>StateOrRegion</b></li>
+     * <li><b>PostalCode</b></li>
+     * <li><b>CountryCode</b></li>
+     * <li><b>Phone</b></li>
+     * </ul>
+     * @return array|boolean <p>associative array, or <b>FALSE</b> if address not set yet</p>
      */
     public function getShippingAddress(){
         if (isset($this->data['ShippingAddress'])){
@@ -348,12 +415,15 @@ class AmazonOrder extends AmazonOrderCore{
     }
     
     /**
-     * Returns an array containing the total cost of the Order along with the currency used
+     * Returns an array containing the total cost of the Order along with the currency used.
      * 
-     * Returns an associative array with the following fields:
-     * -Amount
-     * -CurrencyCode
-     * @return array order total data, or false if not set yet
+     * This method will return <b>FALSE</b> if the order total has not been set yet.
+     * The returned array has the following fields:
+     * <ul>
+     * <li><b>Amount</b></li>
+     * <li><b>CurrencyCode</b></li>
+     * </ul>
+     * @return array|boolean <p>associative array, or <b>FALSE</b> if total not set yet</p>
      */
     public function getOrderTotal(){
         if (isset($this->data['OrderTotal'])){
@@ -364,8 +434,10 @@ class AmazonOrder extends AmazonOrderCore{
     }
     
     /**
-     * Returns just the total cost of the Order
-     * @return string String of order total, or false if not set yet
+     * Returns just the total cost of the Order.
+     * 
+     * This method will return <b>FALSE</b> if the order total has not been set yet.
+     * @return string|boolean <p>number, or <b>FALSE</b> if total not set yet</p>
      */
     public function getOrderTotalAmount(){
         if (isset($this->data['OrderTotal']) && isset($this->data['OrderTotal']['Amount'])){
@@ -376,8 +448,10 @@ class AmazonOrder extends AmazonOrderCore{
     }
 
     /**
-     * Returns the number of items in the Order that have been shipped
-     * @return integer non-negative integer, or false if not set yet
+     * Returns the number of items in the Order that have been shipped.
+     * 
+     * This method will return <b>FALSE</b> if the number has not been set yet.
+     * @return integer|boolean <p>non-negative number, or <b>FALSE</b> if number not set yet</p>
      */
     public function getNumberofItemsShipped(){
         if (isset($this->data['NumberOfItemsShipped'])){
@@ -388,8 +462,10 @@ class AmazonOrder extends AmazonOrderCore{
     }
     
     /**
-     * Returns the number of items in the Order that have yet to be shipped
-     * @return integer non-negative integer, or false if not set yet
+     * Returns the number of items in the Order that have yet to be shipped.
+     * 
+     * This method will return <b>FALSE</b> if the number has not been set yet.
+     * @return integer|boolean <p>non-negative number, or <b>FALSE</b> if number not set yet</p>
      */
     public function getNumberOfItemsUnshipped(){
         if (isset($this->data['NumberOfItemsUnshipped'])){
@@ -400,12 +476,16 @@ class AmazonOrder extends AmazonOrderCore{
     }
     
     /**
-     * Returns an array of the complete payment details
+     * Returns an array of the complete payment details.
      * 
-     * Returns an associative array...
-     * ...
-     * ...
-     * @return array payment data, or false if not set yet
+     * This method will return <b>FALSE</b> if the payment details has not been set yet.
+     * The array returned contains one or more arrays with the following fields:
+     * <ul>
+     * <li><b>Amount</b></li>
+     * <li><b>CurrencyCode</b></li>
+     * <li><b>SubPaymentMethod</b></li>
+     * </ul>
+     * @return array|boolean <p>multi-dimensional array, or <b>FALSE</b> if details not set yet</p>
      */
     public function getPaymentExecutionDetail(){
         if (isset($this->data['PaymentExecutionDetail'])){
@@ -416,8 +496,10 @@ class AmazonOrder extends AmazonOrderCore{
     }
     
     /**
-     * Returns the payment method (either COD, CVS, or Other) of the Order
-     * @return string COD, CVS, or Other, or false if not set yet
+     * Returns the payment method of the Order.
+     * 
+     * This method will return <b>FALSE</b> if the payment method has not been set yet.
+     * @return string|boolean <p>"COD", "CVS", "Other", or <b>FALSE</b> if method not set yet</p>
      */    
     public function getPaymentMethod(){
         if (isset($this->data['PaymentMethod'])){
@@ -428,8 +510,10 @@ class AmazonOrder extends AmazonOrderCore{
     }
     
     /**
-     * Returns the ID of the Marketplace in which the Order was placed
-     * @return string Marketplace ID, or false if not set yet
+     * Returns the ID of the Marketplace in which the Order was placed.
+     * 
+     * This method will return <b>FALSE</b> if the marketplace ID has not been set yet.
+     * @return string|boolean <p>single value, or <b>FALSE</b> if ID not set yet</p>
      */
     public function getMarketplaceId(){
         if (isset($this->data['MarketplaceId'])){
@@ -440,8 +524,10 @@ class AmazonOrder extends AmazonOrderCore{
     }
     
     /**
-     * Returns the name of the buyer
-     * @return string name, or false if not set yet
+     * Returns the name of the buyer.
+     * 
+     * This method will return <b>FALSE</b> if the buyer name has not been set yet.
+     * @return string|boolean <p>single value, or <b>FALSE</b> if name not set yet</p>
      */
     public function getBuyerName(){
         if (isset($this->data['BuyerName'])){
@@ -452,8 +538,10 @@ class AmazonOrder extends AmazonOrderCore{
     }
     
     /**
-     * Returns the email address of the buyer
-     * @return string email, or false if not set yet
+     * Returns the Amazon-generated email address of the buyer.
+     * 
+     * This method will return <b>FALSE</b> if the buyer email has not been set yet.
+     * @return string|boolean <p>single value, or <b>FALSE</b> if email not set yet</p>
      */
     public function getBuyerEmail(){
         if (isset($this->data['BuyerEmail'])){
@@ -464,14 +552,17 @@ class AmazonOrder extends AmazonOrderCore{
     }
     
     /**
-     * Returns the shipment service level category of the Order
+     * Returns the shipment service level category of the Order.
      * 
-     * Returns the shipment serice level category of the Order. Valid values are...
-     * -Expedited
-     * -NextDay
-     * -SecondDay
-     * -Standard
-     * @return string value, or false if not set yet
+     * This method will return <b>FALSE</b> if the service level category has not been set yet.
+     * Valid values for the service level category are...
+     * <ul>
+     * <li>Expedited</li>
+     * <li>NextDay</li>
+     * <li>SecondDay</li>
+     * <li>Standard</li>
+     * </ul>
+     * @return string|boolean <p>single value, or <b>FALSE</b> if category not set yet</p>
      */
     public function getShipServiceLevelCategory(){
         if (isset($this->data['ShipServiceLevelCategory'])){
@@ -482,12 +573,19 @@ class AmazonOrder extends AmazonOrderCore{
     }
     
     /**
-     * Returns the ratio of shipped items to unshipped items
-     * @return float Decimal number from 0 to 1, or false if not set yet
+     * Returns the ratio of shipped items to unshipped items.
+     * 
+     * This method will return <b>FALSE</b> if the shipment numbers have not been set yet.
+     * @return float|boolean <p>Decimal number from 0 to 1, or <b>FALSE</b> if numbers not set yet</p>
      */
     public function getPercentShipped(){
         if (isset($this->data['NumberOfItemsShipped']) && isset($this->data['NumberOfItemsUnshipped'])){
             $total = $this->data['NumberOfItemsShipped'] + $this->data['NumberOfItemsUnshipped'];
+            
+            if ($total == 0){
+                return 0;
+            }
+            
             $ratio = $this->data['NumberOfItemsShipped'] / $total;
             return $ratio;
         } else {

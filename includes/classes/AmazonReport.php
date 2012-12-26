@@ -10,10 +10,18 @@ class AmazonReport extends AmazonReportsCore{
     private $rawreport;
     
     /**
-     * Fetches a report from Amazon.
-     * @param string $s name of store as seen in config file
-     * @param boolean $mock true to enable mock mode
-     * @param array|string $m list of mock files to use
+     * AmazonReport fetches a report from Amazon.
+     * 
+     * The parameters are passed to the parent constructor, which are
+     * in turn passed to the AmazonCore constructor. See it for more information
+     * on these parameters and common methods.
+     * Please note that an extra parameter comes before the usual Mock Mode parameters,
+     * so be careful when setting up the object.
+     * @param string $s <p>Name for the store you want to use.</p>
+     * @param string $id [optional] <p>The report ID to set for the object.</p>
+     * @param boolean $mock [optional] <p>This is a flag for enabling Mock Mode.
+     * This defaults to <b>FALSE</b>.</p>
+     * @param array|string $m [optional] <p>The files (or file) to use in Mock Mode.</p>
      */
     public function __construct($s, $id = null, $mock = false, $m = null) {
         parent::__construct($s, $mock, $m);
@@ -34,9 +42,12 @@ class AmazonReport extends AmazonReportsCore{
     }
     
     /**
-     * Sets the report ID for the next request
-     * @param integer $n
-     * @return boolean false if improper input
+     * Sets the report ID. (Required)
+     * 
+     * This method sets the report ID to be sent in the next request.
+     * This parameter is required for fetching the report from Amazon.
+     * @param string|integer $n <p>Must be numeric</p>
+     * @return boolean <p><b>FALSE</b> if improper input</p>
      */
     public function setReportId($n){
         if (is_numeric($n)){
@@ -47,8 +58,12 @@ class AmazonReport extends AmazonReportsCore{
     }
     
     /**
-     * Sends a request to Amazon for a report
-     * @return boolean false on failure
+     * Sends a request to Amazon for a report.
+     * 
+     * Submits a <i>GetReport</i> request to Amazon. In order to do this,
+     * a report ID is required. Amazon will send
+     * the data back as a response, which can be saved using <i>saveReport</i>.
+     * @return boolean <p><b>FALSE</b> if something goes wrong</p>
      */
     public function fetchReport(){
         if (!array_key_exists('ReportId',$this->options)){
@@ -81,7 +96,7 @@ class AmazonReport extends AmazonReportsCore{
     
     /**
      * Saves the raw report data to a path you specify
-     * @param string $path filename to save the file in
+     * @param string $path <p>filename to save the file in</p>
      */
     public function saveReport($path){
         if (!isset($this->rawreport)){

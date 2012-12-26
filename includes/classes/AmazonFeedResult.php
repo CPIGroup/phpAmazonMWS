@@ -11,10 +11,18 @@ class AmazonFeedResult extends AmazonFeedsCore{
     private $rawFeed;
     
     /**
-     * AmazonFeed object gets the result of a Feed from Amazon
-     * @param string $s store name as seen in config
-     * @param boolean $mock set true to enable mock mode
-     * @param array|string $m list of mock files to use
+     * AmazonFeedResult gets the result of a Feed from Amazon.
+     * 
+     * The parameters are passed to the parent constructor, which are
+     * in turn passed to the AmazonCore constructor. See it for more information
+     * on these parameters and common methods.
+     * Please note that an extra parameter comes before the usual Mock Mode parameters,
+     * so be careful when setting up the object.
+     * @param string $s <p>Name for the store you want to use.</p>
+     * @param string $id [optional] <p>The Feed Submission ID to set for the object.</p>
+     * @param boolean $mock [optional] <p>This is a flag for enabling Mock Mode.
+     * This defaults to <b>FALSE</b>.</p>
+     * @param array|string $m [optional] <p>The files (or file) to use in Mock Mode.</p>
      */
     public function __construct($s, $id = null, $mock = false, $m = null){
         parent::__construct($s, $mock, $m);
@@ -42,9 +50,12 @@ class AmazonFeedResult extends AmazonFeedsCore{
     }
     
     /**
-     * Sets the feed submission ID for the next request
-     * @param integer $n
-     * @return boolean false if improper input
+     * Sets the feed submission ID for the next request. (Required)
+     * 
+     * This method sets the feed submission ID to be sent in the next request. This
+     * parameter is required in order to retrieve a feed from Amazon.
+     * @param string|integer $n <p>Must be numeric</p>
+     * @return boolean <p><b>FALSE</b> if improper input</p>
      */
     public function setFeedId($n){
         if (is_numeric($n)){
@@ -55,8 +66,12 @@ class AmazonFeedResult extends AmazonFeedsCore{
     }
     
     /**
-     * Sends a request to Amazon for a feed
-     * @return boolean false on failure
+     * Sends a request to Amazon for a feed.
+     * 
+     * Submits a <i>GetFeedSubmissionResult</i> request to Amazon. In order to
+     * do this, a feed submission ID is required. Amazon will send back the raw results
+     * of the feed as a response, which can be saved to a file using <i>saveFeed</i>.
+     * @return boolean <p><b>FALSE</b> if something goes wrong</p>
      */
     public function fetchFeedResult(){
         if (!array_key_exists('FeedSubmissionId',$this->options)){
@@ -88,9 +103,11 @@ class AmazonFeedResult extends AmazonFeedsCore{
     }
     
     /**
-     * Saves the raw report data to a path you specify
-     * @param string $path filename to save the file in
-     * @return boolean false on failure
+     * Saves the raw report data to a path you specify.
+     * 
+     * This method will record in the log whether or not the save was successful.
+     * @param string $path <p>path for the file to save the feed data in</p>
+     * @return boolean <p><b>FALSE</b> if something goes wrong</p>
      */
     public function saveFeed($path){
         if (!isset($this->rawFeed)){

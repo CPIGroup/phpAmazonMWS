@@ -10,10 +10,15 @@ class AmazonProductList extends AmazonProductsCore implements Iterator{
     private $i = 0;
     
     /**
-     * AmazonProductList fetches a list of products from Amazon
-     * @param string $s store name as seen in config
-     * @param boolean $mock set true to enable mock mode
-     * @param array|string $m list of mock files to use
+     * AmazonProductList fetches a list of products from Amazon.
+     * 
+     * The parameters are passed to the parent constructor, which are
+     * in turn passed to the AmazonCore constructor. See it for more information
+     * on these parameters and common methods.
+     * @param string $s <p>Name for the store you want to use.</p>
+     * @param boolean $mock [optional] <p>This is a flag for enabling Mock Mode.
+     * This defaults to <b>FALSE</b>.</p>
+     * @param array|string $m [optional] <p>The files (or file) to use in Mock Mode.</p>
      */
     public function __construct($s, $mock = false, $m = null){
         parent::__construct($s, $mock, $m);
@@ -37,9 +42,10 @@ class AmazonProductList extends AmazonProductsCore implements Iterator{
     }
     
     /**
-     * Sets the ID type for the next request
-     * @param string $s "ASIN", "SellerSKU", "UPC", "EAN", "ISBN", or "JAN"
-     * @return boolean false if improper input
+     * Sets the ID type. (Required)
+     * 
+     * @param string $s <p>"ASIN", "SellerSKU", "UPC", "EAN", "ISBN", or "JAN"</p>
+     * @return boolean <p><b>FALSE</b> if improper input</p>
      */
     public function setIdType($s){
         if (is_string($s)){
@@ -50,9 +56,11 @@ class AmazonProductList extends AmazonProductsCore implements Iterator{
     }
     
     /**
-     * sets the request ID(s) to be used in the next request
-     * @param array|string $s array of Report Request IDs or single ID (max: 5)
-     * @return boolean false if failure
+     * Sets the request ID(s). (Required)
+     * 
+     * This method sets the list of product IDs to be sent in the next request.
+     * @param array|string $s <p>A list of product IDs, or a single type string. (max: 5)</p>
+     * @return boolean <p><b>FALSE</b> if improper input</p>
      */
     public function setProductIds($s){
         if (is_string($s)){
@@ -71,9 +79,12 @@ class AmazonProductList extends AmazonProductsCore implements Iterator{
     }
     
     /**
-     * removes ID options
+     * Resets the product ID options.
+     * 
+     * Since product ID is a required parameter, these options should not be removed
+     * without replacing them, so this method is not public.
      */
-    public function resetProductIds(){
+    private function resetProductIds(){
         foreach($this->options as $op=>$junk){
             if(preg_match("#IdList#",$op)){
                 unset($this->options[$op]);
@@ -82,7 +93,11 @@ class AmazonProductList extends AmazonProductsCore implements Iterator{
     }
     
     /**
-     * Fetches the report list from Amazon, using a token if available
+     * Fetches a list of products from Amazon.
+     * 
+     * Submits a <i>GetMatchingProductForId</i> request to Amazon. Amazon will send
+     * the list back as a response, which can be retrieved using <i>getProduct</i>.
+     * @return boolean <p><b>FALSE</b> if something goes wrong</p>
      */
     public function fetchProductList(){
         if (!array_key_exists('IdList.Id.1',$this->options)){

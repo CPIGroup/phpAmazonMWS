@@ -1,13 +1,24 @@
 <?php
-
+/**
+ * Sends a report request to Amazon.
+ * 
+ * This AmazonReportsCore object makes a request to Amazon to generate a report.
+ * In order to do this, a report type is required. Other paramters are also
+ * available to limit the scope of the report.
+ */
 class AmazonReportRequest extends AmazonReportsCore{
     private $response;
     
     /**
-     * Sends a report request to Amazon.
-     * @param string $s name of store as seen in config file
-     * @param boolean $mock true to enable mock mode
-     * @param array|string $m list of mock files to use
+     * AmazonReportRequest sends a report request to Amazon.
+     * 
+     * The parameters are passed to the parent constructor, which are
+     * in turn passed to the AmazonCore constructor. See it for more information
+     * on these parameters and common methods.
+     * @param string $s <p>Name for the store you want to use.</p>
+     * @param boolean $mock [optional] <p>This is a flag for enabling Mock Mode.
+     * This defaults to <b>FALSE</b>.</p>
+     * @param array|string $m [optional] <p>The files (or file) to use in Mock Mode.</p>
      */
     public function __construct($s, $mock = false, $m = null) {
         parent::__construct($s, $mock, $m);
@@ -25,8 +36,12 @@ class AmazonReportRequest extends AmazonReportsCore{
     }
     
     /**
-     * set the report type to be used in the next request
-     * @param string $s value from specific list, see comment inside
+     * Sets the report type. (Required)
+     * 
+     * This method sets the report type to be sent in the next request.
+     * This parameter is required for fetching the report from Amazon.
+     * @param string|integer $n <p>See comment inside for a list of valid values.</p>
+     * @return boolean <p><b>FALSE</b> if improper input</p>
      */
     public function setReportType($s){
         if (is_string($s) && $s){
@@ -95,9 +110,15 @@ class AmazonReportRequest extends AmazonReportsCore{
     }
     
     /**
-     * Sets the Start Time and End Time for the report
-     * @param string $s passed through strtotime, set to null to ignore
-     * @param string $e passed through strtotime
+     * Sets the time frame options. (Optional)
+     * 
+     * This method sets the start and end times for the report request. If this
+     * parameter is set, the report will only contain data that was updated
+     * between the two times given. If these parameters are not set, the report
+     * will only contain the most recent data.
+     * The parameters are passed through <i>strtotime</i>, so values such as "-1 hour" are fine.
+     * @param string $s [optional] <p>A time string for the earliest time.</p>
+     * @param string $e [optional] <p>A time string for the latest time.</p>
      */
     public function setTimeLimits($s = null,$e = null){
         if ($s && is_string($s)){
@@ -111,7 +132,10 @@ class AmazonReportRequest extends AmazonReportsCore{
     }
     
     /**
-     * removes time frame limits
+     * Removes time limit options.
+     * 
+     * Use this in case you change your mind and want to remove the time limit
+     * parameters you previously set.
      */
     public function resetTimeLimits(){
         unset($this->options['StartDate']);
@@ -119,9 +143,11 @@ class AmazonReportRequest extends AmazonReportsCore{
     }
     
     /**
-     * set whether or not the report should return the Sales Channel column
-     * @param string $s "true" or "false", or null
-     * @return boolean false if improper input
+     * Sets whether or not the report should return the Sales Channel column. (Optional)
+     * 
+     * Setting this parameter to <b>TRUE</b> adds the Sales Channel column to the report.
+     * @param string|boolean $s <p>"true" or "false", or boolean</p>
+     * @return boolean <p><b>FALSE</b> if improper input</p>
      */
     public function setShowSalesChannel($s){
         if ($s == 'true' || (is_bool($s) && $s == true)){
@@ -134,9 +160,13 @@ class AmazonReportRequest extends AmazonReportsCore{
     }
     
     /**
-     * sets the Marketplace ID(s) to be used in the next request
-     * @param array|string $s array of Marketplace IDs or single ID
-     * @return boolean false if failure
+     * Sets the marketplace ID(s). (Optional)
+     * 
+     * This method sets the list of marketplace IDs to be sent in the next request.
+     * If this paramter is set, the report will only contain data relevant to the
+     * marketplaces listed.
+     * @param array|string $s <p>A list of marketplace IDs, or a single ID string.</p>
+     * @return boolean <p><b>FALSE</b> if improper input</p>
      */
     public function setMarketplaces($s){
         if (is_string($s)){
@@ -155,7 +185,10 @@ class AmazonReportRequest extends AmazonReportsCore{
     }
     
     /**
-     * removes speed options
+     * Removes marketplace ID options.
+     * 
+     * Use this in case you change your mind and want to remove the Marketplace ID
+     * parameters you previously set.
      */
     public function resetMarketplaces(){
         foreach($this->options as $op=>$junk){
@@ -166,7 +199,13 @@ class AmazonReportRequest extends AmazonReportsCore{
     }
     
     /**
-     * sends a report request to Amazon
+     * Sends a report request to Amazon.
+     * 
+     * Submits a <i>RequestReport</i> request to Amazon. In order to do this,
+     * a Report Type is required. Amazon will send info back as a response,
+     * which can be retrieved using <i>getResponse</i>.
+     * Other methods are available for fetching specific values from the list.
+     * @return boolean <p><b>FALSE</b> if something goes wrong</p>
      */
     public function requestReport(){
         if (!array_key_exists('ReportType',$this->options)){
@@ -202,9 +241,11 @@ class AmazonReportRequest extends AmazonReportsCore{
     }
     
     /**
-     * loads XML response into array
-     * @param SimpleXMLObject $xml XML from response
-     * @return boolean false on failure
+     * Parses XML response into array.
+     * 
+     * This is what reads the response XML and converts it into an array.
+     * @param SimpleXMLObject $xml <p>The XML response from Amazon.</p>
+     * @return boolean <p><b>FALSE</b> if no XML data is found</p>
      */
     protected function parseXML($xml){
         if (!$xml){
@@ -223,8 +264,20 @@ class AmazonReportRequest extends AmazonReportsCore{
     }
     
     /**
-     * gets the response array, if it exists
-     * @return array|boolean Response array, or false on failure
+     * Returns the full response.
+     * 
+     * This method will return <b>FALSE</b> if the response data has not yet been filled.
+     * The returned array will have the following fields:
+     * <ul>
+     * <li><b>ReportRequestId</b></li>
+     * <li><b>ReportType</b></li>
+     * <li><b>StartDate</b></li>
+     * <li><b>EndDate</b></li>
+     * <li><b>Scheduled</b> - "true" or "false"</li>
+     * <li><b>SubmittedDate</b></li>
+     * <li><b>ReportProcessingStatus</b></li>
+     * </ul>
+     * @return array|boolean <p>data array, or <b>FALSE</b> if list not filled yet</p>
      */
     public function getResponse(){
         if (isset($this->response)){
@@ -235,8 +288,11 @@ class AmazonReportRequest extends AmazonReportsCore{
     }
     
     /**
-     * Returns the report request ID for the response
-     * @return string|boolean report request ID, or False if not set yet
+     * Returns the report request ID from the response.
+     * 
+     * This method will return <b>FALSE</b> if the response data has not yet been filled.
+     * @param int $i [optional] <p>List index to retrieve the value from. Defaults to 0.</p>
+     * @return string|boolean <p>single value, or <b>FALSE</b> if Non-numeric index</p>
      */
     public function getReportRequestId(){
         if (isset($this->response)){
@@ -247,8 +303,11 @@ class AmazonReportRequest extends AmazonReportsCore{
     }
     
     /**
-     * Returns the report type for the response
-     * @return string|boolean report type, or False if not set yet
+     * Returns the report type from the response.
+     * 
+     * This method will return <b>FALSE</b> if the response data has not yet been filled.
+     * @param int $i [optional] <p>List index to retrieve the value from. Defaults to 0.</p>
+     * @return string|boolean <p>single value, or <b>FALSE</b> if Non-numeric index</p>
      */
     public function getReportType(){
         if (isset($this->response)){
@@ -259,8 +318,11 @@ class AmazonReportRequest extends AmazonReportsCore{
     }
     
     /**
-     * Returns the report type for the response
-     * @return string|boolean report type, or False if not set yet
+     * Returns the start date for the report from the response.
+     * 
+     * This method will return <b>FALSE</b> if the response data has not yet been filled.
+     * @param int $i [optional] <p>List index to retrieve the value from. Defaults to 0.</p>
+     * @return string|boolean <p>single value, or <b>FALSE</b> if Non-numeric index</p>
      */
     public function getStartDate(){
         if (isset($this->response)){
@@ -271,8 +333,11 @@ class AmazonReportRequest extends AmazonReportsCore{
     }
     
     /**
-     * Returns the report type for the response
-     * @return string|boolean report type, or False if not set yet
+     * Returns the end date for the report from the response.
+     * 
+     * This method will return <b>FALSE</b> if the response data has not yet been filled.
+     * @param int $i [optional] <p>List index to retrieve the value from. Defaults to 0.</p>
+     * @return string|boolean <p>single value, or <b>FALSE</b> if Non-numeric index</p>
      */
     public function getEndDate(){
         if (isset($this->response)){
@@ -283,8 +348,11 @@ class AmazonReportRequest extends AmazonReportsCore{
     }
     
     /**
-     * Returns the report type for the response
-     * @return string|boolean report type, or False if not set yet
+     * Returns whether or not the report is scheduled from the response.
+     * 
+     * This method will return <b>FALSE</b> if the response data has not yet been filled.
+     * @param int $i [optional] <p>List index to retrieve the value from. Defaults to 0.</p>
+     * @return string|boolean <p>"true" or "false", or <b>FALSE</b> if Non-numeric index</p>
      */
     public function getIsScheduled(){
         if (isset($this->response)){
@@ -295,8 +363,11 @@ class AmazonReportRequest extends AmazonReportsCore{
     }
     
     /**
-     * Returns the report type for the response
-     * @return string|boolean report type, or False if not set yet
+     * Returns the date the report was submitted from the response.
+     * 
+     * This method will return <b>FALSE</b> if the response data has not yet been filled.
+     * @param int $i [optional] <p>List index to retrieve the value from. Defaults to 0.</p>
+     * @return string|boolean <p>single value, or <b>FALSE</b> if Non-numeric index</p>
      */
     public function getSubmittedDate(){
         if (isset($this->response)){
@@ -307,8 +378,11 @@ class AmazonReportRequest extends AmazonReportsCore{
     }
     
     /**
-     * Returns the report type for the response
-     * @return string|boolean report type, or False if not set yet
+     * Returns the report processing status from the response.
+     * 
+     * This method will return <b>FALSE</b> if the response data has not yet been filled.
+     * @param int $i [optional] <p>List index to retrieve the value from. Defaults to 0.</p>
+     * @return string|boolean <p>single value, or <b>FALSE</b> if Non-numeric index</p>
      */
     public function getStatus(){
         if (isset($this->response)){

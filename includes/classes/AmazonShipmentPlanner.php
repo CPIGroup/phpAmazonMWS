@@ -11,10 +11,15 @@ class AmazonShipmentPlanner extends AmazonInboundCore implements Iterator{
     private $i = 0;
     
     /**
-     * Fetches a plan from Amazon. This is how you get a Shipment ID.
-     * @param string $s name of store as seen in config file
-     * @param boolean $mock true to enable mock mode
-     * @param array|string $m list of mock files to use
+     * AmazonShipmentPlanner fetches a shipment plan from Amazon. This is how you get a Shipment ID.
+     * 
+     * The parameters are passed to the parent constructor, which are
+     * in turn passed to the AmazonCore constructor. See it for more information
+     * on these parameters and common methods.
+     * @param string $s <p>Name for the store you want to use.</p>
+     * @param boolean $mock [optional] <p>This is a flag for enabling Mock Mode.
+     * This defaults to <b>FALSE</b>.</p>
+     * @param array|string $m [optional] <p>The files (or file) to use in Mock Mode.</p>
      */
     public function __construct($s, $mock = false, $m = null) {
         parent::__construct($s, $mock, $m);
@@ -31,20 +36,23 @@ class AmazonShipmentPlanner extends AmazonInboundCore implements Iterator{
     }
     
     /**
-     * sets the address to use in the next request
+     * Sets the address. (Required)
      * 
-     * Set the address to use in the next request with an array with these keys:
-     * 
-     * 'Name' max: 50 char
-     * 'AddressLine1' max: 180 char
-     * 'AddressLine2' (optional) max: 60 char
-     * 'City' max 30: char
-     * 'DistrictOrCounty' (optional) max: 25 char
-     * 'StateOrProvidenceCode' (recommended) 2 digits
-     * 'CountryCode' 2 digits
-     * 'PostalCode' (recommended) max: 30 char
-     * @param array $a
-     * @return boolean false on failure
+     * This method sets the destination address to be sent in the next request.
+     * This parameter is required for planning a fulfillment order with Amazon.
+     * The array provided should have the following fields:
+     * <ul>
+     * <li><b>Name</b> - max: 50 char</li>
+     * <li><b>AddressLine1</b> - max: 180 char</li>
+     * <li><b>AddressLine2</b> (optional) - max: 60 char</li>
+     * <li><b>City</b> - max: 30 char</li>
+     * <li><b>DistrictOrCounty</b> (optional) - max: 25 char</li>
+     * <li><b>StateOrProvinceCode</b> (recommended) - 2 digits</li>
+     * <li><b>CountryCode</b> - 2 digits</li>
+     * <li><b>PostalCode</b> (recommended) - max: 30 char</li>
+     * </ul>
+     * @param array $a <p>See above.</p>
+     * @return boolean <p><b>FALSE</b> if improper input</p>
      */
     public function setAddress($a){
         if (!$a || is_null($a) || is_string($a)){
@@ -73,7 +81,10 @@ class AmazonShipmentPlanner extends AmazonInboundCore implements Iterator{
     }
     
     /**
-     * resets the address options
+     * Resets the address options.
+     * 
+     * Since address is a required parameter, these options should not be removed
+     * without replacing them, so this method is not public.
      */
     protected function resetAddress(){
         unset($this->options['ShipFromAddress.Name']);
@@ -87,8 +98,11 @@ class AmazonShipmentPlanner extends AmazonInboundCore implements Iterator{
     }
     
     /**
-     * Sets the labeling preference, not required, default setting is SELLER_LABEL
-     * @param string $s "SELLER_LABEL", "AMAZON_LABEL_ONLY", "AMAZON_LABEL_PREFERRED"
+     * Sets the labeling preference. (Optional)
+     * 
+     * If this paramter is not set, Amazon will assume SELLER_LABEL.
+     * @param string $s <p>"SELLER_LABEL", "AMAZON_LABEL_ONLY", "AMAZON_LABEL_PREFERRED"</p>
+     * @return boolean <p><b>FALSE</b> if improper input</p>
      */
     public function setLabelPreference($s){
         if (is_string($s) && $s){
@@ -103,35 +117,40 @@ class AmazonShipmentPlanner extends AmazonInboundCore implements Iterator{
     }
     
     /**
-     * Sets the items to be included in the next request
+     * Sets the items. (Required)
      * 
-     * Sets the items to be included in the next request, using this format:
-     * Array of arrays, each with two fields:
-     * 'SellerSKU'
-     * 'Quantity'
-     * 'ASIN' (optional)
-     * 'QuantityInCase' (optional)
-     * 'Condition' (optjonal)(Possible values:
-     *      "NewItem"
-     *      "NewWithWarranty"
-     *      "NewOEM"
-     *      "NewOpenBox"
-     *      "UsedLikeNew"
-     *      "UsedVeryGood"
-     *      "UsedGood"
-     *      "UsedAcceptable"
-     *      "UsedPoor"
-     *      "UsedRefurbished"
-     *      "CollectibleLikeNew"
-     *      "CollectibleVeryGood"
-     *      "CollectibleGood"
-     *      "CollectibleAcceptable"
-     *      "CollectiblePoor"
-     *      "RefurbishedWithWarranty"
-     *      "Refurbished"
-     *      "Club")
-     * @param array $a array of item arrays
-     * @return boolean false if failure
+     * This method sets the Fulfillment Order ID to be sent in the next request.
+     * This parameter is required for creating a fulfillment order with Amazon.
+     * The array provided should contain a list of arrays, each with the following fields:
+     * <ul>
+     * <li><b>SellerSKU</b> - max: 200 char</li>
+     * <li><b>Quantity</b> - numeric</li>
+     * <li><b>ASIN</b> (optional) - must be valid</li>
+     * <li><b>QuantityInCase</b> (optional) - numeric</li>
+     * <li><b>Condition</b> (optional) - Valid Values:</li>
+     * <ul>
+     * <li>NewItem</li>
+     * <li>NewWithWarranty</li>
+     * <li>NewOEM</li>
+     * <li>NewOpenBox</li>
+     * <li>UsedLikeNew</li>
+     * <li>UsedVeryGood</li>
+     * <li>UsedGood</li>
+     * <li>UsedAcceptable</li>
+     * <li>UsedPoor</li>
+     * <li>UsedRefurbished</li>
+     * <li>CollectibleLikeNew</li>
+     * <li>CollectibleVeryGood</li>
+     * <li>CollectibleGood</li>
+     * <li>CollectibleAcceptable</li>
+     * <li>CollectiblePoor</li>
+     * <li>RefurbishedWithWarranty</li>
+     * <li>Refurbished</li>
+     * <li>Club</li>
+     * </ul>
+     * </ul>
+     * @param array $a <p>See above.</p>
+     * @return boolean <p><b>FALSE</b> if improper input</p>
      */
     public function setItems($a){
         if (!$a || is_null($a) || is_string($a)){
@@ -160,7 +179,10 @@ class AmazonShipmentPlanner extends AmazonInboundCore implements Iterator{
     }
     
     /**
-     * removes item options
+     * Resets the item options.
+     * 
+     * Since the list of items is a required parameter, these options should not be removed
+     * without replacing them, so this method is not public.
      */
     public function resetItems(){
         foreach($this->options as $op=>$junk){
@@ -171,8 +193,13 @@ class AmazonShipmentPlanner extends AmazonInboundCore implements Iterator{
     }
     
     /**
-     * fetches generated shipment plan from amazon
-     * @return boolean false on failure
+     * Sends a request to Amazon to create an Inbound Shipment Plan.
+     * 
+     * Submits a <i>CreateInboundShipmentPlan</i> request to Amazon. In order to do this,
+     * all required parameters must be set. Amazon will send back a list of Shipment Plans
+     * as a response, which can be retrieved using <i>getPlan</i>.
+     * Other methods are available for fetching specific values from the list.
+     * @return boolean <p><b>TRUE</b> if success, <b>FALSE</b> if something goes wrong</p>
      */
     public function fetchPlan(){
         if (!array_key_exists('ShipFromAddress.Name',$this->options)){
@@ -210,7 +237,11 @@ class AmazonShipmentPlanner extends AmazonInboundCore implements Iterator{
     }
     
     /**
-     * converts the XMLdata
+     * Parses XML response into array.
+     * 
+     * This is what reads the response XML and converts it into an array.
+     * @param SimpleXMLObject $xml <p>The XML response from Amazon.</p>
+     * @return boolean <p><b>FALSE</b> if no XML data is found</p>
      */
     protected function parseXML($xml) {
         if (!$xml){
@@ -238,8 +269,20 @@ class AmazonShipmentPlanner extends AmazonInboundCore implements Iterator{
     }
     
     /**
-     * Returns the plan because why not
-     * @return SimpleXMLObject
+     * Returns the supply type for the specified entry.
+     * 
+     * If <i>$i</i> is not specified, the entire list of plans will be returned.
+     * This method will return <b>FALSE</b> if the list has not yet been filled.
+     * The returned array of a single plan will contain the following fields:
+     * <ul>
+     * <li><b>ShipToAddress</b> - See <i>getAddress</i> for details.</li>
+     * <li><b>ShipmentId</b> - Unique ID for the shipment to use.</li>
+     * <li><b>DestinationFulfillmentCenterId</b> - ID for the Fulfillment Center the shipment would ship to.</li>
+     * <li><b>LabelPrepType</b> - Label preparation required.</li>
+     * <li><b>Items</b> - See <i>getItems</i> for details.</li>
+     * </ul>
+     * @param int $i [optional] <p>List index to retrieve the value from. Defaults to NULL.</p>
+     * @return array|boolean <p>plan array, multi-dimensional array, or <b>FALSE</b> if invalid index</p>
      */
     public function getPlan($i = null){
         if (!isset($this->planList)){
@@ -254,8 +297,10 @@ class AmazonShipmentPlanner extends AmazonInboundCore implements Iterator{
     }
     
     /**
-     * returns an array of the shipping IDs for convenient use
-     * @return array|boolean list of shipping IDs, or false on failure
+     * Returns an array of only the shipping IDs for convenient use.
+     * 
+     * This method will return <b>FALSE</b> if the list has not yet been filled.
+     * @return array|boolean <p>list of shipping IDs, or <b>FALSE</b> if list not fetched yet</p>
      */
     public function getShipmentIdList(){
         if (!isset($this->planList)){
@@ -269,9 +314,11 @@ class AmazonShipmentPlanner extends AmazonInboundCore implements Iterator{
     }
     
     /**
-     * returns the shipment ID if it exists
-     * @param integer $i index to return, defaults to 0
-     * @return string|boolean single Shipment ID or false on failure
+     * Returns the shipment ID for the specified entry.
+     * 
+     * This method will return <b>FALSE</b> if the list has not yet been filled.
+     * @param int $i [optional] <p>List index to retrieve the value from. Defaults to 0.</p>
+     * @return string|boolean <p>single value, or <b>FALSE</b> if Non-numeric index</p>
      */
     public function getShipmentId($i = 0){
         if (!isset($this->planList)){

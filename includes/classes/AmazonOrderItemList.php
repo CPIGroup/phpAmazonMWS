@@ -14,11 +14,18 @@ class AmazonOrderItemList extends AmazonOrderCore implements Iterator{
     private $index = 0;
 
     /**
-     * AmazonItemLists contain all of the items for a given order
-     * @param string $s store name as seen in Config
-     * @param string $id order ID to be automatically set
-     * @param boolean $mock set true to enable mock mode
-     * @param array|string $m list of mock files to use
+     * AmazonItemLists contain all of the items for a given order.
+     * 
+     * The parameters are passed to the parent constructor, which are
+     * in turn passed to the AmazonCore constructor. See it for more information
+     * on these parameters and common methods.
+     * Please note that an extra parameter comes before the usual Mock Mode parameters,
+     * so be careful when setting up the object.
+     * @param string $s <p>Name for the store you want to use.</p>
+     * @param string $id [optional] <p>The order ID to set for the object.</p>
+     * @param boolean $mock [optional] <p>This is a flag for enabling Mock Mode.
+     * This defaults to <b>FALSE</b>.</p>
+     * @param array|string $m [optional] <p>The files (or file) to use in Mock Mode.</p>
      */
     public function __construct($s, $id=null, $mock = false, $m = null){
         parent::__construct($s, $mock, $m);
@@ -42,11 +49,24 @@ class AmazonOrderItemList extends AmazonOrderCore implements Iterator{
             $this->throttleTime++;
         }
     }
+    
+    /**
+     * Returns whether or not a token is available.
+     * @return boolean
+     */
+    public function hasToken(){
+        return $this->tokenFlag;
+    }
 
     /**
-     * Sets whether or not the ItemList should automatically use tokens if it receives one.
-     * @param boolean $b
-     * @return boolean false if invalid paramter
+     * Sets whether or not the object should automatically use tokens if it receives one.
+     * 
+     * If this option is set to <b>TRUE</b>, the object will automatically perform
+     * the necessary operations to retrieve the rest of the list using tokens. If
+     * this option is off, the object will only ever retrieve the first section of
+     * the list.
+     * @param boolean $b [optional] <p>Defaults to <b>TRUE</b></p>
+     * @return boolean <p><b>FALSE</b> if improper input</p>
      */
     public function setUseToken($b = true){
         if (is_bool($b)){
@@ -57,9 +77,12 @@ class AmazonOrderItemList extends AmazonOrderCore implements Iterator{
     }
     
     /**
-     * Sets the Order ID to be used, in case it was not already set when the object was initiated
-     * @param string $id Amazon Order ID
-     * @return boolean false if invalid paramter
+     * Sets the Amazon Order ID. (Required)
+     * 
+     * This method sets the Amazon Order ID to be sent in the next request.
+     * This parameter is required for fetching the order's items from Amazon.
+     * @param string $s <p>either string or number</p>
+     * @return boolean <p><b>FALSE</b> if improper input</p>
      */
     public function setOrderId($id){
         if (is_string($id) || is_numeric($id)){
@@ -70,7 +93,14 @@ class AmazonOrderItemList extends AmazonOrderCore implements Iterator{
     }
 
     /**
-     * Retrieves the items from amazon using the pre-defined parameters
+     * Retrieves the items from Amazon.
+     * 
+     * Submits a <i>ListOrderItems</i> request to Amazon. In order to do this,
+     * an Amazon order ID is required. Amazon will send
+     * the data back as a response, which can be retrieved using <i>getItems</i>.
+     * Other methods are available for fetching specific values from the order.
+     * This operation can potentially involve tokens.
+     * @return boolean <p><b>FALSE</b> if something goes wrong</p>
      */
     public function fetchItems(){
         $this->options['Timestamp'] = $this->genTime();
@@ -124,8 +154,12 @@ class AmazonOrderItemList extends AmazonOrderCore implements Iterator{
     }
 
     /**
-     * Makes the preparations necessary for using tokens
-     * @return boolean returns false if no token to use
+     * Sets up options for using tokens.
+     * 
+     * This changes key options for switching between simply fetching a list and
+     * fetching the rest of a list using a token. Please note: because the
+     * operation for using tokens does not use any other parameters, all other
+     * parameters will be removed.
      */
     protected function prepareToken(){
         if ($this->tokenFlag && $this->tokenUseFlag){
@@ -141,8 +175,11 @@ class AmazonOrderItemList extends AmazonOrderCore implements Iterator{
     }
     
     /**
-     * Populates the object's data using the stored XML data. Clears existing data
-     * @return boolean false if no XML data
+     * Parses XML response into array.
+     * 
+     * This is what reads the response XML and converts it into an array.
+     * @param SimpleXMLObject $xml <p>The XML response from Amazon.</p>
+     * @return boolean <p><b>FALSE</b> if no XML data is found</p>
      */
     protected function parseXML($xml){
         if (!$xml){
@@ -219,17 +256,34 @@ class AmazonOrderItemList extends AmazonOrderCore implements Iterator{
     }
     
     /**
-     * Returns whether or not the Item List has a token available
-     * @return boolean
-     */
-    public function hasToken(){
-        return $this->tokenFlag;
-    }
-    
-    /**
-     * Returns entire list of items or single item
-     * @param string $i id of item to get
-     * @return array list of item arrays or single item
+     * Returns the specified order item, or all of them.
+     * 
+     * This method will return <b>FALSE</b> if the list has not yet been filled.
+     * The array for a single order item will have the following fields:
+     * <ul>
+     * <li><b>ASIN</b> - the ASIN for the item</li>
+     * <li><b>SellerSKU</b> - the SKU for the item</li>
+     * <li><b>OrderItemId</b> - the unique ID for the order item</li>
+     * <li><b>Title</b> - the name of the item</li>
+     * <li><b>QuantityOrdered</b> - the quantity of the item ordered</li>
+     * <li><b>QuantityShipped</b> (optional) - the quantity of the item shipped</li>
+     * <li><b>GiftMessageText</b> (optional) - gift message for the item</li>
+     * <li><b>GiftWrapLevel</b> (optional) - the type of gift wrapping for the item</li>
+     * <li><b>ItemPrice</b> (optional) - price for the item, array with the fields <b>Amount</b> and <b>CurrencyCode</b></li>
+     * <li><b>ShippingPrice</b> (optional) - price for shipping, array with the fields <b>Amount</b> and <b>CurrencyCode</b></li>
+     * <li><b>GiftWrapPrice</b> (optional) - price for gift wrapping, array with the fields <b>Amount</b> and <b>CurrencyCode</b></li>
+     * <li><b>ItemTax</b> (optional) - tax on the item, array with the fields <b>Amount</b> and <b>CurrencyCode</b></li>
+     * <li><b>ShippingTax</b> (optional) - tax on shipping, array with the fields <b>Amount</b> and <b>CurrencyCode</b></li>
+     * <li><b>GiftWrapTax</b> (optional) - tax on gift wrapping, array with the fields <b>Amount</b> and <b>CurrencyCode</b></li>
+     * <li><b>ShippingDiscount</b> (optional) - discount on shipping, array with the fields <b>Amount</b> and <b>CurrencyCode</b></li>
+     * <li><b>PromotionDiscount</b> (optional) -promotional discount, array with the fields <b>Amount</b> and <b>CurrencyCode</b></li>
+     * <li><b>CODFee</b> (optional) -fee charged for COD service, array with the fields <b>Amount</b> and <b>CurrencyCode</b></li>
+     * <li><b>CODFeeDiscount</b> (optional) -discount on COD fee, array with the fields <b>Amount</b> and <b>CurrencyCode</b></li>
+     * <li><b>PromotionIds</b> (optional) -array of promotion IDs</li>
+     * </ul>
+     * @param int $i [optional] <p>List index to retrieve the value from.
+     * If none is given, the entire list will be returned. Defaults to NULL.</p>
+     * @return array|boolean <p>array, multi-dimensional array, or <b>FALSE</b> if list not filled yet</p>
      */
     public function getItems($i = null){
         if (isset($this->itemList)){
@@ -244,9 +298,11 @@ class AmazonOrderItemList extends AmazonOrderCore implements Iterator{
     }
     
     /**
-     * Returns ASIN of specified item, defaults to first if none given
-     * @param string $i id of item to get
-     * @return string|boolean false if not yet set
+     * Returns the ASIN for the specified entry.
+     * 
+     * This method will return <b>FALSE</b> if the list has not yet been filled.
+     * @param int $i [optional] <p>List index to retrieve the value from. Defaults to 0.</p>
+     * @return string|boolean <p>single value, or <b>FALSE</b> if Non-numeric index</p>
      */
     public function getASIN($i = 0){
         if (isset($this->itemList[$i]['ASIN'])){
@@ -258,9 +314,11 @@ class AmazonOrderItemList extends AmazonOrderCore implements Iterator{
     }
     
     /**
-     * Returns Seller SKU of specified item, defaults to first if none given
-     * @param string $i id of item to get
-     * @return string|boolean false if not yet set
+     * Returns the seller SKU for the specified entry.
+     * 
+     * This method will return <b>FALSE</b> if the list has not yet been filled.
+     * @param int $i [optional] <p>List index to retrieve the value from. Defaults to 0.</p>
+     * @return string|boolean <p>single value, or <b>FALSE</b> if Non-numeric index</p>
      */
     public function getSellerSKU($i = 0){
         if (isset($this->itemList[$i]['SellerSKU'])){
@@ -271,9 +329,11 @@ class AmazonOrderItemList extends AmazonOrderCore implements Iterator{
     }
     
     /**
-     * Returns Order Item ID of specified item, defaults to first if none given
-     * @param string $i id of item to get
-     * @return string|boolean false if not yet set
+     * Returns the order item ID for the specified entry.
+     * 
+     * This method will return <b>FALSE</b> if the list has not yet been filled.
+     * @param int $i [optional] <p>List index to retrieve the value from. Defaults to 0.</p>
+     * @return string|boolean <p>single value, or <b>FALSE</b> if Non-numeric index</p>
      */
     public function getOrderItemId($i = 0){
         if (isset($this->itemList[$i]['OrderItemId'])){
@@ -284,9 +344,11 @@ class AmazonOrderItemList extends AmazonOrderCore implements Iterator{
     }
     
     /**
-     * Returns Title of specified item, defaults to first if none given
-     * @param string $i id of item to get
-     * @return string|boolean false if not yet set
+     * Returns the name for the specified entry.
+     * 
+     * This method will return <b>FALSE</b> if the list has not yet been filled.
+     * @param int $i [optional] <p>List index to retrieve the value from. Defaults to 0.</p>
+     * @return string|boolean <p>single value, or <b>FALSE</b> if Non-numeric index</p>
      */
     public function getTitle($i = 0){
         if (isset($this->itemList[$i]['Title'])){
@@ -297,9 +359,11 @@ class AmazonOrderItemList extends AmazonOrderCore implements Iterator{
     }
     
     /**
-     * Returns quantity ordered of specified item, defaults to first if none given
-     * @param string $i id of item to get
-     * @return string|boolean false if not yet set
+     * Returns the quantity ordered for the specified entry.
+     * 
+     * This method will return <b>FALSE</b> if the list has not yet been filled.
+     * @param int $i [optional] <p>List index to retrieve the value from. Defaults to 0.</p>
+     * @return string|boolean <p>single value, or <b>FALSE</b> if Non-numeric index</p>
      */
     public function getQuantityOrdered($i = 0){
         if (isset($this->itemList[$i]['QuantityOrdered'])){
@@ -310,9 +374,11 @@ class AmazonOrderItemList extends AmazonOrderCore implements Iterator{
     }
     
     /**
-     * Returns quantity shipped of specified item, defaults to first if none given
-     * @param string $i id of item to get
-     * @return string|boolean false if not yet set
+     * Returns the quantity shipped for the specified entry.
+     * 
+     * This method will return <b>FALSE</b> if the list has not yet been filled.
+     * @param int $i [optional] <p>List index to retrieve the value from. Defaults to 0.</p>
+     * @return string|boolean <p>single value, or <b>FALSE</b> if Non-numeric index</p>
      */
     public function getQuantityShipped($i = 0){
         if (isset($this->itemList[$i]['QuantityShipped'])){
@@ -323,9 +389,11 @@ class AmazonOrderItemList extends AmazonOrderCore implements Iterator{
     }
     
     /**
-     * Calculates percent of items shipped
-     * @param string $i id of item to get
-     * @return float|boolean decimal number from 0 to 1, false if not yet set
+     * Returns the seller SKU for the specified entry.
+     * 
+     * This method will return <b>FALSE</b> if the list has not yet been filled.
+     * @param int $i [optional] <p>List index to retrieve the value from. Defaults to 0.</p>
+     * @return float|boolean <p>decimal number from 0 to 1, or <b>FALSE</b> if Non-numeric index</p>
      */
     public function getPercentShipped($i = 0){
         if ($this->itemList[$i]['QuantityOrdered'] == 0){
@@ -339,9 +407,11 @@ class AmazonOrderItemList extends AmazonOrderCore implements Iterator{
     }
     
     /**
-     * Returns text for gift message of specified item, defaults to first if none given
-     * @param string $i id of item to get
-     * @return string|boolean false if not yet set
+     * Returns the gift message text for the specified entry.
+     * 
+     * This method will return <b>FALSE</b> if the list has not yet been filled.
+     * @param int $i [optional] <p>List index to retrieve the value from. Defaults to 0.</p>
+     * @return string|boolean <p>single value, or <b>FALSE</b> if Non-numeric index</p>
      */
     public function getGiftMessageText($i = 0){
         if (isset($this->itemList[$i]['GiftMessageText'])){
@@ -352,9 +422,11 @@ class AmazonOrderItemList extends AmazonOrderCore implements Iterator{
     }
     
     /**
-     * Returns quantity shipped of specified item, defaults to first if none given
-     * @param string $i id of item to get
-     * @return string|boolean false if not yet set
+     * Returns the gift wrap level for the specified entry.
+     * 
+     * This method will return <b>FALSE</b> if the list has not yet been filled.
+     * @param int $i [optional] <p>List index to retrieve the value from. Defaults to 0.</p>
+     * @return string|boolean <p>single value, or <b>FALSE</b> if Non-numeric index</p>
      */
     public function getGiftWrapLevel($i = 0){
         if (isset($this->itemList[$i]['GiftWrapLevel'])){
@@ -365,10 +437,13 @@ class AmazonOrderItemList extends AmazonOrderCore implements Iterator{
     }
     
     /**
-     * Returns item price of specified item, defaults to first if none given
-     * @param string $i id of item to get
-     * @param boolean $only set to true to get only the amount
-     * @return array|boolean contains Amount and Currency Code, false if not yet set
+     * Returns the item price for the specified entry.
+     * 
+     * This method will return <b>FALSE</b> if the list has not yet been filled.
+     * If an array is returned, it will have the fields <b>Amount</b> and <b>CurrencyCode</b>.
+     * @param int $i [optional] <p>List index to retrieve the value from. Defaults to 0.</p>
+     * @param boolean $only [optional] <p>set to <b>TRUE</b> to get only the amount</p>
+     * @return array|string|boolean <p>array, single value, or <b>FALSE</b> if Non-numeric index</p>
      */
     public function getItemPrice($i = 0, $only = false){
         if (isset($this->itemList[$i]['ItemPrice'])){
@@ -383,10 +458,13 @@ class AmazonOrderItemList extends AmazonOrderCore implements Iterator{
     }
     
     /**
-     * Returns shipping price of specified item, defaults to first if none given
-     * @param string $i id of item to get
-     * @param boolean $only set to true to get only the amount
-     * @return array|boolean contains Amount and Currency Code, false if not yet set
+     * Returns the shipping price for the specified entry.
+     * 
+     * This method will return <b>FALSE</b> if the list has not yet been filled.
+     * If an array is returned, it will have the fields <b>Amount</b> and <b>CurrencyCode</b>.
+     * @param int $i [optional] <p>List index to retrieve the value from. Defaults to 0.</p>
+     * @param boolean $only [optional] <p>set to <b>TRUE</b> to get only the amount</p>
+     * @return array|string|boolean <p>array, single value, or <b>FALSE</b> if Non-numeric index</p>
      */
     public function getShippingPrice($i = 0, $only = false){
         if (isset($this->itemList[$i]['ShippingPrice'])){
@@ -401,10 +479,13 @@ class AmazonOrderItemList extends AmazonOrderCore implements Iterator{
     }
     
     /**
-     * Returns wrapping price of specified item, defaults to first if none given
-     * @param string $i id of item to get
-     * @param boolean $only set to true to get only the amount
-     * @return array|boolean contains Amount and Currency Code, false if not yet set
+     * Returns the gift wrap price for the specified entry.
+     * 
+     * This method will return <b>FALSE</b> if the list has not yet been filled.
+     * If an array is returned, it will have the fields <b>Amount</b> and <b>CurrencyCode</b>.
+     * @param int $i [optional] <p>List index to retrieve the value from. Defaults to 0.</p>
+     * @param boolean $only [optional] <p>set to <b>TRUE</b> to get only the amount</p>
+     * @return array|string|boolean <p>array, single value, or <b>FALSE</b> if Non-numeric index</p>
      */
     public function getGiftWrapPrice($i = 0, $only = false){
         if (isset($this->itemList[$i]['GiftWrapPrice'])){
@@ -419,10 +500,13 @@ class AmazonOrderItemList extends AmazonOrderCore implements Iterator{
     }
     
     /**
-     * Returns item tax of specified item, defaults to first if none given
-     * @param string $i id of item to get
-     * @param boolean $only set to true to get only the amount
-     * @return array|boolean contains Amount and Currency Code, false if not yet set
+     * Returns the item tax for the specified entry.
+     * 
+     * This method will return <b>FALSE</b> if the list has not yet been filled.
+     * If an array is returned, it will have the fields <b>Amount</b> and <b>CurrencyCode</b>.
+     * @param int $i [optional] <p>List index to retrieve the value from. Defaults to 0.</p>
+     * @param boolean $only [optional] <p>set to <b>TRUE</b> to get only the amount</p>
+     * @return array|string|boolean <p>array, single value, or <b>FALSE</b> if Non-numeric index</p>
      */
     public function getItemTax($i = 0, $only = false){
         if (isset($this->itemList[$i]['ItemTax'])){
@@ -437,10 +521,13 @@ class AmazonOrderItemList extends AmazonOrderCore implements Iterator{
     }
     
     /**
-     * Returns shipping tax of specified item, defaults to first if none given
-     * @param string $i id of item to get
-     * @param boolean $only set to true to get only the amount
-     * @return array|boolean contains Amount and Currency Code, false if not yet set
+     * Returns the shipping tax for the specified entry.
+     * 
+     * This method will return <b>FALSE</b> if the list has not yet been filled.
+     * If an array is returned, it will have the fields <b>Amount</b> and <b>CurrencyCode</b>.
+     * @param int $i [optional] <p>List index to retrieve the value from. Defaults to 0.</p>
+     * @param boolean $only [optional] <p>set to <b>TRUE</b> to get only the amount</p>
+     * @return array|string|boolean <p>array, single value, or <b>FALSE</b> if Non-numeric index</p>
      */
     public function getShippingTax($i = 0, $only = false){
         if (isset($this->itemList[$i]['ShippingTax'])){
@@ -455,10 +542,13 @@ class AmazonOrderItemList extends AmazonOrderCore implements Iterator{
     }
     
     /**
-     * Returns wrapping tax of specified item, defaults to first if none given
-     * @param string $i id of item to get
-     * @param boolean $only set to true to get only the amount
-     * @return array|boolean contains Amount and Currency Code, false if not yet set
+     * Returns the gift wrap tax for the specified entry.
+     * 
+     * This method will return <b>FALSE</b> if the list has not yet been filled.
+     * If an array is returned, it will have the fields <b>Amount</b> and <b>CurrencyCode</b>.
+     * @param int $i [optional] <p>List index to retrieve the value from. Defaults to 0.</p>
+     * @param boolean $only [optional] <p>set to <b>TRUE</b> to get only the amount</p>
+     * @return array|string|boolean <p>array, single value, or <b>FALSE</b> if Non-numeric index</p>
      */
     public function getGiftWrapTax($i = 0, $only = false){
         if (isset($this->itemList[$i]['GiftWrapTax'])){
@@ -473,10 +563,13 @@ class AmazonOrderItemList extends AmazonOrderCore implements Iterator{
     }
     
     /**
-     * Returns item tax of specified item, defaults to first if none given
-     * @param string $i id of item to get
-     * @param boolean $only set to true to get only the amount
-     * @return array|boolean contains Amount and Currency Code, false if not yet set
+     * Returns the shipping discount for the specified entry.
+     * 
+     * This method will return <b>FALSE</b> if the list has not yet been filled.
+     * If an array is returned, it will have the fields <b>Amount</b> and <b>CurrencyCode</b>.
+     * @param int $i [optional] <p>List index to retrieve the value from. Defaults to 0.</p>
+     * @param boolean $only [optional] <p>set to <b>TRUE</b> to get only the amount</p>
+     * @return array|string|boolean <p>array, single value, or <b>FALSE</b> if Non-numeric index</p>
      */
     public function getShippingDiscount($i = 0, $only = false){
         if (isset($this->itemList[$i]['ShippingDiscount'])){
@@ -491,10 +584,13 @@ class AmazonOrderItemList extends AmazonOrderCore implements Iterator{
     }
     
     /**
-     * Returns item tax of specified item, defaults to first if none given
-     * @param string $i id of item to get
-     * @param boolean $only set to true to get only the amount
-     * @return array|boolean contains Amount and Currency Code, false if not yet set
+     * Returns the promotional discount for the specified entry.
+     * 
+     * This method will return <b>FALSE</b> if the list has not yet been filled.
+     * If an array is returned, it will have the fields <b>Amount</b> and <b>CurrencyCode</b>.
+     * @param int $i [optional] <p>List index to retrieve the value from. Defaults to 0.</p>
+     * @param boolean $only [optional] <p>set to <b>TRUE</b> to get only the amount</p>
+     * @return array|string|boolean <p>array, single value, or <b>FALSE</b> if Non-numeric index</p>
      */
     public function getPromotionDiscount($i = 0, $only = false){
         if (isset($this->itemList[$i]['PromotionDiscount'])){
@@ -509,10 +605,12 @@ class AmazonOrderItemList extends AmazonOrderCore implements Iterator{
     }
     
     /**
-     * Returns specified promotion ID for specified item, both default to first if none given
-     * @param string $i id of item to get
-     * @param integer $j index of promotion to get 
-     * @return string|boolean false if not yet set
+     * Returns specified promotion ID for specified item.
+     * 
+     * This method will return the entire list of Promotion IDs if <i>$j</i> is not set.
+     * @param int $i [optional] <p>List index to retrieve the value from. Defaults to 0.</p>
+     * @param int $j [optional] <p>Second list index to retrieve the value from. Defaults to NULL.</p>
+     * @return array|string|boolean <p>array, single value, or <b>FALSE</b> if incorrect index</p>
      */
     public function getPromotionIds($i = 0, $j = null){
         if (isset($this->itemList[$i]['PromotionIds'])){

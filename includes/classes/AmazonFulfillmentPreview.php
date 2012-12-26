@@ -10,10 +10,15 @@ class AmazonFulfillmentPreview extends AmazonOutboundCore{
     private $previewList;
     
     /**
-     * Sends a request to Amazon to generate a Fulfillment Shipment Preview.
-     * @param string $s name of store as seen in config file
-     * @param boolean $mock true to enable mock mode
-     * @param array|string $m list of mock files to use
+     * AmazonFulfillmentPreview sends a request to Amazon to generate a Fulfillment Shipment Preview.
+     * 
+     * The parameters are passed to the parent constructor, which are
+     * in turn passed to the AmazonCore constructor. See it for more information
+     * on these parameters and common methods.
+     * @param string $s <p>Name for the store you want to use.</p>
+     * @param boolean $mock [optional] <p>This is a flag for enabling Mock Mode.
+     * This defaults to <b>FALSE</b>.</p>
+     * @param array|string $m [optional] <p>The files (or file) to use in Mock Mode.</p>
      */
     public function __construct($s, $mock = false, $m = null) {
         parent::__construct($s, $mock, $m);
@@ -30,22 +35,25 @@ class AmazonFulfillmentPreview extends AmazonOutboundCore{
     }
     
     /**
-     * sets the address to use in the next request
+     * Sets the address. (Required)
      * 
-     * Set the address to use in the next request with an array with these keys:
-     * 
-     * 'Name' max: 50 char
-     * 'Line1' max: 180 char
-     * 'Line2' (optional) max: 60 char
-     * 'Line3' (optional) max: 60 char
-     * 'DistrictOrCounty' (optional) max: 150 char
-     * 'City' max: 50 char
-     * 'StateOrProvidenceCode' max: 150 char
-     * 'CountryCode' 2 digits
-     * 'PostalCode' max: 20 char
-     * 'PhoneNumber' max: 20 char
-     * @param array $a
-     * @return boolean false on failure
+     * This method sets the destination address to be sent in the next request.
+     * This parameter is required for creating a fulfillment order with Amazon.
+     * The array provided should have the following fields:
+     * <ul>
+     * <li><b>Name</b> - max: 50 char</li>
+     * <li><b>Line1</b> - max: 180 char</li>
+     * <li><b>Line2</b> (optional) - max: 60 char</li>
+     * <li><b>Line3</b> (optional) - max: 60 char</li>
+     * <li><b>DistrictOrCounty</b> (optional) - max: 150 char</li>
+     * <li><b>City</b> - max: 50 char</li>
+     * <li><b>StateOrProvidenceCode</b> - max: 150 char</li>
+     * <li><b>CountryCode</b> - 2 digits</li>
+     * <li><b>PostalCode</b> - max: 20 char</li>
+     * <li><b>PhoneNumber</b> - max: 20 char</li>
+     * </ul>
+     * @param array $a <p>See above.</p>
+     * @return boolean <p><b>FALSE</b> if improper input</p>
      */
     public function setAddress($a){
         if (is_null($a) || is_string($a) || !$a){
@@ -82,7 +90,10 @@ class AmazonFulfillmentPreview extends AmazonOutboundCore{
     }
     
     /**
-     * resets the address options
+     * Resets the address options.
+     * 
+     * Since address is a required parameter, these options should not be removed
+     * without replacing them, so this method is not public.
      */
     protected function resetAddress(){
         unset($this->options['Address.Name']);
@@ -98,15 +109,18 @@ class AmazonFulfillmentPreview extends AmazonOutboundCore{
     }
     
     /**
-     * Sets the items to be included in the next request
+     * Sets the items. (Required)
      * 
-     * Sets the items to be included in the next request, using this format:
-     * Array of arrays, each with the following fields:
-     * 'SellerSKU'
-     * 'SellerFulfillmentOrderItemId'
-     * 'Quantity'
-     * @param array $a array of item arrays
-     * @return boolean false if failure
+     * This method sets the Fulfillment Order ID to be sent in the next request.
+     * This parameter is required for creating a fulfillment order with Amazon.
+     * The array provided should contain a list of arrays, each with the following fields:
+     * <ul>
+     * <li><b>SellerSKU</b> - max: 50 char</li>
+     * <li><b>SellerFulfillmentOrderItemId</b> - useful for differentiating different items with the same SKU, max: 50 char</li>
+     * <li><b>Quantity</b> - numeric</li>
+     * </ul>
+     * @param array $a <p>See above.</p>
+     * @return boolean <p><b>FALSE</b> if improper input</p>
      */
     public function setItems($a){
         if (is_null($a) || is_string($a) || !$a){
@@ -130,9 +144,12 @@ class AmazonFulfillmentPreview extends AmazonOutboundCore{
     }
     
     /**
-     * removes item options
+     * Resets the item options.
+     * 
+     * Since the list of items is a required parameter, these options should not be removed
+     * without replacing them, so this method is not public.
      */
-    public function resetItems(){
+    protected function resetItems(){
         foreach($this->options as $op=>$junk){
             if(preg_match("#Items#",$op)){
                 unset($this->options[$op]);
@@ -141,9 +158,11 @@ class AmazonFulfillmentPreview extends AmazonOutboundCore{
     }
     
     /**
-     * sets the preferred shipping speeds to be used in the next request
-     * @param array|string $s array of strings or single string: "Standard", "Expedited", or "Priority"
-     * @return boolean false if failure
+     * Sets the preferred shipping speeds. (Optional)
+     * 
+     * This method sets the shipping speed to be sent in the next request.
+     * @param string|array $s <p>"Standard", "Expedited", or "Priority", or an array of these values</p>
+     * @return boolean <p><b>FALSE</b> if improper input</p>
      */
     public function setShippingSpeeds($s){
         if (is_string($s)){
@@ -162,7 +181,10 @@ class AmazonFulfillmentPreview extends AmazonOutboundCore{
     }
     
     /**
-     * removes speed options
+     * Removes shipping speed options.
+     * 
+     * Use this in case you change your mind and want to remove the shipping speed
+     * parameters you previously set.
      */
     public function resetShippingSpeeds(){
         foreach($this->options as $op=>$junk){
@@ -173,8 +195,15 @@ class AmazonFulfillmentPreview extends AmazonOutboundCore{
     }
     
     /**
-     * Sends a request to Amazon to create a Fulfillment Preview
-     * @return boolean true on success, false on failure
+     * Generates a Fulfillment Preview with Amazon.
+     * 
+     * Submits a <i>GetFulfillmentPreview</i> request to Amazon. In order to do this,
+     * an address and list of items are required. Amazon will send back a list of
+     * previews as a response, which can be retrieved using <i>getPreview</i>.
+     * This is how you acquire Order IDs to use. Please note that this does not
+     * actually create the fulfillment order, but simply makes a plan for what
+     * the order would be like.
+     * @return boolean <p><b>FALSE</b> if something goes wrong</p>
      */
     public function fetchPreview(){
         if (!array_key_exists('Address.Name',$this->options)){
@@ -212,7 +241,11 @@ class AmazonFulfillmentPreview extends AmazonOutboundCore{
     }
     
     /**
-     * converts XML into arrays
+     * Parses XML response into array.
+     * 
+     * This is what reads the response XML and converts it into an array.
+     * @param SimpleXMLObject $xml <p>The XML response from Amazon.</p>
+     * @return boolean <p><b>FALSE</b> if no XML data is found</p>
      */
     protected function parseXML($xml) {
         if (!$xml){
@@ -278,9 +311,47 @@ class AmazonFulfillmentPreview extends AmazonOutboundCore{
     }
     
     /**
-     * Returns specified Preview
-     * @param int $i index, defaults to 0
-     * @return array gigantic array of information
+     * Returns the specified fulfillment preview, or all of them.
+     * 
+     * This method will return <b>FALSE</b> if the list has not yet been filled.
+     * The array for a single fulfillment order will have the following fields:
+     * <ul>
+     * <li><b>ShippingSpeedCategory</b> - "Standard", "Expedited", or "Priority"</li>
+     * <li><b>IsFulfillable</b> - "true" or "false"</li>
+     * <li><b>EstimatedShippingWeight</b> (optional) - an array with the fields <b>Unit</b> and <b>Value</b></li>
+     * <li><b>FulfillmentPreviewShipments</b> (optional)- array of shipments:</li>
+     * <ul>
+     * <li><b>EarliestShipDate</b> - ISO 8601 date format</li>
+     * <li><b>LatestShipDate</b> - ISO 8601 date format</li>
+     * <li><b>EarliestArrivalDate</b> - ISO 8601 date format</li>
+     * <li><b>LatestArrivalDate</b> - ISO 8601 date format</li>
+     * <li><b>FulfillmentPreviewItems</b> - array of items</li>
+     * <ul>
+     * <li><b>SellerSKU</b> - SKU</li>
+     * <li><b>SellerFulfillmentOrderItemId</b> - unique ID for the item</li>
+     * <li><b>Quantity</b> - quantity in the shipment</li>
+     * <li><b>EstimatedShippingWeight</b> - an array with the fields <b>Unit</b> and <b>Value</b></li>
+     * <li><b>ShippingWeightCalculationMethod</b> - "Package" or "Dimensional"</li>
+     * </ul>
+     * </ul>
+     * <li><b>EstimatedFees</b> (optional)- array of fees</li>
+     * <ul>
+     * <li><b>Name</b> - name of the fee</li>
+     * <li><b>CurrencyCode</b> - currency for the fee</li>
+     * <li><b>Value</b> - value for the fee</li>
+     * </ul>
+     * <li><b>UnfulfillablePreviewItems</b> (optional)- array of items</li>
+     * <ul>
+     * <li><b>SellerSKU</b> - SKU</li>
+     * <li><b>SellerFulfillmentOrderItemId</b> - unique ID for the item</li>
+     * <li><b>Quantity</b> - quantity of the item</li>
+     * <li><b>ItemUnfulfillableReasons</b> - message as to why the item is unfulfillable</li>
+     * </ul>
+     * <li><b>OrderUnfulfillableReasons</b> (optional)- array of message strings</li>
+     * </ul>
+     * @param int $i [optional] <p>List index to retrieve the value from.
+     * If none is given, the entire list will be returned. Defaults to NULL.</p>
+     * @return array|boolean <p>array, multi-dimensional array, or <b>FALSE</b> if list not filled yet</p>
      */
     public function getPreview($i = null){
         if (!isset($this->previewList)){
@@ -294,16 +365,18 @@ class AmazonFulfillmentPreview extends AmazonOutboundCore{
     }
     
     /**
-     * Returns the estimated shipping weight for the specified entry
-     * @param int $i index, defaults to 0
-     * @param int $mode 0 = value, 1 = unit, 2 = value & unit
-     * @return string|boolean weight value, or False if Non-numeric index
+     * Returns the estimated shipping weight for the specified entry.
+     * 
+     * The mode can be set to change what is returned: 0 = value, 1 = unit, 2 = value & unit
+     * @param int $i [optional]<p>List index to retrieve the value from. Defaults to 0.</p>
+     * @param int $mode [optional]<p>The type of value to return. Defaults to only value.</p>
+     * @return string|boolean <p>weight value, or <b>FALSE</b> if improper input</p>
      */
     public function getEstimatedWeight($i = 0,$mode = 0){
         if (!isset($this->previewList)){
             return false;
         }
-        if (is_numeric($i) && $i >= 0){
+        if (is_int($i) && $i >= 0){
             if ($mode == 1){
                 return $this->previewList[$i]['EstimatedShippingWeight']['Unit'];
             } else if ($mode == 2){

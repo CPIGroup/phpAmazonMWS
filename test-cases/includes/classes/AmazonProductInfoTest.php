@@ -43,10 +43,6 @@ class AmazonProductInfoTest extends PHPUnit_Framework_TestCase {
         $this->assertEquals('789',$o2['SellerSKUList.SellerSKU.1']);
         $this->assertArrayNotHasKey('SellerSKUList.SellerSKU.2',$o2);
         
-        $this->object->resetSKUs();
-        $o3 = $this->object->getOptions();
-        $this->assertArrayNotHasKey('SellerSKUList.SellerSKU.1',$o3);
-        
         $this->assertFalse($this->object->setSKUs(null));
         $this->assertFalse($this->object->setSKUs(707));
     }
@@ -65,10 +61,6 @@ class AmazonProductInfoTest extends PHPUnit_Framework_TestCase {
         $o2 = $this->object->getOptions();
         $this->assertEquals('789',$o2['ASINList.ASIN.1']);
         $this->assertArrayNotHasKey('ASINList.ASIN.2',$o2);
-        
-        $this->object->resetASINs();
-        $o3 = $this->object->getOptions();
-        $this->assertArrayNotHasKey('ASINList.ASIN.1',$o3);
         
         $this->assertFalse($this->object->setASINs(null));
         $this->assertFalse($this->object->setASINs(707));

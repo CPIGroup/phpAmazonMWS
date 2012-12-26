@@ -9,10 +9,18 @@ class AmazonPackageTracker extends AmazonOutboundCore{
     private $details;
     
     /**
-     * Fetches a plan from Amazon. This is how you get a Shipment ID.
-     * @param string $s name of store as seen in config file
-     * @param boolean $mock true to enable mock mode
-     * @param array|string $m list of mock files to use
+     * AmazonPackageTracker fetches package tracking details from Amazon.
+     * 
+     * The parameters are passed to the parent constructor, which are
+     * in turn passed to the AmazonCore constructor. See it for more information
+     * on these parameters and common methods.
+     * Please note that an extra parameter comes before the usual Mock Mode parameters,
+     * so be careful when setting up the object.
+     * @param string $s <p>Name for the store you want to use.</p>
+     * @param string $id [optional] <p>The package ID to set for the object.</p>
+     * @param boolean $mock [optional] <p>This is a flag for enabling Mock Mode.
+     * This defaults to <b>FALSE</b>.</p>
+     * @param array|string $m [optional] <p>The files (or file) to use in Mock Mode.</p>
      */
     public function __construct($s, $id = null, $mock = false, $m = null) {
         parent::__construct($s, $mock, $m);
@@ -33,9 +41,12 @@ class AmazonPackageTracker extends AmazonOutboundCore{
     }
     
     /**
-     * Sets the package number for the next request
-     * @param integer $n
-     * @return boolean false if improper input
+     * Sets the package ID. (Required)
+     * 
+     * This method sets the package ID to be sent in the next request.
+     * This parameter is required for fetching the tracking information from Amazon.
+     * @param string|integer $n <p>Must be numeric</p>
+     * @return boolean <p><b>FALSE</b> if improper input</p>
      */
     public function setPackageNumber($n){
         if (is_numeric($n)){
@@ -46,8 +57,12 @@ class AmazonPackageTracker extends AmazonOutboundCore{
     }
     
     /**
-     * Sends a request to Amazon for package tracking details
-     * @return boolean false on failure
+     * Sends a request to Amazon for package tracking details.
+     * 
+     * Submits a <i>GetPackageTrackingDetails</i> request to Amazon. In order to do this,
+     * a package ID is required. Amazon will send
+     * the data back as a response, which can be retrieved using <i>getDetails</i>.
+     * @return boolean <p><b>FALSE</b> if something goes wrong</p>
      */
     public function fetchTrackingDetails(){
         if (!array_key_exists('PackageNumber',$this->options)){
@@ -81,7 +96,11 @@ class AmazonPackageTracker extends AmazonOutboundCore{
     }
     
     /**
-     * converts XML into arrays
+     * Parses XML response into array.
+     * 
+     * This is what reads the response XML and converts it into an array.
+     * @param SimpleXMLObject $xml <p>The XML response from Amazon.</p>
+     * @return boolean <p><b>FALSE</b> if no XML data is found</p>
      */
     protected function parseXML($d) {
         $this->details['PackageNumber'] = (string)$d->PackageNumber;
@@ -116,8 +135,30 @@ class AmazonPackageTracker extends AmazonOutboundCore{
     }
     
     /**
-     * returns all of the details
-     * @return array|boolean all of the details, or false if not set yet
+     * Returns the full package tracking information.
+     * 
+     * This method will return <b>FALSE</b> if the data has not yet been filled.
+     * The array returned will have the following fields:
+     * <ul>
+     * <li><b>PackageNumber</b> - the same package ID you provided, hopefully</li>
+     * <li><b>TrackingNumber</b> - the tracking number for the package</li>
+     * <li><b>CarrierCode</b> - name of the carrier</li>
+     * <li><b>CarrierPhoneNumber</b> - the phone number of the carrier</li>
+     * <li><b>CarrierURL</b> - the URL of the carrier's website</li>
+     * <li><b>ShipDate</b> - time the package was shipped, in ISO 8601 date format</li>
+     * <li><b>ShipToAddress</b> - an array containing the fields <b>City</b>, <b>State</b>, and <b>Country</b></li>
+     * <li><b>CurrentStatus</b> - delivery status of the package</li>
+     * <li><b>SignedForBy</b> - name of the person who signed for the package</li>
+     * <li><b>EstimatedArrivalDate</b> - in ISO 8601 date format</li>
+     * <li><b>TrackingEvents</b> - multi-dimensional array of tracking events, each with the following fields:</li>
+     * <ul>
+     * <li><b>EventDate</b> - in ISO 8601 date format</li>
+     * <li><b>EventAddress</b> - an array containing the fields <b>City</b>, <b>State</b>, and <b>Country</b></li>
+     * <li><b>EventCode</b> - a code number</li>
+     * </ul>
+     * <li><b>AdditionalLocationInfo</b> - further information on how the package was delivered (ex: to a front door)</li>
+     * </ul>
+     * @return array|boolean <p>data array, or <b>FALSE</b> if data not filled yet</p>
      */
     public function getDetails(){
         if (isset($this->details)){

@@ -5,15 +5,20 @@
  * This Amazon Outbound Core object can submit a request to Amazon to
  * create a new Fulfillment Order. In order to create an order,
  * a Shipment ID is needed. Shipment IDs are given by Amazon by
- * using the AmazonFulfillmentPreview object.
+ * using the <i>AmazonFulfillmentPreview</i> object.
  */
 class AmazonFulfillmentOrderCreator extends AmazonOutboundCore{
     
     /**
-     * Creates a fulfillment order. You need a Shipment ID.
-     * @param string $s name of store as seen in config file
-     * @param boolean $mock true to enable mock mode
-     * @param array|string $m list of mock files to use
+     * AmazonFulfillmentOrderCreator creates a fulfillment order. You need a fulfillment order ID.
+     * 
+     * The parameters are passed to the parent constructor, which are
+     * in turn passed to the AmazonCore constructor. See it for more information
+     * on these parameters and common methods.
+     * @param string $s <p>Name for the store you want to use.</p>
+     * @param boolean $mock [optional] <p>This is a flag for enabling Mock Mode.
+     * This defaults to <b>FALSE</b>.</p>
+     * @param array|string $m [optional] <p>The files (or file) to use in Mock Mode.</p>
      */
     public function __construct($s, $mock = false, $m = null) {
         parent::__construct($s, $mock, $m);
@@ -30,9 +35,13 @@ class AmazonFulfillmentOrderCreator extends AmazonOutboundCore{
     }
     
     /**
-     * Sets the fulfillment order ID for the next request
-     * @param string $s (max: 40 chars)
-     * @return boolean false if improper input
+     * Sets the fulfillment order ID. (Required)
+     * 
+     * This method sets the Fulfillment Order ID to be sent in the next request.
+     * This parameter is required for creating a fulfillment order with Amazon.
+     * A fulfillment order ID can be generated using the <i>AmazonFulfillmentPreview</i> object.
+     * @param string $s <p>Maximum 40 characters.</p>
+     * @return boolean <p><b>FALSE</b> if improper input</p>
      */
     public function setFulfillmentOrderId($s){
         if (is_string($s)){
@@ -43,9 +52,13 @@ class AmazonFulfillmentOrderCreator extends AmazonOutboundCore{
     }
     
     /**
-     * Sets the displayed order ID for the next request
-     * @param string $s must be alpha-numeric or ISO-8559-1 compliant (max: 40 chars)
-     * @return boolean false if improper input
+     * Sets the displayed order ID. (Required)
+     * 
+     * This method sets the Displayable Order ID to be sent in the next request.
+     * This parameter is required for creating a fulfillment order with Amazon.
+     * This is your own order ID, and is the ID that is displayed on the packing slip.
+     * @param string $s <p>Must be alpha-numeric or ISO-8559-1 compliant. Maximum 40 characters.</p>
+     * @return boolean <p><b>FALSE</b> if improper input</p>
      */
     public function setDisplayableOrderId($s){
         if (is_string($s)){
@@ -56,9 +69,13 @@ class AmazonFulfillmentOrderCreator extends AmazonOutboundCore{
     }
     
     /**
-     * Sets the displayed timestamp for the next request
-     * @param string $s is passed through strtotime
-     * @return boolean false if improper input
+     * Sets the displayed timestamp. (Required)
+     * 
+     * This method sets the displayed timestamp to be sent in the next request.
+     * This parameter is required for creating a fulfillment order with Amazon.
+     * The parameter is passed through <i>strtotime</i>, so values such as "-1 hour" are fine.
+     * @param string $s <p>Time string.</p>
+     * @return boolean <p><b>FALSE</b> if improper input</p>
      */
     public function setDate($s){
         if (is_string($s)){
@@ -70,9 +87,12 @@ class AmazonFulfillmentOrderCreator extends AmazonOutboundCore{
     }
     
     /**
-     * Sets the displayed comment for the next request
-     * @param string $s (max: 1000 chars)
-     * @return boolean false if improper input
+     * Sets the displayed comment. (Required)
+     * 
+     * This method sets the displayed order comment to be sent in the next request.
+     * This parameter is required for creating a fulfillment order with Amazon.
+     * @param string $s <p>Maximum 1000 characters.</p>
+     * @return boolean <p><b>FALSE</b> if improper input</p>
      */
     public function setComment($s){
         if (is_string($s)){
@@ -83,9 +103,12 @@ class AmazonFulfillmentOrderCreator extends AmazonOutboundCore{
     }
     
     /**
-     * Sets the shipping speed for the next request
-     * @param string $s "Standard", "Expedited", or "Priority"
-     * @return boolean false if improper input
+     * Sets the shipping speed. (Required)
+     * 
+     * This method sets the shipping speed to be sent in the next request.
+     * This parameter is required for creating a fulfillment order with Amazon.
+     * @param string $s <p>"Standard", "Expedited", or "Priority"</p>
+     * @return boolean <p><b>FALSE</b> if improper input</p>
      */
     public function setShippingSpeed($s){
         if (is_string($s)){
@@ -101,22 +124,25 @@ class AmazonFulfillmentOrderCreator extends AmazonOutboundCore{
     }
     
     /**
-     * sets the address to use in the next request
+     * Sets the address. (Required)
      * 
-     * Set the address to use in the next request with an array with these keys:
-     * 
-     * 'Name' max: 50 char
-     * 'Line1' max: 180 char
-     * 'Line2' (optional) max: 60 char
-     * 'Line3' (optional) max: 60 char
-     * 'DistrictOrCounty' (optional) max: 150 char
-     * 'City' max: 50 char
-     * 'StateOrProvidenceCode' max: 150 char
-     * 'CountryCode' 2 digits
-     * 'PostalCode' max: 20 char
-     * 'PhoneNumber' max: 20 char
-     * @param array $a
-     * @return boolean false on failure
+     * This method sets the destination address to be sent in the next request.
+     * This parameter is required for creating a fulfillment order with Amazon.
+     * The array provided should have the following fields:
+     * <ul>
+     * <li><b>Name</b> - max: 50 char</li>
+     * <li><b>Line1</b> - max: 180 char</li>
+     * <li><b>Line2</b> (optional) - max: 60 char</li>
+     * <li><b>Line3</b> (optional) - max: 60 char</li>
+     * <li><b>DistrictOrCounty</b> (optional) - max: 150 char</li>
+     * <li><b>City</b> - max: 50 char</li>
+     * <li><b>StateOrProvidenceCode</b> - max: 150 char</li>
+     * <li><b>CountryCode</b> - 2 digits</li>
+     * <li><b>PostalCode</b> - max: 20 char</li>
+     * <li><b>PhoneNumber</b> - max: 20 char</li>
+     * </ul>
+     * @param array $a <p>See above.</p>
+     * @return boolean <p><b>FALSE</b> if improper input</p>
      */
     public function setAddress($a){
         if (is_null($a) || is_string($a) || !$a){
@@ -153,7 +179,10 @@ class AmazonFulfillmentOrderCreator extends AmazonOutboundCore{
     }
     
     /**
-     * resets the address options
+     * Resets the address options.
+     * 
+     * Since address is a required parameter, these options should not be removed
+     * without replacing them, so this method is not public.
      */
     protected function resetAddress(){
         unset($this->options['DestinationAddress.Name']);
@@ -169,9 +198,18 @@ class AmazonFulfillmentOrderCreator extends AmazonOutboundCore{
     }
     
     /**
-     * Sets the fulfillment policy for the next request
-     * @param string $s "FillOrKill", "FillAll", or "FillAllAvailable"
-     * @return boolean false if improper input
+     * Sets the fulfillment policy. (Optional)
+     * 
+     * This method sets the Fulfillment Policy to be sent in the next request.
+     * If this parameter is not set, Amazon will assume a <i>FillOrKill</i> policy.
+     * Here is a quick description of the policies:
+     * <ul>
+     * <li><b>FillOrKill</b> - cancel the entire order if any of it cannot be fulfilled</li>
+     * <li><b>FillAll</b> - send all possible, wait on any unfulfillable items</li>
+     * <li><b>FillAllAvailable</b> - send all possible, cancel any unfulfillable items</li>
+     * </ul>
+     * @param string $s <p>"FillOrKill", "FillAll", or "FillAllAvailable"</p>
+     * @return boolean <p><b>FALSE</b> if improper input</p>
      */
     public function setFulfillmentPolicy($s){
         if (is_string($s)){
@@ -187,9 +225,17 @@ class AmazonFulfillmentOrderCreator extends AmazonOutboundCore{
     }
     
     /**
-     * Sets the fulfillment method for the next request
-     * @param string $s "Consumer" or "Removal"
-     * @return boolean false if improper input
+     * Sets the fulfillment method. (Optional)
+     * 
+     * This method sets the Fulfillment Method to be sent in the next request.
+     * If this parameter is not set, Amazon will assume a <i>Consumer</i> method.
+     * Here is a quick description of the methods:
+     * <ul>
+     * <li><b>Consumer</b> - customer order</li>
+     * <li><b>Removal</b> - inventory will be returned to the given address</li>
+     * </ul>
+     * @param string $s <p>"Consumer" or "Removal"</p>
+     * @return boolean <p><b>FALSE</b> if improper input</p>
      */
     public function setFulfillmentMethod($s){
         if (is_string($s)){
@@ -205,9 +251,13 @@ class AmazonFulfillmentOrderCreator extends AmazonOutboundCore{
     }
     
     /**
-     * sets the email(s) to be used in the next request
-     * @param array|string $s array of emails or single email (max 64 chars each)
-     * @return boolean false if failure
+     * Sets the email(s). (Optional)
+     * 
+     * This method sets the list of Email addresses to be sent in the next request.
+     * Setting this parameter tells Amazon who to send emails to regarding the
+     * completion of the shipment.
+     * @param array|string $s <p>A list of email addresses, or a single email address. (max: 64 chars each)</p>
+     * @return boolean <p><b>FALSE</b> if improper input</p>
      */
     public function setEmails($s){
         if (is_string($s)){
@@ -226,7 +276,10 @@ class AmazonFulfillmentOrderCreator extends AmazonOutboundCore{
     }
     
     /**
-     * removes email options
+     * Removes email options.
+     * 
+     * Use this in case you change your mind and want to remove the email
+     * parameters you previously set.
      */
     public function resetEmails(){
         foreach($this->options as $op=>$junk){
@@ -237,22 +290,27 @@ class AmazonFulfillmentOrderCreator extends AmazonOutboundCore{
     }
     
     /**
-     * Sets the items to be included in the next request
+     * Sets the items. (Required)
      * 
-     * Sets the items to be included in the next request, using this format:
-     * Array of arrays, each with the following fields:
-     * 'SellerSKU'
-     * 'SellerFulfillmentOrderItemId'
-     * 'Quantity'
-     * 'GiftMessage' (optional, 512 chars)
-     * 'DisplayableComment' (optional, 250 chars)
-     * 'FulfillmentNetworkSKU' (optional)
-     * 'OrderItemDisposition' (optional) "Sellable" or "Unsellable"
-     * 'PerUnitDeclaredValue' (optional array)
-     *      'CurrencyCode' three digits
-     *      'Value'
-     * @param array $a array of item arrays
-     * @return boolean false if failure
+     * This method sets the Fulfillment Order ID to be sent in the next request.
+     * This parameter is required for creating a fulfillment order with Amazon.
+     * The array provided should contain a list of arrays, each with the following fields:
+     * <ul>
+     * <li><b>SellerSKU</b> - max: 50 char</li>
+     * <li><b>SellerFulfillmentOrderItemId</b> - useful for differentiating different items with the same SKU, max: 50 char</li>
+     * <li><b>Quantity</b> - numeric</li>
+     * <li><b>GiftMessage</b> (optional) - max: 512 char</li>
+     * <li><b>DisplayableComment</b> (optional) - max: 250 char</li>
+     * <li><b>FulfillmentNetworkSKU</b> (optional) - usually returned by <i>AmazonFulfillmentPreview</i></li>
+     * <li><b>OrderItemDisposition</b> (optional) - "Sellable" or "Unsellable"</li>
+     * <li><b>PerUnitDeclaredValue</b> (optional array) -</li>
+     * <ul>
+     * <li><b>CurrencyCode</b> - ISO 4217 currency code</li>
+     * <li><b>Value</b> - number</li>
+     * </ul>
+     * </ul>
+     * @param array $a <p>See above.</p>
+     * @return boolean <p><b>FALSE</b> if improper input</p>
      */
     public function setItems($a){
         if (is_null($a) || is_string($a) || !$a){
@@ -293,9 +351,12 @@ class AmazonFulfillmentOrderCreator extends AmazonOutboundCore{
     }
     
     /**
-     * removes item options
+     * Resets the item options.
+     * 
+     * Since the list of items is a required parameter, these options should not be removed
+     * without replacing them, so this method is not public.
      */
-    public function resetItems(){
+    protected function resetItems(){
         foreach($this->options as $op=>$junk){
             if(preg_match("#Items#",$op)){
                 unset($this->options[$op]);
@@ -304,8 +365,14 @@ class AmazonFulfillmentOrderCreator extends AmazonOutboundCore{
     }
     
     /**
-     * Sends a request to Amazon to create a Fulfillment Order
-     * @return boolean true on success, false on failure
+     * Creates a Fulfillment Order with Amazon.
+     * 
+     * Submits a <i>CreateFulfillmentOrder</i> request to Amazon. In order to do this,
+     * a number of parameters are required. Amazon will send back an HTTP response,
+     * so there is no data to retrieve afterwards. The following parameters are required:
+     * fulfillment order ID, displayed order ID, displayed timestamp, comment,
+     * shipping speed, address, items.
+     * @return boolean <p><b>TRUE</b> if the order creation was successful, <b>FALSE</b> if something goes wrong</p>
      */
     public function createOrder(){
         if (!array_key_exists('SellerFulfillmentOrderId',$this->options)){

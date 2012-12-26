@@ -294,7 +294,7 @@ class AmazonFeedListTest extends PHPUnit_Framework_TestCase {
         $check = $this->parseLog();
         $this->assertEquals('Single Mock File set: cancelFeeds.xml',$check[1]);
         $this->assertEquals('Fetched Mock File: mock/cancelFeeds.xml',$check[2]);
-        $this->assertEquals('Successfully canceled 1 report requests.',$check[3]);
+        $this->assertEquals('Successfully cancelled 1 report requests.',$check[3]);
         
         $o = $this->object->getOptions();
         $this->assertEquals('CancelFeedSubmissions',$o['Action']);

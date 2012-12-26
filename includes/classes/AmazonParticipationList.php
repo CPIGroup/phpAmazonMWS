@@ -15,10 +15,15 @@ class AmazonParticipationList extends AmazonSellersCore{
     private $indexP = 0;
     
     /**
-     * Gets list of marketplaces run by seller
-     * @param string $s store name, as seen in the config file
-     * @param boolean $mock set true to enable mock mode
-     * @param array|string $m list of mock files to use
+     * Gets list of marketplaces run by the seller.
+     * 
+     * The parameters are passed to the parent constructor, which are
+     * in turn passed to the AmazonCore constructor. See it for more information
+     * on these parameters and common methods.
+     * @param string $s <p>Name for the store you want to use.</p>
+     * @param boolean $mock [optional] <p>This is a flag for enabling Mock Mode.
+     * This defaults to <b>FALSE</b>.</p>
+     * @param array|string $m [optional] <p>The files (or file) to use in Mock Mode.</p>
      */
     public function __construct($s, $mock = false, $m = null) {
         parent::__construct($s, $mock, $m);
@@ -34,7 +39,7 @@ class AmazonParticipationList extends AmazonSellersCore{
     }
     
     /**
-     * Returns whether or not the Participation List has a token available
+     * Returns whether or not a token is available.
      * @return boolean
      */
     public function hasToken(){
@@ -42,9 +47,14 @@ class AmazonParticipationList extends AmazonSellersCore{
     }
     
     /**
-     * Sets whether or not the Participation List should automatically use tokens if it receives one.
-     * @param boolean $b
-     * @return boolean false if invalid paramter
+     * Sets whether or not the object should automatically use tokens if it receives one.
+     * 
+     * If this option is set to <b>TRUE</b>, the object will automatically perform
+     * the necessary operations to retrieve the rest of the list using tokens. If
+     * this option is off, the object will only ever retrieve the first section of
+     * the list.
+     * @param boolean $b [optional] <p>Defaults to <b>TRUE</b></p>
+     * @return boolean <p><b>FALSE</b> if improper input</p>
      */
     public function setUseToken($b = true){
         if (is_bool($b)){
@@ -55,8 +65,14 @@ class AmazonParticipationList extends AmazonSellersCore{
     }
     
     /**
-     * Fetches the participation list from Amazon, using a token if available
-     * @param boolean $refresh set false to preserve current list (for internal use)
+     * Fetches the participation list from Amazon.
+     * 
+     * Submits a <i>ListMarketplaceParticipations</i> request to Amazon. Amazon will send
+     * the list back as a response, which can be retrieved using <i>getMarketplaceList</i>
+     * and  <i>getParticipationList</i>.
+     * Other methods are available for fetching specific values from the list.
+     * This operation can potentially involve tokens.
+     * @return boolean <p><b>FALSE</b> if something goes wrong</p>
      */
     public function fetchParticipationList(){
         $this->options['Timestamp'] = $this->genTime();
@@ -97,6 +113,14 @@ class AmazonParticipationList extends AmazonSellersCore{
         
     }
     
+    /**
+     * Sets up options for using tokens.
+     * 
+     * This changes key options for switching between simply fetching a list and
+     * fetching the rest of a list using a token. Please note: because the
+     * operation for using tokens does not use any other parameters, all other
+     * parameters will be removed.
+     */
     private function prepareToken(){
         if ($this->tokenFlag && $this->tokenUseFlag){
             $this->options['Action'] = 'ListMarketplaceParticipationsByNextToken';
@@ -111,7 +135,11 @@ class AmazonParticipationList extends AmazonSellersCore{
     }
     
     /**
-     * converts XML into arrays
+     * Parses XML response into two arrays.
+     * 
+     * This is what reads the response XML and converts it into two arrays.
+     * @param SimpleXMLObject $xml <p>The XML response from Amazon.</p>
+     * @return boolean <p><b>FALSE</b> if no XML data is found</p>
      */
     protected function parseXML($xml){
         $xmlP = $xml->ListParticipations;
@@ -142,8 +170,18 @@ class AmazonParticipationList extends AmazonSellersCore{
     }
     
     /**
-     * Returns entire list of marketplaces, for convenience
-     * @return array
+     * Returns the list of marketplaces.
+     * 
+     * The returned array will contain a list of arrays, each with the following fields:
+     * <ul>
+     * <li><b>MarketplaceId</b></li>
+     * <li><b>Name</b></li>
+     * <li><b>Country</b></li>
+     * <li><b>Currency</b></li>
+     * <li><b>Language</b></li>
+     * <li><b>Domain</b></li>
+     * </ul>
+     * @return array|boolean <p>multi-dimensional array, or <b>FALSE</b> if list not filled yet</p>
      */
     public function getMarketplaceList(){
         if (isset($this->marketplaceList)){
@@ -154,8 +192,15 @@ class AmazonParticipationList extends AmazonSellersCore{
     }
     
     /**
-     * Returns entire list of participations, for convenience
-     * @return array
+     * Returns the list of participations.
+     * 
+     * The returned array will contain a list of arrays, each with the following fields:
+     * <ul>
+     * <li><b>MarketplaceId</b></li>
+     * <li><b>SellerId</b></li>
+     * <li><b>Suspended</b></li>
+     * </ul>
+     * @return array|boolean <p>multi-dimensional array, or <b>FALSE</b> if list not filled yet</p>
      */
     public function getParticipationList(){
         if (isset($this->participationList)){
@@ -166,9 +211,11 @@ class AmazonParticipationList extends AmazonSellersCore{
     }
     
     /**
-     * Returns the Marketplace ID for the specified entry, defaults to 0
-     * @param int $i index
-     * @return string|boolean MarketplaceId, or False if Non-numeric index
+     * Returns the marketplace ID for the specified entry.
+     * 
+     * This method will return <b>FALSE</b> if the list has not yet been filled.
+     * @param int $i [optional] <p>List index to retrieve the value from. Defaults to 0.</p>
+     * @return string|boolean <p>single value, or <b>FALSE</b> if Non-numeric index</p>
      */
     public function getMarketplaceId($i = 0){
         if (!isset($this->marketplaceList)){
@@ -182,9 +229,11 @@ class AmazonParticipationList extends AmazonSellersCore{
     }
     
     /**
-     * Returns the name for the specified entry, defaults to 0
-     * @param int $i index
-     * @return string|boolean name, or False if Non-numeric index
+     * Returns the marketplace name for the specified entry.
+     * 
+     * This method will return <b>FALSE</b> if the list has not yet been filled.
+     * @param int $i [optional] <p>List index to retrieve the value from. Defaults to 0.</p>
+     * @return string|boolean <p>single value, or <b>FALSE</b> if Non-numeric index</p>
      */
     public function getName($i = 0){
         if (!isset($this->marketplaceList)){
@@ -198,9 +247,11 @@ class AmazonParticipationList extends AmazonSellersCore{
     }
     
     /**
-     * Returns the default country code for the specified entry, defaults to 0
-     * @param int $i index
-     * @return string|boolean country code, or False if Non-numeric index
+     * Returns the country code for the specified entry.
+     * 
+     * This method will return <b>FALSE</b> if the list has not yet been filled.
+     * @param int $i [optional] <p>List index to retrieve the value from. Defaults to 0.</p>
+     * @return string|boolean <p>single value, or <b>FALSE</b> if Non-numeric index</p>
      */
     public function getCountry($i = 0){
         if (!isset($this->marketplaceList)){
@@ -214,9 +265,11 @@ class AmazonParticipationList extends AmazonSellersCore{
     }
     
     /**
-     * Returns the default currency code for the specified entry, defaults to 0
-     * @param int $i index
-     * @return string|boolean currency code, or False if Non-numeric index
+     * Returns the default currency code for the specified entry.
+     * 
+     * This method will return <b>FALSE</b> if the list has not yet been filled.
+     * @param int $i [optional] <p>List index to retrieve the value from. Defaults to 0.</p>
+     * @return string|boolean <p>single value, or <b>FALSE</b> if Non-numeric index</p>
      */
     public function getCurreny($i = 0){
         if (!isset($this->marketplaceList)){
@@ -230,9 +283,11 @@ class AmazonParticipationList extends AmazonSellersCore{
     }
     
     /**
-     * Returns the default language code for the specified entry, defaults to 0
-     * @param int $i index
-     * @return string|boolean language code, or False if Non-numeric index
+     * Returns the default language code for the specified entry.
+     * 
+     * This method will return <b>FALSE</b> if the list has not yet been filled.
+     * @param int $i [optional] <p>List index to retrieve the value from. Defaults to 0.</p>
+     * @return string|boolean <p>single value, or <b>FALSE</b> if Non-numeric index</p>
      */
     public function getLanguage($i = 0){
         if (!isset($this->marketplaceList)){
@@ -246,9 +301,11 @@ class AmazonParticipationList extends AmazonSellersCore{
     }
     
     /**
-     * Returns the domain name for the specified entry, defaults to 0
-     * @param int $i index
-     * @return string|boolean language code, or False if Non-numeric index
+     * Returns the domain name for the specified entry.
+     * 
+     * This method will return <b>FALSE</b> if the list has not yet been filled.
+     * @param int $i [optional] <p>List index to retrieve the value from. Defaults to 0.</p>
+     * @return string|boolean <p>single value, or <b>FALSE</b> if Non-numeric index</p>
      */
     public function getDomain($i = 0){
         if (!isset($this->marketplaceList)){
@@ -262,9 +319,11 @@ class AmazonParticipationList extends AmazonSellersCore{
     }
     
     /**
-     * Returns the Seller ID for the specified entry, defaults to 0
-     * @param int $i index
-     * @return string|boolean SellerId, or False if Non-numeric index
+     * Returns the seller ID for the specified entry.
+     * 
+     * This method will return <b>FALSE</b> if the list has not yet been filled.
+     * @param int $i [optional] <p>List index to retrieve the value from. Defaults to 0.</p>
+     * @return string|boolean <p>single value, or <b>FALSE</b> if Non-numeric index</p>
      */
     public function getSellerId($i = 0){
         if (!isset($this->participationList)){
@@ -278,9 +337,11 @@ class AmazonParticipationList extends AmazonSellersCore{
     }
     
     /**
-     * Returns the Seller ID for the specified entry, defaults to 0
-     * @param int $i index
-     * @return string "Yes" or "No"
+     * Returns the suspension status for the specified entry.
+     * 
+     * This method will return <b>FALSE</b> if the list has not yet been filled.
+     * @param int $i [optional] <p>List index to retrieve the value from. Defaults to 0.</p>
+     * @return string|boolean <p>"Yes" or "No", or <b>FALSE</b> if Non-numeric index</p>
      */
     public function getSuspensionStatus($i = 0){
         if (!isset($this->participationList)){

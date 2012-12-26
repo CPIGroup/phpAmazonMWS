@@ -60,7 +60,6 @@ class AmazonReportAcknowledgerTest extends PHPUnit_Framework_TestCase {
     }
     
     public function testSetAcknowledgedFilter(){
-        $this->assertFalse($this->object->setAcknowledgedFilter(null)); //can't be nothing
         $this->assertFalse($this->object->setAcknowledgedFilter(5)); //can't be an int
         $this->assertFalse($this->object->setAcknowledgedFilter('banana')); //can't be a random word
         $this->assertNull($this->object->setAcknowledgedFilter(false));
@@ -70,6 +69,9 @@ class AmazonReportAcknowledgerTest extends PHPUnit_Framework_TestCase {
         $o = $this->object->getOptions();
         $this->assertArrayHasKey('Acknowledged',$o);
         $this->assertEquals('true',$o['Acknowledged']);
+        $this->assertNull($this->object->setAcknowledgedFilter(null)); //causes reset
+        $o2 = $this->object->getOptions();
+        $this->assertArrayNotHasKey('Acknowledged',$o2);
     }
     
     public function testAcknowledgeReports(){

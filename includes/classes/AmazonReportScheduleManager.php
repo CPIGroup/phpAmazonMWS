@@ -15,10 +15,15 @@ class AmazonReportScheduleManager extends AmazonReportsCore implements Iterator{
     private $index = 0;
     
     /**
-     * Manages report schedules.
-     * @param string $s name of store as seen in config file
-     * @param boolean $mock true to enable mock mode
-     * @param array|string $m list of mock files to use
+     * AmazonReportsScheduleManager manages report schedules.
+     * 
+     * The parameters are passed to the parent constructor, which are
+     * in turn passed to the AmazonCore constructor. See it for more information
+     * on these parameters and common methods.
+     * @param string $s <p>Name for the store you want to use.</p>
+     * @param boolean $mock [optional] <p>This is a flag for enabling Mock Mode.
+     * This defaults to <b>FALSE</b>.</p>
+     * @param array|string $m [optional] <p>The files (or file) to use in Mock Mode.</p>
      */
     public function __construct($s, $mock = false, $m = null) {
         parent::__construct($s, $mock, $m);
@@ -35,9 +40,11 @@ class AmazonReportScheduleManager extends AmazonReportsCore implements Iterator{
     }
     
     /**
-     * Sets the report type for the next request
-     * @param string $s see comment inside for valid values
-     * @return boolean false if improper input
+     * Sets the report type. (Optional)
+     * 
+     * This method sets the report type to be sent in the next request.
+     * @param string $s <p>See the comment inside for a list of valid values.</p>
+     * @return boolean <p><b>FALSE</b> if improper input</p>
      */
     public function setReportType($s){
         if (is_string($s)){
@@ -60,9 +67,11 @@ class AmazonReportScheduleManager extends AmazonReportsCore implements Iterator{
     }
     
     /**
-     * Sets the schedule for the next request
-     * @param string $s see comment inside for valid values
-     * @return boolean false if improper input
+     * Sets the schedule. (Optional)
+     * 
+     * This method sets the schedule to be sent in the next request.
+     * @param string $s <p>See the comment inside for a list of valid values.</p>
+     * @return boolean <p><b>FALSE</b> if improper input</p>
      */
     public function setSchedule($s){
         if (is_string($s)){
@@ -91,8 +100,15 @@ class AmazonReportScheduleManager extends AmazonReportsCore implements Iterator{
     }
     
     /**
-     * Sets the time the scheduled report will begin
-     * @param string $t time string that will be passed through strtotime
+     * Sets the scheduled date. (Optional)
+     * 
+     * This method sets the scheduled date for the next request.
+     * If this parameters is set, the scheduled report will take effect
+     * at the given time. The value can be no more than 366 days in the future.
+     * If this parameter is not set, the scheduled report will take effect immediately.
+     * The parameter is passed through <i>strtotime</i>, so values such as "-1 hour" are fine.
+     * @param string $t <p>Time string.</p>
+     * @return boolean <p><b>FALSE</b> if improper input</p>
      */
     public function setScheduledDate($t = null){
         try{
@@ -110,7 +126,12 @@ class AmazonReportScheduleManager extends AmazonReportsCore implements Iterator{
     }
     
     /**
-     * Sends the report schedule information to Amazon
+     * Sends the report schedule information to Amazon.
+     * 
+     * Submits a <i>ManageReportSchedule</i> request to Amazon. In order to do this,
+     * a report type and a schedule are required. Amazon will send
+     * data back as a response, which can be retrieved using <i>getList</i>.
+     * @return boolean <p><b>FALSE</b> if something goes wrong</p>
      */
     public function manageReportSchedule(){
         if (!array_key_exists('ReportType',$this->options)){
@@ -150,8 +171,11 @@ class AmazonReportScheduleManager extends AmazonReportsCore implements Iterator{
     }
     
     /**
-     * converts XML to array
-     * @param SimpleXMLObject $xml
+     * Parses XML response into array.
+     * 
+     * This is what reads the response XML and converts it into an array.
+     * @param SimpleXMLObject $xml <p>The XML response from Amazon.</p>
+     * @return boolean <p><b>FALSE</b> if no XML data is found</p>
      */
     protected function parseXML($xml){
         foreach($xml->children() as $key=>$x){
@@ -163,13 +187,6 @@ class AmazonReportScheduleManager extends AmazonReportsCore implements Iterator{
             }
             $i = $this->index;
             
-            /*
-             * after I know what this is,
-             * I might have to optimize this part
-             */
-            
-            
-            
             $this->scheduleList[$i]['ReportType'] = (string)$x->ReportType;
             $this->scheduleList[$i]['Schedule'] = (string)$x->Schedule;
             $this->scheduleList[$i]['ScheduledDate'] = (string)$x->ScheduledDate;
@@ -179,9 +196,11 @@ class AmazonReportScheduleManager extends AmazonReportsCore implements Iterator{
     }
     
     /**
-     * Returns the report type for the specified entry
-     * @param int $i index, defaults to 0
-     * @return string|boolean report type, or False if Non-numeric index
+     * Returns the report type for the specified entry.
+     * 
+     * This method will return <b>FALSE</b> if the list has not yet been filled.
+     * @param int $i [optional] <p>List index to retrieve the value from. Defaults to 0.</p>
+     * @return string|boolean <p>single value, or <b>FALSE</b> if Non-numeric index</p>
      */
     public function getReportType($i = 0){
         if (!isset($this->scheduleList)){
@@ -195,9 +214,11 @@ class AmazonReportScheduleManager extends AmazonReportsCore implements Iterator{
     }
     
     /**
-     * Returns the schedule for the specified entry
-     * @param int $i index, defaults to 0
-     * @return string|boolean schedule, or False if Non-numeric index
+     * Returns the schedule for the specified entry.
+     * 
+     * This method will return <b>FALSE</b> if the list has not yet been filled.
+     * @param int $i [optional] <p>List index to retrieve the value from. Defaults to 0.</p>
+     * @return string|boolean <p>single value, or <b>FALSE</b> if Non-numeric index</p>
      */
     public function getSchedule($i = 0){
         if (!isset($this->scheduleList)){
@@ -211,9 +232,11 @@ class AmazonReportScheduleManager extends AmazonReportsCore implements Iterator{
     }
     
     /**
-     * Returns the scheduled starting date for the specified entry
-     * @param int $i index, defaults to 0
-     * @return string|boolean date scheduled, or False if Non-numeric index
+     * Returns the date the specified report request is scheduled to start.
+     * 
+     * This method will return <b>FALSE</b> if the list has not yet been filled.
+     * @param int $i [optional] <p>List index to retrieve the value from. Defaults to 0.</p>
+     * @return string|boolean <p>single value, or <b>FALSE</b> if Non-numeric index</p>
      */
     public function getScheduledDate($i = 0){
         if (!isset($this->scheduleList)){
@@ -227,9 +250,17 @@ class AmazonReportScheduleManager extends AmazonReportsCore implements Iterator{
     }
     
     /**
-     * Returns the list of report arrays
-     * @param int $i index, defaults to null
-     * @return array Array of arrays
+     * Returns the full list.
+     * 
+     * This method will return <b>FALSE</b> if the list has not yet been filled.
+     * The array for a single report will have the following fields:
+     * <ul>
+     * <li><b>ReportType</b></li>
+     * <li><b>Schedule</b></li>
+     * <li><b>ScheduledDate</b></li>
+     * </ul>
+     * @param int $i [optional] <p>List index to retrieve the value from. Defaults to NULL.</p>
+     * @return array|boolean <p>multi-dimensional array, or <b>FALSE</b> if list not filled yet</p>
      */
     public function getList($i = null){
         if (!isset($this->scheduleList)){
@@ -243,8 +274,10 @@ class AmazonReportScheduleManager extends AmazonReportsCore implements Iterator{
     }
     
     /**
-     * gets the count, if it exists
-     * @return string|boolean number, or false on failure
+     * Returns the report request count.
+     * 
+     * This method will return <b>FALSE</b> if the count has not been set yet.
+     * @return number|boolean <p>number, or <b>FALSE</b> if count not set yet</p>
      */
     public function getCount(){
         if (isset($this->count)){

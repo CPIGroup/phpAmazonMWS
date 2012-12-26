@@ -10,9 +10,17 @@ class AmazonProduct extends AmazonProductsCore{
     
     /**
      * AmazonProduct acts as a container for various results from other classes.
-     * @param string $s store name as seen in config
-     * @param boolean $mock set true to enable mock mode
-     * @param array|string $m list of mock files to use
+     * 
+     * The parameters are passed to the parent constructor, which are
+     * in turn passed to the AmazonCore constructor. See it for more information
+     * on these parameters and common methods.
+     * Please note that an extra parameter comes before the usual Mock Mode parameters,
+     * so be careful when setting up the object.
+     * @param string $s <p>Name for the store you want to use.</p>
+     * @param SimpleXMLElement $data [optional] <p>XML data from Amazon to be parsed.</p>
+     * @param boolean $mock [optional] <p>This is a flag for enabling Mock Mode.
+     * This defaults to <b>FALSE</b>.</p>
+     * @param array|string $m [optional] <p>The files (or file) to use in Mock Mode.</p>
      */
     public function __construct($s, $data = null, $mock = false, $m = null){
         parent::__construct($s, $mock, $m);
@@ -33,10 +41,15 @@ class AmazonProduct extends AmazonProductsCore{
     }
     
     /**
-     * Takes in XML data and parses it for the object to use
-     * @param SimpleXMLObject $xml
+     * Takes in XML data and converts it to an array for the object to use.
+     * @param SimpleXMLObject $xml <p>XML Product data from Amazon</p>
+     * @return boolean <p><b>FALSE</b> if no XML data is found</p>
      */
     public function loadXML($xml){
+        if (!$xml){
+            return false;
+        }
+        
         $this->data = array();
         
         //Categories first
@@ -226,7 +239,8 @@ class AmazonProduct extends AmazonProductsCore{
     
     /**
      * Takes in XML data for Categories and parses it for the object to use
-     * @param SimpleXMLObject $xml
+     * @param SimpleXMLObject $xml <p>The XML data from Amazon.</p>
+     * @return boolean <p><b>FALSE</b> if no valid XML data is found</p>
      */
     protected function loadCategories($xml){
         //Categories
@@ -241,9 +255,13 @@ class AmazonProduct extends AmazonProductsCore{
     }
     
     /**
-     * Recursively builds the hierarchy array
-     * @param SimpleXMLObject $xml
-     * @return array
+     * Recursively builds the hierarchy array.
+     * 
+     * The returned array will have the fields <b>ProductCategoryId</b> and
+     * <b>ProductCategoryName</b>, as well as maybe a <b>Parent</b> field with the same
+     * structure as the array containing it.
+     * @param SimpleXMLObject $xml <p>The XML data from Amazon.</p>
+     * @return array Recursive, multi-dimensional array
      */
     protected function genHierarchy($xml){
         if (!$xml){
@@ -259,16 +277,19 @@ class AmazonProduct extends AmazonProductsCore{
     }
     
     /**
-     * Returns product data
-     * @return array Product data
+     * See <i>getData</i>.
+     * @return array <p>Huge array of Product data.</p>
      */
     public function getProduct(){
         return $this->getData();
     }
     
     /**
-     * Returns product data
-     * @return array Product data
+     * Returns all product data.
+     * 
+     * The array returned will likely be very large and contain data too varied
+     * to be described here.
+     * @return array <p>Huge array of Product data.</p>
      */
     public function getData(){
         if (isset($this->data)){

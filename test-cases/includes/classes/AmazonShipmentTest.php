@@ -144,12 +144,6 @@ class AmazonShipmentTest extends PHPUnit_Framework_TestCase {
         $this->assertArrayNotHasKey('InboundShipmentItems.member.1.QuantityInCase',$o2);
         $this->assertArrayNotHasKey('InboundShipmentItems.member.2.SellerSKU',$o2);
         $this->assertArrayNotHasKey('InboundShipmentItems.member.2.QuantityShipped',$o2);
-        
-        $this->object->resetItems();
-        
-        $o3 = $this->object->getOptions();
-        $this->assertArrayNotHasKey('InboundShipmentItems.member.1.SellerSKU',$o3);
-        $this->assertArrayNotHasKey('InboundShipmentItems.member.1.QuantityShipped',$o3);
     }
     
     public function testSetStatus(){

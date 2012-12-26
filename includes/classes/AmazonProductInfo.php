@@ -12,10 +12,15 @@ class AmazonProductInfo extends AmazonProductsCore{
     
     
     /**
-     * AmazonProductInfo fetches a list of info from Amazon
-     * @param string $s store name as seen in config
-     * @param boolean $mock set true to enable mock mode
-     * @param array|string $m list of mock files to use
+     * AmazonProductInfo fetches a list of info from Amazon.
+     * 
+     * The parameters are passed to the parent constructor, which are
+     * in turn passed to the AmazonCore constructor. See it for more information
+     * on these parameters and common methods.
+     * @param string $s <p>Name for the store you want to use.</p>
+     * @param boolean $mock [optional] <p>This is a flag for enabling Mock Mode.
+     * This defaults to <b>FALSE</b>.</p>
+     * @param array|string $m [optional] <p>The files (or file) to use in Mock Mode.</p>
      */
     public function __construct($s, $mock = false, $m = null){
         parent::__construct($s, $mock, $m);
@@ -34,9 +39,13 @@ class AmazonProductInfo extends AmazonProductsCore{
     }
     
     /**
-     * sets the seller SKU(s) to be used in the next request
-     * @param array|string $s array of seller SKUs or single SKU (max: 20)
-     * @return boolean false if failure
+     * Sets the feed seller SKU(s). (Required*)
+     * 
+     * This method sets the list of seller SKUs to be sent in the next request.
+     * Setting this parameter tells Amazon to only return inventory supplies that match
+     * the IDs in the list. If this parameter is set, ASINs cannot be set.
+     * @param array|string $s <p>A list of Seller SKUs, or a single SKU string. (max: 20)</p>
+     * @return boolean <p><b>FALSE</b> if improper input</p>
      */
     public function setSKUs($s){
         if (is_string($s)){
@@ -57,9 +66,12 @@ class AmazonProductInfo extends AmazonProductsCore{
     }
     
     /**
-     * removes ID options
+     * Resets the seller SKU options.
+     * 
+     * Since seller SKU is a required parameter, these options should not be removed
+     * without replacing them, so this method is not public.
      */
-    public function resetSKUs(){
+    private function resetSKUs(){
         foreach($this->options as $op=>$junk){
             if(preg_match("#SellerSKUList#",$op)){
                 unset($this->options[$op]);
@@ -68,9 +80,13 @@ class AmazonProductInfo extends AmazonProductsCore{
     }
     
     /**
-     * sets the ASIN(s) to be used in the next request
-     * @param array|string $s array of ASINs or single ASIN (max: 20)
-     * @return boolean false if failure
+     * Sets the ASIN(s). (Required*)
+     * 
+     * This method sets the list of ASINs to be sent in the next request.
+     * Setting this parameter tells Amazon to only return inventory supplies that match
+     * the IDs in the list. If this parameter is set, Seller SKUs cannot be set.
+     * @param array|string $s <p>A list of ASINs, or a single ASIN string. (max: 20)</p>
+     * @return boolean <p><b>FALSE</b> if improper input</p>
      */
     public function setASINs($s){
         if (is_string($s)){
@@ -91,9 +107,12 @@ class AmazonProductInfo extends AmazonProductsCore{
     }
     
     /**
-     * removes ID options
+     * Resets the ASIN options.
+     * 
+     * Since ASIN is a required parameter, these options should not be removed
+     * without replacing them, so this method is not public.
      */
-    public function resetASINs(){
+    private function resetASINs(){
         foreach($this->options as $op=>$junk){
             if(preg_match("#ASINList#",$op)){
                 unset($this->options[$op]);
@@ -102,9 +121,13 @@ class AmazonProductInfo extends AmazonProductsCore{
     }
     
     /**
-     * Sets the item condition filter for the next request
-     * @param string $s 
-     * @return boolean false if improper input
+     * Sets the item condition filter. (Optional)
+     * 
+     * This method sets the item condition filter to be sent in the next request.
+     * Setting this parameter tells Amazon to only return products with conditions that match
+     * the one given. If this parameter is not set, Amazon will return products with any condition.
+     * @param string $s <p>Single condition string.</p>
+     * @return boolean <p><b>FALSE</b> if improper input</p>
      */
     public function setConditionFilter($s){
         if (is_string($s)){
@@ -115,9 +138,11 @@ class AmazonProductInfo extends AmazonProductsCore{
     }
     
     /**
-     * Sets whether or not the next Lowest Offer Listings request should exclude your own listings
-     * @param string $s "true" or "false"
-     * @return boolean false if improper input
+     * Sets the "ExcludeSelf" flag. (Optional)
+     * 
+     * Sets whether or not the next Lowest Offer Listings request should exclude your own listings.
+     * @param string|boolean $s <p>"true" or "false", or boolean</p>
+     * @return boolean <p><b>FALSE</b> if improper input</p>
      */
     public function setExcludeSelf($s = 'true'){
         if ($s == 'true' || (is_bool($s) && $s == true)){
@@ -130,7 +155,12 @@ class AmazonProductInfo extends AmazonProductsCore{
     }
     
     /**
-     * Fetches the competitive pricing list from Amazon
+     * Fetches a list of competitive pricing on products from Amazon.
+     * 
+     * Submits a <i>GetCompetitivePricingForSKU</i>
+     * or <i>GetCompetitivePricingForASIN</i> request to Amazon. Amazon will send
+     * the list back as a response, which can be retrieved using <i>getProduct</i>.
+     * @return boolean <p><b>FALSE</b> if something goes wrong</p>
      */
     public function fetchCompetitivePricing(){
         if (!array_key_exists('SellerSKUList.SellerSKU.1',$this->options) && !array_key_exists('ASINList.ASIN.1',$this->options)){
@@ -165,7 +195,12 @@ class AmazonProductInfo extends AmazonProductsCore{
     }
     
     /**
-     * Sets up stuff
+     * Sets up options for using <i>fetchCompetitivePricing</i>.
+     * 
+     * This changes key options for using <i>fetchCompetitivePricing</i>.
+     * Please note: because the operation does not use all of the parameters,
+     * some of the parameters will be removed. The following parameters are removed:
+     * ItemCondition and ExcludeMe.
      */
     protected function prepareCompetitive(){
         include($this->config);
@@ -183,7 +218,12 @@ class AmazonProductInfo extends AmazonProductsCore{
     }
     
     /**
-     * Fetches the competitive pricing list from Amazon
+     * Fetches a list of lowest offers on products from Amazon.
+     * 
+     * Submits a <i>GetLowestOfferListingsForSKU</i>
+     * or <i>GetLowestOfferListingsForASIN</i> request to Amazon. Amazon will send
+     * the list back as a response, which can be retrieved using <i>getProduct</i>.
+     * @return boolean <p><b>FALSE</b> if something goes wrong</p>
      */
     public function fetchLowestOffer(){
         if (!array_key_exists('SellerSKUList.SellerSKU.1',$this->options) && !array_key_exists('ASINList.ASIN.1',$this->options)){
@@ -219,7 +259,9 @@ class AmazonProductInfo extends AmazonProductsCore{
     }
     
     /**
-     * Sets up stuff
+     * Sets up options for using <i>fetchLowestOffer</i>.
+     * 
+     * This changes key options for using <i>fetchLowestOffer</i>.
      */
     protected function prepareLowest(){
         include($this->config);
@@ -235,7 +277,12 @@ class AmazonProductInfo extends AmazonProductsCore{
     }
     
     /**
-     * Fetches the competitive pricing list from Amazon
+     * Fetches a list of your prices on products from Amazon.
+     * 
+     * Submits a <i>GetMyPriceForSKU</i>
+     * or <i>GetMyPriceForASIN</i> request to Amazon. Amazon will send
+     * the list back as a response, which can be retrieved using <i>getProduct</i>.
+     * @return boolean <p><b>FALSE</b> if something goes wrong</p>
      */
     public function fetchMyPrice(){
         if (!array_key_exists('SellerSKUList.SellerSKU.1',$this->options) && !array_key_exists('ASINList.ASIN.1',$this->options)){
@@ -271,7 +318,11 @@ class AmazonProductInfo extends AmazonProductsCore{
     }
     
     /**
-     * Sets up stuff
+     * Sets up options for using <i>fetchMyPrice</i>.
+     * 
+     * This changes key options for using <i>fetchMyPrice</i>.
+     * Please note: because the operation does not use all of the parameters,
+     * the ExcludeMe parameter will be removed.
      */
     protected function prepareMyPrice(){
         include($this->config);
@@ -288,7 +339,12 @@ class AmazonProductInfo extends AmazonProductsCore{
     }
     
     /**
-     * Fetches the competitive pricing list from Amazon
+     * Fetches a list of categories for products from Amazon.
+     * 
+     * Submits a <i>GetProductCategoriesForSKU</i>
+     * or <i>GetProductCategoriesForASIN</i> request to Amazon. Amazon will send
+     * the list back as a response, which can be retrieved using <i>getProduct</i>.
+     * @return boolean <p><b>FALSE</b> if something goes wrong</p>
      */
     public function fetchCategories(){
         if (!array_key_exists('SellerSKUList.SellerSKU.1',$this->options) && !array_key_exists('ASINList.ASIN.1',$this->options)){
@@ -323,7 +379,12 @@ class AmazonProductInfo extends AmazonProductsCore{
     }
     
     /**
-     * Sets up stuff
+     * Sets up options for using <i>fetchCategories</i>.
+     * 
+     * This changes key options for using <i>fetchCategories</i>.
+     * Please note: because the operation does not use all of the parameters,
+     * some of the parameters will be removed. The following parameters are removed:
+     * ItemCondition and ExcludeMe.
      */
     protected function prepareCategories(){
         include($this->config);

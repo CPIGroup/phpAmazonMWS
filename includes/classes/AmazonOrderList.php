@@ -15,10 +15,15 @@ class AmazonOrderList extends AmazonOrderCore implements Iterator{
     private $index = 0;
 
     /**
-     * Amazon Order Lists pull a set of Orders and turn them into an array of AmazonOrder objects.
-     * @param string $s name of store, as seen in the config file
-     * @param boolean $mock set true to enable mock mode
-     * @param array|string $m list of mock files to use
+     * Amazon Order Lists pull a set of Orders and turn them into an array of <i>AmazonOrder</i> objects.
+     * 
+     * The parameters are passed to the parent constructor, which are
+     * in turn passed to the AmazonCore constructor. See it for more information
+     * on these parameters and common methods.
+     * @param string $s <p>Name for the store you want to use.</p>
+     * @param boolean $mock [optional] <p>This is a flag for enabling Mock Mode.
+     * This defaults to <b>FALSE</b>.</p>
+     * @param array|string $m [optional] <p>The files (or file) to use in Mock Mode.</p>
      */
     public function __construct($s, $mock = false, $m = null){
         parent::__construct($s, $mock, $m);
@@ -46,7 +51,7 @@ class AmazonOrderList extends AmazonOrderCore implements Iterator{
     }
     
     /**
-     * Returns whether or not the Order List has a token available
+     * Returns whether or not a token is available.
      * @return boolean
      */
     public function hasToken(){
@@ -54,9 +59,14 @@ class AmazonOrderList extends AmazonOrderCore implements Iterator{
     }
     
     /**
-     * Sets whether or not the OrderList should automatically use tokens if it receives one.
-     * @param boolean $b
-     * @return boolean false if invalid paramter
+     * Sets whether or not the object should automatically use tokens if it receives one.
+     * 
+     * If this option is set to <b>TRUE</b>, the object will automatically perform
+     * the necessary operations to retrieve the rest of the list using tokens. If
+     * this option is off, the object will only ever retrieve the first section of
+     * the list.
+     * @param boolean $b [optional] <p>Defaults to <b>TRUE</b></p>
+     * @return boolean <p><b>FALSE</b> if improper input</p>
      */
     public function setUseToken($b = true){
         if (is_bool($b)){
@@ -67,13 +77,13 @@ class AmazonOrderList extends AmazonOrderCore implements Iterator{
     }
     
     /**
-     * Sets the time frame for the orders fetched.
+     * Sets the time frame for the orders fetched. (Optional)
      * 
-     * Sets the time frame for the orders fetched. If no times are specified, times default to the current time
-     * @param string $mode "Created" or "Modified"
-     * @param dateTime $lower Date the order was created after
-     * @param dateTime $upper Date the order was created before
-     * @return boolean false on failure
+     * Sets the time frame for the orders fetched. If no times are specified, times default to the current time.
+     * @param string $mode <p>"Created" or "Modified"</p>
+     * @param string $lower [optional] <p>A time string for the earliest time.</p>
+     * @param string $upper [optional] <p>A time string for the latest time.</p>
+     * @return boolean <p><b>FALSE</b> if improper input</p>
      */
     public function setLimits($mode,$lower = null,$upper = null){
         try{
@@ -112,9 +122,14 @@ class AmazonOrderList extends AmazonOrderCore implements Iterator{
     }
     
     /**
-     * Sets option for status filter of next request
-     * @param array|string $list array of strings, or a single string
-     * @return boolean false on failure
+     * Sets the order status(es). (Optional)
+     * 
+     * This method sets the list of Order Statuses to be sent in the next request.
+     * Setting this parameter tells Amazon to only return Orders with statuses that match
+     * those in the list. If this parameter is not set, Amazon will return
+     * Orders of any status.
+     * @param array|string $s <p>A list of Order Statuses, or a single status string.</p>
+     * @return boolean <p><b>FALSE</b> if improper input</p>
      */
     public function setOrderStatusFilter($list){
         if (is_string($list)){
@@ -135,7 +150,10 @@ class AmazonOrderList extends AmazonOrderCore implements Iterator{
     }
 
     /**
-     * Resets the Order Status Filter to default
+     * Removes order status options.
+     * 
+     * Use this in case you change your mind and want to remove the Order Status
+     * parameters you previously set.
      */
     public function resetOrderStatusFilter(){
         foreach($this->options as $op=>$junk){
@@ -161,9 +179,14 @@ class AmazonOrderList extends AmazonOrderCore implements Iterator{
     }
     
     /**
-     * Sets option for payment method filter of next request
-     * @param array|string $list array of strings, or a single string
-     * @return boolean false on failure
+     * Sets the payment method(s). (Optional)
+     * 
+     * This method sets the list of Payment Methods to be sent in the next request.
+     * Setting this parameter tells Amazon to only return Orders with payment methods
+     * that match those in the list. If this parameter is not set, Amazon will return
+     * Orders with any payment method.
+     * @param array|string $s <p>A list of Payment Methods, or a single method string.</p>
+     * @return boolean <p><b>FALSE</b> if improper input</p>
      */
     public function setPaymentMethodFilter($list){
         if (is_string($list)){
@@ -183,7 +206,10 @@ class AmazonOrderList extends AmazonOrderCore implements Iterator{
     }
     
     /**
-     * Resets the Payment Method Filter to default
+     * Removes payment method options.
+     * 
+     * Use this in case you change your mind and want to remove the Payment Method
+     * parameters you previously set.
      */
     public function resetPaymentMethodFilter(){
         foreach($this->options as $op=>$junk){
@@ -194,17 +220,14 @@ class AmazonOrderList extends AmazonOrderCore implements Iterator{
     }
     
     /**
-     * Sets (or resets) the Email Filter. This resets certain fields.
+     * Sets (or resets) the email address. (Optional)
      * 
-     * Sets (or resets) the Seller Order ID Filter. The following filter options are disabled by this function:
-     * -SellerOrderId
-     * -OrderStatus
-     * -PaymentMethod
-     * -FulfillmentChannel
-     * -LastUpdatedAfter
-     * -LastUpdatedBefore
-     * @param string|null $filter string or null
-     * @return boolean false on failure
+     * This method sets the email address to be sent in the next request.
+     * Setting this parameter tells Amazon to only return Orders with addresses
+     * that match the address given. If this parameter is set, the following options
+     * will be removed: SellerOrderId, OrderStatus, PaymentMethod, FulfillmentChannel, LastUpdatedAfter, LastUpdatedBefore.
+     * @param string $s <p>A single address string. Set to NULL to remove the option.</p>
+     * @return boolean <p><b>FALSE</b> if improper input</p>
      */
     public function setEmailFilter($filter){
         if (is_string($filter)){
@@ -224,17 +247,14 @@ class AmazonOrderList extends AmazonOrderCore implements Iterator{
     }
     
     /**
-     * Sets (or resets) the Seller Order ID Filter. This resets certain fields.
+     * Sets (or resets) the seller order ID(s). (Optional)
      * 
-     * Sets (or resets) the Seller Order ID Filter. The following filter options are disabled by this function:
-     * -BuyerEmail
-     * -OrderStatus
-     * -PaymentMethod
-     * -FulfillmentChannel
-     * -LastUpdatedAfter
-     * -LastUpdatedBefore
-     * @param string|null $filter string or null
-     * @return boolean false on failure
+     * This method sets the list of seller order IDs to be sent in the next request.
+     * Setting this parameter tells Amazon to only return Orders with addresses
+     * that match those in the list. If this parameter is set, the following options
+     * will be removed: BuyerEmail, OrderStatus, PaymentMethod, FulfillmentChannel, LastUpdatedAfter, LastUpdatedBefore.
+     * @param array|string $s <p>A list of Payment Methods, or a single type string. Set to NULL to remove the option.</p>
+     * @return boolean <p><b>FALSE</b> if improper input</p>
      */
     public function setSellerOrderIdFilter($filter){
         if (is_string($filter)){
@@ -254,9 +274,12 @@ class AmazonOrderList extends AmazonOrderCore implements Iterator{
     }
     
     /**
-     * Sets the max number of results per page for the next request
-     * @param int $num integer from 1 to 100
-     * @return boolean false on failure
+     * Sets the maximum response per page count. (Optional)
+     * 
+     * This method sets the maximum number of Feed Submissions for Amazon to return per page.
+     * If this parameter is not set, Amazon will send 100 at a time.
+     * @param array|string $s <p>Positive integer from 1 to 100.</p>
+     * @return boolean <p><b>FALSE</b> if improper input</p>
      */
     public function setMaxResultsPerPage($num){
         if (is_int($num) && $num <= 100 && $num >= 1){
@@ -267,7 +290,12 @@ class AmazonOrderList extends AmazonOrderCore implements Iterator{
     }
     
     /**
-     * Fetches orders from Amazon using the pre-set parameters and putting them in an array of AmazonOrder objects
+     * Fetches orders from Amazon and puts them in an array of <i>AmazonOrder</i> objects.
+     * 
+     * Submits a <i>ListOrders</i> request to Amazon. Amazon will send
+     * the list back as a response, which can be retrieved using <i>getList</i>.
+     * This operation can potentially involve tokens.
+     * @return boolean <p><b>FALSE</b> if something goes wrong</p>
      */
     public function fetchOrders(){
         $this->options['Timestamp'] = $this->genTime();
@@ -317,8 +345,12 @@ class AmazonOrderList extends AmazonOrderCore implements Iterator{
     }
 
     /**
-     * Makes the preparations necessary for using tokens
-     * @return boolean returns false if no token to use
+     * Sets up options for using tokens.
+     * 
+     * This changes key options for switching between simply fetching a list and
+     * fetching the rest of a list using a token. Please note: because the
+     * operation for using tokens does not use any other parameters, all other
+     * parameters will be removed.
      */
     protected function prepareToken(){
         if ($this->tokenFlag && $this->tokenUseFlag){
@@ -345,6 +377,13 @@ class AmazonOrderList extends AmazonOrderCore implements Iterator{
         }
     }
     
+    /**
+     * Parses XML response into array.
+     * 
+     * This is what reads the response XML and converts it into an array.
+     * @param SimpleXMLObject $xml <p>The XML response from Amazon.</p>
+     * @return boolean <p><b>FALSE</b> if no XML data is found</p>
+     */
     protected function parseXML($xml){
         if (!$xml){
             return false;
@@ -362,10 +401,14 @@ class AmazonOrderList extends AmazonOrderCore implements Iterator{
     }
     
     /**
-     * returns array of item lists or a single item list
-     * @param boolean $token whether or not to automatically use tokens when fetching items
-     * @param integer $i index
-     * @return array|AmazonOrderItemList AmazonOrderItemList or array of AmazonOrderItemLists
+     * Returns array of item lists or a single item list.
+     * 
+     * If <i>$i</i> is not specified, the method will fetch the items for every
+     * order in the list. Please note that for lists with a high number of orders,
+     * this operation could take a while due to throttling. (Two seconds per order when throttled.)
+     * @param boolean $token [optional] <p>whether or not to automatically use tokens when fetching items.</p>
+     * @param int $i [optional] <p>List index to retrieve the value from. Defaults to null.</p>
+     * @return array|AmazonOrderItemList <p><i>AmazonOrderItemList</i> object or array of objects, or <b>FALSE</b> if non-numeric index</p>
      */
     public function fetchItems($token = false, $i = null){
         if (!isset($this->orderList)){
@@ -386,8 +429,8 @@ class AmazonOrderList extends AmazonOrderCore implements Iterator{
     }
     
     /**
-     * Returns the list of orders
-     * @return array Array of AmazonOrder objects, or false if not set yet
+     * Returns the list of orders.
+     * @return array|boolean <p>array of <i>AmazonOrder</i> objects, or <b>FALSE</b> if list not filled yet</p>
      */
     public function getList(){
         if (isset($this->orderList)){

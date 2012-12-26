@@ -161,13 +161,6 @@ class AmazonFulfillmentPreviewTest extends PHPUnit_Framework_TestCase {
         $this->assertArrayNotHasKey('Items.member.2.SellerSKU',$o2);
         $this->assertArrayNotHasKey('Items.member.2.SellerFulfillmentOrderItemId',$o2);
         $this->assertArrayNotHasKey('Items.member.2.Quantity',$o2);
-        
-        $this->object->resetItems();
-        
-        $o3 = $this->object->getOptions();
-        $this->assertArrayNotHasKey('Items.member.1.SellerSKU',$o3);
-        $this->assertArrayNotHasKey('Items.member.1.SellerFulfillmentOrderItemId',$o3);
-        $this->assertArrayNotHasKey('Items.member.1.Quantity',$o3);
     }
     
     public function testSetShippingSpeeds(){

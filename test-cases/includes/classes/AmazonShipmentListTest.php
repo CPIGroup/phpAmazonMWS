@@ -47,10 +47,6 @@ class AmazonShipmentListTest extends PHPUnit_Framework_TestCase {
         $o2 = $this->object->getOptions();
         $this->assertArrayNotHasKey('ShipmentStatusList.member.2',$o2);
         
-        $this->object->resetStatusFilter();
-        $o3 = $this->object->getOptions();
-        $this->assertArrayNotHasKey('ShipmentStatusList.member.1',$o3);
-        
         $this->assertFalse($this->object->setStatusFilter(null));
         $this->assertFalse($this->object->setStatusFilter(707));
     }
@@ -66,10 +62,6 @@ class AmazonShipmentListTest extends PHPUnit_Framework_TestCase {
         $this->assertNull($this->object->setIdFilter('808')); //causes reset
         $o2 = $this->object->getOptions();
         $this->assertArrayNotHasKey('ShipmentIdList.member.2',$o2);
-        
-        $this->object->resetIdFilter();
-        $o3 = $this->object->getOptions();
-        $this->assertArrayNotHasKey('ShipmentIdList.member.1',$o3);
         
         $this->assertFalse($this->object->setIdFilter(null));
         $this->assertFalse($this->object->setIdFilter(707));

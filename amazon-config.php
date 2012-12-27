@@ -89,6 +89,7 @@ define('THROTTLE_TIME_FEEDRESULT',60);
 
 //Safe Throttle Mode
 //Automatically throttles every time
-define('AMAZON_THROTTLE_SAFE',true);
+//define('AMAZON_THROTTLE_SAFE',true);
+define('AMAZON_THROTTLE_SAFE',false);
 
 ?>

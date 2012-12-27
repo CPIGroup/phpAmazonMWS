@@ -14,6 +14,7 @@ abstract class AmazonCore{
     protected $urlbranch;
     protected $throttleLimit;
     protected $throttleTime;
+    protected $throttleSafe;
     protected $throttleGroup;
     protected $storeName;
     protected $options;
@@ -270,6 +271,7 @@ abstract class AmazonCore{
             $this->config = $path;
             $this->setLogPath(AMAZON_LOG);
             $this->urlbase = AMAZON_SERVICE_URL;
+            $this->throttleSafe = AMAZON_THROTTLE_SAFE;
         } else {
             throw new Exception("Config file does not exist or cannot be read! ($path)");
         }
@@ -347,27 +349,68 @@ abstract class AmazonCore{
             $this->log("Unable to find Throttle Group, setting to ".$this->options['Action'],'Warning');
         }
         
-        $sql = 'SELECT MAX(timestamp) as maxtime FROM `amazonRequestLog` WHERE `type` = ?';
-        $value = array($this->throttleGroup);
-        $result = db::executeQuery($sql, $value, DB_PLUGINS)->fetchAll();
-        if(!$result){
-            return;
-        }
-        
-        $maxtime = $result[0]['maxtime'];
-        flush();
-        while(true){
-            $mintime = time()-$this->throttleTime;
-            $timediff = $maxtime-$mintime;
-            if($maxtime <= $mintime){
-                flush();
+        if ($this->throttleSafe){
+            //original throttling code
+            //only checks when the last request was made
+            $sql = 'SELECT MAX(timestamp) as maxtime FROM `amazonRequestLog` WHERE `type` = ?';
+            $value = array($this->throttleGroup);
+            $result = db::executeQuery($sql, $value, DB_PLUGINS)->fetchAll();
+            if(!$result){
+                $this->log("No response from the database!",'Warning');
                 return;
             }
-            flush();
-            $this->log("Last request of this type: ".date("Y/m/d h:i:s", $maxtime).", Sleeping for $timediff seconds",'Throttle');
-            sleep($timediff);
-            $result = db::executeQuery($sql, $value, DB_PLUGINS)->fetchAll();
+
             $maxtime = $result[0]['maxtime'];
+            flush();
+            
+            //loop until there is an available request spot
+            while(true){
+                flush();
+                $mintime = time()-$this->throttleTime;
+                $timediff = $maxtime-$mintime;
+                if($maxtime <= $mintime){
+                    return;
+                }
+                $this->log("Last request of this type: ".date("Y/m/d h:i:s", $maxtime).", Sleeping for $timediff seconds",'Throttle');
+                sleep($timediff);
+                $result = db::executeQuery($sql, $value, DB_PLUGINS)->fetchAll();
+                $maxtime = $result[0]['maxtime'];
+            }
+        } else {
+            //new throttling code
+            //checks the number of same requests made within the past time that
+            //it would take the entire request supply to regenerate
+            $sql = 'SELECT COUNT(*) as count, MAX(timestamp) as maxtime  FROM `amazonRequestLog` WHERE `type` = ? AND `timestamp` > ?';
+            $value = array($this->throttleGroup, time()-($this->throttleLimit * $this->throttleTime));
+            $result = db::executeQuery($sql, $value, DB_PLUGINS)->fetchAll();
+            if(!$result){
+                $this->log("No response from the database!",'Warning');
+                return;
+            }
+
+            $count = $result[0]['count'];
+            $maxtime = $result[0]['maxtime'];
+            flush();
+            
+            //loop until there is an available request spot
+            while(true){
+                flush();
+                $mintime = time()-$this->throttleTime;
+                $timediff = $maxtime-$mintime;
+                if ($count < $this->throttleLimit || $mintime >= $maxtime){
+                    return;
+                }
+                $last = time()-$maxtime;
+                $s = ($last == 1) ? '' : 's';
+                $s2 = ($timediff == 1) ? '' : 's';
+                $this->log("Last request of this type: ".date("Y/m/d h:i:s", $maxtime)." ($last second$s ago), Sleeping for $timediff second$s2",'Throttle');
+                sleep($timediff);
+                
+                $value = array($this->throttleGroup, time()-($this->throttleLimit * $this->throttleTime));
+                $result = db::executeQuery($sql, $value, DB_PLUGINS)->fetchAll();
+                $count = $result[0]['count'];
+                $maxtime = $result[0]['maxtime'];
+            }
         }
         
     }

@@ -8,8 +8,8 @@
  */
 class AmazonOrderItemList extends AmazonOrderCore implements Iterator{
     private $itemList;
-    private $tokenFlag = false;
-    private $tokenUseFlag = false;
+    protected $tokenFlag = false;
+    protected $tokenUseFlag = false;
     private $i = 0;
     private $index = 0;
 
@@ -108,10 +108,7 @@ class AmazonOrderItemList extends AmazonOrderCore implements Iterator{
         if ($this->mockMode){
            $xml = $this->fetchMockFile()->$path;
         } else {
-            $this->throttle();
-            $this->log("Making request to Amazon");
-            $response = fetchURL($url,array('Post'=>$query));
-            $this->logRequest();
+            $response = $this->sendRequest($url, array('Post'=>$query));
             
             if (!$this->checkResponse($response)){
                 return false;
@@ -119,16 +116,6 @@ class AmazonOrderItemList extends AmazonOrderCore implements Iterator{
             
             $xml = simplexml_load_string($response['body'])->$path;
         }
-            
-        
-        if ($xml->NextToken){
-            $this->tokenFlag = true;
-            $this->options['NextToken'] = (string)$xml->NextToken;
-        } else {
-            unset($this->options['NextToken']);
-            $this->tokenFlag = false;
-        }
-        
         
         if (is_null($xml->AmazonOrderId)){
             $this->log("You just got throttled.",'Warning');
@@ -139,6 +126,8 @@ class AmazonOrderItemList extends AmazonOrderCore implements Iterator{
         }
         
         $this->parseXML($xml->OrderItems);
+        
+        $this->checkToken($xml);
         
         if ($this->tokenFlag && $this->tokenUseFlag){
             $this->log("Recursively fetching more items");

@@ -211,10 +211,7 @@ class AmazonShipmentPlanner extends AmazonInboundCore implements Iterator{
         if ($this->mockMode){
            $xml = $this->fetchMockFile()->$path->InboundShipmentPlans;
         } else {
-            $this->throttle();
-            $this->log("Making request to Amazon");
-            $response = fetchURL($url,array('Post'=>$query));
-            $this->logRequest();
+            $response = $this->sendRequest($url, array('Post'=>$query));
             
             if (!$this->checkResponse($response)){
                 return false;

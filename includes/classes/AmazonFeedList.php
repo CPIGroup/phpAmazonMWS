@@ -10,8 +10,8 @@
  * can use tokens when retrieving the list.
  */
 class AmazonFeedList extends AmazonFeedsCore implements Iterator{
-    private $tokenFlag = false;
-    private $tokenUseFlag = false;
+    protected $tokenFlag = false;
+    protected $tokenUseFlag = false;
     private $feedList;
     private $index = 0;
     private $i = 0;
@@ -255,10 +255,7 @@ class AmazonFeedList extends AmazonFeedsCore implements Iterator{
         if ($this->mockMode){
            $xml = $this->fetchMockFile()->$path;
         } else {
-            $this->throttle();
-            $this->log("Making request to Amazon");
-            $response = fetchURL($url,array('Post'=>$query));
-            $this->logRequest();
+            $response = $this->sendRequest($url, array('Post'=>$query));
             
             if (!$this->checkResponse($response)){
                 return false;
@@ -267,15 +264,9 @@ class AmazonFeedList extends AmazonFeedsCore implements Iterator{
             $xml = simplexml_load_string($response['body'])->$path;
         }
         
-        if ($xml->NextToken){
-            $this->tokenFlag = true;
-            $this->options['NextToken'] = (string)$xml->NextToken;
-        } else {
-            unset($this->options['NextToken']);
-            $this->tokenFlag = false;
-        }
-        
         $this->parseXML($xml);
+        
+        $this->checkToken($xml);
         
         if ($this->tokenFlag && $this->tokenUseFlag){
             $this->log("Recursively fetching more Feeds");
@@ -360,10 +351,7 @@ class AmazonFeedList extends AmazonFeedsCore implements Iterator{
         if ($this->mockMode){
            $xml = $this->fetchMockFile()->$path;
         } else {
-            $this->throttle();
-            $this->log("Making request to Amazon");
-            $response = fetchURL($url,array('Post'=>$query));
-            $this->logRequest();
+            $response = $this->sendRequest($url, array('Post'=>$query));
             
             if (!$this->checkResponse($response)){
                 return false;
@@ -414,10 +402,7 @@ class AmazonFeedList extends AmazonFeedsCore implements Iterator{
         if ($this->mockMode){
            $xml = $this->fetchMockFile()->$path;
         } else {
-            $this->throttle();
-            $this->log("Making request to Amazon");
-            $response = fetchURL($url,array('Post'=>$query));
-            $this->logRequest();
+            $response = $this->sendRequest($url, array('Post'=>$query));
             
             if (!$this->checkResponse($response)){
                 return false;

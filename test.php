@@ -3,15 +3,15 @@ include('/var/www/athena/includes/header.php');
         
 include('includes/classes.php');
 
-$a = new AmazonServiceStatus('BigKitchen','Inbound');
-$a->fetchServiceStatus();
-var_dump ($a);
-
-//$a = new AmazonFeedList('BigKitchen');
-//$a->setTimeLimits('-5 hours');
-//$a->setMaxCount(50);
-//$a->fetchFeedSubmissions();
+//$a = new AmazonServiceStatus('BigKitchen','Inbound');
+//$a->fetchServiceStatus();
 //var_dump ($a);
+
+$a = new AmazonFeedList('BigKitchen');
+$a->setTimeLimits('-5 hours');
+$a->setMaxCount(50);
+$a->fetchFeedSubmissions();
+var_dump ($a);
 
 //var_dump(base64_encode(md5('',true)));
 //var_dump('1B2M2Y8AsgTpgAmY7PhCfg==');

@@ -241,20 +241,20 @@ class AmazonFeed extends AmazonFeedsCore{
         if ($this->mockMode){
            $xml = $this->fetchMockFile()->$path;
         } else {
-            $this->throttle();
-            $this->log("Making request to Amazon");
             $headers = $this->genHeader();
             $post = $this->genPost();
-            $response = fetchURL("$url?$query",array('Header'=>$headers,'Post'=>$post));
-            $this->logRequest();
+            $response = $this->sendRequest("$url?$query",array('Header'=>$headers,'Post'=>$post));
             
-            $this->checkResponse($response);
+            if (!$this->checkResponse($response)){
+                return false;
+            }
             
             //getting Response 100?
             if ($response['head'] == 'HTTP/1.1 100 Continue'){
                 $body = strstr($response['body'],'<');
                 $xml = simplexml_load_string($body)->$path;
             } else {
+                $this->log("Unexpected response: ".$response['code'],'Warning');
                 $xml = simplexml_load_string($response['body'])->$path;
             }
             
@@ -322,15 +322,15 @@ class AmazonFeed extends AmazonFeedsCore{
     protected function checkResponse($r){
         if (!is_array($r)){
             $this->log("No Response found",'Warning');
-            return;
+            return false;
         }
         //for dealing with 100 response
         if (array_key_exists('error', $r) && $r['ok'] == 0){
             $this->log("Response Not OK! Error: ".$r['error'],'Urgent');
-            return;
+            return false;
         } else {
             $this->log("Response OK!");
-            return;
+            return true;
         }
     }
     

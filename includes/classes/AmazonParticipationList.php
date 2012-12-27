@@ -7,8 +7,8 @@
  * than potential use of tokens.
  */
 class AmazonParticipationList extends AmazonSellersCore{
-    private $tokenFlag = false;
-    private $tokenUseFlag = false;
+    protected $tokenFlag = false;
+    protected $tokenUseFlag = false;
     private $participationList;
     private $marketplaceList;
     private $indexM = 0;
@@ -87,10 +87,7 @@ class AmazonParticipationList extends AmazonSellersCore{
         if ($this->mockMode){
            $xml = $this->fetchMockFile()->$path;
         } else {
-            $this->throttle();
-            $this->log("Making request to Amazon");
-            $response = fetchURL($url,array('Post'=>$query));
-            $this->logRequest();
+            $response = $this->sendRequest($url, array('Post'=>$query));
             
             if (!$this->checkResponse($response)){
                 return false;
@@ -99,16 +96,14 @@ class AmazonParticipationList extends AmazonSellersCore{
             $xml = simplexml_load_string($response['body'])->$path;
         }
         
-        if ($xml->NextToken){
-            $this->tokenFlag = true;
-            $this->options['NextToken'] = (string)$xml->NextToken;
-        } else {
-            unset($this->options['NextToken']);
-            $this->tokenFlag = false;
-        }
-        
         $this->parseXML($xml);
         
+        $this->checkToken($xml);
+        
+        if ($this->tokenFlag && $this->tokenUseFlag){
+            $this->log("Recursively fetching more Participationseses");
+            $this->fetchParticipationList();
+        }
     }
     
     /**
@@ -159,11 +154,6 @@ class AmazonParticipationList extends AmazonSellersCore{
             $this->marketplaceList[$this->indexM]['Language'] = (string)$x->DefaultLanguageCode;
             $this->marketplaceList[$this->indexM]['Domain'] = (string)$x->DomainName;
             $this->indexM++;
-        }
-        
-        if ($this->tokenFlag && $this->tokenUseFlag){
-            $this->log("Recursively fetching more Participationseses");
-            $this->fetchParticipationList();
         }
     }
     

@@ -338,81 +338,79 @@ abstract class AmazonCore{
      * 
      * This method reads from a database table to coordinate all requests sent
      * to Amazon to prevent the request from being rejected due to throttling.
-     * @todo has Athena config... oh and uses Athena's  DB class
-     * @todo also probably change to take into account the count
+     *  @DEPRECATED No longer uses database
      */
     protected function throttle(){
-        include('/var/www/athena/includes/config.php');
-        
-        if (!isset($this->throttleGroup)){
-            $this->throttleGroup = $this->options['Action'];
-            $this->log("Unable to find Throttle Group, setting to ".$this->options['Action'],'Warning');
-        }
-        
-        if ($this->throttleSafe){
-            //original throttling code
-            //only checks when the last request was made
-            $sql = 'SELECT MAX(timestamp) as maxtime FROM `amazonRequestLog` WHERE `type` = ?';
-            $value = array($this->throttleGroup);
-            $result = db::executeQuery($sql, $value, DB_PLUGINS)->fetchAll();
-            if(!$result){
-                $this->log("No response from the database!",'Warning');
-                return;
-            }
-
-            $maxtime = $result[0]['maxtime'];
-            flush();
-            
-            //loop until there is an available request spot
-            while(true){
-                flush();
-                $mintime = time()-$this->throttleTime;
-                $timediff = $maxtime-$mintime;
-                if($maxtime <= $mintime){
-                    return;
-                }
-                $this->log("Last request of this type: ".date("Y/m/d h:i:s", $maxtime).", Sleeping for $timediff seconds",'Throttle');
-                sleep($timediff);
-                $result = db::executeQuery($sql, $value, DB_PLUGINS)->fetchAll();
-                $maxtime = $result[0]['maxtime'];
-            }
-        } else {
-            //new throttling code
-            //checks the number of same requests made within the past time that
-            //it would take the entire request supply to regenerate
-            $sql = 'SELECT COUNT(*) as count, MAX(timestamp) as maxtime  FROM `amazonRequestLog` WHERE `type` = ? AND `timestamp` > ?';
-            $value = array($this->throttleGroup, time()-($this->throttleLimit * $this->throttleTime));
-            $result = db::executeQuery($sql, $value, DB_PLUGINS)->fetchAll();
-            if(!$result){
-                $this->log("No response from the database!",'Warning');
-                return;
-            }
-
-            $count = $result[0]['count'];
-            $maxtime = $result[0]['maxtime'];
-            flush();
-            
-            //loop until there is an available request spot
-            while(true){
-                flush();
-                $mintime = time()-$this->throttleTime;
-                $timediff = $maxtime-$mintime;
-                if ($count < $this->throttleLimit || $mintime >= $maxtime){
-                    return;
-                }
-                $last = time()-$maxtime;
-                $s = ($last == 1) ? '' : 's';
-                $s2 = ($timediff == 1) ? '' : 's';
-                $this->log("Last request of this type: ".date("Y/m/d h:i:s", $maxtime)." ($last second$s ago), Sleeping for $timediff second$s2",'Throttle');
-                sleep($timediff);
-                
-                $value = array($this->throttleGroup, time()-($this->throttleLimit * $this->throttleTime));
-                $result = db::executeQuery($sql, $value, DB_PLUGINS)->fetchAll();
-                $count = $result[0]['count'];
-                $maxtime = $result[0]['maxtime'];
-            }
-        }
-        
+//        include('/var/www/athena/includes/config.php');
+//        
+//        if (!isset($this->throttleGroup)){
+//            $this->throttleGroup = $this->options['Action'];
+//            $this->log("Unable to find Throttle Group, setting to ".$this->options['Action'],'Warning');
+//        }
+//        
+//        if ($this->throttleSafe){
+//            //original throttling code
+//            //only checks when the last request was made
+//            $sql = 'SELECT MAX(timestamp) as maxtime FROM `amazonRequestLog` WHERE `type` = ?';
+//            $value = array($this->throttleGroup);
+//            $result = db::executeQuery($sql, $value, DB_PLUGINS)->fetchAll();
+//            if(!$result){
+//                $this->log("No response from the database!",'Warning');
+//                return;
+//            }
+//
+//            $maxtime = $result[0]['maxtime'];
+//            flush();
+//            
+//            //loop until there is an available request spot
+//            while(true){
+//                flush();
+//                $mintime = time()-$this->throttleTime;
+//                $timediff = $maxtime-$mintime;
+//                if($maxtime <= $mintime){
+//                    return;
+//                }
+//                $this->log("Last request of this type: ".date("Y/m/d h:i:s", $maxtime).", Sleeping for $timediff seconds",'Throttle');
+//                sleep($timediff);
+//                $result = db::executeQuery($sql, $value, DB_PLUGINS)->fetchAll();
+//                $maxtime = $result[0]['maxtime'];
+//            }
+//        } else {
+//            //new throttling code
+//            //checks the number of same requests made within the past time that
+//            //it would take the entire request supply to regenerate
+//            $sql = 'SELECT COUNT(*) as count, MAX(timestamp) as maxtime  FROM `amazonRequestLog` WHERE `type` = ? AND `timestamp` > ?';
+//            $value = array($this->throttleGroup, time()-($this->throttleLimit * $this->throttleTime));
+//            $result = db::executeQuery($sql, $value, DB_PLUGINS)->fetchAll();
+//            if(!$result){
+//                $this->log("No response from the database!",'Warning');
+//                return;
+//            }
+//
+//            $count = $result[0]['count'];
+//            $maxtime = $result[0]['maxtime'];
+//            flush();
+//            
+//            //loop until there is an available request spot
+//            while(true){
+//                flush();
+//                $mintime = time()-$this->throttleTime;
+//                $timediff = $maxtime-$mintime;
+//                if ($count < $this->throttleLimit || $mintime >= $maxtime){
+//                    return;
+//                }
+//                $last = time()-$maxtime;
+//                $s = ($last == 1) ? '' : 's';
+//                $s2 = ($timediff == 1) ? '' : 's';
+//                $this->log("Last request of this type: ".date("Y/m/d h:i:s", $maxtime)." ($last second$s ago), Sleeping for $timediff second$s2",'Throttle');
+//                sleep($timediff);
+//                
+//                $value = array($this->throttleGroup, time()-($this->throttleLimit * $this->throttleTime));
+//                $result = db::executeQuery($sql, $value, DB_PLUGINS)->fetchAll();
+//                $count = $result[0]['count'];
+//                $maxtime = $result[0]['maxtime'];
+//            }
+//        }
     }
     
     /**
@@ -507,19 +505,19 @@ abstract class AmazonCore{
      * 
      * This method writes to the database table the action performed and the time
      * it was performed. This is used for throttling.
-     * @todo ATHENA...
+     * @DEPRECATED No longer uses database
      */
     protected function logRequest(){
-        include('/var/www/athena/includes/config.php');
-        
-        $sql = "INSERT INTO  `amazonRequestLog` (`id` ,`type` ,`timestamp`)VALUES (NULL ,  ?,  ?)";
-        $value = array($this->options['Action'],time());
-        $this->log("Logging action to database: ".$this->options['Action']);
-        
-        $result = db::executeQuery($sql, $value, DB_PLUGINS);
-        if (!$result){
-            $this->log("Could not write to database!",'Urgent');
-        }
+//        include('/var/www/athena/includes/config.php');
+//        
+//        $sql = "INSERT INTO  `amazonRequestLog` (`id` ,`type` ,`timestamp`)VALUES (NULL ,  ?,  ?)";
+//        $value = array($this->options['Action'],time());
+//        $this->log("Logging action to database: ".$this->options['Action']);
+//        
+//        $result = db::executeQuery($sql, $value, DB_PLUGINS);
+//        if (!$result){
+//            $this->log("Could not write to database!",'Urgent');
+//        }
     }
     
     /**
@@ -549,112 +547,124 @@ abstract class AmazonCore{
         return $this->_getParametersAsString($this->options);
     }
     
-    //Functions from Athena:
     /**
-	 * Connect to database using PDO
-	 * @global boold $mysql_ATTR_PERSISTENT_FALSE - need to set to 1 if fork() using
-	 * @param string $dbName - datable
-	 * @param string $username - username
-	 * @param string $password - password
-	 * @param string $hostname - hostname
-	 * @return PDO 
-	 */
-	private static function dbConnect($dbName,$username=null,$password=null,$hostname=null){
-
-		// globals vars
-		global $mysql_ATTR_PERSISTENT_FALSE;
-		if (defined("DB_PHPUNIT")) {			
-			// rewrite it use config for test server
-			$username = DB_TEST_USERNAME;
-			$password = DB_TEST_PASSWORD;
-			$hostname = DB_TEST_HOSTNAME;
-
-			// @todo make it nice :)
-			if ($dbName == DB_ATHENA) {
-				$dbName = DB_TEST_ATHENA;
-			} elseif ($dbName == DB_SERVER) {
-				$dbName = DB_TEST_SERVER;
-			} elseif ($dbName == DB_PLUGINS) {
-				$dbName = DB_TEST_PLUGINS;
-			}
-		} else {
-			// set variables by default if did't not set
-			if (is_null($username))
-				$username = DB_USERNAME;
-			if (is_null($password))
-				$password = DB_PASSWORD;
-			if (is_null($hostname))
-				$hostname = DB_HOSTNAME;
-		}
-		
-		// error if not test database set and phpunit runnig 
-		if (in_array($dbName, Array(DB_ATHENA, DB_SERVER, DB_PLUGINS)) and preg_match('/phpunit/i', $_SERVER['SCRIPT_FILENAME'])) {
-			trigger_error('Access denied to connect to production server if phpunit running for security reason', E_USER_ERROR);
-		}
-		
-		// config
-		$config = Array(PDO::ATTR_PERSISTENT => true);
-		if (isset($mysql_ATTR_PERSISTENT_FALSE) and $mysql_ATTR_PERSISTENT_FALSE == 1)
-			$config = Array(PDO::ATTR_PERSISTENT => false);
-		
-		$config[PDO::MYSQL_ATTR_INIT_COMMAND] = "SET NAMES 'UTF8'";
-		
-		// config line; may be in the future we would like use different driver?
-		$connectline = "mysql:host=" . $hostname . ";dbname=" . $dbName;
-		
-		try {
-			$PDO = new PDO($connectline, $username, $password, $config);
-			$PDO->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-		} catch (PDOException $e) {
-			die ($e->getMessage());
-		}
-		
-		// if phpunit test, change database!
-		if (preg_match('/phpunit/i', $_SERVER['SCRIPT_FILENAME'])) {
-			$q = $PDO->exec('USE `'.$dbName.'`;');
-		}
-
-		return $PDO;
-	}
+     * Sends a request to Amazon via cURL
+     * 
+     * This method will keep trying if the request was throttled.
+     * @param string $url <p>URL to feed to cURL</p>
+     * @param array $param <p>paramter array to feed to cURL</p>
+     * @return array <p>cURL response array</p>
+     */
+    protected function sendRequest($url,$param){
+        $this->log("Making request to Amazon: ".$this->options['Action']);
+        $response = $this->fetchURL($url,$param);
         
-	/**
-	 * Perform a PDO mysql query
-	 * @global type $mysql_database
-	 * @param string $sql SQL Statement containing ? ---> OR <--- :named values
-	 * @param array $values Array of values in order of ?.  |OR|  If key 'bindValue' exsits do ['bindValue'] + ['parameter'], ['value'] , OPTIONAL: ['data_type']
-	 * @param string $dbName - Optional: mysql database override
-	 * @param bool $returnID - Should the function return the last inserted ID?
-	 * @return mixed - PDO object by default, ID if $returnID set to TRUE;
-	 */
-	private static function executeQuery($sql, $values, $dbName=NULL, $returnID=null) {
-		if (config::check('Maintenance mode'))
-			die(''._('Server is in Maintenance Mode').'');
-		
-		if ($dbName == NULL)
-			$dbName = DB_ATHENA;
-		
-		$conn = self::dbConnect($dbName);
-		
-		myLog("PDO: Sql:" . $sql . " - Values:" . print_r($values, TRUE), LOG_DEBUG);
-
-		$q = $conn->prepare($sql);
-
-		//BindValue Support
-		if ( is_array($values) and isset($values['bindValue']) and is_array($values['bindValue'])) { //bindValue can not be mixed with ?
-			foreach ($values['bindValue'] as $value) {
-				$q->bindValue($value['parameter'], $value['value'], (isset($value['data_type']) ? $value['data_type'] : PDO::PARAM_STR));
-			}
-			$q->execute();
-		} else {
-			$q->execute($values);
-		}
-
-		if (!$returnID) {
-			return $q;
-		} else {
-			return $conn->lastInsertId();
-		}
-	}
+        while ($response['code'] == '503'){
+            $this->sleep();
+            $response = $this->fetchURL($url,$param);
+        }
+        
+        return $response;
+    }
+    
+    /**
+     * Sleeps for the throttle time and records to the log.
+     */
+    protected function sleep(){
+        flush();
+        $s = ($this->throttleTime == 1) ? '' : 's';
+        $this->log("Request was throttled, Sleeping for ".$this->throttleTime." second$s",'Throttle');
+        sleep($this->throttleTime);
+    }
+    
+    /**
+     * Checks for a token and changes the proper options
+     * @param SimpleXMLObject $xml <p>response data</p>
+     * @return boolean <p><b>FALSE</b> if no XML data</p>
+     */
+    protected function checkToken($xml){
+        if (!$xml){
+            return false;
+        }
+        if ($xml->NextToken){
+            $this->tokenFlag = true;
+            $this->options['NextToken'] = (string)$xml->NextToken;
+        } else {
+            unset($this->options['NextToken']);
+            $this->tokenFlag = false;
+        }
+    }
+    
+    //Functions from Athena:
+       /**
+        * Get url or send POST data
+        * @param string $url 
+        * @param array  $param['Header']
+        *               $param['Post']
+        * @return array $return['ok'] 1  - success, (0,-1) - fail
+        *               $return['body']  - response
+        *               $return['error'] - error, if "ok" is not 1
+        *               $return['head']  - http header
+        */
+       function fetchURL ($url, $param) {
+        $return = array();
+        
+        $ch = curl_init();
+        
+        curl_setopt($ch,CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch,CURLOPT_TIMEOUT, 0);
+        curl_setopt($ch,CURLOPT_FORBID_REUSE, 1);
+        curl_setopt($ch,CURLOPT_FRESH_CONNECT, 1);
+        curl_setopt($ch,CURLOPT_HEADER, 1);
+        curl_setopt($ch,CURLOPT_URL,$url);
+        if ($param and $param['Header'])
+                curl_setopt($ch,CURLOPT_HTTPHEADER, $param['Header']);
+        if ($param and $param['Post'])
+                 curl_setopt($ch,CURLOPT_POSTFIELDS, $param['Post']);
+        
+        $data = curl_exec($ch);
+        if ( curl_errno($ch) ) {
+                $return['ok'] = -1;
+                $return['error'] = curl_error($ch);
+                return $return;
+        }
+        
+        $data = preg_split("/\r\n\r\n/",$data, 2, PREG_SPLIT_NO_EMPTY);
+        if ($data) {
+                $return['head'] = ( isset($data[0]) ? $data[0] : null );
+                $return['body'] = ( isset($data[1]) ? $data[1] : null );
+        }
+        
+        $data = preg_match("/HTTP\/[0-9.]+ ([0-9]+) (.+)\r\n/",$return['head'], $matches);
+        if ($matches) {
+                $return['code'] = $matches[1];
+                $return['answer'] = $matches[2];
+        }
+        
+        $data = preg_match("/meta http-equiv=.refresh. +content=.[0-9]*;url=([^'\"]*)/i",$return['body'], $matches);
+        if ($matches) {
+                $return['location'] = $matches[1];
+                $return['code'] = '301';
+        }
+        
+        if ( $return['code'] == '200' or $return['code'] == '302' ) {
+                $return['ok'] = 1;
+        } else {
+                $return['error'] = (($return['answer'] and $return['answer'] != 'OK') ? $return['answer'] : 'Something wrong!');
+                $return['ok'] = 0;
+        }
+        
+        foreach (preg_split('/\n/', $return['head'], -1, PREG_SPLIT_NO_EMPTY) as $value) {
+                $data = preg_split('/:/', $value, 2, PREG_SPLIT_NO_EMPTY);
+                if (is_array($data) and isset($data['1'])) {
+                        $return['headarray'][$data['0']] = trim($data['1']);
+                }
+        }
+        
+        curl_close($ch);
+        
+        return $return;
+       }
     // End Functions from Athena
      
     // Functions from Amazon:

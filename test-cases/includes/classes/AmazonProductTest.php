@@ -17,7 +17,7 @@ class AmazonProductTest extends PHPUnit_Framework_TestCase {
     protected function setUp() {
         $this->resetLog();
         $this->object = new AmazonProduct('BigKitchen', null, true);
-        $this->object->setConfig('/var/www/athena/plugins/newAmazon/test-cases/test-config.php');
+        $this->object->setConfig('/var/www/athena/plugins/amazon/newAmazon/test-cases/test-config.php');
     }
 
     /**
@@ -29,7 +29,7 @@ class AmazonProductTest extends PHPUnit_Framework_TestCase {
     }
     
     public function testProduct(){
-        $data = simplexml_load_file('/var/www/athena/plugins/newAmazon/test-cases/mock/searchProducts.xml');
+        $data = simplexml_load_file('/var/www/athena/plugins/amazon/newAmazon/test-cases/mock/searchProducts.xml');
         $p = $data->ListMatchingProductsResult->Products->Product;
         $obj = new AmazonProduct('BigKitchen', $p, true);
         $o = $obj->getData();

@@ -17,7 +17,7 @@ class AmazonOrderSetTest extends PHPUnit_Framework_TestCase {
     protected function setUp() {
         $this->resetLog();
         $this->object = new AmazonOrderSet('BigKitchen', null, true);
-        $this->object->setConfig('/var/www/athena/plugins/newAmazon/test-cases/test-config.php');
+        $this->object->setConfig('/var/www/athena/plugins/amazon/newAmazon/test-cases/test-config.php');
     }
 
     /**

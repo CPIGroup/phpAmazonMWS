@@ -17,7 +17,7 @@ class AmazonOrderTest extends PHPUnit_Framework_TestCase {
     protected function setUp() {
         $this->resetLog();
         $this->object = new AmazonOrder('BigKitchen', null, null, true);
-        $this->object->setConfig('/var/www/athena/plugins/newAmazon/test-cases/test-config.php');
+        $this->object->setConfig('/var/www/athena/plugins/amazon/newAmazon/test-cases/test-config.php');
     }
 
     /**
@@ -35,7 +35,7 @@ class AmazonOrderTest extends PHPUnit_Framework_TestCase {
         $this->assertArrayHasKey('AmazonOrderId.Id.1',$o);
         $this->assertEquals('77', $o['AmazonOrderId.Id.1']);
         
-        $data = simplexml_load_file('/var/www/athena/plugins/newAmazon/test-cases/mock/fetchOrder.xml');
+        $data = simplexml_load_file('/var/www/athena/plugins/amazon/newAmazon/test-cases/mock/fetchOrder.xml');
         $obj2 = new AmazonOrder('BigKitchen', null, $data->GetOrderResult->Orders->Order, true);
         
         $get = $obj2->getAmazonOrderId();

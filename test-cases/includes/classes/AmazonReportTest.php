@@ -17,7 +17,7 @@ class AmazonReportTest extends PHPUnit_Framework_TestCase {
     protected function setUp() {
         $this->resetLog();
         $this->object = new AmazonReport('BigKitchen', null, true);
-        $this->object->setConfig('/var/www/athena/plugins/newAmazon/test-cases/test-config.php');
+        $this->object->setConfig('/var/www/athena/plugins/amazon/newAmazon/test-cases/test-config.php');
     }
 
     /**
@@ -72,8 +72,8 @@ class AmazonReportTest extends PHPUnit_Framework_TestCase {
      * @depends testFetchReport
      */
     public function testSaveReport($o){
-        $path = '/var/www/athena/plugins/newAmazon/test-cases/mock/saveReport.xml';
-        $path2 = '/var/www/athena/plugins/newAmazon/test-cases/mock/fetchReport.xml';
+        $path = '/var/www/athena/plugins/amazon/newAmazon/test-cases/mock/saveReport.xml';
+        $path2 = '/var/www/athena/plugins/amazon/newAmazon/test-cases/mock/fetchReport.xml';
         $o->saveReport($path);
         $check = $this->parseLog();
         $this->assertEquals("Successfully saved report #777 at $path",$check[1]);

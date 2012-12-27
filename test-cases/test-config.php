@@ -34,7 +34,7 @@ define('AMAZON_VERSION_SELLERS',   '2011-07-01');
 
 
 //Location of log file to use
-define('AMAZON_LOG','/var/www/athena/plugins/newAmazon/test-cases/log.txt');
+define('AMAZON_LOG','/var/www/athena/plugins/amazon/newAmazon/test-cases/log.txt');
 
 //Amazon Throttle Values in seconds
 //Do not modify unless Amazon changes the values

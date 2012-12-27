@@ -41,7 +41,7 @@ abstract class AmazonCore{
      * from the list to use as a response. See <i>setMock</i> for more information.</p>
      */
     protected function __construct($s, $mock=false, $m = null){
-        $this->setConfig('/var/www/athena/plugins/newAmazon/amazon-config.php');
+        $this->setConfig('/var/www/athena/plugins/amazon/newAmazon/amazon-config.php');
         $this->setStore($s);
         $this->setMock($mock,$m);
         

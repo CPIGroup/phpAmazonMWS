@@ -24,20 +24,12 @@ class AmazonPackageTracker extends AmazonOutboundCore{
      */
     public function __construct($s, $id = null, $mock = false, $m = null) {
         parent::__construct($s, $mock, $m);
-        if (file_exists($this->config)){
-            include($this->config);
-        } else {
-            throw new Exception('Config file does not exist!');
-        }
         
         if($id){
             $this->setPackageNumber($id);
         }
         
         $this->options['Action'] = 'GetPackageTrackingDetails';
-        
-        $this->throttleLimit = $throttleLimitInventory;
-        $this->throttleTime = $throttleTimeInventory;
     }
     
     /**
@@ -70,11 +62,9 @@ class AmazonPackageTracker extends AmazonOutboundCore{
             return false;
         }
         
-        $this->options['Timestamp'] = $this->genTime();
         $url = $this->urlbase.$this->urlbranch;
         
-        $this->options['Signature'] = $this->_signParameters($this->options, $this->secretKey);
-        $query = $this->_getParametersAsString($this->options);
+        $query = $this->genQuery();
         
         $path = $this->options['Action'].'Result';
         if ($this->mockMode){

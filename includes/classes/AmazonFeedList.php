@@ -36,14 +36,8 @@ class AmazonFeedList extends AmazonFeedsCore implements Iterator{
             throw new Exception('Config file does not exist!');
         }
         
-        $this->throttleLimit = $throttleLimitFeedList;
-        $this->throttleTime = $throttleTimeFeedList;
-        
-        if ($throttleSafe){
-            $this->throttleLimit++;
-            $this->throttleTime++;
-        }
-        
+        $this->throttleLimit = THROTTLE_LIMIT_FEEDLIST;
+        $this->throttleTime = THROTTLE_TIME_FEEDLIST;
     }
     
     /**
@@ -251,13 +245,11 @@ class AmazonFeedList extends AmazonFeedsCore implements Iterator{
      * @return boolean <p><b>FALSE</b> if something goes wrong</p>
      */
     public function fetchFeedSubmissions(){
-        $this->options['Timestamp'] = $this->genTime();
         $this->prepareToken();
         
         $url = $this->urlbase.$this->urlbranch;
         
-        $this->options['Signature'] = $this->_signParameters($this->options, $this->secretKey);
-        $query = $this->_getParametersAsString($this->options);
+        $query = $this->genQuery();
         
         $path = $this->options['Action'].'Result';
         if ($this->mockMode){
@@ -304,8 +296,8 @@ class AmazonFeedList extends AmazonFeedsCore implements Iterator{
         include($this->config);
         if ($this->tokenFlag && $this->tokenUseFlag){
             $this->options['Action'] = 'GetFeedSubmissionListByNextToken';
-            $this->throttleLimit = $throttleLimitReportToken;
-            $this->throttleTime = $throttleTimeReportToken;
+            $this->throttleLimit = THROTTLE_LIMIT_REPORTTOKEN;
+            $this->throttleTime = THROTTLE_TIME_REPORTTOKEN;
             $this->throttleGroup = 'GetFeedSubmissionListByNextToken';
             $this->resetFeedTypes();
             $this->resetFeedStatuses();
@@ -314,8 +306,8 @@ class AmazonFeedList extends AmazonFeedsCore implements Iterator{
             unset($this->options['MaxCount']);
         } else {
             $this->options['Action'] = 'GetFeedSubmissionList';
-            $this->throttleLimit = $throttleLimitFeedList;
-            $this->throttleTime = $throttleTimeFeedList;
+            $this->throttleLimit = THROTTLE_LIMIT_FEEDLIST;
+            $this->throttleTime = THROTTLE_TIME_FEEDLIST;
             $this->throttleGroup = 'GetFeedSubmissionList';
             unset($this->options['NextToken']);
             $this->feedList = array();
@@ -358,13 +350,11 @@ class AmazonFeedList extends AmazonFeedsCore implements Iterator{
      * @return boolean <p><b>FALSE</b> if something goes wrong</p>
      */
     public function countFeeds(){
-        $this->options['Timestamp'] = $this->genTime();
         $this->prepareCount();
         
         $url = $this->urlbase.$this->urlbranch;
         
-        $this->options['Signature'] = $this->_signParameters($this->options, $this->secretKey);
-        $query = $this->_getParametersAsString($this->options);
+        $query = $this->genQuery();
         
         $path = $this->options['Action'].'Result';
         if ($this->mockMode){
@@ -396,8 +386,8 @@ class AmazonFeedList extends AmazonFeedsCore implements Iterator{
      */
     protected function prepareCount(){
         $this->options['Action'] = 'GetFeedSubmissionCount';
-        $this->throttleLimit = $throttleLimitFeedList;
-        $this->throttleTime = $throttleTimeFeedList;
+        $this->throttleLimit = THROTTLE_LIMIT_FEEDLIST;
+        $this->throttleTime = THROTTLE_TIME_FEEDLIST;
         $this->throttleGroup = 'GetFeedSubmissionCount';
         $this->resetFeedIds();
         unset($this->options['MaxCount']);
@@ -415,12 +405,10 @@ class AmazonFeedList extends AmazonFeedsCore implements Iterator{
      */
     public function cancelFeeds(){
         $this->prepareCancel();
-        $this->options['Timestamp'] = $this->genTime();
         
         $url = $this->urlbase.$this->urlbranch;
         
-        $this->options['Signature'] = $this->_signParameters($this->options, $this->secretKey);
-        $query = $this->_getParametersAsString($this->options);
+        $query = $this->genQuery();
         
         $path = $this->options['Action'].'Result';
         if ($this->mockMode){
@@ -453,8 +441,8 @@ class AmazonFeedList extends AmazonFeedsCore implements Iterator{
     protected function prepareCancel(){
         include($this->config);
         $this->options['Action'] = 'CancelFeedSubmissions';
-        $this->throttleLimit = $throttleLimitFeedList;
-        $this->throttleTime = $throttleTimeFeedList;
+        $this->throttleLimit = THROTTLE_LIMIT_FEEDLIST;
+        $this->throttleTime = THROTTLE_TIME_FEEDLIST;
         $this->throttleGroup = 'CancelFeedSubmissions';
         unset($this->options['MaxCount']);
         unset($this->options['NextToken']);

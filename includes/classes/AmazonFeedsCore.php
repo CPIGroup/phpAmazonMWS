@@ -27,7 +27,7 @@ abstract class AmazonFeedsCore extends AmazonCore{
         }
         
         $this->urlbranch = '';
-        $this->options['Version'] = $versionFeeds;
+        $this->options['Version'] = AMAZON_VERSION_FEEDS;
     }
 }
 ?>

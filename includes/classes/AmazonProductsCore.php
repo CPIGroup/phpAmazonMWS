@@ -29,14 +29,16 @@ abstract class AmazonProductsCore extends AmazonCore{
             throw new Exception('Config file does not exist!');
         }
         
-        $this->urlbranch = 'Products/'.$versionProducts;
-        $this->options['Version'] = $versionProducts;
+        $this->urlbranch = 'Products/'.AMAZON_VERSION_PRODUCTS;
+        $this->options['Version'] = AMAZON_VERSION_PRODUCTS;
         
         if(array_key_exists('marketplaceId', $store[$s])){
             $this->options['MarketplaceId'] = $store[$s]['marketplaceId'];
         } else {
             $this->log("Marketplace ID is missing",'Urgent');
         }
+        
+        $this->throttleLimit = THROTTLE_LIMIT_PRODUCT;
     }
     
     /**

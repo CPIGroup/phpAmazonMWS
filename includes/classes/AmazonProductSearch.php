@@ -38,15 +38,8 @@ class AmazonProductSearch extends AmazonProductsCore{
         
         $this->options['Action'] = 'ListMatchingProducts';
         
-        $this->throttleLimit = $throttleLimitProduct;
-        $this->throttleTime = $throttleTimeProductMatch;
+        $this->throttleTime = THROTTLE_TIME_PRODUCTMATCH;
         $this->throttleGroup = 'ListMatchingProducts';
-        
-        if ($throttleSafe){
-            $this->throttleLimit++;
-            $this->throttleTime++;
-        }
-        
     }
     
     /**
@@ -137,11 +130,9 @@ class AmazonProductSearch extends AmazonProductsCore{
             return false;
         }
         
-        $this->options['Timestamp'] = $this->genTime();
         $url = $this->urlbase.$this->urlbranch;
         
-        $this->options['Signature'] = $this->_signParameters($this->options, $this->secretKey);
-        $query = $this->_getParametersAsString($this->options);
+        $query = $this->genQuery();
         
         if ($this->mockMode){
            $xml = $this->fetchMockFile();

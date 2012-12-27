@@ -16,7 +16,6 @@ abstract class AmazonCore{
     protected $throttleTime;
     protected $throttleGroup;
     protected $storeName;
-    protected $secretKey;
     protected $options;
     protected $config;
     protected $mockMode = false;
@@ -136,7 +135,7 @@ abstract class AmazonCore{
                 }
                 return $return;
             } catch (Exception $e){
-                $this->log("Error when opening Mock File: $url",'Warning');
+                $this->log("Error when opening Mock File: $url - ".$e->getMessage(),'Warning');
                 return false;
             }
             
@@ -269,8 +268,8 @@ abstract class AmazonCore{
         if (file_exists($path) && is_readable($path)){
             include($path);
             $this->config = $path;
-            $this->setLogPath($logpath);
-            $this->urlbase = $serviceURL;
+            $this->setLogPath(AMAZON_LOG);
+            $this->urlbase = AMAZON_SERVICE_URL;
         } else {
             throw new Exception("Config file does not exist or cannot be read! ($path)");
         }
@@ -323,9 +322,7 @@ abstract class AmazonCore{
             } else {
                 $this->log("Access Key ID is missing!",'Warning');
             }
-            if(array_key_exists('secretKey', $store[$s])){
-                $this->secretKey = $store[$s]['secretKey'];
-            } else {
+            if(!array_key_exists('secretKey', $store[$s])){
                 $this->log("Secret Key is missing!",'Warning');
             }
             
@@ -482,7 +479,142 @@ abstract class AmazonCore{
         }
     }
     
-    // -- test --
+    /**
+     * Handles generation of the signed query string.
+     * 
+     * This method uses the secret key from the config file to generate the
+     * signed query string.
+     * It also handles the creation of the timestamp option prior.
+     * @return string <p>query string to send to cURL</p>
+     * @throws Exception <p>when config file or secret key is missing</p>
+     */
+    protected function genQuery(){
+        if (file_exists($this->config)){
+            include($this->config);
+        } else {
+            throw new Exception("Config file does not exist!");
+        }
+        
+        if (array_key_exists($this->storeName, $store) && array_key_exists('secretKey', $store[$this->storeName])){
+            $secretKey = $store[$this->storeName]['secretKey'];
+        } else {
+            throw new Exception("Secret Key is missing!");
+        }
+        
+        $this->options['Timestamp'] = $this->genTime();
+        $this->options['Signature'] = $this->_signParameters($this->options, $secretKey);
+        return $this->_getParametersAsString($this->options);
+    }
+    
+    //Functions from Athena:
+    /**
+	 * Connect to database using PDO
+	 * @global boold $mysql_ATTR_PERSISTENT_FALSE - need to set to 1 if fork() using
+	 * @param string $dbName - datable
+	 * @param string $username - username
+	 * @param string $password - password
+	 * @param string $hostname - hostname
+	 * @return PDO 
+	 */
+	private static function dbConnect($dbName,$username=null,$password=null,$hostname=null){
+
+		// globals vars
+		global $mysql_ATTR_PERSISTENT_FALSE;
+		if (defined("DB_PHPUNIT")) {			
+			// rewrite it use config for test server
+			$username = DB_TEST_USERNAME;
+			$password = DB_TEST_PASSWORD;
+			$hostname = DB_TEST_HOSTNAME;
+
+			// @todo make it nice :)
+			if ($dbName == DB_ATHENA) {
+				$dbName = DB_TEST_ATHENA;
+			} elseif ($dbName == DB_SERVER) {
+				$dbName = DB_TEST_SERVER;
+			} elseif ($dbName == DB_PLUGINS) {
+				$dbName = DB_TEST_PLUGINS;
+			}
+		} else {
+			// set variables by default if did't not set
+			if (is_null($username))
+				$username = DB_USERNAME;
+			if (is_null($password))
+				$password = DB_PASSWORD;
+			if (is_null($hostname))
+				$hostname = DB_HOSTNAME;
+		}
+		
+		// error if not test database set and phpunit runnig 
+		if (in_array($dbName, Array(DB_ATHENA, DB_SERVER, DB_PLUGINS)) and preg_match('/phpunit/i', $_SERVER['SCRIPT_FILENAME'])) {
+			trigger_error('Access denied to connect to production server if phpunit running for security reason', E_USER_ERROR);
+		}
+		
+		// config
+		$config = Array(PDO::ATTR_PERSISTENT => true);
+		if (isset($mysql_ATTR_PERSISTENT_FALSE) and $mysql_ATTR_PERSISTENT_FALSE == 1)
+			$config = Array(PDO::ATTR_PERSISTENT => false);
+		
+		$config[PDO::MYSQL_ATTR_INIT_COMMAND] = "SET NAMES 'UTF8'";
+		
+		// config line; may be in the future we would like use different driver?
+		$connectline = "mysql:host=" . $hostname . ";dbname=" . $dbName;
+		
+		try {
+			$PDO = new PDO($connectline, $username, $password, $config);
+			$PDO->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+		} catch (PDOException $e) {
+			die ($e->getMessage());
+		}
+		
+		// if phpunit test, change database!
+		if (preg_match('/phpunit/i', $_SERVER['SCRIPT_FILENAME'])) {
+			$q = $PDO->exec('USE `'.$dbName.'`;');
+		}
+
+		return $PDO;
+	}
+        
+	/**
+	 * Perform a PDO mysql query
+	 * @global type $mysql_database
+	 * @param string $sql SQL Statement containing ? ---> OR <--- :named values
+	 * @param array $values Array of values in order of ?.  |OR|  If key 'bindValue' exsits do ['bindValue'] + ['parameter'], ['value'] , OPTIONAL: ['data_type']
+	 * @param string $dbName - Optional: mysql database override
+	 * @param bool $returnID - Should the function return the last inserted ID?
+	 * @return mixed - PDO object by default, ID if $returnID set to TRUE;
+	 */
+	private static function executeQuery($sql, $values, $dbName=NULL, $returnID=null) {
+		if (config::check('Maintenance mode'))
+			die(''._('Server is in Maintenance Mode').'');
+		
+		if ($dbName == NULL)
+			$dbName = DB_ATHENA;
+		
+		$conn = self::dbConnect($dbName);
+		
+		myLog("PDO: Sql:" . $sql . " - Values:" . print_r($values, TRUE), LOG_DEBUG);
+
+		$q = $conn->prepare($sql);
+
+		//BindValue Support
+		if ( is_array($values) and isset($values['bindValue']) and is_array($values['bindValue'])) { //bindValue can not be mixed with ?
+			foreach ($values['bindValue'] as $value) {
+				$q->bindValue($value['parameter'], $value['value'], (isset($value['data_type']) ? $value['data_type'] : PDO::PARAM_STR));
+			}
+			$q->execute();
+		} else {
+			$q->execute($values);
+		}
+
+		if (!$returnID) {
+			return $q;
+		} else {
+			return $conn->lastInsertId();
+		}
+	}
+    // End Functions from Athena
+     
+    // Functions from Amazon:
     /**
      * Reformats the provided string using rawurlencode while also replacing ~, copied from Amazon
      * 
@@ -572,7 +704,7 @@ abstract class AmazonCore{
         );
     }
     
-    // -- end test --
+    // -- End Functions from Amazon --
     
 }
 

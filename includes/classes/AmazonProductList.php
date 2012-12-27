@@ -30,15 +30,8 @@ class AmazonProductList extends AmazonProductsCore implements Iterator{
         
         $this->options['Action'] = 'GetMatchingProductForId';
         
-        $this->throttleLimit = $throttleLimitProduct;
-        $this->throttleTime = $throttleTimeProductList;
+        $this->throttleTime = THROTTLE_TIME_PRODUCTLIST;
         $this->throttleGroup = 'GetMatchingProductForId';
-        
-        if ($throttleSafe){
-            $this->throttleLimit++;
-            $this->throttleTime++;
-        }
-        
     }
     
     /**
@@ -108,12 +101,10 @@ class AmazonProductList extends AmazonProductsCore implements Iterator{
             $this->log("ID Type must be set in order to use the given IDs!",'Warning');
             return false;
         }
-        $this->options['Timestamp'] = $this->genTime();
         
         $url = $this->urlbase.$this->urlbranch;
         
-        $this->options['Signature'] = $this->_signParameters($this->options, $this->secretKey);
-        $query = $this->_getParametersAsString($this->options);
+        $query = $this->genQuery();
         
         if ($this->mockMode){
            $xml = $this->fetchMockFile();

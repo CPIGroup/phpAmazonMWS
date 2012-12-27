@@ -24,19 +24,12 @@ class AmazonProduct extends AmazonProductsCore{
      */
     public function __construct($s, $data = null, $mock = false, $m = null){
         parent::__construct($s, $mock, $m);
-        if (file_exists($this->config)){
-            include($this->config);
-        } else {
-            throw new Exception('Config file does not exist!');
-        }
         
         if ($data){
             $this->loadXML($data);
         }
         
         unset($this->productList);
-        
-        $this->throttleLimit = $throttleLimitProduct;
         
     }
     

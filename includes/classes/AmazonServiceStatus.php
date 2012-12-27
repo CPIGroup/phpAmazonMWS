@@ -40,8 +40,8 @@ class AmazonServiceStatus extends AmazonCore{
         
         $this->options['Action'] = 'GetServiceStatus';
         
-        $this->throttleLimit = $throttleLimitStatus;
-        $this->throttleTime = $throttleTimeStatus;
+        $this->throttleLimit = THROTTLE_LIMIT_STATUS;
+        $this->throttleTime = THROTTLE_TIME_STATUS;
         $this->throttleGroup = 'GetServiceStatus';
     }
     
@@ -81,33 +81,33 @@ class AmazonServiceStatus extends AmazonCore{
         
         switch($s){
             case 'Inbound':
-                $this->urlbranch = 'FulfillmentInboundShipment/'.$versionInbound;
-                $this->options['Version'] = $versionInbound;
+                $this->urlbranch = 'FulfillmentInboundShipment/'.AMAZON_VERSION_INBOUND;
+                $this->options['Version'] = AMAZON_VERSION_INBOUND;
                 $this->ready = true;
                 return true;
             case 'Inventory':
-                $this->urlbranch = 'FulfillmentInventory/'.$versionInventory;
-                $this->options['Version'] = $versionInventory;
+                $this->urlbranch = 'FulfillmentInventory/'.AMAZON_VERSION_INVENTORY;
+                $this->options['Version'] = AMAZON_VERSION_INVENTORY;
                 $this->ready = true;
                 return true;
             case 'Orders':
-                $this->urlbranch = 'Orders/'.$versionOrders;
-                $this->options['Version'] = $versionOrders;
+                $this->urlbranch = 'Orders/'.AMAZON_VERSION_ORDERS;
+                $this->options['Version'] = AMAZON_VERSION_ORDERS;
                 $this->ready = true;
                 return true;
             case 'Outbound':
-                $this->urlbranch = 'FulfillmentOutboundShipment/'.$versionOutbound;
-                $this->options['Version'] = $versionOutbound;
+                $this->urlbranch = 'FulfillmentOutboundShipment/'.AMAZON_VERSION_OUTBOUND;
+                $this->options['Version'] = AMAZON_VERSION_OUTBOUND;
                 $this->ready = true;
                 return true;
             case 'Products':
-                $this->urlbranch = 'Products/'.$versionProducts;
-                $this->options['Version'] = $versionProducts;
+                $this->urlbranch = 'Products/'.AMAZON_VERSION_PRODUCTS;
+                $this->options['Version'] = AMAZON_VERSION_PRODUCTS;
                 $this->ready = true;
                 return true;
             case 'Sellers':
-                $this->urlbranch = 'Sellers/'.$versionSellers;
-                $this->options['Version'] = $versionSellers;
+                $this->urlbranch = 'Sellers/'.AMAZON_VERSION_SELLERS;
+                $this->options['Version'] = AMAZON_VERSION_SELLERS;
                 $this->ready = true;
                 return true;
             default:
@@ -131,11 +131,10 @@ class AmazonServiceStatus extends AmazonCore{
             $this->log("Service must be set in order to retrieve status",'Warning');
             return false;
         }
-        $this->options['Timestamp'] = $this->genTime();
         
         $url = $this->urlbase.$this->urlbranch;
-        $this->options['Signature'] = $this->_signParameters($this->options, $this->secretKey);
-        $query = $this->_getParametersAsString($this->options);
+        
+        $query = $this->genQuery();
         
         $path = $this->options['Action'].'Result';
         if ($this->mockMode){

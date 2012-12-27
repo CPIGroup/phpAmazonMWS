@@ -40,14 +40,9 @@ class AmazonOrderItemList extends AmazonOrderCore implements Iterator{
             $this->setOrderId($id);
         }
         
-        $this->throttleLimit = $throttleLimitItem;
-        $this->throttleTime = $throttleTimeItem;
+        $this->throttleLimit = THROTTLE_LIMIT_ITEM;
+        $this->throttleTime = THROTTLE_TIME_ITEM;
         $this->throttleGroup = 'ListOrderItems';
-        
-        if ($throttleSafe){
-            $this->throttleLimit++;
-            $this->throttleTime++;
-        }
     }
     
     /**
@@ -103,13 +98,11 @@ class AmazonOrderItemList extends AmazonOrderCore implements Iterator{
      * @return boolean <p><b>FALSE</b> if something goes wrong</p>
      */
     public function fetchItems(){
-        $this->options['Timestamp'] = $this->genTime();
         $this->prepareToken();
         
         $url = $this->urlbase.$this->urlbranch;
         
-        $this->options['Signature'] = $this->_signParameters($this->options, $this->secretKey);
-        $query = $this->_getParametersAsString($this->options);
+        $query = $this->genQuery();
         
         $path = $this->options['Action'].'Result';
         if ($this->mockMode){

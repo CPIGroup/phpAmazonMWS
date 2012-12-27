@@ -39,14 +39,10 @@ class AmazonOrderSet extends AmazonOrderCore implements Iterator{
             $this->setOrderIds($o);
         }
         
-        $this->throttleLimit = $throttleLimitOrder;
-        $this->throttleTime = $throttleTimeOrder;
+        $this->options['Action'] = 'GetOrder';
+        $this->throttleLimit = THROTTLE_LIMIT_ORDER;
+        $this->throttleTime = THROTTLE_TIME_ORDER;
         $this->throttleGroup = 'GetOrder';
-        
-        if ($throttleSafe){
-            $this->throttleLimit++;
-            $this->throttleTime++;
-        }
     }
     
     /**
@@ -105,13 +101,9 @@ class AmazonOrderSet extends AmazonOrderCore implements Iterator{
             return false;
         }
         
-        $this->options['Timestamp'] = $this->genTime();
-        $this->options['Action'] = 'GetOrder';
-        
         $url = $this->urlbase.$this->urlbranch;
         
-        $this->options['Signature'] = $this->_signParameters($this->options, $this->secretKey);
-        $query = $this->_getParametersAsString($this->options);
+        $query = $this->genQuery();
         
         $path = $this->options['Action'].'Result';
         if ($this->mockMode){

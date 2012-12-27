@@ -35,8 +35,8 @@ class AmazonReportScheduleManager extends AmazonReportsCore implements Iterator{
         
         $this->options['Action'] = 'ManageReportSchedule';
         
-        $this->throttleLimit = $throttleLimitSchedule;
-        $this->throttleTime = $throttleTimeSchedule;
+        $this->throttleLimit = THROTTLE_LIMIT_REPORTSCHEDULE;
+        $this->throttleTime = THROTTLE_TIME_REPORTSCHEDULE;
     }
     
     /**
@@ -120,7 +120,7 @@ class AmazonReportScheduleManager extends AmazonReportsCore implements Iterator{
             $this->options['ScheduledDate'] = $after;
             
         } catch (Exception $e){
-            $this->log("Parameter should be a timestamp, instead $t",'Warning');
+            $this->log("Error: ".$e->getMessage(),'Warning');
         }
         
     }
@@ -143,12 +143,9 @@ class AmazonReportScheduleManager extends AmazonReportsCore implements Iterator{
             return false;
         }
         
-        $this->options['Timestamp'] = $this->genTime();
-        
         $url = $this->urlbase.$this->urlbranch;
         
-        $this->options['Signature'] = $this->_signParameters($this->options, $this->secretKey);
-        $query = $this->_getParametersAsString($this->options);
+        $query = $this->genQuery();
         
         $path = $this->options['Action'].'Result';
         

@@ -39,15 +39,9 @@ class AmazonOrderList extends AmazonOrderCore implements Iterator{
             $this->log("Marketplace ID is missing",'Urgent');
         }
         
-        $this->throttleLimit = $throttleLimitOrderList;
-        $this->throttleTime = $throttleTimeOrderList;
+        $this->throttleLimit = THROTTLE_LIMIT_ORDERLIST;
+        $this->throttleTime = THROTTLE_TIME_ORDERLIST;
         $this->throttleGroup = 'ListOrders';
-        
-        if ($throttleSafe){
-            $this->throttleLimit++;
-            $this->throttleTime++;
-            $this->throttleCount = $this->throttleLimit;
-        }
     }
     
     /**
@@ -115,7 +109,7 @@ class AmazonOrderList extends AmazonOrderCore implements Iterator{
             }
             
         } catch (Exception $e){
-            $this->log('The parameters given broke strtotime().','Warning');
+            $this->log('Error: '.$e->getMessage(),'Warning');
             return false;
         }
         
@@ -298,9 +292,6 @@ class AmazonOrderList extends AmazonOrderCore implements Iterator{
      * @return boolean <p><b>FALSE</b> if something goes wrong</p>
      */
     public function fetchOrders(){
-        $this->options['Timestamp'] = $this->genTime();
-        $this->options['Action'] = 'ListOrders';
-        
         if (!array_key_exists('CreatedAfter', $this->options) && !array_key_exists('LastUpdatedAfter', $this->options)){
             $this->setLimits('Created');
         }
@@ -309,8 +300,7 @@ class AmazonOrderList extends AmazonOrderCore implements Iterator{
         
         $url = $this->urlbase.$this->urlbranch;
         
-        $this->options['Signature'] = $this->_signParameters($this->options, $this->secretKey);
-        $query = $this->_getParametersAsString($this->options);
+        $query = $this->genQuery();
         
         $path = $this->options['Action'].'Result';
         if ($this->mockMode){

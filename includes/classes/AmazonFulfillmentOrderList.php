@@ -27,16 +27,8 @@ class AmazonFulfillmentOrderList extends AmazonOutboundCore implements Iterator{
      */
     public function __construct($s, $mock = false, $m = null) {
         parent::__construct($s, $mock, $m);
-        if (file_exists($this->config)){
-            include($this->config);
-        } else {
-            throw new Exception('Config file does not exist!');
-        }
         
         $this->options['Action'] = 'ListAllFulfillmentOrders';
-        
-        $this->throttleLimit = $throttleLimitInventory;
-        $this->throttleTime = $throttleTimeInventory;
     }
     
     /**
@@ -117,14 +109,12 @@ class AmazonFulfillmentOrderList extends AmazonOutboundCore implements Iterator{
      * @return boolean <p><b>FALSE</b> if something goes wrong</p>
      */
     public function fetchOrderList(){
-        $this->options['Timestamp'] = $this->genTime();
         $this->prepareToken();
         
         
         $url = $this->urlbase.$this->urlbranch;
         
-        $this->options['Signature'] = $this->_signParameters($this->options, $this->secretKey);
-        $query = $this->_getParametersAsString($this->options);
+        $query = $this->genQuery();
         
         $path = $this->options['Action'].'Result';
         

@@ -33,8 +33,8 @@ class AmazonParticipationList extends AmazonSellersCore{
             throw new Exception('Config file does not exist!');
         }
         
-        $this->throttleLimit = $throttleLimitSellers;
-        $this->throttleTime = $throttleTimeSellers;
+        $this->throttleLimit = THROTTLE_LIMIT_SELLERS;
+        $this->throttleTime = THROTTLE_TIME_SELLERS;
         $this->throttleGroup = 'ParticipationList';
     }
     
@@ -75,14 +75,12 @@ class AmazonParticipationList extends AmazonSellersCore{
      * @return boolean <p><b>FALSE</b> if something goes wrong</p>
      */
     public function fetchParticipationList(){
-        $this->options['Timestamp'] = $this->genTime();
         $this->prepareToken();
         
         
         $url = $this->urlbase.$this->urlbranch;
         
-        $this->options['Signature'] = $this->_signParameters($this->options, $this->secretKey);
-        $query = $this->_getParametersAsString($this->options);
+        $query = $this->genQuery();
         
         $path = $this->options['Action'].'Result';
         

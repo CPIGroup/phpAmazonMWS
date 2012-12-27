@@ -26,14 +26,6 @@ class AmazonInventoryList extends AmazonInventoryCore implements Iterator{
      */
     public function __construct($s, $mock = false, $m = null) {
         parent::__construct($s, $mock, $m);
-        if (file_exists($this->config)){
-            include($this->config);
-        } else {
-            throw new Exception('Config file does not exist!');
-        }
-        
-        $this->throttleLimit = $throttleLimitInventory;
-        $this->throttleTime = $throttleTimeInventory;
     }
     
     /**
@@ -155,13 +147,10 @@ class AmazonInventoryList extends AmazonInventoryCore implements Iterator{
             $this->setStartTime();
         }
         $this->prepareToken();
-        $this->options['Timestamp'] = $this->genTime();
-        
         
         $url = $this->urlbase.$this->urlbranch;
         
-        $this->options['Signature'] = $this->_signParameters($this->options, $this->secretKey);
-        $query = $this->_getParametersAsString($this->options);
+        $query = $this->genQuery();
         
         $path = $this->options['Action'].'Result';
         

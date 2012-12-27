@@ -33,15 +33,9 @@ class AmazonFeed extends AmazonFeedsCore{
         
         $this->options['Action'] = 'SubmitFeed';
         
-        $this->throttleLimit = $throttleLimitFeedSubmit;
-        $this->throttleTime = $throttleTimeFeedSubmit;
+        $this->throttleLimit = THROTTLE_LIMIT_FEEDSUBMIT;
+        $this->throttleTime = THROTTLE_TIME_FEEDSUBMIT;
         $this->throttleGroup = 'SubmitFeed';
-        
-        if ($throttleSafe){
-            $this->throttleLimit++;
-            $this->throttleTime++;
-        }
-        
     }
     
     /**
@@ -211,7 +205,7 @@ class AmazonFeed extends AmazonFeedsCore{
             $this->options['PurgeAndReplace'] = 'false';
             if (file_exists($this->config)){
                 include($this->config);
-                $this->throttleTime = $throttleTimeFeedSubmit;
+                $this->throttleTime = THROTTLE_TIME_FEEDSUBMIT;
             } else {
                 return false;
             }
@@ -239,15 +233,11 @@ class AmazonFeed extends AmazonFeedsCore{
             return false;
         }
         
-        $this->options['Timestamp'] = $this->genTime();
-        
         $url = $this->urlbase.$this->urlbranch;
         
-        $this->options['Signature'] = $this->_signParameters($this->options, $this->secretKey);
-        $query = $this->_getParametersAsString($this->options);
+        $query = $this->genQuery();
         
         $path = $this->options['Action'].'Result';
-        
         if ($this->mockMode){
            $xml = $this->fetchMockFile()->$path;
         } else {

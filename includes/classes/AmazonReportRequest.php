@@ -30,8 +30,8 @@ class AmazonReportRequest extends AmazonReportsCore{
         
         $this->options['Action'] = 'RequestReport';
         
-        $this->throttleLimit = $throttleLimitReportRequest;
-        $this->throttleTime = $throttleTimeReportRequest;
+        $this->throttleLimit = THROTTLE_LIMIT_REPORTREQUEST;
+        $this->throttleTime = THROTTLE_TIME_REPORTREQUEST;
         $this->throttleGroup = 'RequestReport';
     }
     
@@ -213,12 +213,9 @@ class AmazonReportRequest extends AmazonReportsCore{
             return false;
         }
         
-        $this->options['Timestamp'] = $this->genTime();
-        
         $url = $this->urlbase.$this->urlbranch;
         
-        $this->options['Signature'] = $this->_signParameters($this->options, $this->secretKey);
-        $query = $this->_getParametersAsString($this->options);
+        $query = $this->genQuery();
         
         $path = $this->options['Action'].'Result';
         if ($this->mockMode){

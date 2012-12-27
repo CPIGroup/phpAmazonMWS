@@ -25,8 +25,12 @@ abstract class AmazonOutboundCore extends AmazonCore{
         } else {
             throw new Exception('Config file does not exist!');
         }
-        $this->urlbranch = 'FulfillmentOutboundShipment/'.$versionOutbound;
-        $this->options['Version'] = $versionOutbound;
+        
+        $this->urlbranch = 'FulfillmentOutboundShipment/'.AMAZON_VERSION_OUTBOUND;
+        $this->options['Version'] = AMAZON_VERSION_OUTBOUND;
+        
+        $this->throttleLimit = THROTTLE_LIMIT_INVENTORY;
+        $this->throttleTime = THROTTLE_TIME_INVENTORY;
         $this->throttleGroup = 'Inventory';
     }
 }

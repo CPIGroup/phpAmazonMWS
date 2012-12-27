@@ -38,15 +38,9 @@ class AmazonFeedResult extends AmazonFeedsCore{
         
         $this->options['Action'] = 'GetFeedSubmissionResult';
         
-        $this->throttleLimit = $throttleLimitFeedResult;
-        $this->throttleTime = $throttleTimeFeedResult;
+        $this->throttleLimit = THROTTLE_LIMIT_FEEDRESULT;
+        $this->throttleTime = THROTTLE_TIME_FEEDRESULT;
         $this->throttleGroup = 'GetFeedSubmissionResult';
-        
-        if ($throttleSafe){
-            $this->throttleLimit++;
-            $this->throttleTime++;
-        }
-        
     }
     
     /**
@@ -79,11 +73,9 @@ class AmazonFeedResult extends AmazonFeedsCore{
             return false;
         }
         
-        $this->options['Timestamp'] = $this->genTime();
         $url = $this->urlbase.$this->urlbranch;
         
-        $this->options['Signature'] = $this->_signParameters($this->options, $this->secretKey);
-        $query = $this->_getParametersAsString($this->options);
+        $query = $this->genQuery();
         
         if ($this->mockMode){
            $this->rawFeed = $this->fetchMockFile(false);

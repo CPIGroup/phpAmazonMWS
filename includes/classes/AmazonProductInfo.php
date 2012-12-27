@@ -24,18 +24,6 @@ class AmazonProductInfo extends AmazonProductsCore{
      */
     public function __construct($s, $mock = false, $m = null){
         parent::__construct($s, $mock, $m);
-        if (file_exists($this->config)){
-            include($this->config);
-        } else {
-            throw new Exception('Config file does not exist!');
-        }
-        
-        $this->throttleLimit = $throttleLimitProduct;
-        
-        if ($throttleSafe){
-            $this->throttleLimit++; 
-        }
-        
     }
     
     /**
@@ -167,13 +155,12 @@ class AmazonProductInfo extends AmazonProductsCore{
             $this->log("Product IDs must be set in order to look them up!",'Warning');
             return false;
         }
-        $this->options['Timestamp'] = $this->genTime();
+        
         $this->prepareCompetitive();
         
         $url = $this->urlbase.$this->urlbranch;
         
-        $this->options['Signature'] = $this->_signParameters($this->options, $this->secretKey);
-        $query = $this->_getParametersAsString($this->options);
+        $query = $this->genQuery();
         
         if ($this->mockMode){
            $xml = $this->fetchMockFile();
@@ -204,7 +191,7 @@ class AmazonProductInfo extends AmazonProductsCore{
      */
     protected function prepareCompetitive(){
         include($this->config);
-        $this->throttleTime = $throttleTimeProductPrice;
+        $this->throttleTime = THROTTLE_TIME_PRODUCTPRICE;
         $this->throttleGroup = 'GetCompetitivePricing';
         unset($this->options['ExcludeMe']);
         unset($this->options['ItemCondition']);
@@ -230,13 +217,12 @@ class AmazonProductInfo extends AmazonProductsCore{
             $this->log("Product IDs must be set in order to look them up!",'Warning');
             return false;
         }
-        $this->options['Timestamp'] = $this->genTime();
+        
         $this->prepareLowest();
         
         $url = $this->urlbase.$this->urlbranch;
         
-        $this->options['Signature'] = $this->_signParameters($this->options, $this->secretKey);
-        $query = $this->_getParametersAsString($this->options);
+        $query = $this->genQuery();
         
         if ($this->mockMode){
            $xml = $this->fetchMockFile();
@@ -265,7 +251,7 @@ class AmazonProductInfo extends AmazonProductsCore{
      */
     protected function prepareLowest(){
         include($this->config);
-        $this->throttleTime = $throttleTimeProductPrice;
+        $this->throttleTime = THROTTLE_TIME_PRODUCTPRICE;
         $this->throttleGroup = 'GetLowestOfferListings';
         if (array_key_exists('SellerSKUList.SellerSKU.1',$this->options)){
             $this->options['Action'] = 'GetLowestOfferListingsForSKU';
@@ -289,13 +275,12 @@ class AmazonProductInfo extends AmazonProductsCore{
             $this->log("Product IDs must be set in order to look them up!",'Warning');
             return false;
         }
-        $this->options['Timestamp'] = $this->genTime();
+        
         $this->prepareMyPrice();
         
         $url = $this->urlbase.$this->urlbranch;
         
-        $this->options['Signature'] = $this->_signParameters($this->options, $this->secretKey);
-        $query = $this->_getParametersAsString($this->options);
+        $query = $this->genQuery();
         
         if ($this->mockMode){
            $xml = $this->fetchMockFile();
@@ -326,7 +311,7 @@ class AmazonProductInfo extends AmazonProductsCore{
      */
     protected function prepareMyPrice(){
         include($this->config);
-        $this->throttleTime = $throttleTimeProductPrice;
+        $this->throttleTime = THROTTLE_TIME_PRODUCTPRICE;
         $this->throttleGroup = 'GetMyPrice';
         unset($this->options['ExcludeMe']);
         if (array_key_exists('SellerSKUList.SellerSKU.1',$this->options)){
@@ -351,13 +336,12 @@ class AmazonProductInfo extends AmazonProductsCore{
             $this->log("Product IDs must be set in order to look them up!",'Warning');
             return false;
         }
-        $this->options['Timestamp'] = $this->genTime();
+        
         $this->prepareCategories();
         
         $url = $this->urlbase.$this->urlbranch;
         
-        $this->options['Signature'] = $this->_signParameters($this->options, $this->secretKey);
-        $query = $this->_getParametersAsString($this->options);
+        $query = $this->genQuery();
         
         if ($this->mockMode){
            $xml = $this->fetchMockFile();
@@ -388,7 +372,7 @@ class AmazonProductInfo extends AmazonProductsCore{
      */
     protected function prepareCategories(){
         include($this->config);
-        $this->throttleTime = $throttleTimeProductList;
+        $this->throttleTime = THROTTLE_TIME_PRODUCTLIST;
         $this->throttleGroup = 'GetProductCategories';
         unset($this->options['ExcludeMe']);
         unset($this->options['ItemCondition']);

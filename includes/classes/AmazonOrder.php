@@ -41,15 +41,9 @@ class AmazonOrder extends AmazonOrderCore{
         
         $this->options['Action'] = 'GetOrder';
         
-        $this->throttleLimit = $throttleLimitOrder;
-        $this->throttleTime = $throttleTimeOrder;
+        $this->throttleLimit = THROTTLE_LIMIT_ORDER;
+        $this->throttleTime = THROTTLE_TIME_ORDER;
         $this->throttleGroup = 'GetOrder';
-        
-        if ($throttleSafe){
-            $this->throttleLimit++;
-            $this->throttleTime++;
-        }
-        
     }
     
     /**
@@ -84,12 +78,9 @@ class AmazonOrder extends AmazonOrderCore{
             return false;
         }
         
-        $this->options['Timestamp'] = $this->genTime();
-        
         $url = $this->urlbase.$this->urlbranch;
         
-        $this->options['Signature'] = $this->_signParameters($this->options, $this->secretKey);
-        $query = $this->_getParametersAsString($this->options);
+        $query = $this->genQuery();
         
         if ($this->mockMode){
             $xml = $this->fetchMockFile();

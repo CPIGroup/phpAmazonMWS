@@ -26,8 +26,8 @@ abstract class AmazonOrderCore extends AmazonCore{
             throw new Exception('Config file does not exist!');
         }
         
-        $this->urlbranch = 'Orders/'.$versionOrders;
-        $this->options['Version'] = $versionOrders;
+        $this->urlbranch = 'Orders/'.AMAZON_VERSION_ORDERS;
+        $this->options['Version'] = AMAZON_VERSION_ORDERS;
     }
 }
 ?>

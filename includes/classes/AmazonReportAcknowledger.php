@@ -40,8 +40,8 @@ class AmazonReportAcknowledger extends AmazonReportsCore implements Iterator{
         
         $this->options['Action'] = 'UpdateReportAcknowledgements';
         
-        $this->throttleLimit = $throttleLimitReportSchedule;
-        $this->throttleTime = $throttleTimeReportSchedule;
+        $this->throttleLimit = THROTTLE_LIMIT_REPORTSCHEDULE;
+        $this->throttleTime = THROTTLE_TIME_REPORTSCHEDULE;
         $this->throttleGroup = 'UpdateReportAcknowledgements';
     }
     
@@ -117,12 +117,10 @@ class AmazonReportAcknowledger extends AmazonReportsCore implements Iterator{
             $this->log("Report IDs must be set in order to acknowledge reports!",'Warning');
             return false;
         }
-        $this->options['Timestamp'] = $this->genTime();
         
         $url = $this->urlbase.$this->urlbranch;
         
-        $this->options['Signature'] = $this->_signParameters($this->options, $this->secretKey);
-        $query = $this->_getParametersAsString($this->options);
+        $query = $this->genQuery();
         
         $path = $this->options['Action'].'Result';
         if ($this->mockMode){

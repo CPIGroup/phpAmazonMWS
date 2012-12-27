@@ -334,86 +334,6 @@ abstract class AmazonCore{
     }
     
     /**
-     * Manages the object's throttling.
-     * 
-     * This method reads from a database table to coordinate all requests sent
-     * to Amazon to prevent the request from being rejected due to throttling.
-     *  @DEPRECATED No longer uses database
-     */
-    protected function throttle(){
-//        include('/var/www/athena/includes/config.php');
-//        
-//        if (!isset($this->throttleGroup)){
-//            $this->throttleGroup = $this->options['Action'];
-//            $this->log("Unable to find Throttle Group, setting to ".$this->options['Action'],'Warning');
-//        }
-//        
-//        if ($this->throttleSafe){
-//            //original throttling code
-//            //only checks when the last request was made
-//            $sql = 'SELECT MAX(timestamp) as maxtime FROM `amazonRequestLog` WHERE `type` = ?';
-//            $value = array($this->throttleGroup);
-//            $result = db::executeQuery($sql, $value, DB_PLUGINS)->fetchAll();
-//            if(!$result){
-//                $this->log("No response from the database!",'Warning');
-//                return;
-//            }
-//
-//            $maxtime = $result[0]['maxtime'];
-//            flush();
-//            
-//            //loop until there is an available request spot
-//            while(true){
-//                flush();
-//                $mintime = time()-$this->throttleTime;
-//                $timediff = $maxtime-$mintime;
-//                if($maxtime <= $mintime){
-//                    return;
-//                }
-//                $this->log("Last request of this type: ".date("Y/m/d h:i:s", $maxtime).", Sleeping for $timediff seconds",'Throttle');
-//                sleep($timediff);
-//                $result = db::executeQuery($sql, $value, DB_PLUGINS)->fetchAll();
-//                $maxtime = $result[0]['maxtime'];
-//            }
-//        } else {
-//            //new throttling code
-//            //checks the number of same requests made within the past time that
-//            //it would take the entire request supply to regenerate
-//            $sql = 'SELECT COUNT(*) as count, MAX(timestamp) as maxtime  FROM `amazonRequestLog` WHERE `type` = ? AND `timestamp` > ?';
-//            $value = array($this->throttleGroup, time()-($this->throttleLimit * $this->throttleTime));
-//            $result = db::executeQuery($sql, $value, DB_PLUGINS)->fetchAll();
-//            if(!$result){
-//                $this->log("No response from the database!",'Warning');
-//                return;
-//            }
-//
-//            $count = $result[0]['count'];
-//            $maxtime = $result[0]['maxtime'];
-//            flush();
-//            
-//            //loop until there is an available request spot
-//            while(true){
-//                flush();
-//                $mintime = time()-$this->throttleTime;
-//                $timediff = $maxtime-$mintime;
-//                if ($count < $this->throttleLimit || $mintime >= $maxtime){
-//                    return;
-//                }
-//                $last = time()-$maxtime;
-//                $s = ($last == 1) ? '' : 's';
-//                $s2 = ($timediff == 1) ? '' : 's';
-//                $this->log("Last request of this type: ".date("Y/m/d h:i:s", $maxtime)." ($last second$s ago), Sleeping for $timediff second$s2",'Throttle');
-//                sleep($timediff);
-//                
-//                $value = array($this->throttleGroup, time()-($this->throttleLimit * $this->throttleTime));
-//                $result = db::executeQuery($sql, $value, DB_PLUGINS)->fetchAll();
-//                $count = $result[0]['count'];
-//                $maxtime = $result[0]['maxtime'];
-//            }
-//        }
-    }
-    
-    /**
      * Writes a message to the log.
      * 
      * This method adds a message line to the log file defined by the config.
@@ -498,26 +418,6 @@ abstract class AmazonCore{
         }
         return date('Y-m-d\TH:i:sO',$time-2*60);
             
-    }
-    
-    /**
-     * Records the request made and the timestamp.
-     * 
-     * This method writes to the database table the action performed and the time
-     * it was performed. This is used for throttling.
-     * @DEPRECATED No longer uses database
-     */
-    protected function logRequest(){
-//        include('/var/www/athena/includes/config.php');
-//        
-//        $sql = "INSERT INTO  `amazonRequestLog` (`id` ,`type` ,`timestamp`)VALUES (NULL ,  ?,  ?)";
-//        $value = array($this->options['Action'],time());
-//        $this->log("Logging action to database: ".$this->options['Action']);
-//        
-//        $result = db::executeQuery($sql, $value, DB_PLUGINS);
-//        if (!$result){
-//            $this->log("Could not write to database!",'Urgent');
-//        }
     }
     
     /**

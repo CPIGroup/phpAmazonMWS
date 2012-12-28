@@ -16,8 +16,7 @@ class AmazonServiceStatusTest extends PHPUnit_Framework_TestCase {
      */
     protected function setUp() {
         $this->resetLog();
-        $this->object = new AmazonServiceStatus('BigKitchen', null, true);
-        $this->object->setConfig('/var/www/athena/plugins/amazon/newAmazon/test-cases/test-config.php');
+        $this->object = new AmazonServiceStatus('BigKitchen', null, true, null, '/var/www/athena/plugins/amazon/newAmazon/test-cases/test-config.php');
     }
 
     /**
@@ -29,7 +28,7 @@ class AmazonServiceStatusTest extends PHPUnit_Framework_TestCase {
     }
     
     public function testSetUp(){
-        $obj = new AmazonServiceStatus('BigKitchen', 'Inbound', true);
+        $obj = new AmazonServiceStatus('BigKitchen', 'Inbound');
         $this->assertTrue($obj->isReady());
     }
     

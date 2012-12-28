@@ -16,8 +16,7 @@ class AmazonCoreTest extends PHPUnit_Framework_TestCase {
      */
     protected function setUp() {
         $this->resetLog();
-        $this->object = new AmazonServiceStatus('BigKitchen', 'Inbound', true);
-        $this->object->setConfig('/var/www/athena/plugins/amazon/newAmazon/test-cases/test-config.php');
+        $this->object = new AmazonServiceStatus('BigKitchen', 'Inbound', true, null, '/var/www/athena/plugins/amazon/newAmazon/test-cases/test-config.php');
     }
 
     /**
@@ -34,11 +33,11 @@ class AmazonCoreTest extends PHPUnit_Framework_TestCase {
     public function mockProvider() {
         return array(
             array(true,null, 'Mock Mode set to ON'),
-            array(false,null, 'Mock Mode set to OFF'),
+            array(false,null, null),
             array(true,'test', 'Mock Mode set to ON','Single Mock File set: test'),
             array(true,array('test'), 'Mock Mode set to ON','Mock files array set.'),
-            array(false,'test', 'Mock Mode set to OFF','Single Mock File set: test'),
-            array(false,array('test'), 'Mock Mode set to OFF','Mock files array set.'),
+            array(false,'test', 'Single Mock File set: test'),
+            array(false,array('test'), 'Mock files array set.'),
             array('no',null, null),
         );
     }
@@ -82,6 +81,7 @@ class AmazonCoreTest extends PHPUnit_Framework_TestCase {
     public function testSetStore() {
         $this->object->setStore('no');
         $check = $this->parseLog();
+        var_dump($check);
         $this->assertEquals('Mock Mode set to ON',$check[0]);
         $this->assertEquals('Store no does not exist!',$check[1]);
         $this->resetLog();

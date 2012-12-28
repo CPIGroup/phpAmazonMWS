@@ -16,8 +16,7 @@ class AmazonFeedTest extends PHPUnit_Framework_TestCase {
      */
     protected function setUp() {
         $this->resetLog();
-        $this->object = new AmazonFeed('BigKitchen', true);
-        $this->object->setConfig('/var/www/athena/plugins/amazon/newAmazon/test-cases/test-config.php');
+        $this->object = new AmazonFeed('BigKitchen', true, null, '/var/www/athena/plugins/amazon/newAmazon/test-cases/test-config.php');
     }
 
     /**

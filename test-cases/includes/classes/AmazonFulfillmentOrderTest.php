@@ -16,8 +16,7 @@ class AmazonFulfillmentOrderTest extends PHPUnit_Framework_TestCase {
      */
     protected function setUp() {
         $this->resetLog();
-        $this->object = new AmazonFulfillmentOrder('BigKitchen', null, true);
-        $this->object->setConfig('/var/www/athena/plugins/amazon/newAmazon/test-cases/test-config.php');
+        $this->object = new AmazonFulfillmentOrder('BigKitchen', null, true, null, '/var/www/athena/plugins/amazon/newAmazon/test-cases/test-config.php');
     }
 
     /**
@@ -29,7 +28,7 @@ class AmazonFulfillmentOrderTest extends PHPUnit_Framework_TestCase {
     }
     
     public function testSetUp(){
-        $obj = new AmazonFulfillmentOrder('BigKitchen', '77', true);
+        $obj = new AmazonFulfillmentOrder('BigKitchen', '77');
         
         $o = $obj->getOptions();
         $this->assertArrayHasKey('SellerFulfillmentOrderId',$o);

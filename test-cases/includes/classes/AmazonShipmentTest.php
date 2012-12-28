@@ -16,8 +16,7 @@ class AmazonShipmentTest extends PHPUnit_Framework_TestCase {
      */
     protected function setUp() {
         $this->resetLog();
-        $this->object = new AmazonShipment('BigKitchen', true);
-        $this->object->setConfig('/var/www/athena/plugins/amazon/newAmazon/test-cases/test-config.php');
+        $this->object = new AmazonShipment('BigKitchen', true, null, '/var/www/athena/plugins/amazon/newAmazon/test-cases/test-config.php');
     }
 
     /**
@@ -168,7 +167,7 @@ class AmazonShipmentTest extends PHPUnit_Framework_TestCase {
     }
     
     public function testUsePlan(){
-        $planner = new AmazonShipmentPlanner('BigKitchen',true,'fetchPlan.xml');
+        $planner = new AmazonShipmentPlanner('BigKitchen', true, 'fetchPlan.xml', '/var/www/athena/plugins/amazon/newAmazon/test-cases/test-config.php');
         $a = array();
         $a['Name'] = 'Name';
         $a['AddressLine1'] = 'AddressLine1';
@@ -215,7 +214,7 @@ class AmazonShipmentTest extends PHPUnit_Framework_TestCase {
      */
     public function testCreateShipment($o){
         $this->resetLog();
-        $this->object = new AmazonShipment('BigKitchen',true);
+        $this->object = new AmazonShipment('BigKitchen',true, null, '/var/www/athena/plugins/amazon/newAmazon/test-cases/test-config.php');
         $this->assertFalse($this->object->createShipment()); //no ID set
         
         $this->object->setShipmentId('55');
@@ -263,7 +262,7 @@ class AmazonShipmentTest extends PHPUnit_Framework_TestCase {
      */
     public function testUpdateShipment($o){
         $this->resetLog();
-        $this->object = new AmazonShipment('BigKitchen',true);
+        $this->object = new AmazonShipment('BigKitchen', true, null, '/var/www/athena/plugins/amazon/newAmazon/test-cases/test-config.php');
         $this->assertFalse($this->object->updateShipment()); //no ID set
         
         $this->object->setShipmentId('55');

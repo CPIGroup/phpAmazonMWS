@@ -16,8 +16,7 @@ class AmazonProductSearchTest extends PHPUnit_Framework_TestCase {
      */
     protected function setUp() {
         $this->resetLog();
-        $this->object = new AmazonProductSearch('BigKitchen', null, true);
-        $this->object->setConfig('/var/www/athena/plugins/amazon/newAmazon/test-cases/test-config.php');
+        $this->object = new AmazonProductSearch('BigKitchen', null, true, null, '/var/www/athena/plugins/amazon/newAmazon/test-cases/test-config.php');
     }
 
     /**
@@ -29,7 +28,7 @@ class AmazonProductSearchTest extends PHPUnit_Framework_TestCase {
     }
     
     public function testSetUp(){
-        $obj = new AmazonProductSearch('BigKitchen', 'platinum', true);
+        $obj = new AmazonProductSearch('BigKitchen', 'platinum');
         
         $o = $obj->getOptions();
         $this->assertArrayHasKey('Query',$o);

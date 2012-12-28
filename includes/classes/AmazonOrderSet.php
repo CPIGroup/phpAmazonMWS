@@ -25,9 +25,10 @@ class AmazonOrderSet extends AmazonOrderCore implements Iterator{
      * @param boolean $mock [optional] <p>This is a flag for enabling Mock Mode.
      * This defaults to <b>FALSE</b>.</p>
      * @param array|string $m [optional] <p>The files (or file) to use in Mock Mode.</p>
+     * @param string $config [optional] <p>An alternate config file to set. Used for testing.</p>
      */
-    public function __construct($s, $o = null, $mock = false, $m = null){
-        parent::__construct($s, $mock, $m);
+    public function __construct($s, $o = null, $mock = false, $m = null, $config = null){
+        parent::__construct($s, $mock, $m, $config);
         $this->i = 0;
         if (file_exists($this->config)){
             include($this->config);
@@ -127,7 +128,7 @@ class AmazonOrderSet extends AmazonOrderCore implements Iterator{
             if ($key != 'Order'){
                 break;
             }
-            $this->orderList[$this->index] = new AmazonOrder($this->storeName,null,$order,$this->mockMode,$this->mockFiles);
+            $this->orderList[$this->index] = new AmazonOrder($this->storeName,null,$order,$this->mockMode,$this->mockFiles,$this->config);
             $this->orderList[$this->index]->mockIndex = $this->mockIndex;
             $this->index++;
         }

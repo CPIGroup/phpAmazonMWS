@@ -39,9 +39,13 @@ abstract class AmazonCore{
      * @param array|string $m [optional] <p>The files (or file) to use in Mock Mode.
      * When Mock Mode is enabled, the object will retrieve one of these files
      * from the list to use as a response. See <i>setMock</i> for more information.</p>
+     * @param string $config [optional] <p>An alternate config file to set. Used for testing.</p>
      */
-    protected function __construct($s, $mock=false, $m = null){
-        $this->setConfig('/var/www/athena/plugins/amazon/newAmazon/amazon-config.php');
+    protected function __construct($s, $mock=false, $m = null, $config = null){
+        if (is_null($config)){
+            $config = __DIR__.'/../../amazon-config.php';
+        }
+        $this->setConfig($config);
         $this->setStore($s);
         $this->setMock($mock,$m);
         
@@ -63,7 +67,7 @@ abstract class AmazonCore{
      * Mock Mode is particularly useful when you need
      * to test functions such as canceling orders or adding new products.
      * @param boolean $b [optional] <p>When set to <b>TRUE</b>, Mock Mode is
-     * enabled for the object.</p>
+     * enabled for the object. Defaults to <b>TRUE</b>.</p>
      * @param array|string|integer $files [optional] <p>The list of files (or single file)
      * to be used with Mock Mode. If a single string is given, this method will
      * put it into an array. Integers can also be given, for use in <i>fetchMockResponse</i>.
@@ -74,11 +78,9 @@ abstract class AmazonCore{
             $this->resetMock(true);
             $this->mockMode = $b;
             if ($b){
-                $mode = 'ON';
-            } else {
-                $mode = 'OFF';
+                $this->log("Mock Mode set to ON");
             }
-            $this->log("Mock Mode set to $mode");
+            
             if (is_string($files)){
                 $this->mockFiles = array();
                 $this->mockFiles[0] = $files;
@@ -269,7 +271,7 @@ abstract class AmazonCore{
         if (file_exists($path) && is_readable($path)){
             include($path);
             $this->config = $path;
-            $this->setLogPath(AMAZON_LOG);
+            $this->setLogPath($logpath);
             $this->urlbase = AMAZON_SERVICE_URL;
             $this->throttleSafe = AMAZON_THROTTLE_SAFE;
         } else {
@@ -407,7 +409,7 @@ abstract class AmazonCore{
      * @param string $time [optional] <p>The time to use. Since this value is
      * passed through <i>strtotime</i> first, values such as "-1 hour" are fine.
      * Defaults to the current time.</p>
-     * @return string <p>Unix timestamp of the time, minus 2 minutes.</p>
+     * @return string <p>Unix timestamp of the time, minus 30 seconds.</p>
      */
     protected function genTime($time=false){
         if (!$time){
@@ -416,7 +418,7 @@ abstract class AmazonCore{
             $time = strtotime($time);
             
         }
-        return date('Y-m-d\TH:i:sO',$time-2*60);
+        return date('Y-m-d\TH:i:sO',$time-30);
             
     }
     
@@ -442,6 +444,7 @@ abstract class AmazonCore{
             throw new Exception("Secret Key is missing!");
         }
         
+        unset($this->options['Signature']);
         $this->options['Timestamp'] = $this->genTime();
         $this->options['Signature'] = $this->_signParameters($this->options, $secretKey);
         return $this->_getParametersAsString($this->options);

@@ -16,8 +16,7 @@ class AmazonReportTest extends PHPUnit_Framework_TestCase {
      */
     protected function setUp() {
         $this->resetLog();
-        $this->object = new AmazonReport('BigKitchen', null, true);
-        $this->object->setConfig('/var/www/athena/plugins/amazon/newAmazon/test-cases/test-config.php');
+        $this->object = new AmazonReport('BigKitchen', null, true, null, '/var/www/athena/plugins/amazon/newAmazon/test-cases/test-config.php');
     }
 
     /**
@@ -29,7 +28,7 @@ class AmazonReportTest extends PHPUnit_Framework_TestCase {
     }
     
     public function testSetUp(){
-        $obj = new AmazonReport('BigKitchen', '77', true);
+        $obj = new AmazonReport('BigKitchen', '77');
         
         $o = $obj->getOptions();
         $this->assertArrayHasKey('ReportId',$o);

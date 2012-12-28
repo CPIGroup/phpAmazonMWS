@@ -1,14 +1,5 @@
 <?php
 
-//Service URL Base
-//Current setting is United States
-define('AMAZON_SERVICE_URL','https://mws.amazonservices.com/');
-
-//for User-Agent header(?)
-define('AMAZON_APPLICATION','Athena Amazon Plugin');
-define('AMAZON_APPVERSION','0.1');
-
-
 //Merchant ID for this store
 $store['BigKitchen']['merchantId'] = 'AYBHI2AQPIRDU';
 //Marketplace ID for this store
@@ -17,6 +8,14 @@ $store['BigKitchen']['marketplaceId'] = 'ATVPDKIKX0DER';
 $store['BigKitchen']['keyId'] = 'AKIAJBQH4G6FKKUAPU6Q';
 //Secret Accress Key for this store
 $store['BigKitchen']['secretKey'] = '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';
+
+//Service URL Base
+//Current setting is United States
+define('AMAZON_SERVICE_URL','https://mws.amazonservices.com/');
+
+//for User-Agent header(?)
+define('AMAZON_APPLICATION','Athena Amazon Plugin');
+define('AMAZON_APPVERSION','0.1');
 
 
 //Version numbers for cores
@@ -31,7 +30,7 @@ define('AMAZON_VERSION_SELLERS',   '2011-07-01');
 
 
 //Location of log file to use
-define('AMAZON_LOG','log.txt');
+$logpath = __DIR__.'/log.txt';
 
 //Amazon Throttle Values in seconds
 //Do not modify unless Amazon changes the values

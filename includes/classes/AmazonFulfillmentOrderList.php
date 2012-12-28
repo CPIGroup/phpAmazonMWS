@@ -24,9 +24,10 @@ class AmazonFulfillmentOrderList extends AmazonOutboundCore implements Iterator{
      * @param boolean $mock [optional] <p>This is a flag for enabling Mock Mode.
      * This defaults to <b>FALSE</b>.</p>
      * @param array|string $m [optional] <p>The files (or file) to use in Mock Mode.</p>
+     * @param string $config [optional] <p>An alternate config file to set. Used for testing.</p>
      */
-    public function __construct($s, $mock = false, $m = null) {
-        parent::__construct($s, $mock, $m);
+    public function __construct($s, $mock = false, $m = null, $config = null) {
+        parent::__construct($s, $mock, $m, $config);
         
         $this->options['Action'] = 'ListAllFulfillmentOrders';
     }
@@ -236,7 +237,7 @@ class AmazonFulfillmentOrderList extends AmazonOutboundCore implements Iterator{
         $list = array();
         $i = 0;
         foreach($this->orderList as $x){
-            $list[$i] = new AmazonFulfillmentOrder($this->storeName,$x['SellerFulfillmentOrderId'],$this->mockMode,$this->mockFiles);
+            $list[$i] = new AmazonFulfillmentOrder($this->storeName,$x['SellerFulfillmentOrderId'],$this->mockMode,$this->mockFiles,$this->config);
             $list[$i]->mockIndex = $this->mockIndex;
             $list[$i]->fetchOrder();
             $i++;

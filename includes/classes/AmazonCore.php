@@ -409,7 +409,7 @@ abstract class AmazonCore{
      * @param string $time [optional] <p>The time to use. Since this value is
      * passed through <i>strtotime</i> first, values such as "-1 hour" are fine.
      * Defaults to the current time.</p>
-     * @return string <p>Unix timestamp of the time, minus 30 seconds.</p>
+     * @return string <p>Unix timestamp of the time, minus 2 minutes.</p>
      */
     protected function genTime($time=false){
         if (!$time){
@@ -418,7 +418,7 @@ abstract class AmazonCore{
             $time = strtotime($time);
             
         }
-        return date('Y-m-d\TH:i:sO',$time-30);
+        return date('Y-m-d\TH:i:sO',$time-120);
             
     }
     

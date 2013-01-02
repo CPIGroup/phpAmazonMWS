@@ -81,7 +81,6 @@ class AmazonCoreTest extends PHPUnit_Framework_TestCase {
     public function testSetStore() {
         $this->object->setStore('no');
         $check = $this->parseLog();
-        var_dump($check);
         $this->assertEquals('Mock Mode set to ON',$check[0]);
         $this->assertEquals('Store no does not exist!',$check[1]);
         $this->resetLog();

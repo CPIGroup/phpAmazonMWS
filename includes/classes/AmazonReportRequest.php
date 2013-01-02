@@ -130,8 +130,10 @@ class AmazonReportRequest extends AmazonReportsCore{
             $timee = $this->genTime($e);
             $this->options['EndDate'] = $timee;
         }
-        if ($this->options['StartDate'] > $this->options['EndDate']){
-            $this->options['StartDate'] = $this->options['EndDate'] - 1;
+        if (isset($this->options['StartDate']) && 
+                isset($this->options['EndDate']) && 
+                $this->options['StartDate'] > $this->options['EndDate']){
+            $this->setTimeLimits($this->options['EndDate'].' - 1 second');
         }
     }
     

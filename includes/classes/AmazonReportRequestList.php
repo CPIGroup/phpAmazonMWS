@@ -213,8 +213,10 @@ class AmazonReportRequestList extends AmazonReportsCore implements Iterator{
             $timee = $this->genTime($e);
             $this->options['RequestedToDate'] = $timee;
         }
-        if ($this->options['RequestedFromDate'] > $this->options['RequestedToDate']){
-            $this->options['RequestedFromDate'] = $this->options['RequestedToDate'] - 1;
+        if (isset($this->options['RequestedFromDate']) && 
+                isset($this->options['RequestedToDate']) && 
+                $this->options['RequestedFromDate'] > $this->options['RequestedToDate']){
+            $this->setTimeLimits($this->options['RequestedToDate'].' - 1 second');
         }
     }
     

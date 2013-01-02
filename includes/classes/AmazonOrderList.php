@@ -89,6 +89,8 @@ class AmazonOrderList extends AmazonOrderCore implements Iterator{
             }
             if ($upper){
                 $before = $this->genTime($upper);
+            } else {
+                $before = $this->genTime('+1 sec');
             }
             if ($mode == 'Created'){
                 $this->options['CreatedAfter'] = $after;

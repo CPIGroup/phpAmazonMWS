@@ -195,6 +195,9 @@ class AmazonReportList extends AmazonReportsCore implements Iterator{
             $timee = $this->genTime($e);
             $this->options['AvailableToDate'] = $timee;
         }
+        if ($this->options['AvailableFromDate'] > $this->options['AvailableToDate']){
+            $this->options['AvailableFromDate'] = $this->options['AvailableToDate'] - 1;
+        }
     }
     
     /**

@@ -97,7 +97,10 @@ class AmazonShipmentItemList extends AmazonInboundCore implements Iterator{
             if ($upper){
                 $before = $this->genTime($upper);
             } else {
-                $before = $this->genTime();
+                $before = $this->genTime('- 2 min');
+            }
+            if ($after > $before){
+                $after = $before - 1;
             }
             $this->options['LastUpdatedAfter'] = $after;
             $this->options['LastUpdatedBefore'] = $before;

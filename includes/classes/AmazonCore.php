@@ -122,7 +122,7 @@ abstract class AmazonCore{
             $this->log("End of Mock List, resetting to 0");
             $this->resetMock();
         }
-        //Todo: prepare this for librarification
+        //check for absolute/relative file paths
         if (strpos($this->mockFiles[$this->mockIndex], '/') === 0 || strpos($this->mockFiles[$this->mockIndex], '..') === 0){
             $url = $this->mockFiles[$this->mockIndex];
         } else {

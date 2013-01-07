@@ -123,7 +123,11 @@ abstract class AmazonCore{
             $this->resetMock();
         }
         //Todo: prepare this for librarification
-        $url = 'mock/'.$this->mockFiles[$this->mockIndex];
+        if (strpos($this->mockFiles[$this->mockIndex], '/') === 0 || strpos($this->mockFiles[$this->mockIndex], '..') === 0){
+            $url = $this->mockFiles[$this->mockIndex];
+        } else {
+            $url = 'mock/'.$this->mockFiles[$this->mockIndex];
+        }
         $this->mockIndex++;
         
         

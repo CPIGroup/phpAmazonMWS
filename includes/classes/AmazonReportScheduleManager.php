@@ -173,6 +173,9 @@ class AmazonReportScheduleManager extends AmazonReportsCore implements Iterator{
      * @return boolean <p><b>FALSE</b> if no XML data is found</p>
      */
     protected function parseXML($xml){
+        if (!$xml){
+            return false;
+        }
         foreach($xml->children() as $key=>$x){
             if ($key == 'Count'){
                 $this->count = (string)$x;

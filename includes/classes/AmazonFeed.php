@@ -52,7 +52,7 @@ class AmazonFeed extends AmazonFeedsCore{
     public function setFeedContent($s, $override = null){
         if (is_string($s) && $s){
             if ($override && file_exists($override) && is_writable($override)){
-                if (strpos($override, '/') == 0){
+                if (strpos($override, '/') === 0){
                     file_put_contents($override, $s);
                 } else {
                     file_put_contents('../../'.$override, $s);

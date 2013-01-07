@@ -329,7 +329,7 @@ class AmazonReportRequestList extends AmazonReportsCore implements Iterator{
      * @return boolean <p><b>FALSE</b> if no XML data is found</p>
      */
     protected function parseXML($xml){
-        if (!xml){
+        if (!$xml){
             return false;
         }
         

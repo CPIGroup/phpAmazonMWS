@@ -87,10 +87,13 @@ class AmazonPackageTracker extends AmazonOutboundCore{
      * Parses XML response into array.
      * 
      * This is what reads the response XML and converts it into an array.
-     * @param SimpleXMLObject $xml <p>The XML response from Amazon.</p>
+     * @param SimpleXMLObject $d <p>The XML response from Amazon.</p>
      * @return boolean <p><b>FALSE</b> if no XML data is found</p>
      */
     protected function parseXML($d) {
+        if (!$d){
+            return false;
+        }
         $this->details['PackageNumber'] = (string)$d->PackageNumber;
         $this->details['TrackingNumber'] = (string)$d->TrackingNumber;
         $this->details['CarrierCode'] = (string)$d->CarrierCode;

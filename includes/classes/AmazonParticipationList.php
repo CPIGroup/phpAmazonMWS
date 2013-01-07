@@ -136,6 +136,9 @@ class AmazonParticipationList extends AmazonSellersCore{
      * @return boolean <p><b>FALSE</b> if no XML data is found</p>
      */
     protected function parseXML($xml){
+        if (!$xml){
+            return false;
+        }
         $xmlP = $xml->ListParticipations;
         $xmlM = $xml->ListMarketplaces;
         

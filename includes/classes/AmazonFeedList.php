@@ -315,6 +315,9 @@ class AmazonFeedList extends AmazonFeedsCore implements Iterator{
      * @return boolean <p><b>FALSE</b> if no XML data is found</p>
      */
     protected function parseXML($xml){
+        if (!$xml){
+            return false;
+        }
         foreach($xml->children() as $key=>$x){
             $i = $this->index;
             if ($key == 'Count'){

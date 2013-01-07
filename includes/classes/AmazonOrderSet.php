@@ -123,7 +123,17 @@ class AmazonOrderSet extends AmazonOrderCore implements Iterator{
         
     }
     
+    /**
+     * Parses XML response into array.
+     * 
+     * This is what reads the response XML and converts it into an array.
+     * @param SimpleXMLObject $xml <p>The XML response from Amazon.</p>
+     * @return boolean <p><b>FALSE</b> if no XML data is found</p>
+     */
     protected function parseXML($xml){
+        if (!$xml){
+            return false;
+        }
         foreach($xml->Orders->children() as $key => $order){
             if ($key != 'Order'){
                 break;

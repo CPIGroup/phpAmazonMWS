@@ -76,7 +76,7 @@ class AmazonOrderItemListTest extends PHPUnit_Framework_TestCase {
         $this->object->setOrderId('77');
         $this->object->setMock(true,array('countFeeds.xml','fetchOrderItems.xml'));
         $this->assertFalse($this->object->fetchItems()); //no results
-        $this->assertFalse($this->object->fetchItems()); //wrong ID
+        $this->assertNull($this->object->fetchItems()); //wrong ID
         
         $check = $this->parseLog();
         $this->assertEquals('You just got throttled.',$check[3]);

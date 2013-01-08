@@ -123,7 +123,6 @@ class AmazonOrderItemList extends AmazonOrderCore implements Iterator{
             return false;
         } else if ($this->options['AmazonOrderId'] && $this->options['AmazonOrderId'] != $xml->AmazonOrderId){
             $this->log('You grabbed the wrong Order\'s items! - '.$this->options['AmazonOrderId'].' =/= '.$xml->AmazonOrderId,'Urgent');
-            return false;
         }
         
         $this->parseXML($xml->OrderItems);

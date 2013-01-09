@@ -378,7 +378,7 @@ class AmazonOrderItemList extends AmazonOrderCore implements Iterator{
      * @return float|boolean <p>decimal number from 0 to 1, or <b>FALSE</b> if Non-numeric index</p>
      */
     public function getPercentShipped($i = 0){
-        if ($this->itemList[$i]['QuantityOrdered'] == 0){
+        if (!$this->getQuantityOrdered($i) || !$this->getQuantityShipped($i)){
             return false;
         }
         if (isset($this->itemList[$i]['QuantityOrdered']) && isset($this->itemList[$i]['QuantityShipped'])){

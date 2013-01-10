@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<ListInboundShipmentItemsResponse xmlns="http://mws.amazonaws.com/FulfillmentInboundShipment/2010-10-01/">
+    <ListInboundShipmentItemsResult>
+        <NextToken>Token!</NextToken>
+        <ItemData>
+            <member>
+                <ShipmentId>SSF85DGIZZ3OF1</ShipmentId>
+                <SellerSKU>SampleSKU1</SellerSKU>
+                <QuantityShipped>3</QuantityShipped>
+                <QuantityInCase>0</QuantityInCase>
+                <QuantityReceived>0</QuantityReceived>
+                <FulfillmentNetworkSKU>B000FADVPQ</FulfillmentNetworkSKU>
+            </member>
+        </ItemData>
+    </ListInboundShipmentItemsResult>
+    <ResponseMetadata>
+        <RequestId>ffce8932-8e69-11df-8af1-5bf2881764d8</RequestId>
+    </ResponseMetadata>
+</ListInboundShipmentItemsResponse>

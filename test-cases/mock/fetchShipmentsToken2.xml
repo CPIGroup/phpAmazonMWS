@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+<ListInboundShipmentsByNextTokenResponse xmlns="http://mws.amazonaws.com/FulfillmentInboundShipment/2010-10-01/">
+    <ListInboundShipmentsByNextTokenResult>
+        <ShipmentData>
+            <member>
+                <ShipFromAddress>
+                    <PostalCode>98101</PostalCode>
+                    <Name>Joan Doe</Name>
+                    <CountryCode>US</CountryCode>
+                    <StateOrProvinceCode>WA</StateOrProvinceCode>
+                    <AddressLine2>Apt 2</AddressLine2>
+                    <AddressLine1>876 Elm St</AddressLine1>
+                    <City>Seattle</City>
+                </ShipFromAddress>
+                <AreCasesRequired>true</AreCasesRequired>
+                <ShipmentId>SSF85DGIZZ7PL3</ShipmentId>
+                <ShipmentStatus>SHIPPED</ShipmentStatus>
+                <ShipmentName>CreateShipmentTestCase</ShipmentName>
+                <DestinationFulfillmentCenterId>RNO2</DestinationFulfillmentCenterId>
+                <LabelPrepType>SELLER_LABEL</LabelPrepType>
+            </member>
+        </ShipmentData>
+    </ListInboundShipmentsByNextTokenResult>
+    <ResponseMetadata>
+        <RequestId>8547a35c-8e70-11df-8af1-5bf2881764d8</RequestId>
+    </ResponseMetadata>
+</ListInboundShipmentsByNextTokenResponse>

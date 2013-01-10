@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+<ListMarketplaceParticipationsByNextTokenResponse xmlns="https://mws.amazonservices.com/Sellers/2011-07-01">
+    <ListMarketplaceParticipationsByNextTokenResult>
+        <ListParticipations>
+            <Participation>
+                <MarketplaceId>ATVPDKIKX0DER</MarketplaceId>
+                <SellerId>A135KKEKWF1JAI6</SellerId>
+                <HasSellerSuspendedListings>No</HasSellerSuspendedListings>
+            </Participation>
+        </ListParticipations>
+        <ListMarketplaces>
+            <Marketplace>
+                <MarketplaceId>ATVPDKIKX0DER</MarketplaceId>
+                <Name>Amazon.com</Name>
+                <DefaultCountryCode>US</DefaultCountryCode>
+                <DefaultCurrencyCode>USD</DefaultCurrencyCode>
+                <DefaultLanguageCode>en_US</DefaultLanguageCode>
+                <DomainName>www.amazon.com</DomainName>
+            </Marketplace>
+        </ListMarketplaces>
+    </ListMarketplaceParticipationsByNextTokenResult>
+    <ResponseMetadata>
+        <RequestId>efeab958-74e2-45d4-9018-2323084413b5</RequestId>
+    </ResponseMetadata>
+</ListMarketplaceParticipationsByNextTokenResponse>

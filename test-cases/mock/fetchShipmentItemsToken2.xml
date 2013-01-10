@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<ListInboundShipmentItemsByNextTokenResponse xmlns="http://mws.amazonaws.com/FulfillmentInboundShipment/2010-10-01/">
+    <ListInboundShipmentItemsByNextTokenResult>
+        <ItemData>
+            <member>
+                <SellerSKU>SampleSKU202</SellerSKU>
+                <QuantityShipped>48</QuantityShipped>
+                <QuantityInCase>24</QuantityInCase>
+                <QuantityReceived>0</QuantityReceived>
+                <FulfillmentNetworkSKU>B0011VECH4</FulfillmentNetworkSKU>
+            </member>
+        </ItemData>
+    </ListInboundShipmentItemsByNextTokenResult>
+    <ResponseMetadata>
+        <RequestId>ffce8932-8e69-11df-8af1-5bf2881764d8</RequestId>
+    </ResponseMetadata>
+</ListInboundShipmentItemsByNextTokenResponse>

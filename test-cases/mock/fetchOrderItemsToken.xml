@@ -1,0 +1,42 @@
+<?xml version="1.0"?>
+<ListOrderItemsResponse xmlns="https://mws.amazonservices.com/Orders/2011-01-01">
+    <ListOrderItemsResult>
+        <NextToken>Token!</NextToken>
+        <AmazonOrderId>058-1233752-8214740</AmazonOrderId>
+        <OrderItems>
+            <OrderItem>
+                <ASIN>BT0093TELA</ASIN>
+                <OrderItemId>68828574383266</OrderItemId>
+                <SellerSKU>CBA_OTF_1</SellerSKU>
+                <Title>Example item name</Title>
+                <QuantityOrdered>1</QuantityOrdered>
+                <QuantityShipped>1</QuantityShipped>
+                <ItemPrice>
+                    <CurrencyCode>USD</CurrencyCode>
+                    <Amount>25.99</Amount>
+                </ItemPrice>
+                <ShippingPrice>
+                    <CurrencyCode>USD</CurrencyCode>
+                    <Amount>1.26</Amount>
+                </ShippingPrice>
+                <CODFee>
+                    <CurrencyCode>USD</CurrencyCode>
+                    <Amount>10.00</Amount>
+                </CODFee>
+                <CODFeeDiscount>
+                    <CurrencyCode>USD</CurrencyCode>
+                    <Amount>1.00</Amount>
+                </CODFeeDiscount>
+                <GiftMessageText>For you!</GiftMessageText>
+                <GiftWrapPrice>
+                    <CurrencyCode>USD</CurrencyCode>
+                    <Amount>1.99</Amount>
+                </GiftWrapPrice>
+                <GiftWrapLevel>Classic</GiftWrapLevel>
+            </OrderItem>
+        </OrderItems>
+    </ListOrderItemsResult>
+    <ResponseMetadata>
+        <RequestId>88faca76-b600-46d2-b53c-0c8c4533e43a</RequestId>
+    </ResponseMetadata>
+</ListOrderItemsResponse>

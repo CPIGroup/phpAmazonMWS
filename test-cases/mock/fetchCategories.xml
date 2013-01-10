@@ -1,0 +1,48 @@
+<?xml version="1.0"?>
+<GetProductCategoriesForSKUResponse xmlns="http://mws.amazonservices.com/schema/Products/2011-10-01">
+    <GetProductCategoriesForSKUResult>
+        <Self>
+            <ProductCategoryId>15709131</ProductCategoryId>
+            <ProductCategoryName>Tire Gauges</ProductCategoryName>
+            <Parent>
+                <ProductCategoryId>15709111</ProductCategoryId>
+                <ProductCategoryName>Tire &amp; Wheel Tools</ProductCategoryName>
+                <Parent>
+                    <ProductCategoryId>15706941</ProductCategoryId>
+                    <ProductCategoryName>Tools &amp; Equipment</ProductCategoryName>
+                    <Parent>
+                        <ProductCategoryId>15690151</ProductCategoryId>
+                        <ProductCategoryName>Categories</ProductCategoryName>
+                        <Parent>
+                            <ProductCategoryId>15684181</ProductCategoryId>
+                            <ProductCategoryName>Categories</ProductCategoryName>
+                        </Parent>
+                    </Parent>
+                </Parent>
+            </Parent>
+        </Self>
+        <Self>
+            <ProductCategoryId>15709141</ProductCategoryId>
+            <ProductCategoryName>Tire Repair Tools</ProductCategoryName>
+            <Parent>
+                <ProductCategoryId>15709111</ProductCategoryId>
+                <ProductCategoryName>Tire &amp; Wheel Tools</ProductCategoryName>
+                <Parent>
+                    <ProductCategoryId>15706941</ProductCategoryId>
+                    <ProductCategoryName>Tools &amp; Equipment</ProductCategoryName>
+                    <Parent>
+                        <ProductCategoryId>15690151</ProductCategoryId>
+                        <ProductCategoryName>Categories</ProductCategoryName>
+                        <Parent>
+                            <ProductCategoryId>15684181</ProductCategoryId>
+                            <ProductCategoryName>Categories</ProductCategoryName>
+                        </Parent>
+                    </Parent>
+                </Parent>
+            </Parent>
+        </Self>
+    </GetProductCategoriesForSKUResult>
+    <ResponseMetadata>
+        <RequestId>a515a798-a277-4831-9cf4-b4e04016fc87</RequestId>
+    </ResponseMetadata>
+</GetProductCategoriesForSKUResponse>

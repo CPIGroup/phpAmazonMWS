@@ -355,13 +355,29 @@ abstract class AmazonCore{
     protected function log($msg, $level = 'Info'){
         if ($msg) {
             $backtrace = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS);
-
+            
+            if (file_exists($this->config)){
+                include($this->config);
+            } else {
+                throw new Exception("Config file does not exist!");
+            }
+            if (isset($logfunction) && $logfunction != '' && function_exists($logfunction)){
+                switch ($level){
+                   case('Info'): $loglevel = LOG_INFO; break; 
+                   case('Throttle'): $loglevel = LOG_INFO; break; 
+                   case('Warning'): $loglevel = LOG_NOTICE; break; 
+                   case('Urgent'): $loglevel = LOG_ERR; break; 
+                   default: $loglevel = LOG_INFO;
+                }
+                call_user_func($logfunction,$msg,$loglevel);
+            }
+            
             if($userName){ 
                     $name = $userName;
             }else{
                     $name = 'guest';
             }
-
+            
             if(isset($backtrace) && isset($backtrace[1]) && isset($backtrace[1]['file']) && isset($backtrace[1]['line']) && isset($backtrace[1]['function'])){
                     $fileName = basename($backtrace[1]['file']);
                     $file = $backtrace[1]['file'];

@@ -32,6 +32,9 @@ define('AMAZON_VERSION_SELLERS',   '2011-07-01');
 //Location of log file to use
 $logpath = __DIR__.'/log.txt';
 
+//Name of custom log function to use
+$logfunction = '';
+
 //Amazon Throttle Values in seconds
 //Do not modify unless Amazon changes the values
 //Fetching Orders

@@ -7,6 +7,70 @@
  * each of the other cores extend from. It contains a number of
  * methods shared by all cores, such as logging, throttling, and
  * signature generation.
+ * 
+ * The general flow for using a class in this library is as follows:
+ * <ol>
+ * <li>Create an object (or objects) of the desired type.</li>
+ * <li>Set the request parameters using "set_____" functions.
+ * Some classes allow you to set parameters when constructing the object.
+ * Some classes don't need any parameters, and a few don't have any at all.</li>
+ * <li>Send the request to Amazon using the class's unique function. (Usually "fetch___")
+ * If not enough parameters have been set, the request will not go through.</li>
+ * <li>Retrieve the data received with "get____" functions. Some classes can
+ * be iterated through using foreach.</li>
+ * <li>Repeat. Please note that performing Amazon actions sometimes alters or
+ * removes parameters previously set, so it is recommended that you set all of the
+ * desired parameters again before making a second action, or better yet, use a new object.
+ * The exception to this is follow-up actions, which rely on the data previously
+ * received from Amazon and do not require any parameters.</li>
+ * </ol>
+ * While there are a lot of functions, they all share one of the structures listed below.
+ * Once you know how to use one class, you should be able to use the other classes.
+ * <ul>
+ * <li><b>Constructor</b> - Some classes let you pass an extra value when creating the class
+ * in order to automatically set one of the parameters necessary for the class. Other
+ * than that, all of the classes are created the same way and have the same options
+ * for setting mock mode and other testing features.</li>
+ * <li><b>Set an Option Flag</b> - These are functions for toggling a setting that only has an
+ * On or Off setting. The single value they take is usually a boolean (or sometimes
+ * a string with the words "true" or "false") and the value is often optional. If
+ * no value is passed, the setting will be enabled. Passing a value of false is
+ * the only way to deactivate the option afterwards.</li>
+ * <li><b>Set Single Value</b> - These are functions meant for setting a parameter that
+ * uses only a single value. For example, setting a shipment ID to
+ * receive the items for. They typically require only a single parameter, usually a string.
+ * Occasionally, the function will require a number, or a specific string value. In
+ * these cases, the function will not set the parameter if the value is incorrect.</li>
+ * <li><b>Set Multiple Values</b> - These are functions for setting options that can take
+ * a list of values. These functions can take either an array of values, or a single
+ * string. If this function is used a second time, the first list of values will be
+ * completely removed and replaced with the new values.</li>
+ * <li><b>Set Time Options</b> - A number of classes have functions for setting time limit
+ * options. This is typically a pair of time points, but depending on the class, it
+ * may only need one. All values passed to these functions are passed through <i>strtotime</i>
+ * before being used, so a wide variety of values is accepted. For more information on
+ * what is acceptible, see the documentation for <i>strtotime</i>.</li>
+ * <li><b>Amazon Actions</b> - These are functions with names like "fetch____" or "cancel___",
+ * and they are what send the request to Amazon. No parameter is ever needed, and the output
+ * is always only to indicate if the action was successful.</li>
+ * <li><b>Retrieve Value from a Single Object</b> - These functions are for retrieving
+ * data sent by Amazon from a class that is not dedicated to a list of information.
+ * No parameters are needed.</li>
+ * <li><b>Retrieve Value from a List Object</b> - These functions are also for retrieving data,
+ * but from classes that contain a list of different information sets. These functions can
+ * take an integer for a list index, which then returns the value from the specified entry.
+ * If no index is given, it defaults to returning the first entry in the list. In the case
+ * of complex lists, sometimes a second index may be used.</li>
+ * <li><b>Retrieve a List Entry</b> - These functions return either part of or all of
+ * a class object's data list. An optional index can be passed to return a particular
+ * data set. If no index is given, the entire list of data is returned. Keep in mind
+ * that the arrays returned by these functions are usually pretty large.</li>
+ * <li><b>Follow-Up Actions</b> - There are only a few of these functions, and are mostly
+ * "fetchItems" functions for lists of orders or shipments. These functions send a request
+ * to Amazon for every entry in the object's data list. Please note that these functions
+ * will generally take a while to perform and will return a lot of data. These are the
+ * only non-"get" functions that will return the information.</li>
+ * </ul>
  */
 
 abstract class AmazonCore{

@@ -539,7 +539,7 @@ abstract class AmazonCore{
      * 
      * This method will keep trying if the request was throttled.
      * @param string $url <p>URL to feed to cURL</p>
-     * @param array $param <p>paramter array to feed to cURL</p>
+     * @param array $param <p>parameter array to feed to cURL</p>
      * @return array <p>cURL response array</p>
      */
     protected function sendRequest($url,$param){

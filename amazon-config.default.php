@@ -1,21 +1,18 @@
 <?php
 
-//Merchant ID for this store
-$store['BigKitchen']['merchantId'] = '';
-//Marketplace ID for this store
-$store['BigKitchen']['marketplaceId'] = '';
-//Access Key ID
-$store['BigKitchen']['keyId'] = '';
-//Secret Accress Key for this store
-$store['BigKitchen']['secretKey'] = '';
+
+$store['YourAmazonStore']['merchantId'] = '';//Merchant ID for this store
+$store['YourAmazonStore']['marketplaceId'] = ''; //Marketplace ID for this store
+$store['YourAmazonStore']['keyId'] = ''; //Access Key ID
+$store['YourAmazonStore']['secretKey'] = ''; //Secret Accress Key for this store
 
 //Service URL Base
 //Current setting is United States
 define('AMAZON_SERVICE_URL','https://mws.amazonservices.com/');
 
 //for User-Agent header(?)
-define('AMAZON_APPLICATION','Athena Amazon Plugin');
-define('AMAZON_APPVERSION','0.1');
+define('AMAZON_APPLICATION','phpAmazonMWS');
+define('AMAZON_APPVERSION','1.0');
 
 
 //Version numbers for cores

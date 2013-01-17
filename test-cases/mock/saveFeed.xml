@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<AmazonEnvelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="amzn-envelope.xsd">
+    <Header>
+        <DocumentVersion>1.02</DocumentVersion>
+        <MerchantIdentifier>T_M_GOOD_83835495</MerchantIdentifier>
+    </Header>
+    <MessageType>ProcessingReport</MessageType>
+    <Message>
+        <MessageID>1</MessageID>
+        <ProcessingReport>
+            <DocumentTransactionID>4319742521</DocumentTransactionID>
+        </ProcessingReport>
+    </Message>
+</AmazonEnvelope>

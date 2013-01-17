@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<UpdateInboundShipmentResponse xmlns="http://mws.amazonaws.com/FulfillmentInboundShipment/2010-10-01/">
+    <UpdateInboundShipmentResult>
+        <ShipmentId>FBA63J76R</ShipmentId>
+    </UpdateInboundShipmentResult>
+    <ResponseMetadata>
+        <RequestId>4a1a7029-462b-4a27-a04c-4cbe0fd107e3</RequestId>
+    </ResponseMetadata>
+</UpdateInboundShipmentResponse>

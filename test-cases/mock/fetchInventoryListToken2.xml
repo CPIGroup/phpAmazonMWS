@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<ListInventorySupplyByNextTokenResponse xmlns="http://mws.amazonaws.com/FulfillmentInventory/2010-10-01">
+    <ListInventorySupplyByNextTokenResult>
+        <InventorySupplyList>
+            <member>
+                <SellerSKU>SampleSKU2</SellerSKU>
+                <ASIN>B00004RWQR</ASIN>
+                <TotalSupplyQuantity>0</TotalSupplyQuantity>
+                <FNSKU>X00008FZR1</FNSKU>
+                <Condition>UsedLikeNew</Condition>
+                <SupplyDetail/>
+                <InStockSupplyQuantity>0</InStockSupplyQuantity>
+            </member>
+        </InventorySupplyList>
+    </ListInventorySupplyByNextTokenResult>
+    <ResponseMetadata>
+        <RequestId>e8698ffa-8e59-11df-9acb-230ae7a8b736</RequestId>
+    </ResponseMetadata>
+</ListInventorySupplyByNextTokenResponse>

@@ -1,0 +1,86 @@
+<?xml version="1.0"?>
+<GetCompetitivePricingForSKUResponse xmlns="http://mws.amazonservices.com/schema/Products/2011-10-01">
+    <GetCompetitivePricingForSKUResult SellerSKU="SKU2468" status="Success">
+        <Product xmlns="http://mws.amazonservices.com/schema/Products/2011-10-01" xmlns:ns2="http://mws.amazonservices.com/schema/Products/2011-10-01/default.xsd">
+        <Identifiers>
+            <MarketplaceASIN>
+                <MarketplaceId>ATVPDKIKX0DER</MarketplaceId>
+                <ASIN>1933890517</ASIN>
+            </MarketplaceASIN>
+            <SKUIdentifier>
+                <ns2:MarketplaceId>ATVPDKIKX0DER</ns2:MarketplaceId>
+                <ns2:SellerId>A2NKEXAMPLEF53</ns2:SellerId>
+                <ns2:SellerSKU>SKU1357</ns2:SellerSKU>
+            </SKUIdentifier>
+        </Identifiers>
+        <CompetitivePricing>
+            <CompetitivePrices>
+                <CompetitivePrice belongsToRequester="false" condition="New" subcondition="New">
+                    <CompetitivePriceId>1</CompetitivePriceId>
+                    <Price>
+                        <LandedPrice>
+                            <CurrencyCode>USD</CurrencyCode>
+                            <Amount>38.93</Amount>
+                        </LandedPrice>
+                        <ListingPrice>
+                            <CurrencyCode>USD</CurrencyCode>
+                            <Amount>38.93</Amount>
+                        </ListingPrice>
+                        <Shipping>
+                            <CurrencyCode>USD</CurrencyCode>
+                            <Amount>0.00</Amount>
+                        </Shipping>
+                    </Price>
+                </CompetitivePrice>
+                <CompetitivePrice belongsToRequester="false" condition="Used" subcondition="Good">
+                    <ns2:CompetitivePriceId>2</ns2:CompetitivePriceId>
+                    <Price>
+                        <LandedPrice>
+                            <ns2:CurrencyCode>USD</ns2:CurrencyCode>
+                            <ns2:Amount>41.68</ns2:Amount>
+                        </LandedPrice>
+                        <ListingPrice>
+                            <ns2:CurrencyCode>USD</ns2:CurrencyCode>
+                            <ns2:Amount>37.69</ns2:Amount>
+                        </ListingPrice>
+                        <Shipping>
+                        <ns2:CurrencyCode>USD</ns2:CurrencyCode>
+                        <ns2:Amount>3.99</ns2:Amount>
+                        </Shipping>
+                    </Price>
+                </CompetitivePrice>
+            </CompetitivePrices>
+            <NumberOfOfferListings>
+            <OfferListingCount condition="Any">173</OfferListingCount>
+            <OfferListingCount condition="Used">82</OfferListingCount>
+            <OfferListingCount condition="New">91</OfferListingCount>
+            </NumberOfOfferListings>
+            <TradeInValue>
+            <CurrencyCode>USD</CurrencyCode>
+            <Amount>25.11</Amount>
+            </TradeInValue>
+        </CompetitivePricing>
+        <SalesRankings>
+        <SalesRank>
+        <ProductCategoryId>book_display_on_website</ProductCategoryId>
+        <Rank>161</Rank>
+        </SalesRank>
+        <SalesRank>
+        <ProductCategoryId>271578011</ProductCategoryId>
+        <Rank>1</Rank>
+        </SalesRank>
+        <SalesRank>
+        <ProductCategoryId>355562011</ProductCategoryId>
+        <Rank>2</Rank>
+        </SalesRank>
+        <SalesRank>
+        <ProductCategoryId>173516</ProductCategoryId>
+        <Rank>12</Rank>
+        </SalesRank>
+        </SalesRankings>
+        </Product>
+    </GetCompetitivePricingForSKUResult>
+    <ResponseMetadata>
+        <RequestId>3f51ceaf-2dab-49bd-b982-193015fae1a8</RequestId>
+    </ResponseMetadata>
+</GetCompetitivePricingForSKUResponse>

@@ -1,0 +1,42 @@
+<GetMyPriceForSKUResponse xmlns="http://mws.amazonservices.com/schema/Products/2011-10-01">
+<GetMyPriceForSKUResult status="Success" ASIN="B00080QHMM">
+<Product xmlns:ns2="http://mws.amazonservices.com/schema/Products/2011-10-01/default.xsd" xmlns="http://mws.amazonservices.com/schema/Products/2011-10-01">
+<Identifiers>
+<MarketplaceASIN>
+<MarketplaceId>ATVPDKIKX0DER</MarketplaceId>
+<ASIN>B00080QHMM</ASIN>
+</MarketplaceASIN>
+</Identifiers>
+<Offers>
+<Offer>
+<BuyingPrice>
+<ListingPrice>
+<CurrencyCode>USD</CurrencyCode>
+<Amount>22.50</Amount>
+</ListingPrice>
+<Shipping>
+<CurrencyCode>USD</CurrencyCode>
+<Amount>4.57</Amount>
+</Shipping>
+<LandedPrice>
+<CurrencyCode>USD</CurrencyCode>
+<Amount>27.07</Amount>
+</LandedPrice>
+</BuyingPrice>
+<RegularPrice>
+<CurrencyCode>USD</CurrencyCode>
+<Amount>22.50</Amount>
+</RegularPrice>
+<FulfillmentChannel>Merchant</FulfillmentChannel>
+<ItemCondition>New</ItemCondition>
+<ItemSubCondition>New</ItemSubCondition>
+<SellerId>A3F1LGRLCQDI4D</SellerId>
+<SellerSKU>12345</SellerSKU>
+</Offer>
+</Offers>
+</Product>
+</GetMyPriceForSKUResult>
+<ResponseMetadata>
+<RequestId>5dff0a4a-4462-462c-9cdf-7f07f9c2492b</RequestId>
+</ResponseMetadata>
+</GetMyPriceForSKUResponse>

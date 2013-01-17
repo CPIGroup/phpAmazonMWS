@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<GetFeedSubmissionListResponse xmlns="http://mws.amazonservices.com/doc/2009-01-01/">
+    <GetFeedSubmissionListResult>
+        <NextToken>2YgYW55IGNhcm5hbCBwbGVhc3VyZS4=</NextToken>
+        <HasNext>true</HasNext>
+        <FeedSubmissionInfo>
+            <FeedSubmissionId>9876543210</FeedSubmissionId>
+            <FeedType>_MOCK_FEED_</FeedType>
+            <SubmittedDate>2012-12-12T12:12:12+00:00</SubmittedDate>
+            <FeedProcessingStatus>_SUBMITTED_</FeedProcessingStatus>
+        </FeedSubmissionInfo>
+    </GetFeedSubmissionListResult>
+    <ResponseMetadata>
+        <RequestId>1105b931-6f1c-4480-8e97-f3b467840a9e</RequestId>
+    </ResponseMetadata>
+</GetFeedSubmissionListResponse>

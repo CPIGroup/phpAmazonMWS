@@ -413,7 +413,7 @@ abstract class AmazonCore{
      * This is merely for the benefit of the user and does not affect how
      * the code runs. The values used in this library are "Info", "Warning",
      * "Urgent", and "Throttle".</p>
-     * @return boolean <p><b>FALSE</b> if the message is empty</p>
+     * @return boolean <p><b>FALSE</b> if the message is empty, NULL if logging is muted</p>
      * @throws Exception <p>If the file can't be written to.</p>
      */
     protected function log($msg, $level = 'Info'){
@@ -434,6 +434,10 @@ abstract class AmazonCore{
                    default: $loglevel = LOG_INFO;
                 }
                 call_user_func($logfunction,$msg,$loglevel);
+            }
+            
+            if (isset($muteLog) && $muteLog == true){
+                return;
             }
             
             if($userName){ 

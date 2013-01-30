@@ -32,6 +32,9 @@ $logpath = __DIR__.'/log.txt';
 //Name of custom log function to use
 $logfunction = '';
 
+//Turn off normal logging
+$muteLog = false;
+
 //Amazon Throttle Values in seconds
 //Do not modify unless Amazon changes the values
 //Fetching Orders

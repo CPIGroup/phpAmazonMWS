@@ -34,8 +34,8 @@ class AmazonReportList extends AmazonReportsCore implements Iterator{
             throw new Exception('Config file does not exist!');
         }
         
-        $this->throttleLimit = THROTTLE_LIMIT_REPORTLIST;
-        $this->throttleTime = THROTTLE_TIME_REPORTLIST;
+        $this->throttleLimit = $THROTTLE_LIMIT_REPORTLIST;
+        $this->throttleTime = $THROTTLE_TIME_REPORTLIST;
     }
     
     /**
@@ -270,8 +270,8 @@ class AmazonReportList extends AmazonReportsCore implements Iterator{
         include($this->config);
         if ($this->tokenFlag && $this->tokenUseFlag){
             $this->options['Action'] = 'GetReportListByNextToken';
-            $this->throttleLimit = THROTTLE_LIMIT_REPORTTOKEN;
-            $this->throttleTime = THROTTLE_TIME_REPORTTOKEN;
+            $this->throttleLimit = $THROTTLE_LIMIT_REPORTTOKEN;
+            $this->throttleTime = $THROTTLE_TIME_REPORTTOKEN;
             $this->throttleGroup = 'GetReportListByNextToken';
             $this->resetRequestIds();
             $this->resetReportTypes();
@@ -280,8 +280,8 @@ class AmazonReportList extends AmazonReportsCore implements Iterator{
             unset($this->options['Acknowledged']);
         } else {
             $this->options['Action'] = 'GetReportList';
-            $this->throttleLimit = THROTTLE_LIMIT_REPORTLIST;
-            $this->throttleTime = THROTTLE_TIME_REPORTLIST;
+            $this->throttleLimit = $THROTTLE_LIMIT_REPORTLIST;
+            $this->throttleTime = $THROTTLE_TIME_REPORTLIST;
             $this->throttleGroup = 'GetReportList';
             unset($this->options['NextToken']);
             $this->reportList = array();
@@ -358,8 +358,8 @@ class AmazonReportList extends AmazonReportsCore implements Iterator{
     protected function prepareCount(){
         include($this->config);
         $this->options['Action'] = 'GetReportCount';
-        $this->throttleLimit = THROTTLE_LIMIT_REPORTREQUESTLIST;
-        $this->throttleTime = THROTTLE_TIME_REPORTREQUESTLIST;
+        $this->throttleLimit = $THROTTLE_LIMIT_REPORTREQUESTLIST;
+        $this->throttleTime = $THROTTLE_TIME_REPORTREQUESTLIST;
         $this->throttleGroup = 'GetReportCount';
         unset($this->options['NextToken']);
         unset($this->options['MaxCount']);

@@ -27,8 +27,8 @@ abstract class AmazonSellersCore extends AmazonCore{
             throw new Exception('Config file does not exist!');
         }
         
-        $this->urlbranch = 'Sellers/'.AMAZON_VERSION_SELLERS;
-        $this->options['Version'] = AMAZON_VERSION_SELLERS;
+        $this->urlbranch = 'Sellers/'.$AMAZON_VERSION_SELLERS;
+        $this->options['Version'] = $AMAZON_VERSION_SELLERS;
     }
 }
 ?>

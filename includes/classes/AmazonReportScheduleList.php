@@ -36,8 +36,8 @@ class AmazonReportScheduleList extends AmazonReportsCore implements Iterator{
             throw new Exception('Config file does not exist!');
         }
         
-        $this->throttleLimit = THROTTLE_LIMIT_REPORTSCHEDULE;
-        $this->throttleTime = THROTTLE_TIME_REPORTSCHEDULE;
+        $this->throttleLimit = $THROTTLE_LIMIT_REPORTSCHEDULE;
+        $this->throttleTime = $THROTTLE_TIME_REPORTSCHEDULE;
     }
     
     /**
@@ -160,14 +160,14 @@ class AmazonReportScheduleList extends AmazonReportsCore implements Iterator{
         include($this->config);
         if ($this->tokenFlag && $this->tokenUseFlag){
             $this->options['Action'] = 'GetReportScheduleListByNextToken';
-            $this->throttleLimit = THROTTLE_LIMIT_REPORTTOKEN;
-            $this->throttleTime = THROTTLE_TIME_REPORTTOKEN;
+            $this->throttleLimit = $THROTTLE_LIMIT_REPORTTOKEN;
+            $this->throttleTime = $THROTTLE_TIME_REPORTTOKEN;
             $this->throttleGroup = 'GetReportScheduleListByNextToken';
             $this->resetReportTypes();
         } else {
             $this->options['Action'] = 'GetReportScheduleList';
-            $this->throttleLimit = THROTTLE_LIMIT_REPORTSCHEDULE;
-            $this->throttleTime = THROTTLE_TIME_REPORTSCHEDULE;
+            $this->throttleLimit = $THROTTLE_LIMIT_REPORTSCHEDULE;
+            $this->throttleTime = $THROTTLE_TIME_REPORTSCHEDULE;
             $this->throttleGroup = 'GetReportScheduleList';
             unset($this->options['NextToken']);
             $this->scheduleList = array();
@@ -242,8 +242,8 @@ class AmazonReportScheduleList extends AmazonReportsCore implements Iterator{
     protected function prepareCount(){
         include($this->config);
         $this->options['Action'] = 'GetReportScheduleCount';
-        $this->throttleLimit = THROTTLE_LIMIT_REPORTSCHEDULE;
-        $this->throttleTime = THROTTLE_TIME_REPORTSCHEDULE;
+        $this->throttleLimit = $THROTTLE_LIMIT_REPORTSCHEDULE;
+        $this->throttleTime = $THROTTLE_TIME_REPORTSCHEDULE;
         $this->throttleGroup = 'GetReportScheduleCount';
         unset($this->options['NextToken']);
     }

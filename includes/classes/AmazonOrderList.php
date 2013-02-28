@@ -40,8 +40,8 @@ class AmazonOrderList extends AmazonOrderCore implements Iterator{
             $this->log("Marketplace ID is missing",'Urgent');
         }
         
-        $this->throttleLimit = THROTTLE_LIMIT_ORDERLIST;
-        $this->throttleTime = THROTTLE_TIME_ORDERLIST;
+        $this->throttleLimit = $THROTTLE_LIMIT_ORDERLIST;
+        $this->throttleTime = $THROTTLE_TIME_ORDERLIST;
         $this->throttleGroup = 'ListOrders';
     }
     

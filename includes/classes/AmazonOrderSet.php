@@ -41,8 +41,8 @@ class AmazonOrderSet extends AmazonOrderCore implements Iterator{
         }
         
         $this->options['Action'] = 'GetOrder';
-        $this->throttleLimit = THROTTLE_LIMIT_ORDER;
-        $this->throttleTime = THROTTLE_TIME_ORDER;
+        $this->throttleLimit = $THROTTLE_LIMIT_ORDER;
+        $this->throttleTime = $THROTTLE_TIME_ORDER;
         $this->throttleGroup = 'GetOrder';
     }
     

@@ -27,11 +27,11 @@ abstract class AmazonInboundCore extends AmazonCore{
             throw new Exception('Config file does not exist!');
         }
         
-        $this->urlbranch = 'FulfillmentInboundShipment/'.AMAZON_VERSION_INBOUND;
-        $this->options['Version'] = AMAZON_VERSION_INBOUND;
+        $this->urlbranch = 'FulfillmentInboundShipment/'.$AMAZON_VERSION_INBOUND;
+        $this->options['Version'] = $AMAZON_VERSION_INBOUND;
         
-        $this->throttleLimit = THROTTLE_LIMIT_INVENTORY;
-        $this->throttleTime = THROTTLE_TIME_INVENTORY;
+        $this->throttleLimit = $THROTTLE_LIMIT_INVENTORY;
+        $this->throttleTime = $THROTTLE_TIME_INVENTORY;
         $this->throttleGroup = 'Inventory';
     }
 }

@@ -41,8 +41,8 @@ class AmazonOrderItemList extends AmazonOrderCore implements Iterator{
             $this->setOrderId($id);
         }
         
-        $this->throttleLimit = THROTTLE_LIMIT_ITEM;
-        $this->throttleTime = THROTTLE_TIME_ITEM;
+        $this->throttleLimit = $THROTTLE_LIMIT_ITEM;
+        $this->throttleTime = $THROTTLE_TIME_ITEM;
         $this->throttleGroup = 'ListOrderItems';
     }
     

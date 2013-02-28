@@ -39,7 +39,7 @@ class AmazonProductSearch extends AmazonProductsCore{
         
         $this->options['Action'] = 'ListMatchingProducts';
         
-        $this->throttleTime = THROTTLE_TIME_PRODUCTMATCH;
+        $this->throttleTime = $THROTTLE_TIME_PRODUCTMATCH;
         $this->throttleGroup = 'ListMatchingProducts';
     }
     

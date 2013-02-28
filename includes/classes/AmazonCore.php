@@ -340,8 +340,7 @@ abstract class AmazonCore{
             include($path);
             $this->config = $path;
             $this->setLogPath($logpath);
-            $this->urlbase = AMAZON_SERVICE_URL;
-            $this->throttleSafe = AMAZON_THROTTLE_SAFE;
+            $this->urlbase = $AMAZON_SERVICE_URL;
         } else {
             throw new Exception("Config file does not exist or cannot be read! ($path)");
         }

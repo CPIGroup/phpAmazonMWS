@@ -34,8 +34,8 @@ class AmazonParticipationList extends AmazonSellersCore{
             throw new Exception('Config file does not exist!');
         }
         
-        $this->throttleLimit = THROTTLE_LIMIT_SELLERS;
-        $this->throttleTime = THROTTLE_TIME_SELLERS;
+        $this->throttleLimit = $THROTTLE_LIMIT_SELLERS;
+        $this->throttleTime = $THROTTLE_TIME_SELLERS;
         $this->throttleGroup = 'ParticipationList';
     }
     

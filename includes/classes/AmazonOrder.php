@@ -42,8 +42,8 @@ class AmazonOrder extends AmazonOrderCore{
         
         $this->options['Action'] = 'GetOrder';
         
-        $this->throttleLimit = THROTTLE_LIMIT_ORDER;
-        $this->throttleTime = THROTTLE_TIME_ORDER;
+        $this->throttleLimit = $THROTTLE_LIMIT_ORDER;
+        $this->throttleTime = $THROTTLE_TIME_ORDER;
         $this->throttleGroup = 'GetOrder';
     }
     

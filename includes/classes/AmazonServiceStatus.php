@@ -41,8 +41,8 @@ class AmazonServiceStatus extends AmazonCore{
         
         $this->options['Action'] = 'GetServiceStatus';
         
-        $this->throttleLimit = THROTTLE_LIMIT_STATUS;
-        $this->throttleTime = THROTTLE_TIME_STATUS;
+        $this->throttleLimit = $THROTTLE_LIMIT_STATUS;
+        $this->throttleTime = $THROTTLE_TIME_STATUS;
         $this->throttleGroup = 'GetServiceStatus';
     }
     

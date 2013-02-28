@@ -39,8 +39,8 @@ class AmazonFeedResult extends AmazonFeedsCore{
         
         $this->options['Action'] = 'GetFeedSubmissionResult';
         
-        $this->throttleLimit = THROTTLE_LIMIT_FEEDRESULT;
-        $this->throttleTime = THROTTLE_TIME_FEEDRESULT;
+        $this->throttleLimit = $THROTTLE_LIMIT_FEEDRESULT;
+        $this->throttleTime = $THROTTLE_TIME_FEEDRESULT;
         $this->throttleGroup = 'GetFeedSubmissionResult';
     }
     

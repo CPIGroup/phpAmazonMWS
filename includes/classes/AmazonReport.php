@@ -38,8 +38,8 @@ class AmazonReport extends AmazonReportsCore{
         
         $this->options['Action'] = 'GetReport';
         
-        $this->throttleLimit = THROTTLE_LIMIT_REPORT;
-        $this->throttleTime = THROTTLE_TIME_REPORT;
+        $this->throttleLimit = $THROTTLE_LIMIT_REPORT;
+        $this->throttleTime = $THROTTLE_TIME_REPORT;
     }
     
     /**

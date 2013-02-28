@@ -41,8 +41,8 @@ class AmazonReportAcknowledger extends AmazonReportsCore implements Iterator{
         
         $this->options['Action'] = 'UpdateReportAcknowledgements';
         
-        $this->throttleLimit = THROTTLE_LIMIT_REPORTSCHEDULE;
-        $this->throttleTime = THROTTLE_TIME_REPORTSCHEDULE;
+        $this->throttleLimit = $THROTTLE_LIMIT_REPORTSCHEDULE;
+        $this->throttleTime = $THROTTLE_TIME_REPORTSCHEDULE;
         $this->throttleGroup = 'UpdateReportAcknowledgements';
     }
     

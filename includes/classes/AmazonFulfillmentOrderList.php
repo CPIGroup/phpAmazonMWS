@@ -107,9 +107,10 @@ class AmazonFulfillmentOrderList extends AmazonOutboundCore implements Iterator{
      * Submits a <i>ListAllFulfillmentOrders</i> request to Amazon. Amazon will send
      * the list back as a response, which can be retrieved using <i>getOrder</i>.
      * This operation can potentially involve tokens.
+     * @param boolean <p>When set to <b>FALSE</b>, the function will not recurse, defaults to <b>TRUE</b></p>
      * @return boolean <p><b>FALSE</b> if something goes wrong</p>
      */
-    public function fetchOrderList(){
+    public function fetchOrderList($r = true){
         $this->prepareToken();
         
         
@@ -135,9 +136,12 @@ class AmazonFulfillmentOrderList extends AmazonOutboundCore implements Iterator{
         
         $this->checkToken($xml);
         
-        if ($this->tokenFlag && $this->tokenUseFlag){
-            $this->log("Recursively fetching more Orders");
-            $this->fetchOrderList(false);
+        if ($this->tokenFlag && $this->tokenUseFlag && $r === true){
+            while ($this->tokenFlag){
+                $this->log("Recursively fetching more Orders");
+                $this->fetchOrderList(false);
+            }
+            
         }
         
     }

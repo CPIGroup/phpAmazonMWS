@@ -199,9 +199,10 @@ class AmazonShipmentList extends AmazonInboundCore implements Iterator{
      * the list back as a response, which can be retrieved using <i>getShipment</i>.
      * Other methods are available for fetching specific values from the list.
      * This operation can potentially involve tokens.
+     * @param boolean <p>When set to <b>FALSE</b>, the function will not recurse, defaults to <b>TRUE</b></p>
      * @return boolean <p><b>FALSE</b> if something goes wrong</p>
      */
-    public function fetchShipments(){
+    public function fetchShipments($r = true){
         if (!array_key_exists('ShipmentStatusList.member.1', $this->options) && !array_key_exists('ShipmentIdList.member.1', $this->options)){
             $this->log("Either status filter or ID filter must be set before requesting a list!",'Warning');
             return false;
@@ -230,9 +231,12 @@ class AmazonShipmentList extends AmazonInboundCore implements Iterator{
         
         $this->checkToken($xml);
         
-        if ($this->tokenFlag && $this->tokenUseFlag){
-            $this->log("Recursively fetching more shipments");
-            $this->fetchShipments();
+        if ($this->tokenFlag && $this->tokenUseFlag && $r === true){
+            while ($this->tokenFlag){
+                $this->log("Recursively fetching more shipments");
+                $this->fetchShipments(false);
+            }
+            
         }
         
         

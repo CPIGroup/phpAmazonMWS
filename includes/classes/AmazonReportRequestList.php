@@ -238,9 +238,10 @@ class AmazonReportRequestList extends AmazonReportsCore implements Iterator{
      * the list back as a response, which can be retrieved using <i>getList</i>.
      * Other methods are available for fetching specific values from the list.
      * This operation can potentially involve tokens.
+     * @param boolean <p>When set to <b>FALSE</b>, the function will not recurse, defaults to <b>TRUE</b></p>
      * @return boolean <p><b>FALSE</b> if something goes wrong</p>
      */
-    public function fetchRequestList(){
+    public function fetchRequestList($r = true){
         $this->prepareToken();
         
         $url = $this->urlbase.$this->urlbranch;
@@ -264,9 +265,12 @@ class AmazonReportRequestList extends AmazonReportsCore implements Iterator{
         
         $this->checkToken($xml);
         
-        if ($this->tokenFlag && $this->tokenUseFlag){
-            $this->log("Recursively fetching more Report Requests");
-            $this->fetchRequestList();
+        if ($this->tokenFlag && $this->tokenUseFlag && $r === true){
+            while ($this->tokenFlag){
+                $this->log("Recursively fetching more Report Requests");
+                $this->fetchRequestList(false);
+            }
+            
         }
         
     }

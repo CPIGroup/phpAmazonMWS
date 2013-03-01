@@ -32,7 +32,7 @@ $AMAZON_VERSION_REPORTS     = '2009-01-01';
 $AMAZON_VERSION_SELLERS     = '2011-07-01';
 
 //Location of log file to use
-$logpath = '/var/www/athena/plugins/amazon/newAmazon/test-cases/log.txt';
+$logpath = __DIR__.'/log.txt';
 
 //Name of custom log function to use
 $logfunction = '';

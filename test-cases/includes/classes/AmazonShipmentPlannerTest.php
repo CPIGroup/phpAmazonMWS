@@ -15,7 +15,7 @@ class AmazonShipmentPlannerTest extends PHPUnit_Framework_TestCase {
      * This method is called before a test is executed.
      */
     protected function setUp() {
-        $this->resetLog();
+        resetLog();
         $this->object = new AmazonShipmentPlanner('BigKitchen', true, null, '/var/www/athena/plugins/amazon/newAmazon/test-cases/test-config.php');
     }
 
@@ -32,7 +32,7 @@ class AmazonShipmentPlannerTest extends PHPUnit_Framework_TestCase {
         $this->assertFalse($this->object->setAddress('address')); //can't be a string
         $this->assertFalse($this->object->setAddress(array())); //can't be empty
         
-        $check = $this->parseLog();
+        $check = parseLog();
         $this->assertEquals('Tried to set address to invalid values',$check[1]);
         $this->assertEquals('Tried to set address to invalid values',$check[2]);
         $this->assertEquals('Tried to set address to invalid values',$check[3]);
@@ -80,8 +80,8 @@ class AmazonShipmentPlannerTest extends PHPUnit_Framework_TestCase {
         $o2 = $this->object->getOptions();
         $this->assertArrayHasKey('ShipFromAddress.Name',$o2);
         $this->assertEquals('Name2',$o2['ShipFromAddress.Name']);
-        $this->assertNull($o2['ShipFromAddress.AddressLine2']);
-        $this->assertNull($o2['ShipFromAddress.DistrictOrCounty']);
+        $this->assertFalse(isset($o2['ShipFromAddress.AddressLine2']));
+        $this->assertFalse(isset($o2['ShipFromAddress.DistrictOrCounty']));
         
     }
     
@@ -111,7 +111,7 @@ class AmazonShipmentPlannerTest extends PHPUnit_Framework_TestCase {
         
         $this->assertFalse($this->object->setItems($break)); //missing quantity
         
-        $check = $this->parseLog();
+        $check = parseLog();
         $this->assertEquals('Tried to set Items to invalid values',$check[1]);
         $this->assertEquals('Tried to set Items to invalid values',$check[2]);
         $this->assertEquals('Tried to set Items to invalid values',$check[3]);
@@ -174,7 +174,7 @@ class AmazonShipmentPlannerTest extends PHPUnit_Framework_TestCase {
 //    }
     
     public function testFetchPlan(){
-        $this->resetLog();
+        resetLog();
         $this->object->setMock(true,'fetchPlan.xml');
         
         $this->assertFalse($this->object->fetchPlan()); //no address set yet
@@ -199,7 +199,7 @@ class AmazonShipmentPlannerTest extends PHPUnit_Framework_TestCase {
         $o = $this->object->getOptions();
         $this->assertEquals('CreateInboundShipmentPlan',$o['Action']);
         
-        $check = $this->parseLog();
+        $check = parseLog();
         $this->assertEquals('Single Mock File set: fetchPlan.xml',$check[1]);
         $this->assertEquals('Address must be set in order to make a plan',$check[2]);
         $this->assertEquals('Items must be set in order to make a plan',$check[3]);
@@ -331,38 +331,6 @@ class AmazonShipmentPlannerTest extends PHPUnit_Framework_TestCase {
         $this->assertFalse($this->object->getShipmentId()); //not fetched yet for this object
     }
     
-    /**
-     * Resets log for next test
-     */
-    protected function resetLog(){
-        file_put_contents('log.txt','');
-    }
-    
-    /**
-     * gets the log contents
-     */
-    protected function getLog(){
-        return file_get_contents('log.txt');
-    }
-    
-    /**
-     * gets log and returns messages in an array
-     * @param string $s pre-fetched log contents
-     * @return array list of message strings
-     */
-    protected function parseLog($s = null){
-        if (!$s){
-            $s = $this->getLog();
-        }
-        $temp = explode("\n",$s);
-        
-        $return = array();
-        foreach($temp as $x){
-            $tempo = explode('] ',$x);
-            $return[] = trim($tempo[1]);
-        }
-        array_pop($return);
-        return $return;
-    }
-
 }
+
+require_once('helperFunctions.php');

@@ -34,8 +34,10 @@ class AmazonFeed extends AmazonFeedsCore{
         
         $this->options['Action'] = 'SubmitFeed';
         
-        $this->throttleLimit = THROTTLE_LIMIT_FEEDSUBMIT;
-        $this->throttleTime = THROTTLE_TIME_FEEDSUBMIT;
+        if(isset($THROTTLE_LIMIT_FEEDSUBMIT))
+        $this->throttleLimit = $THROTTLE_LIMIT_FEEDSUBMIT;
+        if(isset($THROTTLE_TIME_FEEDSUBMIT))
+        $this->throttleTime = $THROTTLE_TIME_FEEDSUBMIT;
         $this->throttleGroup = 'SubmitFeed';
     }
     
@@ -206,7 +208,8 @@ class AmazonFeed extends AmazonFeedsCore{
             $this->options['PurgeAndReplace'] = 'false';
             if (file_exists($this->config)){
                 include($this->config);
-                $this->throttleTime = THROTTLE_TIME_FEEDSUBMIT;
+                if(isset($THROTTLE_TIME_FEEDSUBMIT))
+                $this->throttleTime = $THROTTLE_TIME_FEEDSUBMIT;
             } else {
                 return false;
             }

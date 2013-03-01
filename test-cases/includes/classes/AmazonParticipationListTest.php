@@ -15,7 +15,7 @@ class AmazonParticipationListTest extends PHPUnit_Framework_TestCase {
      * This method is called before a test is executed.
      */
     protected function setUp() {
-        $this->resetLog();
+        resetLog();
         $this->object = new AmazonParticipationList('BigKitchen', true, null, '/var/www/athena/plugins/amazon/newAmazon/test-cases/test-config.php');
     }
 
@@ -37,7 +37,7 @@ class AmazonParticipationListTest extends PHPUnit_Framework_TestCase {
 
 
     public function testFetchParticipationList(){
-        $this->resetLog();
+        resetLog();
         $this->object->setMock(true,'fetchParticipationList.xml'); //no token
         $this->assertNull($this->object->fetchParticipationList());
         
@@ -49,7 +49,7 @@ class AmazonParticipationListTest extends PHPUnit_Framework_TestCase {
         $this->assertInternalType('array',$r[0]);
         
         
-        $check = $this->parseLog();
+        $check = parseLog();
         $this->assertEquals('Single Mock File set: fetchParticipationList.xml',$check[1]);
         $this->assertEquals('Fetched Mock File: mock/fetchParticipationList.xml',$check[2]);
         
@@ -191,12 +191,12 @@ class AmazonParticipationListTest extends PHPUnit_Framework_TestCase {
     }
     
     public function testFetchParticipationListToken1(){
-        $this->resetLog();
+        resetLog();
         $this->object->setMock(true,'fetchParticipationListToken.xml'); //no token
         
         //without using token
         $this->assertNull($this->object->fetchParticipationList());
-        $check = $this->parseLog();
+        $check = parseLog();
         $this->assertEquals('Single Mock File set: fetchParticipationListToken.xml',$check[1]);
         $this->assertEquals('Fetched Mock File: mock/fetchParticipationListToken.xml',$check[2]);
         
@@ -210,13 +210,13 @@ class AmazonParticipationListTest extends PHPUnit_Framework_TestCase {
     }
     
     public function testFetchParticipationListToken2(){
-        $this->resetLog();
+        resetLog();
         $this->object->setMock(true,array('fetchParticipationListToken.xml','fetchParticipationListToken2.xml'));
         
         //with using token
         $this->object->setUseToken();
         $this->assertNull($this->object->fetchParticipationList());
-        $check = $this->parseLog();
+        $check = parseLog();
         $this->assertEquals('Mock files array set.',$check[1]);
         $this->assertEquals('Fetched Mock File: mock/fetchParticipationListToken.xml',$check[2]);
         $this->assertEquals('Recursively fetching more Participationseses',$check[3]);
@@ -232,38 +232,6 @@ class AmazonParticipationListTest extends PHPUnit_Framework_TestCase {
         $this->assertNotEquals($p[0],$p[1]);
     }
     
-    /**
-     * Resets log for next test
-     */
-    protected function resetLog(){
-        file_put_contents('log.txt','');
-    }
-    
-    /**
-     * gets the log contents
-     */
-    protected function getLog(){
-        return file_get_contents('log.txt');
-    }
-    
-    /**
-     * gets log and returns messages in an array
-     * @param string $s pre-fetched log contents
-     * @return array list of message strings
-     */
-    protected function parseLog($s = null){
-        if (!$s){
-            $s = $this->getLog();
-        }
-        $temp = explode("\n",$s);
-        
-        $return = array();
-        foreach($temp as $x){
-            $tempo = explode('] ',$x);
-            $return[] = trim($tempo[1]);
-        }
-        array_pop($return);
-        return $return;
-    }
-
 }
+
+require_once('helperFunctions.php');

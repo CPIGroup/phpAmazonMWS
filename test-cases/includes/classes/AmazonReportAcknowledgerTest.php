@@ -15,7 +15,7 @@ class AmazonReportAcknowledgerTest extends PHPUnit_Framework_TestCase {
      * This method is called before a test is executed.
      */
     protected function setUp() {
-        $this->resetLog();
+        resetLog();
         $this->object = new AmazonReportAcknowledger('BigKitchen', null, true, null, '/var/www/athena/plugins/amazon/newAmazon/test-cases/test-config.php');
     }
 
@@ -74,7 +74,7 @@ class AmazonReportAcknowledgerTest extends PHPUnit_Framework_TestCase {
     }
     
     public function testAcknowledgeReports(){
-        $this->resetLog();
+        resetLog();
         $this->object->setMock(true,'acknowledgeReports.xml');
         
         $this->assertFalse($this->object->acknowledgeReports()); //no Report ID set yet
@@ -82,7 +82,7 @@ class AmazonReportAcknowledgerTest extends PHPUnit_Framework_TestCase {
         
         $this->assertNull($this->object->acknowledgeReports());
         
-        $check = $this->parseLog();
+        $check = parseLog();
         $this->assertEquals('Single Mock File set: acknowledgeReports.xml',$check[1]);
         $this->assertEquals('Report IDs must be set in order to acknowledge reports!',$check[2]);
         $this->assertEquals('Fetched Mock File: mock/acknowledgeReports.xml',$check[3]);
@@ -186,38 +186,6 @@ class AmazonReportAcknowledgerTest extends PHPUnit_Framework_TestCase {
         $this->assertFalse($this->object->getList()); //not fetched yet for this object
     }
     
-    /**
-     * Resets log for next test
-     */
-    protected function resetLog(){
-        file_put_contents('log.txt','');
-    }
-    
-    /**
-     * gets the log contents
-     */
-    protected function getLog(){
-        return file_get_contents('log.txt');
-    }
-    
-    /**
-     * gets log and returns messages in an array
-     * @param string $s pre-fetched log contents
-     * @return array list of message strings
-     */
-    protected function parseLog($s = null){
-        if (!$s){
-            $s = $this->getLog();
-        }
-        $temp = explode("\n",$s);
-        
-        $return = array();
-        foreach($temp as $x){
-            $tempo = explode('] ',$x);
-            $return[] = trim($tempo[1]);
-        }
-        array_pop($return);
-        return $return;
-    }
-
 }
+
+require_once('helperFunctions.php');

@@ -15,7 +15,7 @@ class AmazonFulfillmentOrderListTest extends PHPUnit_Framework_TestCase {
      * This method is called before a test is executed.
      */
     protected function setUp() {
-        $this->resetLog();
+        resetLog();
         $this->object = new AmazonFulfillmentOrderList('BigKitchen', true, null, '/var/www/athena/plugins/amazon/newAmazon/test-cases/test-config.php');
     }
 
@@ -57,7 +57,7 @@ class AmazonFulfillmentOrderListTest extends PHPUnit_Framework_TestCase {
 
 
     public function testFetchOrderList(){
-        $this->resetLog();
+        resetLog();
         $this->object->setMock(true,array('fetchFulfillmentOrderList.xml')); //no token
         $this->assertNull($this->object->fetchOrderList());
         
@@ -70,7 +70,7 @@ class AmazonFulfillmentOrderListTest extends PHPUnit_Framework_TestCase {
         $this->assertInternalType('array',$r[1]);
         
         
-        $check = $this->parseLog();
+        $check = parseLog();
         $this->assertEquals('Mock files array set.',$check[1]);
         $this->assertEquals('Fetched Mock File: mock/fetchFulfillmentOrderList.xml',$check[2]);
         
@@ -103,7 +103,7 @@ class AmazonFulfillmentOrderListTest extends PHPUnit_Framework_TestCase {
     }
     
     public function testGetFullList(){
-        $this->resetLog();
+        resetLog();
         $this->object->setMock(true,array('fetchFulfillmentOrderList.xml','fetchFulfillmentOrder.xml','fetchFulfillmentOrder.xml')); //need files for orders
         $this->assertNull($this->object->fetchOrderList());
         
@@ -117,7 +117,7 @@ class AmazonFulfillmentOrderListTest extends PHPUnit_Framework_TestCase {
         $this->assertInternalType('array',$r[0]->getOrder());
         $this->assertInternalType('array',$r[1]->getOrder());
         
-        $check = $this->parseLog();
+        $check = parseLog();
         $this->assertEquals('Mock files array set.',$check[1]);
         $this->assertEquals('Fetched Mock File: mock/fetchFulfillmentOrderList.xml',$check[2]);
         $this->assertEquals('Mock Mode set to ON',$check[3]);
@@ -129,12 +129,12 @@ class AmazonFulfillmentOrderListTest extends PHPUnit_Framework_TestCase {
     }
     
     public function testFetchOrderListToken1(){
-        $this->resetLog();
+        resetLog();
         $this->object->setMock(true,array('fetchFulfillmentOrderListToken.xml'));
         
         //without using token
         $this->assertNull($this->object->fetchOrderList());
-        $check = $this->parseLog();
+        $check = parseLog();
         $this->assertEquals('Mock files array set.',$check[1]);
         $this->assertEquals('Fetched Mock File: mock/fetchFulfillmentOrderListToken.xml',$check[2]);
         $this->assertTrue($this->object->hasToken());
@@ -147,13 +147,13 @@ class AmazonFulfillmentOrderListTest extends PHPUnit_Framework_TestCase {
     }
     
     public function testFetchOrderListToken2(){
-        $this->resetLog();
+        resetLog();
         $this->object->setMock(true,array('fetchFulfillmentOrderListToken.xml','fetchFulfillmentOrderListToken2.xml'));
         
         //with using token
         $this->object->setUseToken();
         $this->assertNull($this->object->fetchOrderList());
-        $check = $this->parseLog();
+        $check = parseLog();
         $this->assertEquals('Mock files array set.',$check[1]);
         $this->assertEquals('Fetched Mock File: mock/fetchFulfillmentOrderListToken.xml',$check[2]);
         $this->assertEquals('Recursively fetching more Orders',$check[3]);
@@ -169,38 +169,6 @@ class AmazonFulfillmentOrderListTest extends PHPUnit_Framework_TestCase {
         $this->assertNotEquals($r[0],$r[1]);
     }
     
-    /**
-     * Resets log for next test
-     */
-    protected function resetLog(){
-        file_put_contents('log.txt','');
-    }
-    
-    /**
-     * gets the log contents
-     */
-    protected function getLog(){
-        return file_get_contents('log.txt');
-    }
-    
-    /**
-     * gets log and returns messages in an array
-     * @param string $s pre-fetched log contents
-     * @return array list of message strings
-     */
-    protected function parseLog($s = null){
-        if (!$s){
-            $s = $this->getLog();
-        }
-        $temp = explode("\n",$s);
-        
-        $return = array();
-        foreach($temp as $x){
-            $tempo = explode('] ',$x);
-            $return[] = trim($tempo[1]);
-        }
-        array_pop($return);
-        return $return;
-    }
-
 }
+
+require_once('helperFunctions.php');

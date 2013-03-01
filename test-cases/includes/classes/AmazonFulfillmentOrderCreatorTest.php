@@ -15,7 +15,7 @@ class AmazonFulfillmentOrderCreatorTest extends PHPUnit_Framework_TestCase {
      * This method is called before a test is executed.
      */
     protected function setUp() {
-        $this->resetLog();
+        resetLog();
         $this->object = new AmazonFulfillmentOrderCreator('BigKitchen', true, null, '/var/www/athena/plugins/amazon/newAmazon/test-cases/test-config.php');
     }
 
@@ -73,7 +73,7 @@ class AmazonFulfillmentOrderCreatorTest extends PHPUnit_Framework_TestCase {
         $this->assertArrayHasKey('ShippingSpeedCategory',$o);
         $this->assertEquals('Priority',$o['ShippingSpeedCategory']);
         
-        $check = $this->parseLog();
+        $check = parseLog();
         $this->assertEquals('Tried to set shipping status to invalid value',$check[1]);
         
     }
@@ -89,7 +89,7 @@ class AmazonFulfillmentOrderCreatorTest extends PHPUnit_Framework_TestCase {
         $this->assertArrayHasKey('FulfillmentPolicy',$o);
         $this->assertEquals('FillAllAvailable',$o['FulfillmentPolicy']);
         
-        $check = $this->parseLog();
+        $check = parseLog();
         $this->assertEquals('Tried to set fulfillment policy to invalid value',$check[1]);
         
     }
@@ -104,7 +104,7 @@ class AmazonFulfillmentOrderCreatorTest extends PHPUnit_Framework_TestCase {
         $this->assertArrayHasKey('FulfillmentMethod',$o);
         $this->assertEquals('Removal',$o['FulfillmentMethod']);
         
-        $check = $this->parseLog();
+        $check = parseLog();
         $this->assertEquals('Tried to set fulfillment method to invalid value',$check[1]);
         
     }
@@ -114,7 +114,7 @@ class AmazonFulfillmentOrderCreatorTest extends PHPUnit_Framework_TestCase {
         $this->assertFalse($this->object->setAddress('address')); //can't be a string
         $this->assertFalse($this->object->setAddress(array())); //can't be empty
         
-        $check = $this->parseLog();
+        $check = parseLog();
         $this->assertEquals('Tried to set address to invalid values',$check[1]);
         $this->assertEquals('Tried to set address to invalid values',$check[2]);
         $this->assertEquals('Tried to set address to invalid values',$check[3]);
@@ -220,7 +220,7 @@ class AmazonFulfillmentOrderCreatorTest extends PHPUnit_Framework_TestCase {
         
         $this->assertFalse($this->object->setItems($break)); //missing quantity
         
-        $check = $this->parseLog();
+        $check = parseLog();
         $this->assertEquals('Tried to set Items to invalid values',$check[1]);
         $this->assertEquals('Tried to set Items to invalid values',$check[2]);
         $this->assertEquals('Tried to set Items to invalid values',$check[3]);
@@ -296,7 +296,7 @@ class AmazonFulfillmentOrderCreatorTest extends PHPUnit_Framework_TestCase {
     }
     
     public function testCreateOrder(){
-        $this->resetLog();
+        resetLog();
         $this->object->setMock(true,array(503,200));
         
         $this->assertFalse($this->object->createOrder()); //no Seller Fulfillment Order ID set yet
@@ -335,7 +335,7 @@ class AmazonFulfillmentOrderCreatorTest extends PHPUnit_Framework_TestCase {
         $this->object->createOrder(); //attempt 1: oops, bad response
         $this->object->createOrder(); //attempt 2: success
         
-        $check = $this->parseLog();
+        $check = parseLog();
         $this->assertEquals('Mock files array set.',$check[1]);
         $this->assertEquals('Seller Fulfillment OrderID must be set in order to create an order',$check[2]);
         $this->assertEquals('Displayable Order ID must be set in order to create an order',$check[3]);
@@ -350,38 +350,6 @@ class AmazonFulfillmentOrderCreatorTest extends PHPUnit_Framework_TestCase {
         $this->assertEquals('Successfully created Fulfillment Order 123ABC / ABC123',$check[12]);
     }
     
-    /**
-     * Resets log for next test
-     */
-    protected function resetLog(){
-        file_put_contents('log.txt','');
-    }
-    
-    /**
-     * gets the log contents
-     */
-    protected function getLog(){
-        return file_get_contents('log.txt');
-    }
-    
-    /**
-     * gets log and returns messages in an array
-     * @param string $s pre-fetched log contents
-     * @return array list of message strings
-     */
-    protected function parseLog($s = null){
-        if (!$s){
-            $s = $this->getLog();
-        }
-        $temp = explode("\n",$s);
-        
-        $return = array();
-        foreach($temp as $x){
-            $tempo = explode('] ',$x);
-            $return[] = trim($tempo[1]);
-        }
-        array_pop($return);
-        return $return;
-    }
-
 }
+
+require_once('helperFunctions.php');

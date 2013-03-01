@@ -30,8 +30,11 @@ abstract class AmazonProductsCore extends AmazonCore{
             throw new Exception('Config file does not exist!');
         }
         
-        $this->urlbranch = 'Products/'.AMAZON_VERSION_PRODUCTS;
-        $this->options['Version'] = AMAZON_VERSION_PRODUCTS;
+        if(isset($AMAZON_VERSION_PRODUCTS)){
+            $this->urlbranch = 'Products/'.$AMAZON_VERSION_PRODUCTS;
+            $this->options['Version'] = $AMAZON_VERSION_PRODUCTS;
+        }
+        
         
         if(array_key_exists('marketplaceId', $store[$s])){
             $this->options['MarketplaceId'] = $store[$s]['marketplaceId'];
@@ -39,7 +42,8 @@ abstract class AmazonProductsCore extends AmazonCore{
             $this->log("Marketplace ID is missing",'Urgent');
         }
         
-        $this->throttleLimit = THROTTLE_LIMIT_PRODUCT;
+        if(isset($THROTTLE_LIMIT_PRODUCT))
+        $this->throttleLimit = $THROTTLE_LIMIT_PRODUCT;
     }
     
     /**
@@ -78,7 +82,7 @@ abstract class AmazonProductsCore extends AmazonCore{
                         $this->log("Product Error: $error",'Warning');
                     } elseif($z->getName() != 'Product'){
                         $this->productList[$z->getName()] = (string)$z;
-                        $this->log("Special case: ".$z->getName().' ~ '.serialize($z),'Warning');
+                        $this->log("Special case: ".$z->getName(),'Warning');
                     } else {
                         $this->productList[$this->index] = new AmazonProduct($this->storeName, $z, $this->mockMode, $this->mockFiles,$this->config);
                         $this->index++;

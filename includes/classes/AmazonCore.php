@@ -340,8 +340,8 @@ abstract class AmazonCore{
             include($path);
             $this->config = $path;
             $this->setLogPath($logpath);
-            $this->urlbase = AMAZON_SERVICE_URL;
-            $this->throttleSafe = AMAZON_THROTTLE_SAFE;
+            if (isset($AMAZON_SERVICE_URL))
+            $this->urlbase = $AMAZON_SERVICE_URL;
         } else {
             throw new Exception("Config file does not exist or cannot be read! ($path)");
         }
@@ -417,7 +417,7 @@ abstract class AmazonCore{
      * @throws Exception <p>If the file can't be written to.</p>
      */
     protected function log($msg, $level = 'Info'){
-        if ($msg) {
+        if ($msg != false) {
             $backtrace = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS);
             
             if (file_exists($this->config)){
@@ -440,7 +440,7 @@ abstract class AmazonCore{
                 return;
             }
             
-            if($userName){ 
+            if(isset($userName) && $userName != ''){ 
                     $name = $userName;
             }else{
                     $name = 'guest';

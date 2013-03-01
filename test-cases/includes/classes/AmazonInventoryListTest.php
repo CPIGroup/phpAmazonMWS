@@ -15,7 +15,7 @@ class AmazonInventoryListTest extends PHPUnit_Framework_TestCase {
      * This method is called before a test is executed.
      */
     protected function setUp() {
-        $this->resetLog();
+        resetLog();
         $this->object = new AmazonInventoryList('BigKitchen', true, null, '/var/www/athena/plugins/amazon/newAmazon/test-cases/test-config.php');
     }
 
@@ -75,7 +75,7 @@ class AmazonInventoryListTest extends PHPUnit_Framework_TestCase {
     }
     
     public function testFetchInventoryList(){
-        $this->resetLog();
+        resetLog();
         $this->object->setResponseGroup('Detailed');
         $this->object->setMock(true,'fetchInventoryList.xml'); //no token
         $this->assertNull($this->object->fetchInventoryList());
@@ -83,7 +83,7 @@ class AmazonInventoryListTest extends PHPUnit_Framework_TestCase {
         $o = $this->object->getOptions();
         $this->assertEquals('ListInventorySupply',$o['Action']);
         
-        $check = $this->parseLog();
+        $check = parseLog();
         $this->assertEquals('Single Mock File set: fetchInventoryList.xml',$check[1]);
         $this->assertEquals('Fetched Mock File: mock/fetchInventoryList.xml',$check[2]);
         
@@ -298,13 +298,13 @@ class AmazonInventoryListTest extends PHPUnit_Framework_TestCase {
     }
     
     public function testFetchInventoryListToken1(){
-        $this->resetLog();
+        resetLog();
         $this->object->setMock(true,'fetchInventoryListToken.xml'); //no token
         $this->object->setResponseGroup('Detailed');
         
         //without using token
         $this->assertNull($this->object->fetchInventoryList());
-        $check = $this->parseLog();
+        $check = parseLog();
         $this->assertEquals('Single Mock File set: fetchInventoryListToken.xml',$check[1]);
         $this->assertEquals('Fetched Mock File: mock/fetchInventoryListToken.xml',$check[2]);
         
@@ -318,13 +318,13 @@ class AmazonInventoryListTest extends PHPUnit_Framework_TestCase {
     }
     
     public function testFetchInventoryListToken2(){
-        $this->resetLog();
+        resetLog();
         $this->object->setMock(true,array('fetchInventoryListToken.xml','fetchInventoryListToken2.xml'));
         
         //with using token
         $this->object->setUseToken();
         $this->assertNull($this->object->fetchInventoryList());
-        $check = $this->parseLog();
+        $check = parseLog();
         $this->assertEquals('Mock files array set.',$check[1]);
         $this->assertEquals('Fetched Mock File: mock/fetchInventoryListToken.xml',$check[2]);
         $this->assertEquals('Recursively fetching more Inventory Supplies',$check[3]);
@@ -343,38 +343,6 @@ class AmazonInventoryListTest extends PHPUnit_Framework_TestCase {
         $this->assertNotEquals($r[0],$r[1]);
     }
     
-    /**
-     * Resets log for next test
-     */
-    protected function resetLog(){
-        file_put_contents('log.txt','');
-    }
-    
-    /**
-     * gets the log contents
-     */
-    protected function getLog(){
-        return file_get_contents('log.txt');
-    }
-    
-    /**
-     * gets log and returns messages in an array
-     * @param string $s pre-fetched log contents
-     * @return array list of message strings
-     */
-    protected function parseLog($s = null){
-        if (!$s){
-            $s = $this->getLog();
-        }
-        $temp = explode("\n",$s);
-        
-        $return = array();
-        foreach($temp as $x){
-            $tempo = explode('] ',$x);
-            $return[] = trim($tempo[1]);
-        }
-        array_pop($return);
-        return $return;
-    }
-
 }
+
+require_once('helperFunctions.php');

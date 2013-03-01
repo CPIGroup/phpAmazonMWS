@@ -15,7 +15,7 @@ class AmazonShipmentListTest extends PHPUnit_Framework_TestCase {
      * This method is called before a test is executed.
      */
     protected function setUp() {
-        $this->resetLog();
+        resetLog();
         $this->object = new AmazonShipmentList('BigKitchen', true, null, '/var/www/athena/plugins/amazon/newAmazon/test-cases/test-config.php');
     }
 
@@ -105,7 +105,7 @@ class AmazonShipmentListTest extends PHPUnit_Framework_TestCase {
     }
     
     public function testFetchShipments(){
-        $this->resetLog();
+        resetLog();
         $this->object->setMock(true,'fetchShipments.xml'); //no token
         $this->assertFalse($this->object->fetchShipments()); //no filter yet
         
@@ -115,7 +115,7 @@ class AmazonShipmentListTest extends PHPUnit_Framework_TestCase {
         $o = $this->object->getOptions();
         $this->assertEquals('ListInboundShipments',$o['Action']);
         
-        $check = $this->parseLog();
+        $check = parseLog();
         $this->assertEquals('Single Mock File set: fetchShipments.xml',$check[1]);
         $this->assertEquals('Either status filter or ID filter must be set before requesting a list!',$check[2]);
         $this->assertEquals('Fetched Mock File: mock/fetchShipments.xml',$check[3]);
@@ -126,13 +126,13 @@ class AmazonShipmentListTest extends PHPUnit_Framework_TestCase {
     }
     
     public function testFetchShipmentsToken1(){
-        $this->resetLog();
+        resetLog();
         $this->object->setMock(true,'fetchShipmentsToken.xml'); //no token
         
         //without using token
         $this->object->setStatusFilter('status');
         $this->assertNull($this->object->fetchShipments());
-        $check = $this->parseLog();
+        $check = parseLog();
         $this->assertEquals('Single Mock File set: fetchShipmentsToken.xml',$check[1]);
         $this->assertEquals('Fetched Mock File: mock/fetchShipmentsToken.xml',$check[2]);
         
@@ -147,14 +147,14 @@ class AmazonShipmentListTest extends PHPUnit_Framework_TestCase {
     }
     
     public function testFetchShipmentsToken2(){
-        $this->resetLog();
+        resetLog();
         $this->object->setMock(true,array('fetchShipmentsToken.xml','fetchShipmentsToken2.xml'));
         
         //with using token
         $this->object->setUseToken();
         $this->object->setStatusFilter('status');
         $this->assertNull($this->object->fetchShipments());
-        $check = $this->parseLog();
+        $check = parseLog();
         $this->assertEquals('Mock files array set.',$check[1]);
         $this->assertEquals('Fetched Mock File: mock/fetchShipmentsToken.xml',$check[2]);
         $this->assertEquals('Recursively fetching more shipments',$check[3]);
@@ -347,38 +347,6 @@ class AmazonShipmentListTest extends PHPUnit_Framework_TestCase {
         $this->assertFalse($this->object->fetchItems()); //not fetched yet for this object
     }
     
-    /**
-     * Resets log for next test
-     */
-    protected function resetLog(){
-        file_put_contents('log.txt','');
-    }
-    
-    /**
-     * gets the log contents
-     */
-    protected function getLog(){
-        return file_get_contents('log.txt');
-    }
-    
-    /**
-     * gets log and returns messages in an array
-     * @param string $s pre-fetched log contents
-     * @return array list of message strings
-     */
-    protected function parseLog($s = null){
-        if (!$s){
-            $s = $this->getLog();
-        }
-        $temp = explode("\n",$s);
-        
-        $return = array();
-        foreach($temp as $x){
-            $tempo = explode('] ',$x);
-            $return[] = trim($tempo[1]);
-        }
-        array_pop($return);
-        return $return;
-    }
-
 }
+
+require_once('helperFunctions.php');

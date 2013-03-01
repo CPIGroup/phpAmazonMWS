@@ -41,8 +41,10 @@ class AmazonOrderItemList extends AmazonOrderCore implements Iterator{
             $this->setOrderId($id);
         }
         
-        $this->throttleLimit = THROTTLE_LIMIT_ITEM;
-        $this->throttleTime = THROTTLE_TIME_ITEM;
+        if(isset($THROTTLE_LIMIT_ITEM))
+        $this->throttleLimit = $THROTTLE_LIMIT_ITEM;
+        if(isset($THROTTLE_TIME_ITEM))
+        $this->throttleTime = $THROTTLE_TIME_ITEM;
         $this->throttleGroup = 'ListOrderItems';
     }
     
@@ -96,9 +98,10 @@ class AmazonOrderItemList extends AmazonOrderCore implements Iterator{
      * the data back as a response, which can be retrieved using <i>getItems</i>.
      * Other methods are available for fetching specific values from the order.
      * This operation can potentially involve tokens.
+     * @param boolean <p>When set to <b>FALSE</b>, the function will not recurse, defaults to <b>TRUE</b></p>
      * @return boolean <p><b>FALSE</b> if something goes wrong</p>
      */
-    public function fetchItems(){
+    public function fetchItems($r = true){
         $this->prepareToken();
         
         $url = $this->urlbase.$this->urlbranch;
@@ -121,7 +124,7 @@ class AmazonOrderItemList extends AmazonOrderCore implements Iterator{
         if (is_null($xml->AmazonOrderId)){
             $this->log("You just got throttled.",'Warning');
             return false;
-        } else if ($this->options['AmazonOrderId'] && $this->options['AmazonOrderId'] != $xml->AmazonOrderId){
+        } else if (isset($this->options['AmazonOrderId']) && $this->options['AmazonOrderId'] && $this->options['AmazonOrderId'] != $xml->AmazonOrderId){
             $this->log('You grabbed the wrong Order\'s items! - '.$this->options['AmazonOrderId'].' =/= '.$xml->AmazonOrderId,'Urgent');
         }
         
@@ -129,9 +132,11 @@ class AmazonOrderItemList extends AmazonOrderCore implements Iterator{
         
         $this->checkToken($xml);
         
-        if ($this->tokenFlag && $this->tokenUseFlag){
-            $this->log("Recursively fetching more items");
-            $this->fetchItems();
+        if ($this->tokenFlag && $this->tokenUseFlag && $r === true){
+            while ($this->tokenFlag){
+                $this->log("Recursively fetching more items");
+                $this->fetchItems(false);
+            }
         }
     }
 

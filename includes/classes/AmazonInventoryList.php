@@ -141,9 +141,10 @@ class AmazonInventoryList extends AmazonInventoryCore implements Iterator{
      * the list back as a response, which can be retrieved using <i>getSupply</i>.
      * Other methods are available for fetching specific values from the list.
      * This operation can potentially involve tokens.
+     * @param boolean <p>When set to <b>FALSE</b>, the function will not recurse, defaults to <b>TRUE</b></p>
      * @return boolean <p><b>FALSE</b> if something goes wrong</p>
      */
-    public function fetchInventoryList(){
+    public function fetchInventoryList($r = true){
         if (!isset($this->options['QueryStartDateTime']) && !isset($this->options['SellerSkus.member.1'])){
             $this->setStartTime();
         }
@@ -171,9 +172,12 @@ class AmazonInventoryList extends AmazonInventoryCore implements Iterator{
         
         $this->checkToken($xml);
         
-        if ($this->tokenFlag && $this->tokenUseFlag){
-            $this->log("Recursively fetching more Inventory Supplies");
-            $this->fetchInventoryList();
+        if ($this->tokenFlag && $this->tokenUseFlag && $r === true){
+            while ($this->tokenFlag){
+                $this->log("Recursively fetching more Inventory Supplies");
+                $this->fetchInventoryList(false);
+            }
+            
         }
         
     }
@@ -225,7 +229,7 @@ class AmazonInventoryList extends AmazonInventoryCore implements Iterator{
                     $this->supplyList[$this->index]['EarliestAvailability'] = (string)$x->EarliestAvailability->TimepointType;
                 }
             }
-            if ($this->options['ResponseGroup'] == 'Detailed'){
+            if (isset($this->options['ResponseGroup']) && $this->options['ResponseGroup'] == 'Detailed'){
                 $j = 0;
                 foreach($x->SupplyDetail->children() as $z){
                     if ((string)$z->EarliestAvailableToPick->TimepointType == 'DateTime'){

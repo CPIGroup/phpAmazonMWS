@@ -15,7 +15,7 @@ class AmazonCoreTest extends PHPUnit_Framework_TestCase {
      * This method is called before a test is executed.
      */
     protected function setUp() {
-        $this->resetLog();
+        resetLog();
         $this->object = new AmazonServiceStatus('BigKitchen', 'Inbound', true, null, '/var/www/athena/plugins/amazon/newAmazon/test-cases/test-config.php');
     }
 
@@ -47,10 +47,12 @@ class AmazonCoreTest extends PHPUnit_Framework_TestCase {
      * @dataProvider mockProvider
      */
     public function testSetMock($a, $b, $c, $d = null) {
-        $this->resetLog();
+        resetLog();
         $this->object->setMock($a, $b);
-        $check = $this->parseLog();
-        $this->assertEquals($c,$check[0]);
+        $check = parseLog();
+        if ((is_bool($a) && $a) || $b){
+            $this->assertEquals($c,$check[0]);
+        }
         if ($d){
             $this->assertEquals($d,$check[1]);
         }
@@ -80,12 +82,12 @@ class AmazonCoreTest extends PHPUnit_Framework_TestCase {
      */
     public function testSetStore() {
         $this->object->setStore('no');
-        $check = $this->parseLog();
+        $check = parseLog();
         $this->assertEquals('Mock Mode set to ON',$check[0]);
         $this->assertEquals('Store no does not exist!',$check[1]);
-        $this->resetLog();
+        resetLog();
         $this->object->setStore('bad');
-        $bad = $this->parseLog();
+        $bad = parseLog();
         $this->assertEquals('Merchant ID is missing!',$bad[0]);
         $this->assertEquals('Access Key ID is missing!',$bad[1]);
         $this->assertEquals('Secret Key is missing!',$bad[2]);
@@ -101,38 +103,6 @@ class AmazonCoreTest extends PHPUnit_Framework_TestCase {
         $this->assertArrayHasKey('Version',$o);
     }
     
-    /**
-     * Resets log for next test
-     */
-    protected function resetLog(){
-        file_put_contents('log.txt','');
-    }
-    
-    /**
-     * gets the log contents
-     */
-    protected function getLog(){
-        return file_get_contents('log.txt');
-    }
-    
-    /**
-     * gets log and returns messages in an array
-     * @param string $s pre-fetched log contents
-     * @return array list of message strings
-     */
-    protected function parseLog($s = null){
-        if (!$s){
-            $s = $this->getLog();
-        }
-        $temp = explode("\n",$s);
-        
-        $return = array();
-        foreach($temp as $x){
-            $tempo = explode('] ',$x);
-            $return[] = trim($tempo[1]);
-        }
-        array_pop($return);
-        return $return;
-    }
-
 }
+
+require_once('helperFunctions.php');

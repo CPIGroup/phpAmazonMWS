@@ -36,8 +36,10 @@ class AmazonReportScheduleList extends AmazonReportsCore implements Iterator{
             throw new Exception('Config file does not exist!');
         }
         
-        $this->throttleLimit = THROTTLE_LIMIT_REPORTSCHEDULE;
-        $this->throttleTime = THROTTLE_TIME_REPORTSCHEDULE;
+        if(isset($THROTTLE_LIMIT_REPORTSCHEDULE))
+        $this->throttleLimit = $THROTTLE_LIMIT_REPORTSCHEDULE;
+        if(isset($THROTTLE_TIME_REPORTSCHEDULE))
+        $this->throttleTime = $THROTTLE_TIME_REPORTSCHEDULE;
     }
     
     /**
@@ -110,9 +112,10 @@ class AmazonReportScheduleList extends AmazonReportsCore implements Iterator{
      * the list back as a response, which can be retrieved using <i>getList</i>.
      * Other methods are available for fetching specific values from the list.
      * This operation can potentially involve tokens.
+     * @param boolean <p>When set to <b>FALSE</b>, the function will not recurse, defaults to <b>TRUE</b></p>
      * @return boolean <p><b>FALSE</b> if something goes wrong</p>
      */
-    public function fetchReportList(){
+    public function fetchReportList($r = true){
         $this->prepareToken();
         
         $url = $this->urlbase.$this->urlbranch;
@@ -137,9 +140,12 @@ class AmazonReportScheduleList extends AmazonReportsCore implements Iterator{
         
         $this->checkToken($xml);
         
-        if ($this->tokenFlag && $this->tokenUseFlag){
-            $this->log("Recursively fetching more Report Schedules");
-            $this->fetchReportList();
+        if ($this->tokenFlag && $this->tokenUseFlag && $r === true){
+            while ($this->tokenFlag){
+                $this->log("Recursively fetching more Report Schedules");
+                $this->fetchReportList(false);
+            }
+            
         }
         
     }
@@ -156,14 +162,18 @@ class AmazonReportScheduleList extends AmazonReportsCore implements Iterator{
         include($this->config);
         if ($this->tokenFlag && $this->tokenUseFlag){
             $this->options['Action'] = 'GetReportScheduleListByNextToken';
-            $this->throttleLimit = THROTTLE_LIMIT_REPORTTOKEN;
-            $this->throttleTime = THROTTLE_TIME_REPORTTOKEN;
+        if(isset($THROTTLE_LIMIT_REPORTTOKEN))
+            $this->throttleLimit = $THROTTLE_LIMIT_REPORTTOKEN;
+        if(isset($THROTTLE_TIME_REPORTTOKEN))
+            $this->throttleTime = $THROTTLE_TIME_REPORTTOKEN;
             $this->throttleGroup = 'GetReportScheduleListByNextToken';
             $this->resetReportTypes();
         } else {
             $this->options['Action'] = 'GetReportScheduleList';
-            $this->throttleLimit = THROTTLE_LIMIT_REPORTSCHEDULE;
-            $this->throttleTime = THROTTLE_TIME_REPORTSCHEDULE;
+        if(isset($THROTTLE_LIMIT_REPORTSCHEDULE))
+            $this->throttleLimit = $THROTTLE_LIMIT_REPORTSCHEDULE;
+        if(isset($THROTTLE_TIME_REPORTSCHEDULE))
+            $this->throttleTime = $THROTTLE_TIME_REPORTSCHEDULE;
             $this->throttleGroup = 'GetReportScheduleList';
             unset($this->options['NextToken']);
             $this->scheduleList = array();
@@ -238,8 +248,10 @@ class AmazonReportScheduleList extends AmazonReportsCore implements Iterator{
     protected function prepareCount(){
         include($this->config);
         $this->options['Action'] = 'GetReportScheduleCount';
-        $this->throttleLimit = THROTTLE_LIMIT_REPORTSCHEDULE;
-        $this->throttleTime = THROTTLE_TIME_REPORTSCHEDULE;
+        if(isset($THROTTLE_LIMIT_REPORTSCHEDULE))
+        $this->throttleLimit = $THROTTLE_LIMIT_REPORTSCHEDULE;
+        if(isset($THROTTLE_TIME_REPORTSCHEDULE))
+        $this->throttleTime = $THROTTLE_TIME_REPORTSCHEDULE;
         $this->throttleGroup = 'GetReportScheduleCount';
         unset($this->options['NextToken']);
     }

@@ -15,7 +15,7 @@ class AmazonShipmentTest extends PHPUnit_Framework_TestCase {
      * This method is called before a test is executed.
      */
     protected function setUp() {
-        $this->resetLog();
+        resetLog();
         $this->object = new AmazonShipment('BigKitchen', true, null, '/var/www/athena/plugins/amazon/newAmazon/test-cases/test-config.php');
     }
 
@@ -33,7 +33,7 @@ class AmazonShipmentTest extends PHPUnit_Framework_TestCase {
         $this->assertFalse($this->object->setAddress(array())); //can't be empty
         $this->assertFalse($this->object->setAddress(array('address' => 'address'))); //missing keys
         
-        $check = $this->parseLog();
+        $check = parseLog();
         $this->assertEquals('Tried to set address to invalid values',$check[1]);
         $this->assertEquals('Tried to set address to invalid values',$check[2]);
         $this->assertEquals('Tried to set address to invalid values',$check[3]);
@@ -73,7 +73,7 @@ class AmazonShipmentTest extends PHPUnit_Framework_TestCase {
         $a2['Name'] = 'Name2';
         $a2['AddressLine1'] = 'AddressLine1-2';
         $a2['City'] = 'City2';
-        $a2['StateOrProvidenceCode'] = 'StateOrProvidenceCode2';
+        $a2['StateOrProvinceCode'] = 'StateOrProvinceCode2';
         $a2['CountryCode'] = 'CountryCode2';
         $a2['PostalCode'] = 'PostalCode2';
         
@@ -101,7 +101,7 @@ class AmazonShipmentTest extends PHPUnit_Framework_TestCase {
         
         $this->assertFalse($this->object->setItems($break)); //missing quantity
         
-        $check = $this->parseLog();
+        $check = parseLog();
         $this->assertEquals('Tried to set Items to invalid values',$check[1]);
         $this->assertEquals('Tried to set Items to invalid values',$check[2]);
         $this->assertEquals('Tried to set Items to invalid values',$check[3]);
@@ -201,9 +201,9 @@ class AmazonShipmentTest extends PHPUnit_Framework_TestCase {
         $this->assertEquals('TeeballBall3251',$o['InboundShipmentItems.member.2.SellerSKU']);
         $this->assertEquals('5',$o['InboundShipmentItems.member.2.QuantityShipped']);
         
-        $this->resetLog();
+        resetLog();
         $this->assertFalse($this->object->usePlan(null));
-        $check = $this->parseLog();
+        $check = parseLog();
         $this->assertEquals('usePlan requires an array',$check[0]);
         
         return $this->object;
@@ -213,7 +213,7 @@ class AmazonShipmentTest extends PHPUnit_Framework_TestCase {
      * @depends testUsePlan
      */
     public function testCreateShipment($o){
-        $this->resetLog();
+        resetLog();
         $this->object = new AmazonShipment('BigKitchen',true, null, '/var/www/athena/plugins/amazon/newAmazon/test-cases/test-config.php');
         $this->assertFalse($this->object->createShipment()); //no ID set
         
@@ -236,7 +236,7 @@ class AmazonShipmentTest extends PHPUnit_Framework_TestCase {
         $op = $o->getOptions();
         $this->assertEquals('CreateInboundShipment',$op['Action']);
         
-        $check = $this->parseLog();
+        $check = parseLog();
         $this->assertEquals('Shipment ID must be set in order to create it',$check[1]);
         $this->assertEquals('Header must be set in order to make a shipment',$check[2]);
         $this->assertEquals('Items must be set in order to make a shipment',$check[3]);
@@ -261,7 +261,7 @@ class AmazonShipmentTest extends PHPUnit_Framework_TestCase {
      * @depends testUsePlan
      */
     public function testUpdateShipment($o){
-        $this->resetLog();
+        resetLog();
         $this->object = new AmazonShipment('BigKitchen', true, null, '/var/www/athena/plugins/amazon/newAmazon/test-cases/test-config.php');
         $this->assertFalse($this->object->updateShipment()); //no ID set
         
@@ -284,7 +284,7 @@ class AmazonShipmentTest extends PHPUnit_Framework_TestCase {
         $op = $o->getOptions();
         $this->assertEquals('UpdateInboundShipment',$op['Action']);
         
-        $check = $this->parseLog();
+        $check = parseLog();
         $this->assertEquals('Shipment ID must be set in order to update it',$check[1]);
         $this->assertEquals('Header must be set in order to update a shipment',$check[2]);
         $this->assertEquals('Items must be set in order to update a shipment',$check[3]);
@@ -293,38 +293,6 @@ class AmazonShipmentTest extends PHPUnit_Framework_TestCase {
         $this->assertEquals('Successfully updated Shipment #FBA63J76R',$check[7]);
     }
     
-    /**
-     * Resets log for next test
-     */
-    protected function resetLog(){
-        file_put_contents('log.txt','');
-    }
-    
-    /**
-     * gets the log contents
-     */
-    protected function getLog(){
-        return file_get_contents('log.txt');
-    }
-    
-    /**
-     * gets log and returns messages in an array
-     * @param string $s pre-fetched log contents
-     * @return array list of message strings
-     */
-    protected function parseLog($s = null){
-        if (!$s){
-            $s = $this->getLog();
-        }
-        $temp = explode("\n",$s);
-        
-        $return = array();
-        foreach($temp as $x){
-            $tempo = explode('] ',$x);
-            $return[] = trim($tempo[1]);
-        }
-        array_pop($return);
-        return $return;
-    }
-
 }
+
+require_once('helperFunctions.php');

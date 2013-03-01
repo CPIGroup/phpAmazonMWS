@@ -34,8 +34,10 @@ class AmazonParticipationList extends AmazonSellersCore{
             throw new Exception('Config file does not exist!');
         }
         
-        $this->throttleLimit = THROTTLE_LIMIT_SELLERS;
-        $this->throttleTime = THROTTLE_TIME_SELLERS;
+        if(isset($THROTTLE_LIMIT_SELLERS))
+        $this->throttleLimit = $THROTTLE_LIMIT_SELLERS;
+        if(isset($THROTTLE_TIME_SELLERS))
+        $this->throttleTime = $THROTTLE_TIME_SELLERS;
         $this->throttleGroup = 'ParticipationList';
     }
     
@@ -73,9 +75,10 @@ class AmazonParticipationList extends AmazonSellersCore{
      * and  <i>getParticipationList</i>.
      * Other methods are available for fetching specific values from the list.
      * This operation can potentially involve tokens.
+     * @param boolean <p>When set to <b>FALSE</b>, the function will not recurse, defaults to <b>TRUE</b></p>
      * @return boolean <p><b>FALSE</b> if something goes wrong</p>
      */
-    public function fetchParticipationList(){
+    public function fetchParticipationList($r = true){
         $this->prepareToken();
         
         
@@ -101,9 +104,12 @@ class AmazonParticipationList extends AmazonSellersCore{
         
         $this->checkToken($xml);
         
-        if ($this->tokenFlag && $this->tokenUseFlag){
-            $this->log("Recursively fetching more Participationseses");
-            $this->fetchParticipationList();
+        if ($this->tokenFlag && $this->tokenUseFlag && $r === true){
+            while ($this->tokenFlag){
+                $this->log("Recursively fetching more Participationseses");
+                $this->fetchParticipationList(false);
+            }
+            
         }
     }
     

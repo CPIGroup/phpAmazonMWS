@@ -15,7 +15,7 @@ class AmazonFulfillmentOrderTest extends PHPUnit_Framework_TestCase {
      * This method is called before a test is executed.
      */
     protected function setUp() {
-        $this->resetLog();
+        resetLog();
         $this->object = new AmazonFulfillmentOrder('BigKitchen', null, true, null, '/var/www/athena/plugins/amazon/newAmazon/test-cases/test-config.php');
     }
 
@@ -46,7 +46,7 @@ class AmazonFulfillmentOrderTest extends PHPUnit_Framework_TestCase {
     }
     
     public function testFetchOrder(){
-        $this->resetLog();
+        resetLog();
         $this->object->setMock(true,'fetchFulfillmentOrder.xml');
         
         $this->assertFalse($this->object->fetchOrder()); //no order ID set yet
@@ -58,7 +58,7 @@ class AmazonFulfillmentOrderTest extends PHPUnit_Framework_TestCase {
         $o = $this->object->getOptions();
         $this->assertEquals('GetFulfillmentOrder',$o['Action']);
         
-        $check = $this->parseLog();
+        $check = parseLog();
         $this->assertEquals('Single Mock File set: fetchFulfillmentOrder.xml',$check[1]);
         $this->assertEquals('Fulfillment Order ID must be set in order to fetch it!',$check[2]);
         $this->assertEquals('Fetched Mock File: mock/fetchFulfillmentOrder.xml',$check[3]);
@@ -168,7 +168,7 @@ class AmazonFulfillmentOrderTest extends PHPUnit_Framework_TestCase {
     }
     
     public function testCancelOrder(){
-        $this->resetLog();
+        resetLog();
         $this->object->setMock(true,200);
         
         $this->assertFalse($this->object->cancelOrder()); //no ID set yet
@@ -176,7 +176,7 @@ class AmazonFulfillmentOrderTest extends PHPUnit_Framework_TestCase {
         $ok = $this->object->cancelOrder();
         $this->assertTrue($ok);
         
-        $check = $this->parseLog();
+        $check = parseLog();
         $this->assertEquals('Single Mock Response set: 200',$check[1]);
         $this->assertEquals('Fulfillment Order ID must be set in order to cancel it!',$check[2]);
         $this->assertEquals('Returning Mock Response: 200',$check[3]);
@@ -187,7 +187,7 @@ class AmazonFulfillmentOrderTest extends PHPUnit_Framework_TestCase {
     }
     
     public function testFetchMockResponse(){
-        $this->resetLog();
+        resetLog();
         $this->object->setOrderId('777');
         
         $this->object->setMock(true,array());
@@ -202,7 +202,7 @@ class AmazonFulfillmentOrderTest extends PHPUnit_Framework_TestCase {
         $this->assertTrue($this->object->cancelOrder()); //200
         $this->assertFalse($this->object->cancelOrder()); //loop back to 404
         
-        $check = $this->parseLog();
+        $check = parseLog();
         $this->assertEquals('Mock files array set.',$check[1]);
         $this->assertEquals('Attempted to retrieve mock responses, but no mock responses present',$check[2]);
         $this->assertEquals('No Response found',$check[3]);
@@ -226,38 +226,6 @@ class AmazonFulfillmentOrderTest extends PHPUnit_Framework_TestCase {
         $this->assertEquals('Bad Response! 404 Not Found: Not Found - Not Found',$check[21]);
     }
     
-    /**
-     * Resets log for next test
-     */
-    protected function resetLog(){
-        file_put_contents('log.txt','');
-    }
-    
-    /**
-     * gets the log contents
-     */
-    protected function getLog(){
-        return file_get_contents('log.txt');
-    }
-    
-    /**
-     * gets log and returns messages in an array
-     * @param string $s pre-fetched log contents
-     * @return array list of message strings
-     */
-    protected function parseLog($s = null){
-        if (!$s){
-            $s = $this->getLog();
-        }
-        $temp = explode("\n",$s);
-        
-        $return = array();
-        foreach($temp as $x){
-            $tempo = explode('] ',$x);
-            $return[] = trim($tempo[1]);
-        }
-        array_pop($return);
-        return $return;
-    }
-
 }
+
+require_once('helperFunctions.php');

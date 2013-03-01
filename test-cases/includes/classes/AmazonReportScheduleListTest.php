@@ -15,7 +15,7 @@ class AmazonReportScheduleListTest extends PHPUnit_Framework_TestCase {
      * This method is called before a test is executed.
      */
     protected function setUp() {
-        $this->resetLog();
+        resetLog();
         $this->object = new AmazonReportScheduleList('BigKitchen', true, null, '/var/www/athena/plugins/amazon/newAmazon/test-cases/test-config.php');
     }
 
@@ -62,14 +62,14 @@ class AmazonReportScheduleListTest extends PHPUnit_Framework_TestCase {
     }
     
     public function testFetchReportList(){
-        $this->resetLog();
+        resetLog();
         $this->object->setMock(true,'fetchReportScheduleList.xml'); //no token
         $this->assertNull($this->object->fetchReportList());
         
         $o = $this->object->getOptions();
         $this->assertEquals('GetReportScheduleList',$o['Action']);
         
-        $check = $this->parseLog();
+        $check = parseLog();
         $this->assertEquals('Single Mock File set: fetchReportScheduleList.xml',$check[1]);
         $this->assertEquals('Fetched Mock File: mock/fetchReportScheduleList.xml',$check[2]);
         
@@ -79,12 +79,12 @@ class AmazonReportScheduleListTest extends PHPUnit_Framework_TestCase {
     }
     
     public function testFetchReportListToken1(){
-        $this->resetLog();
+        resetLog();
         $this->object->setMock(true,'fetchReportScheduleListToken.xml'); //no token
         
         //without using token
         $this->assertNull($this->object->fetchReportList());
-        $check = $this->parseLog();
+        $check = parseLog();
         $this->assertEquals('Single Mock File set: fetchReportScheduleListToken.xml',$check[1]);
         $this->assertEquals('Fetched Mock File: mock/fetchReportScheduleListToken.xml',$check[2]);
         
@@ -99,13 +99,13 @@ class AmazonReportScheduleListTest extends PHPUnit_Framework_TestCase {
     }
     
     public function testFetchReportListToken2(){
-        $this->resetLog();
+        resetLog();
         $this->object->setMock(true,array('fetchReportScheduleListToken.xml','fetchReportScheduleListToken2.xml'));
         
         //with using token
         $this->object->setUseToken();
         $this->assertNull($this->object->fetchReportList());
-        $check = $this->parseLog();
+        $check = parseLog();
         $this->assertEquals('Mock files array set.',$check[1]);
         $this->assertEquals('Fetched Mock File: mock/fetchReportScheduleListToken.xml',$check[2]);
         $this->assertEquals('Recursively fetching more Report Schedules',$check[3]);
@@ -176,7 +176,7 @@ class AmazonReportScheduleListTest extends PHPUnit_Framework_TestCase {
     }
     
     public function testFetchCount(){
-        $this->resetLog();
+        resetLog();
         $this->object->setReportTypes('123456');
         $this->object->setMock(true,'fetchReportScheduleCount.xml');
         $this->assertNull($this->object->fetchCount());
@@ -184,7 +184,7 @@ class AmazonReportScheduleListTest extends PHPUnit_Framework_TestCase {
         $o = $this->object->getOptions();
         $this->assertEquals('GetReportScheduleCount',$o['Action']);
         
-        $check = $this->parseLog();
+        $check = parseLog();
         $this->assertEquals('Single Mock File set: fetchReportScheduleCount.xml',$check[1]);
         $this->assertEquals('Fetched Mock File: mock/fetchReportScheduleCount.xml',$check[2]);
         
@@ -203,38 +203,6 @@ class AmazonReportScheduleListTest extends PHPUnit_Framework_TestCase {
         $this->assertFalse($this->object->getCount()); //not fetched yet for this object
     }
     
-    /**
-     * Resets log for next test
-     */
-    protected function resetLog(){
-        file_put_contents('log.txt','');
-    }
-    
-    /**
-     * gets the log contents
-     */
-    protected function getLog(){
-        return file_get_contents('log.txt');
-    }
-    
-    /**
-     * gets log and returns messages in an array
-     * @param string $s pre-fetched log contents
-     * @return array list of message strings
-     */
-    protected function parseLog($s = null){
-        if (!$s){
-            $s = $this->getLog();
-        }
-        $temp = explode("\n",$s);
-        
-        $return = array();
-        foreach($temp as $x){
-            $tempo = explode('] ',$x);
-            $return[] = trim($tempo[1]);
-        }
-        array_pop($return);
-        return $return;
-    }
-
 }
+
+require_once('helperFunctions.php');

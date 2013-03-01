@@ -40,8 +40,10 @@ class AmazonOrderList extends AmazonOrderCore implements Iterator{
             $this->log("Marketplace ID is missing",'Urgent');
         }
         
-        $this->throttleLimit = THROTTLE_LIMIT_ORDERLIST;
-        $this->throttleTime = THROTTLE_TIME_ORDERLIST;
+        if(isset($THROTTLE_LIMIT_ORDERLIST))
+        $this->throttleLimit = $THROTTLE_LIMIT_ORDERLIST;
+        if(isset($THROTTLE_TIME_ORDERLIST))
+        $this->throttleTime = $THROTTLE_TIME_ORDERLIST;
         $this->throttleGroup = 'ListOrders';
     }
     
@@ -295,9 +297,10 @@ class AmazonOrderList extends AmazonOrderCore implements Iterator{
      * Submits a <i>ListOrders</i> request to Amazon. Amazon will send
      * the list back as a response, which can be retrieved using <i>getList</i>.
      * This operation can potentially involve tokens.
+     * @param boolean <p>When set to <b>FALSE</b>, the function will not recurse, defaults to <b>TRUE</b></p>
      * @return boolean <p><b>FALSE</b> if something goes wrong</p>
      */
-    public function fetchOrders(){
+    public function fetchOrders($r = true){
         if (!array_key_exists('CreatedAfter', $this->options) && !array_key_exists('LastUpdatedAfter', $this->options)){
             $this->setLimits('Created');
         }
@@ -325,9 +328,12 @@ class AmazonOrderList extends AmazonOrderCore implements Iterator{
         
         $this->checkToken($xml);
         
-        if ($this->tokenFlag && $this->tokenUseFlag){
-            $this->log("Recursively fetching more orders");
-            $this->fetchOrders();
+        if ($this->tokenFlag && $this->tokenUseFlag && $r === true){
+            while ($this->tokenFlag){
+                $this->log("Recursively fetching more orders");
+                $this->fetchOrders(false);
+            }
+            
         }
     }
 

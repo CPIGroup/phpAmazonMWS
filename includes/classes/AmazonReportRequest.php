@@ -31,7 +31,9 @@ class AmazonReportRequest extends AmazonReportsCore{
         
         $this->options['Action'] = 'RequestReport';
         
+        if(isset($THROTTLE_LIMIT_REPORTREQUEST))
         $this->throttleLimit = $THROTTLE_LIMIT_REPORTREQUEST;
+        if(isset($THROTTLE_TIME_REPORTREQUEST))
         $this->throttleTime = $THROTTLE_TIME_REPORTREQUEST;
         $this->throttleGroup = 'RequestReport';
     }

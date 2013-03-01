@@ -28,6 +28,7 @@ abstract class AmazonReportsCore extends AmazonCore{
         }
         
         $this->urlbranch = '';
+        if(isset($AMAZON_VERSION_REPORTS))
         $this->options['Version'] = $AMAZON_VERSION_REPORTS;
     }
     

@@ -27,10 +27,14 @@ abstract class AmazonInventoryCore extends AmazonCore{
             throw new Exception('Config file does not exist!');
         }
         
-        $this->urlbranch = 'FulfillmentInventory/'.$AMAZON_VERSION_INVENTORY;
-        $this->options['Version'] = $AMAZON_VERSION_INVENTORY;
+        if(isset($AMAZON_VERSION_INVENTORY)){
+            $this->urlbranch = 'FulfillmentInventory/'.$AMAZON_VERSION_INVENTORY;
+            $this->options['Version'] = $AMAZON_VERSION_INVENTORY;
+        }
         
+        if(isset($THROTTLE_LIMIT_INVENTORY))
         $this->throttleLimit = $THROTTLE_LIMIT_INVENTORY;
+        if(isset($THROTTLE_TIME_INVENTORY))
         $this->throttleTime = $THROTTLE_TIME_INVENTORY;
         $this->throttleGroup = 'Inventory';
     }

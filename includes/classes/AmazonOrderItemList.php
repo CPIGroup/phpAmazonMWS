@@ -41,7 +41,9 @@ class AmazonOrderItemList extends AmazonOrderCore implements Iterator{
             $this->setOrderId($id);
         }
         
+        if(isset($THROTTLE_LIMIT_ITEM))
         $this->throttleLimit = $THROTTLE_LIMIT_ITEM;
+        if(isset($THROTTLE_TIME_ITEM))
         $this->throttleTime = $THROTTLE_TIME_ITEM;
         $this->throttleGroup = 'ListOrderItems';
     }
@@ -122,7 +124,7 @@ class AmazonOrderItemList extends AmazonOrderCore implements Iterator{
         if (is_null($xml->AmazonOrderId)){
             $this->log("You just got throttled.",'Warning');
             return false;
-        } else if ($this->options['AmazonOrderId'] && $this->options['AmazonOrderId'] != $xml->AmazonOrderId){
+        } else if (isset($this->options['AmazonOrderId']) && $this->options['AmazonOrderId'] && $this->options['AmazonOrderId'] != $xml->AmazonOrderId){
             $this->log('You grabbed the wrong Order\'s items! - '.$this->options['AmazonOrderId'].' =/= '.$xml->AmazonOrderId,'Urgent');
         }
         

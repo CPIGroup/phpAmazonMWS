@@ -41,7 +41,9 @@ class AmazonServiceStatus extends AmazonCore{
         
         $this->options['Action'] = 'GetServiceStatus';
         
+        if(isset($THROTTLE_LIMIT_STATUS))
         $this->throttleLimit = $THROTTLE_LIMIT_STATUS;
+        if(isset($THROTTLE_TIME_STATUS))
         $this->throttleTime = $THROTTLE_TIME_STATUS;
         $this->throttleGroup = 'GetServiceStatus';
     }
@@ -82,34 +84,46 @@ class AmazonServiceStatus extends AmazonCore{
         
         switch($s){
             case 'Inbound':
-                $this->urlbranch = 'FulfillmentInboundShipment/'.AMAZON_VERSION_INBOUND;
-                $this->options['Version'] = AMAZON_VERSION_INBOUND;
-                $this->ready = true;
+                if(isset($AMAZON_VERSION_INBOUND)){
+                    $this->urlbranch = 'FulfillmentInboundShipment/'.$AMAZON_VERSION_INBOUND;
+                    $this->options['Version'] = $AMAZON_VERSION_INBOUND;
+                    $this->ready = true;
+                }
                 return true;
             case 'Inventory':
-                $this->urlbranch = 'FulfillmentInventory/'.AMAZON_VERSION_INVENTORY;
-                $this->options['Version'] = AMAZON_VERSION_INVENTORY;
-                $this->ready = true;
+                if(isset($AMAZON_VERSION_INVENTORY)){
+                    $this->urlbranch = 'FulfillmentInventory/'.$AMAZON_VERSION_INVENTORY;
+                    $this->options['Version'] = $AMAZON_VERSION_INVENTORY;
+                    $this->ready = true;
+                }
                 return true;
             case 'Orders':
-                $this->urlbranch = 'Orders/'.AMAZON_VERSION_ORDERS;
-                $this->options['Version'] = AMAZON_VERSION_ORDERS;
-                $this->ready = true;
+                if(isset($AMAZON_VERSION_ORDERS)){
+                    $this->urlbranch = 'Orders/'.$AMAZON_VERSION_ORDERS;
+                    $this->options['Version'] = $AMAZON_VERSION_ORDERS;
+                    $this->ready = true;
+                }
                 return true;
             case 'Outbound':
-                $this->urlbranch = 'FulfillmentOutboundShipment/'.AMAZON_VERSION_OUTBOUND;
-                $this->options['Version'] = AMAZON_VERSION_OUTBOUND;
-                $this->ready = true;
+                if(isset($AMAZON_VERSION_OUTBOUND)){
+                    $this->urlbranch = 'FulfillmentOutboundShipment/'.$AMAZON_VERSION_OUTBOUND;
+                    $this->options['Version'] = $AMAZON_VERSION_OUTBOUND;
+                    $this->ready = true;
+                }
                 return true;
             case 'Products':
-                $this->urlbranch = 'Products/'.AMAZON_VERSION_PRODUCTS;
-                $this->options['Version'] = AMAZON_VERSION_PRODUCTS;
-                $this->ready = true;
+                if(isset($AMAZON_VERSION_PRODUCTS)){
+                    $this->urlbranch = 'Products/'.$AMAZON_VERSION_PRODUCTS;
+                    $this->options['Version'] = $AMAZON_VERSION_PRODUCTS;
+                    $this->ready = true;
+                }
                 return true;
             case 'Sellers':
-                $this->urlbranch = 'Sellers/'.AMAZON_VERSION_SELLERS;
-                $this->options['Version'] = AMAZON_VERSION_SELLERS;
-                $this->ready = true;
+                if(isset($AMAZON_VERSION_SELLERS)){
+                    $this->urlbranch = 'Sellers/'.$AMAZON_VERSION_SELLERS;
+                    $this->options['Version'] = $AMAZON_VERSION_SELLERS;
+                    $this->ready = true;
+                }
                 return true;
             default:
                 $this->log("$s is not a valid service",'Warning');

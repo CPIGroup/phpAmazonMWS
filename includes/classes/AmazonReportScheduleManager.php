@@ -36,8 +36,10 @@ class AmazonReportScheduleManager extends AmazonReportsCore implements Iterator{
         
         $this->options['Action'] = 'ManageReportSchedule';
         
-        $this->throttleLimit = THROTTLE_LIMIT_REPORTSCHEDULE;
-        $this->throttleTime = THROTTLE_TIME_REPORTSCHEDULE;
+        if(isset($THROTTLE_LIMIT_REPORTSCHEDULE))
+        $this->throttleLimit = $THROTTLE_LIMIT_REPORTSCHEDULE;
+        if(isset($THROTTLE_TIME_REPORTSCHEDULE))
+        $this->throttleTime = $THROTTLE_TIME_REPORTSCHEDULE;
     }
     
     /**

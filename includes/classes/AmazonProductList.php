@@ -31,6 +31,7 @@ class AmazonProductList extends AmazonProductsCore implements Iterator{
         
         $this->options['Action'] = 'GetMatchingProductForId';
         
+        if(isset($THROTTLE_TIME_PRODUCTLIST))
         $this->throttleTime = $THROTTLE_TIME_PRODUCTLIST;
         $this->throttleGroup = 'GetMatchingProductForId';
     }

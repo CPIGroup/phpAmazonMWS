@@ -34,7 +34,9 @@ class AmazonReportList extends AmazonReportsCore implements Iterator{
             throw new Exception('Config file does not exist!');
         }
         
+        if(isset($THROTTLE_LIMIT_REPORTLIST))
         $this->throttleLimit = $THROTTLE_LIMIT_REPORTLIST;
+        if(isset($THROTTLE_TIME_REPORTLIST))
         $this->throttleTime = $THROTTLE_TIME_REPORTLIST;
     }
     
@@ -270,7 +272,9 @@ class AmazonReportList extends AmazonReportsCore implements Iterator{
         include($this->config);
         if ($this->tokenFlag && $this->tokenUseFlag){
             $this->options['Action'] = 'GetReportListByNextToken';
+            if(isset($THROTTLE_LIMIT_REPORTTOKEN))
             $this->throttleLimit = $THROTTLE_LIMIT_REPORTTOKEN;
+            if(isset($THROTTLE_TIME_REPORTTOKEN))
             $this->throttleTime = $THROTTLE_TIME_REPORTTOKEN;
             $this->throttleGroup = 'GetReportListByNextToken';
             $this->resetRequestIds();
@@ -280,7 +284,9 @@ class AmazonReportList extends AmazonReportsCore implements Iterator{
             unset($this->options['Acknowledged']);
         } else {
             $this->options['Action'] = 'GetReportList';
+            if(isset($THROTTLE_LIMIT_REPORTLIST))
             $this->throttleLimit = $THROTTLE_LIMIT_REPORTLIST;
+            if(isset($THROTTLE_TIME_REPORTLIST))
             $this->throttleTime = $THROTTLE_TIME_REPORTLIST;
             $this->throttleGroup = 'GetReportList';
             unset($this->options['NextToken']);
@@ -358,7 +364,9 @@ class AmazonReportList extends AmazonReportsCore implements Iterator{
     protected function prepareCount(){
         include($this->config);
         $this->options['Action'] = 'GetReportCount';
+        if(isset($THROTTLE_LIMIT_REPORTREQUESTLIST))
         $this->throttleLimit = $THROTTLE_LIMIT_REPORTREQUESTLIST;
+        if(isset($THROTTLE_TIME_REPORTREQUESTLIST))
         $this->throttleTime = $THROTTLE_TIME_REPORTREQUESTLIST;
         $this->throttleGroup = 'GetReportCount';
         unset($this->options['NextToken']);

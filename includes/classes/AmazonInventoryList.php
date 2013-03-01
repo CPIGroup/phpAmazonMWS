@@ -229,7 +229,7 @@ class AmazonInventoryList extends AmazonInventoryCore implements Iterator{
                     $this->supplyList[$this->index]['EarliestAvailability'] = (string)$x->EarliestAvailability->TimepointType;
                 }
             }
-            if ($this->options['ResponseGroup'] == 'Detailed'){
+            if (isset($this->options['ResponseGroup']) && $this->options['ResponseGroup'] == 'Detailed'){
                 $j = 0;
                 foreach($x->SupplyDetail->children() as $z){
                     if ((string)$z->EarliestAvailableToPick->TimepointType == 'DateTime'){

@@ -15,7 +15,7 @@ class AmazonFeedTest extends PHPUnit_Framework_TestCase {
      * This method is called before a test is executed.
      */
     protected function setUp() {
-        $this->resetLog();
+        resetLog();
         $this->object = new AmazonFeed('BigKitchen', true, null, '/var/www/athena/plugins/amazon/newAmazon/test-cases/test-config.php');
     }
 
@@ -91,7 +91,7 @@ class AmazonFeedTest extends PHPUnit_Framework_TestCase {
         if (!is_null($a)){
             $this->assertArrayHasKey('PurgeAndReplace',$o);
             $this->assertEquals($c,$o['PurgeAndReplace']);
-            $check = $this->parseLog();
+            $check = parseLog();
             $this->assertEquals($d,$check[1]);
         } else {
             $this->assertArrayNotHasKey('PurgeAndReplace',$o);
@@ -99,7 +99,7 @@ class AmazonFeedTest extends PHPUnit_Framework_TestCase {
     }
     
     public function testSubmitFeed(){
-        $this->resetLog();
+        resetLog();
         $this->object->setMock(true,'submitFeed.xml');
         
         $this->assertFalse($this->object->submitFeed()); //nothing set yet
@@ -112,7 +112,7 @@ class AmazonFeedTest extends PHPUnit_Framework_TestCase {
         $ok = $this->object->submitFeed(); //now it is good
         $this->assertNull($ok);
         
-        $check = $this->parseLog();
+        $check = parseLog();
         $this->assertEquals('Single Mock File set: submitFeed.xml',$check[1]);
         $this->assertEquals('Feed\'s contents must be set in order to submit it!',$check[2]);
         $this->assertEquals('Feed Type must be set in order to submit a feed!',$check[3]);
@@ -134,38 +134,6 @@ class AmazonFeedTest extends PHPUnit_Framework_TestCase {
         $this->assertEquals('_SUBMITTED_',$r['FeedProcessingStatus']);
     }
     
-    /**
-     * Resets log for next test
-     */
-    protected function resetLog(){
-        file_put_contents('log.txt','');
-    }
-    
-    /**
-     * gets the log contents
-     */
-    protected function getLog(){
-        return file_get_contents('log.txt');
-    }
-    
-    /**
-     * gets log and returns messages in an array
-     * @param string $s pre-fetched log contents
-     * @return array list of message strings
-     */
-    protected function parseLog($s = null){
-        if (!$s){
-            $s = $this->getLog();
-        }
-        $temp = explode("\n",$s);
-        
-        $return = array();
-        foreach($temp as $x){
-            $tempo = explode('] ',$x);
-            $return[] = trim($tempo[1]);
-        }
-        array_pop($return);
-        return $return;
-    }
-
 }
+
+require_once('helperFunctions.php');

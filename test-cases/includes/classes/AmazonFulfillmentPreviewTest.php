@@ -15,7 +15,7 @@ class AmazonFulfillmentPreviewTest extends PHPUnit_Framework_TestCase {
      * This method is called before a test is executed.
      */
     protected function setUp() {
-        $this->resetLog();
+        resetLog();
         $this->object = new AmazonFulfillmentPreview('BigKitchen', true, null, '/var/www/athena/plugins/amazon/newAmazon/test-cases/test-config.php');
     }
 
@@ -32,7 +32,7 @@ class AmazonFulfillmentPreviewTest extends PHPUnit_Framework_TestCase {
         $this->assertFalse($this->object->setAddress('address')); //can't be a string
         $this->assertFalse($this->object->setAddress(array())); //can't be empty
         
-        $check = $this->parseLog();
+        $check = parseLog();
         $this->assertEquals('Tried to set address to invalid values',$check[1]);
         $this->assertEquals('Tried to set address to invalid values',$check[2]);
         $this->assertEquals('Tried to set address to invalid values',$check[3]);
@@ -111,7 +111,7 @@ class AmazonFulfillmentPreviewTest extends PHPUnit_Framework_TestCase {
         
         $this->assertFalse($this->object->setItems($break)); //missing quantity
         
-        $check = $this->parseLog();
+        $check = parseLog();
         $this->assertEquals('Tried to set Items to invalid values',$check[1]);
         $this->assertEquals('Tried to set Items to invalid values',$check[2]);
         $this->assertEquals('Tried to set Items to invalid values',$check[3]);
@@ -190,7 +190,7 @@ class AmazonFulfillmentPreviewTest extends PHPUnit_Framework_TestCase {
     }
     
     public function testFetchPreview(){
-        $this->resetLog();
+        resetLog();
         $this->object->setMock(true,'fetchPreview.xml');
         
         $this->assertFalse($this->object->fetchPreview()); //no address set yet
@@ -212,7 +212,7 @@ class AmazonFulfillmentPreviewTest extends PHPUnit_Framework_TestCase {
         $this->object->setItems($i);
         $this->assertNull($this->object->fetchPreview());
         
-        $check = $this->parseLog();
+        $check = parseLog();
         $this->assertEquals('Single Mock File set: fetchPreview.xml',$check[1]);
         $this->assertEquals('Address must be set in order to create a preview',$check[2]);
         $this->assertEquals('Items must be set in order to create a preview',$check[3]);
@@ -306,38 +306,6 @@ class AmazonFulfillmentPreviewTest extends PHPUnit_Framework_TestCase {
         $this->assertFalse($this->object->getEstimatedWeight(0)); //not fetched for this object yet
     }
     
-    /**
-     * Resets log for next test
-     */
-    protected function resetLog(){
-        file_put_contents('log.txt','');
-    }
-    
-    /**
-     * gets the log contents
-     */
-    protected function getLog(){
-        return file_get_contents('log.txt');
-    }
-    
-    /**
-     * gets log and returns messages in an array
-     * @param string $s pre-fetched log contents
-     * @return array list of message strings
-     */
-    protected function parseLog($s = null){
-        if (!$s){
-            $s = $this->getLog();
-        }
-        $temp = explode("\n",$s);
-        
-        $return = array();
-        foreach($temp as $x){
-            $tempo = explode('] ',$x);
-            $return[] = trim($tempo[1]);
-        }
-        array_pop($return);
-        return $return;
-    }
-
 }
+
+require_once('helperFunctions.php');

@@ -15,7 +15,7 @@ class AmazonServiceStatusTest extends PHPUnit_Framework_TestCase {
      * This method is called before a test is executed.
      */
     protected function setUp() {
-        $this->resetLog();
+        resetLog();
         $this->object = new AmazonServiceStatus('BigKitchen', null, true, null, '/var/www/athena/plugins/amazon/newAmazon/test-cases/test-config.php');
     }
 
@@ -56,7 +56,7 @@ class AmazonServiceStatusTest extends PHPUnit_Framework_TestCase {
         $this->assertEquals($b, $this->object->setService($a));
         $this->assertEquals($b, $this->object->isReady());
         if ($c){
-            $log = $this->parseLog();
+            $log = parseLog();
             $this->assertEquals($c,$log[1]);
         }
         $this->assertFalse($this->object->setService('bloop'));
@@ -64,7 +64,7 @@ class AmazonServiceStatusTest extends PHPUnit_Framework_TestCase {
     }
     
     public function testFetchServiceStatus(){
-        $this->resetLog();
+        resetLog();
         $this->object->setMock(true,'fetchServiceStatus.xml');
         
         $this->assertFalse($this->object->fetchServiceStatus()); //no service set yet
@@ -75,7 +75,7 @@ class AmazonServiceStatusTest extends PHPUnit_Framework_TestCase {
         $o = $this->object->getOptions();
         $this->assertEquals('GetServiceStatus',$o['Action']);
         
-        $check = $this->parseLog();
+        $check = parseLog();
         $this->assertEquals('Single Mock File set: fetchServiceStatus.xml',$check[1]);
         $this->assertEquals('Service must be set in order to retrieve status',$check[2]);
         $this->assertEquals('Fetched Mock File: mock/fetchServiceStatus.xml',$check[3]);
@@ -124,153 +124,7 @@ class AmazonServiceStatusTest extends PHPUnit_Framework_TestCase {
         
         $this->assertFalse($this->object->getMessageList()); //not fetched yet for this object
     }
-//    
-//    /**
-//     * @depends testFetchOrder
-//     */
-//    public function testGetPaymentMethod($o){
-//        $get = $o->getPaymentMethod();
-//        $this->assertEquals('COD',$get);
-//        
-//        $this->assertFalse($this->object->getPaymentMethod()); //not fetched yet for this object
-//    }
-//    
-//    /**
-//     * @depends testFetchOrder
-//     */
-//    public function testGetMarketplaceId($o){
-//        $get = $o->getMarketplaceId();
-//        $this->assertEquals('ATVPDKIKX0DER',$get);
-//        
-//        $this->assertFalse($this->object->getMarketplaceId()); //not fetched yet for this object
-//    }
-//    
-//    /**
-//     * @depends testFetchOrder
-//     */
-//    public function testGetBuyerName($o){
-//        $get = $o->getBuyerName();
-//        $this->assertEquals('Amazon User',$get);
-//        
-//        $this->assertFalse($this->object->getBuyerName()); //not fetched yet for this object
-//    }
-//    
-//    /**
-//     * @depends testFetchOrder
-//     */
-//    public function testGetBuyerEmail($o){
-//        $get = $o->getBuyerEmail();
-//        $this->assertEquals('5vlh04mgfmjh9h5@marketplace.amazon.com',$get);
-//        
-//        $this->assertFalse($this->object->getBuyerEmail()); //not fetched yet for this object
-//    }
-//    
-//    /**
-//     * @depends testFetchOrder
-//     */
-//    public function testGetShipServiceLevelCategory($o){
-//        $get = $o->getShipServiceLevelCategory();
-//        $this->assertEquals('Standard',$get);
-//        
-//        $this->assertFalse($this->object->getShipServiceLevelCategory()); //not fetched yet for this object
-//    }
-//    
-//    /**
-//     * @depends testFetchOrder
-//     */
-//    public function testGetPercentShipped($o){
-//        $get = $o->getPercentShipped();
-//        $this->assertEquals(0.5,$get);
-//        
-//        $this->assertFalse($this->object->getPercentShipped()); //not fetched yet for this object
-//    }
-//    
-//    /**
-//     * @depends testFetchOrder
-//     */
-//    public function testFetchItems($o){
-//        $o->setMock(true,'fetchOrderItems.xml');
-//        $obj = $o->fetchItems();
-//        $get = $obj->getItems();
-//        
-//        $x = array();
-//        $x1 = array();
-//        $x1['ASIN'] = 'BT0093TELA';
-//        $x1['SellerSKU'] = 'CBA_OTF_1';
-//        $x1['OrderItemId'] = '68828574383266';
-//        $x1['Title'] = 'Example item name';
-//        $x1['QuantityOrdered'] = '1';
-//        $x1['QuantityShipped'] = '1';
-//        $x1['GiftMessageText'] = 'For you!';
-//        $x1['GiftWrapLevel'] = 'Classic';
-//        $x1['ItemPrice']['Amount'] = '25.99';
-//        $x1['ItemPrice']['CurrencyCode'] = 'USD';
-//        $x1['ShippingPrice']['Amount'] = '1.26';
-//        $x1['ShippingPrice']['CurrencyCode'] = 'USD';
-//        $x1['CODFee']['Amount'] = '10.00';
-//        $x1['CODFee']['CurrencyCode'] = 'USD';
-//        $x1['CODFeeDiscount']['Amount'] = '1.00';
-//        $x1['CODFeeDiscount']['CurrencyCode'] = 'USD';
-//        $x1['ItemTax'] = $x1['CODFeeDiscount'];
-//        $x1['ShippingTax'] = $x1['CODFeeDiscount'];
-//        $x1['GiftWrapTax'] = $x1['CODFeeDiscount'];
-//        $x1['ShippingDiscount'] = $x1['CODFeeDiscount'];
-//        $x1['PromotionDiscount'] = $x1['CODFeeDiscount'];
-//        $x1['GiftWrapPrice']['Amount'] = '1.99';
-//        $x1['GiftWrapPrice']['CurrencyCode'] = 'USD';
-//        $x[0] = $x1;
-//        $x2 = array();
-//        $x2['ASIN'] = 'BCTU1104UEFB';
-//        $x2['SellerSKU'] = 'CBA_OTF_5';
-//        $x2['OrderItemId'] = '79039765272157';
-//        $x2['Title'] = 'Example item name';
-//        $x2['QuantityOrdered'] = '2';
-//        $x2['ItemPrice']['Amount'] = '17.95';
-//        $x2['ItemPrice']['CurrencyCode'] = 'USD';
-//        $x2['PromotionIds'][0] = 'FREESHIP';
-//        $x[1] = $x2;
-//        
-//        $this->assertEquals($x,$get);
-//        
-//        $alt = $o->fetchItems(5); //boolean changed to false
-//        $altget = $alt->getItems();
-//        $this->assertEquals($x,$altget);
-//        
-//        $this->assertFalse($this->object->fetchItems()); //not fetched yet for this object
-//    }
     
-    /**
-     * Resets log for next test
-     */
-    protected function resetLog(){
-        file_put_contents('log.txt','');
-    }
-    
-    /**
-     * gets the log contents
-     */
-    protected function getLog(){
-        return file_get_contents('log.txt');
-    }
-    
-    /**
-     * gets log and returns messages in an array
-     * @param string $s pre-fetched log contents
-     * @return array list of message strings
-     */
-    protected function parseLog($s = null){
-        if (!$s){
-            $s = $this->getLog();
-        }
-        $temp = explode("\n",$s);
-        
-        $return = array();
-        foreach($temp as $x){
-            $tempo = explode('] ',$x);
-            $return[] = trim($tempo[1]);
-        }
-        array_pop($return);
-        return $return;
-    }
-
 }
+
+require_once('helperFunctions.php');

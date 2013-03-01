@@ -15,7 +15,7 @@ class AmazonOrderItemListTest extends PHPUnit_Framework_TestCase {
      * This method is called before a test is executed.
      */
     protected function setUp() {
-        $this->resetLog();
+        resetLog();
         $this->object = new AmazonOrderItemList('BigKitchen', null, true, null, '/var/www/athena/plugins/amazon/newAmazon/test-cases/test-config.php');
     }
 
@@ -54,7 +54,7 @@ class AmazonOrderItemListTest extends PHPUnit_Framework_TestCase {
     }
     
     public function testFetchItems(){
-        $this->resetLog();
+        resetLog();
         $this->object->setOrderId('058-1233752-8214740');
         $this->object->setMock(true,'fetchOrderItems.xml'); //no token
         $this->assertNull($this->object->fetchItems());
@@ -62,7 +62,7 @@ class AmazonOrderItemListTest extends PHPUnit_Framework_TestCase {
         $o = $this->object->getOptions();
         $this->assertEquals('ListOrderItems',$o['Action']);
         
-        $check = $this->parseLog();
+        $check = parseLog();
         $this->assertEquals('Single Mock File set: fetchOrderItems.xml',$check[1]);
         $this->assertEquals('Fetched Mock File: mock/fetchOrderItems.xml',$check[2]);
         
@@ -72,13 +72,13 @@ class AmazonOrderItemListTest extends PHPUnit_Framework_TestCase {
     }
     
     public function testFetchItemsBreak(){
-        $this->resetLog();
+        resetLog();
         $this->object->setOrderId('77');
         $this->object->setMock(true,array('countFeeds.xml','fetchOrderItems.xml'));
         $this->assertFalse($this->object->fetchItems()); //no results
         $this->assertNull($this->object->fetchItems()); //wrong ID
         
-        $check = $this->parseLog();
+        $check = parseLog();
         $this->assertEquals('You just got throttled.',$check[3]);
         $this->assertEquals('You grabbed the wrong Order\'s items! - 77 =/= 058-1233752-8214740',$check[5]);
     }
@@ -388,13 +388,13 @@ class AmazonOrderItemListTest extends PHPUnit_Framework_TestCase {
     }
     
     public function testFetchOrderItemsToken1(){
-        $this->resetLog();
+        resetLog();
         $this->object->setMock(true,'fetchOrderItemsToken.xml'); //no token
         $this->object->setOrderId('058-1233752-8214740');
         
         //without using token
         $this->assertNull($this->object->fetchItems());
-        $check = $this->parseLog();
+        $check = parseLog();
         $this->assertEquals('Single Mock File set: fetchOrderItemsToken.xml',$check[1]);
         $this->assertEquals('Fetched Mock File: mock/fetchOrderItemsToken.xml',$check[2]);
         
@@ -408,14 +408,14 @@ class AmazonOrderItemListTest extends PHPUnit_Framework_TestCase {
     }
     
     public function testFetchOrderItemsToken2(){
-        $this->resetLog();
+        resetLog();
         $this->object->setMock(true,array('fetchOrderItemsToken.xml','fetchOrderItemsToken2.xml'));
         $this->object->setOrderId('058-1233752-8214740');
         
         //with using token
         $this->object->setUseToken();
         $this->assertNull($this->object->fetchItems());
-        $check = $this->parseLog();
+        $check = parseLog();
         $this->assertEquals('Mock files array set.',$check[1]);
         $this->assertEquals('Fetched Mock File: mock/fetchOrderItemsToken.xml',$check[2]);
         $this->assertEquals('Recursively fetching more items',$check[3]);
@@ -433,38 +433,6 @@ class AmazonOrderItemListTest extends PHPUnit_Framework_TestCase {
         $this->assertNotEquals($r[0],$r[1]);
     }
     
-    /**
-     * Resets log for next test
-     */
-    protected function resetLog(){
-        file_put_contents('log.txt','');
-    }
-    
-    /**
-     * gets the log contents
-     */
-    protected function getLog(){
-        return file_get_contents('log.txt');
-    }
-    
-    /**
-     * gets log and returns messages in an array
-     * @param string $s pre-fetched log contents
-     * @return array list of message strings
-     */
-    protected function parseLog($s = null){
-        if (!$s){
-            $s = $this->getLog();
-        }
-        $temp = explode("\n",$s);
-        
-        $return = array();
-        foreach($temp as $x){
-            $tempo = explode('] ',$x);
-            $return[] = trim($tempo[1]);
-        }
-        array_pop($return);
-        return $return;
-    }
-
 }
+
+require_once('helperFunctions.php');

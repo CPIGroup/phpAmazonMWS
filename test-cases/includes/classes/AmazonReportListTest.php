@@ -15,7 +15,7 @@ class AmazonReportListTest extends PHPUnit_Framework_TestCase {
      * This method is called before a test is executed.
      */
     protected function setUp() {
-        $this->resetLog();
+        resetLog();
         $this->object = new AmazonReportList('BigKitchen', true, null, '/var/www/athena/plugins/amazon/newAmazon/test-cases/test-config.php');
     }
 
@@ -163,14 +163,14 @@ class AmazonReportListTest extends PHPUnit_Framework_TestCase {
     }
     
     public function testFetchReportList(){
-        $this->resetLog();
+        resetLog();
         $this->object->setMock(true,'fetchReportList.xml'); //no token
         $this->assertNull($this->object->fetchReportList());
         
         $o = $this->object->getOptions();
         $this->assertEquals('GetReportList',$o['Action']);
         
-        $check = $this->parseLog();
+        $check = parseLog();
         $this->assertEquals('Single Mock File set: fetchReportList.xml',$check[1]);
         $this->assertEquals('Fetched Mock File: mock/fetchReportList.xml',$check[2]);
         
@@ -180,12 +180,12 @@ class AmazonReportListTest extends PHPUnit_Framework_TestCase {
     }
     
     public function testFetchReportListToken1(){
-        $this->resetLog();
+        resetLog();
         $this->object->setMock(true,'fetchReportListToken.xml'); //no token
         
         //without using token
         $this->assertNull($this->object->fetchReportList());
-        $check = $this->parseLog();
+        $check = parseLog();
         $this->assertEquals('Single Mock File set: fetchReportListToken.xml',$check[1]);
         $this->assertEquals('Fetched Mock File: mock/fetchReportListToken.xml',$check[2]);
         
@@ -200,13 +200,13 @@ class AmazonReportListTest extends PHPUnit_Framework_TestCase {
     }
     
     public function testFetchReportListToken2(){
-        $this->resetLog();
+        resetLog();
         $this->object->setMock(true,array('fetchReportListToken.xml','fetchReportListToken2.xml'));
         
         //with using token
         $this->object->setUseToken();
         $this->assertNull($this->object->fetchReportList());
-        $check = $this->parseLog();
+        $check = parseLog();
         $this->assertEquals('Mock files array set.',$check[1]);
         $this->assertEquals('Fetched Mock File: mock/fetchReportListToken.xml',$check[2]);
         $this->assertEquals('Recursively fetching more Reports',$check[3]);
@@ -298,7 +298,7 @@ class AmazonReportListTest extends PHPUnit_Framework_TestCase {
     }
     
     public function testFetchCount(){
-        $this->resetLog();
+        resetLog();
         $this->object->setRequestIds('123456');
         $this->object->setMaxCount(77);
         $this->object->setMock(true,'fetchReportCount.xml');
@@ -309,7 +309,7 @@ class AmazonReportListTest extends PHPUnit_Framework_TestCase {
         $this->assertArrayNotHasKey('ReportRequestIdList.Id.1',$o);
         $this->assertArrayNotHasKey('MaxCount',$o);
         
-        $check = $this->parseLog();
+        $check = parseLog();
         $this->assertEquals('Single Mock File set: fetchReportCount.xml',$check[1]);
         $this->assertEquals('Fetched Mock File: mock/fetchReportCount.xml',$check[2]);
         
@@ -328,38 +328,6 @@ class AmazonReportListTest extends PHPUnit_Framework_TestCase {
         $this->assertFalse($this->object->getCount()); //not fetched yet for this object
     }
     
-    /**
-     * Resets log for next test
-     */
-    protected function resetLog(){
-        file_put_contents('log.txt','');
-    }
-    
-    /**
-     * gets the log contents
-     */
-    protected function getLog(){
-        return file_get_contents('log.txt');
-    }
-    
-    /**
-     * gets log and returns messages in an array
-     * @param string $s pre-fetched log contents
-     * @return array list of message strings
-     */
-    protected function parseLog($s = null){
-        if (!$s){
-            $s = $this->getLog();
-        }
-        $temp = explode("\n",$s);
-        
-        $return = array();
-        foreach($temp as $x){
-            $tempo = explode('] ',$x);
-            $return[] = trim($tempo[1]);
-        }
-        array_pop($return);
-        return $return;
-    }
-
 }
+
+require_once('helperFunctions.php');

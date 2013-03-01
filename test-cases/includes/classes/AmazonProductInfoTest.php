@@ -15,7 +15,7 @@ class AmazonProductInfoTest extends PHPUnit_Framework_TestCase {
      * This method is called before a test is executed.
      */
     protected function setUp() {
-        $this->resetLog();
+        resetLog();
         $this->object = new AmazonProductInfo('BigKitchen', true, null, '/var/www/athena/plugins/amazon/newAmazon/test-cases/test-config.php');
     }
 
@@ -88,7 +88,7 @@ class AmazonProductInfoTest extends PHPUnit_Framework_TestCase {
     }
     
     public function testFetchCompetitivePricing(){
-        $this->resetLog();
+        resetLog();
         $this->object->setMock(true,'fetchCompetitivePricing.xml');
         $this->assertFalse($this->object->fetchCompetitivePricing()); //no IDs yet
         $this->object->setSKUs('789');
@@ -97,7 +97,7 @@ class AmazonProductInfoTest extends PHPUnit_Framework_TestCase {
         $o = $this->object->getOptions();
         $this->assertEquals('GetCompetitivePricingForSKU',$o['Action']);
         
-        $check = $this->parseLog();
+        $check = parseLog();
         $this->assertEquals('Single Mock File set: fetchCompetitivePricing.xml',$check[1]);
         $this->assertEquals('Product IDs must be set in order to look them up!',$check[2]);
         $this->assertEquals('Fetched Mock File: mock/fetchCompetitivePricing.xml',$check[3]);
@@ -129,7 +129,7 @@ class AmazonProductInfoTest extends PHPUnit_Framework_TestCase {
     }
     
     public function testFetchLowestOffer(){
-        $this->resetLog();
+        resetLog();
         $this->object->setMock(true,'fetchLowestOffer.xml');
         $this->assertFalse($this->object->fetchLowestOffer()); //no IDs yet
         $this->object->setSKUs('789');
@@ -138,7 +138,7 @@ class AmazonProductInfoTest extends PHPUnit_Framework_TestCase {
         $o = $this->object->getOptions();
         $this->assertEquals('GetLowestOfferListingsForSKU',$o['Action']);
         
-        $check = $this->parseLog();
+        $check = parseLog();
         $this->assertEquals('Single Mock File set: fetchLowestOffer.xml',$check[1]);
         $this->assertEquals('Product IDs must be set in order to look them up!',$check[2]);
         $this->assertEquals('Fetched Mock File: mock/fetchLowestOffer.xml',$check[3]);
@@ -171,7 +171,7 @@ class AmazonProductInfoTest extends PHPUnit_Framework_TestCase {
     }
     
     public function testFetchMyPrice(){
-        $this->resetLog();
+        resetLog();
         $this->object->setMock(true,'fetchMyPrice.xml');
         $this->assertFalse($this->object->fetchMyPrice()); //no IDs yet
         $this->object->setSKUs('789');
@@ -180,7 +180,7 @@ class AmazonProductInfoTest extends PHPUnit_Framework_TestCase {
         $o = $this->object->getOptions();
         $this->assertEquals('GetMyPriceForSKU',$o['Action']);
         
-        $check = $this->parseLog();
+        $check = parseLog();
         $this->assertEquals('Single Mock File set: fetchMyPrice.xml',$check[1]);
         $this->assertEquals('Product IDs must be set in order to look them up!',$check[2]);
         $this->assertEquals('Fetched Mock File: mock/fetchMyPrice.xml',$check[3]);
@@ -212,7 +212,7 @@ class AmazonProductInfoTest extends PHPUnit_Framework_TestCase {
     }
     
     public function testFetchCategories(){
-        $this->resetLog();
+        resetLog();
         $this->object->setMock(true,'fetchCategories.xml');
         $this->assertFalse($this->object->fetchCategories()); //no IDs yet
         $this->object->setSKUs('789');
@@ -220,7 +220,7 @@ class AmazonProductInfoTest extends PHPUnit_Framework_TestCase {
         $o = $this->object->getOptions();
         $this->assertEquals('GetProductCategoriesForSKU',$o['Action']);
         
-        $check = $this->parseLog();
+        $check = parseLog();
         $this->assertEquals('Single Mock File set: fetchCategories.xml',$check[1]);
         $this->assertEquals('Product IDs must be set in order to look them up!',$check[2]);
         $this->assertEquals('Fetched Mock File: mock/fetchCategories.xml',$check[3]);
@@ -253,38 +253,6 @@ class AmazonProductInfoTest extends PHPUnit_Framework_TestCase {
         $this->assertFalse($this->object->getProduct()); //not fetched yet for this object
     }
     
-    /**
-     * Resets log for next test
-     */
-    protected function resetLog(){
-        file_put_contents('log.txt','');
-    }
-    
-    /**
-     * gets the log contents
-     */
-    protected function getLog(){
-        return file_get_contents('log.txt');
-    }
-    
-    /**
-     * gets log and returns messages in an array
-     * @param string $s pre-fetched log contents
-     * @return array list of message strings
-     */
-    protected function parseLog($s = null){
-        if (!$s){
-            $s = $this->getLog();
-        }
-        $temp = explode("\n",$s);
-        
-        $return = array();
-        foreach($temp as $x){
-            $tempo = explode('] ',$x);
-            $return[] = trim($tempo[1]);
-        }
-        array_pop($return);
-        return $return;
-    }
-
 }
+
+require_once('helperFunctions.php');

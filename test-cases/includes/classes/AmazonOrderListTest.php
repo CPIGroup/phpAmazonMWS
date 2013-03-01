@@ -15,7 +15,7 @@ class AmazonOrderListTest extends PHPUnit_Framework_TestCase {
      * This method is called before a test is executed.
      */
     protected function setUp() {
-        $this->resetLog();
+        resetLog();
         $this->object = new AmazonOrderList('BigKitchen', true, null, '/var/www/athena/plugins/amazon/newAmazon/test-cases/test-config.php');
     }
 
@@ -52,7 +52,7 @@ class AmazonOrderListTest extends PHPUnit_Framework_TestCase {
         
         $this->assertFalse($this->object->setLimits('wrong'));
         $this->assertFalse($this->object->setLimits('Created',array(5)));
-        $check = $this->parseLog();
+        $check = parseLog();
         $this->assertEquals('First parameter should be either "Created" or "Modified".',$check[1]);
         $this->assertEquals('Error: strtotime() expects parameter 1 to be string, array given',$check[2]);
     }
@@ -203,14 +203,14 @@ class AmazonOrderListTest extends PHPUnit_Framework_TestCase {
     }
     
     public function testFetchOrders(){
-        $this->resetLog();
+        resetLog();
         $this->object->setMock(true,'fetchOrderList.xml'); //no token
         $this->assertNull($this->object->fetchOrders());
         
         $o = $this->object->getOptions();
         $this->assertEquals('ListOrders',$o['Action']);
         
-        $check = $this->parseLog();
+        $check = parseLog();
         $this->assertEquals('Single Mock File set: fetchOrderList.xml',$check[1]);
         $this->assertEquals('Fetched Mock File: mock/fetchOrderList.xml',$check[2]);
         
@@ -220,12 +220,12 @@ class AmazonOrderListTest extends PHPUnit_Framework_TestCase {
     }
     
     public function testFetchOrdersToken1(){
-        $this->resetLog();
+        resetLog();
         $this->object->setMock(true,'fetchOrderListToken.xml'); //no token
         
         //without using token
         $this->assertNull($this->object->fetchOrders());
-        $check = $this->parseLog();
+        $check = parseLog();
         $this->assertEquals('Single Mock File set: fetchOrderListToken.xml',$check[1]);
         $this->assertEquals('Fetched Mock File: mock/fetchOrderListToken.xml',$check[2]);
         $this->assertEquals('Mock Mode set to ON',$check[3]);
@@ -246,13 +246,13 @@ class AmazonOrderListTest extends PHPUnit_Framework_TestCase {
     }
     
     public function testFetchOrdersToken2(){
-        $this->resetLog();
+        resetLog();
         $this->object->setMock(true,array('fetchOrderListToken.xml','fetchOrderListToken2.xml'));
         
         //with using token
         $this->object->setUseToken();
         $this->assertNull($this->object->fetchOrders());
-        $check = $this->parseLog();
+        $check = parseLog();
         $this->assertEquals('Mock files array set.',$check[1]);
         $this->assertEquals('Fetched Mock File: mock/fetchOrderListToken.xml',$check[2]);
         $this->assertEquals('Mock Mode set to ON',$check[3]);
@@ -281,7 +281,7 @@ class AmazonOrderListTest extends PHPUnit_Framework_TestCase {
     public function testFetchItems(){
         $this->object->setMock(true,array('fetchOrderList.xml','fetchOrderItems.xml'));
         $this->object->fetchOrders();
-        $this->resetLog();
+        resetLog();
         $get = $this->object->fetchItems();
         $this->assertInternalType('array',$get);
         $this->assertEquals(3,count($get));
@@ -307,38 +307,6 @@ class AmazonOrderListTest extends PHPUnit_Framework_TestCase {
         $this->assertFalse($this->object->getList()); //not fetched yet for this object
     }
     
-    /**
-     * Resets log for next test
-     */
-    protected function resetLog(){
-        file_put_contents('log.txt','');
-    }
-    
-    /**
-     * gets the log contents
-     */
-    protected function getLog(){
-        return file_get_contents('log.txt');
-    }
-    
-    /**
-     * gets log and returns messages in an array
-     * @param string $s pre-fetched log contents
-     * @return array list of message strings
-     */
-    protected function parseLog($s = null){
-        if (!$s){
-            $s = $this->getLog();
-        }
-        $temp = explode("\n",$s);
-        
-        $return = array();
-        foreach($temp as $x){
-            $tempo = explode('] ',$x);
-            $return[] = trim($tempo[1]);
-        }
-        array_pop($return);
-        return $return;
-    }
-
 }
+
+require_once('helperFunctions.php');

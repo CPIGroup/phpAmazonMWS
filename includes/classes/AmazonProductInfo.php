@@ -189,6 +189,7 @@ class AmazonProductInfo extends AmazonProductsCore{
      */
     protected function prepareCompetitive(){
         include($this->config);
+        if(isset($THROTTLE_TIME_PRODUCTPRICE))
         $this->throttleTime = $THROTTLE_TIME_PRODUCTPRICE;
         $this->throttleGroup = 'GetCompetitivePricing';
         unset($this->options['ExcludeMe']);
@@ -246,6 +247,7 @@ class AmazonProductInfo extends AmazonProductsCore{
      */
     protected function prepareLowest(){
         include($this->config);
+        if(isset($THROTTLE_TIME_PRODUCTPRICE))
         $this->throttleTime = $THROTTLE_TIME_PRODUCTPRICE;
         $this->throttleGroup = 'GetLowestOfferListings';
         if (array_key_exists('SellerSKUList.SellerSKU.1',$this->options)){
@@ -303,6 +305,7 @@ class AmazonProductInfo extends AmazonProductsCore{
      */
     protected function prepareMyPrice(){
         include($this->config);
+        if(isset($THROTTLE_TIME_PRODUCTPRICE))
         $this->throttleTime = $THROTTLE_TIME_PRODUCTPRICE;
         $this->throttleGroup = 'GetMyPrice';
         unset($this->options['ExcludeMe']);
@@ -361,6 +364,7 @@ class AmazonProductInfo extends AmazonProductsCore{
      */
     protected function prepareCategories(){
         include($this->config);
+        if(isset($THROTTLE_TIME_PRODUCTLIST))
         $this->throttleTime = $THROTTLE_TIME_PRODUCTLIST;
         $this->throttleGroup = 'GetProductCategories';
         unset($this->options['ExcludeMe']);

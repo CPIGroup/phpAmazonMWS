@@ -608,10 +608,14 @@ abstract class AmazonCore{
         curl_setopt($ch,CURLOPT_FRESH_CONNECT, 1);
         curl_setopt($ch,CURLOPT_HEADER, 1);
         curl_setopt($ch,CURLOPT_URL,$url);
-        if ($param and $param['Header'])
+        if (!empty($param)){
+            if (!empty($param['Header'])){
                 curl_setopt($ch,CURLOPT_HTTPHEADER, $param['Header']);
-        if ($param and $param['Post'])
-                 curl_setopt($ch,CURLOPT_POSTFIELDS, $param['Post']);
+            }
+            if (!empty($param['Post'])){
+                curl_setopt($ch,CURLOPT_POSTFIELDS, $param['Post']);
+            }
+        }
         
         $data = curl_exec($ch);
         if ( curl_errno($ch) ) {
@@ -621,24 +625,28 @@ abstract class AmazonCore{
         }
         
         $data = preg_split("/\r\n\r\n/",$data, 2, PREG_SPLIT_NO_EMPTY);
-        if ($data) {
+        if (!empty($data)) {
                 $return['head'] = ( isset($data[0]) ? $data[0] : null );
                 $return['body'] = ( isset($data[1]) ? $data[1] : null );
+        } else {
+                $return['head'] = null;
+                $return['body'] = null;
         }
         
+        $matches = array();
         $data = preg_match("/HTTP\/[0-9.]+ ([0-9]+) (.+)\r\n/",$return['head'], $matches);
-        if ($matches) {
+        if (!empty($matches)) {
                 $return['code'] = $matches[1];
                 $return['answer'] = $matches[2];
         }
         
         $data = preg_match("/meta http-equiv=.refresh. +content=.[0-9]*;url=([^'\"]*)/i",$return['body'], $matches);
-        if ($matches) {
+        if (!empty($matches)) {
                 $return['location'] = $matches[1];
                 $return['code'] = '301';
         }
         
-        if ( $return['code'] == '200' or $return['code'] == '302' ) {
+        if ( $return['code'] == '200' || $return['code'] == '302' ) {
                 $return['ok'] = 1;
         } else {
                 $return['error'] = (($return['answer'] and $return['answer'] != 'OK') ? $return['answer'] : 'Something wrong!');

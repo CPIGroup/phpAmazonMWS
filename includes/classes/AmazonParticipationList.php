@@ -57,7 +57,7 @@ class AmazonParticipationList extends AmazonSellersCore{
      * this option is off, the object will only ever retrieve the first section of
      * the list.
      * @param boolean $b [optional] <p>Defaults to <b>TRUE</b></p>
-     * @return boolean <p><b>FALSE</b> if improper input</p>
+     * @return boolean <b>FALSE</b> if improper input
      */
     public function setUseToken($b = true){
         if (is_bool($b)){
@@ -76,7 +76,7 @@ class AmazonParticipationList extends AmazonSellersCore{
      * Other methods are available for fetching specific values from the list.
      * This operation can potentially involve tokens.
      * @param boolean <p>When set to <b>FALSE</b>, the function will not recurse, defaults to <b>TRUE</b></p>
-     * @return boolean <p><b>FALSE</b> if something goes wrong</p>
+     * @return boolean <b>FALSE</b> if something goes wrong
      */
     public function fetchParticipationList($r = true){
         $this->prepareToken();
@@ -139,7 +139,7 @@ class AmazonParticipationList extends AmazonSellersCore{
      * 
      * This is what reads the response XML and converts it into two arrays.
      * @param SimpleXMLObject $xml <p>The XML response from Amazon.</p>
-     * @return boolean <p><b>FALSE</b> if no XML data is found</p>
+     * @return boolean <b>FALSE</b> if no XML data is found
      */
     protected function parseXML($xml){
         if (!$xml){
@@ -179,7 +179,7 @@ class AmazonParticipationList extends AmazonSellersCore{
      * <li><b>Language</b></li>
      * <li><b>Domain</b></li>
      * </ul>
-     * @return array|boolean <p>multi-dimensional array, or <b>FALSE</b> if list not filled yet</p>
+     * @return array|boolean multi-dimensional array, or <b>FALSE</b> if list not filled yet
      */
     public function getMarketplaceList(){
         if (isset($this->marketplaceList)){
@@ -198,7 +198,7 @@ class AmazonParticipationList extends AmazonSellersCore{
      * <li><b>SellerId</b></li>
      * <li><b>Suspended</b></li>
      * </ul>
-     * @return array|boolean <p>multi-dimensional array, or <b>FALSE</b> if list not filled yet</p>
+     * @return array|boolean multi-dimensional array, or <b>FALSE</b> if list not filled yet
      */
     public function getParticipationList(){
         if (isset($this->participationList)){
@@ -213,7 +213,7 @@ class AmazonParticipationList extends AmazonSellersCore{
      * 
      * This method will return <b>FALSE</b> if the list has not yet been filled.
      * @param int $i [optional] <p>List index to retrieve the value from. Defaults to 0.</p>
-     * @return string|boolean <p>single value, or <b>FALSE</b> if Non-numeric index</p>
+     * @return string|boolean single value, or <b>FALSE</b> if Non-numeric index
      */
     public function getMarketplaceId($i = 0){
         if (!isset($this->marketplaceList)){
@@ -231,7 +231,7 @@ class AmazonParticipationList extends AmazonSellersCore{
      * 
      * This method will return <b>FALSE</b> if the list has not yet been filled.
      * @param int $i [optional] <p>List index to retrieve the value from. Defaults to 0.</p>
-     * @return string|boolean <p>single value, or <b>FALSE</b> if Non-numeric index</p>
+     * @return string|boolean single value, or <b>FALSE</b> if Non-numeric index
      */
     public function getName($i = 0){
         if (!isset($this->marketplaceList)){
@@ -249,7 +249,7 @@ class AmazonParticipationList extends AmazonSellersCore{
      * 
      * This method will return <b>FALSE</b> if the list has not yet been filled.
      * @param int $i [optional] <p>List index to retrieve the value from. Defaults to 0.</p>
-     * @return string|boolean <p>single value, or <b>FALSE</b> if Non-numeric index</p>
+     * @return string|boolean single value, or <b>FALSE</b> if Non-numeric index
      */
     public function getCountry($i = 0){
         if (!isset($this->marketplaceList)){
@@ -267,7 +267,7 @@ class AmazonParticipationList extends AmazonSellersCore{
      * 
      * This method will return <b>FALSE</b> if the list has not yet been filled.
      * @param int $i [optional] <p>List index to retrieve the value from. Defaults to 0.</p>
-     * @return string|boolean <p>single value, or <b>FALSE</b> if Non-numeric index</p>
+     * @return string|boolean single value, or <b>FALSE</b> if Non-numeric index
      */
     public function getCurreny($i = 0){
         if (!isset($this->marketplaceList)){
@@ -285,7 +285,7 @@ class AmazonParticipationList extends AmazonSellersCore{
      * 
      * This method will return <b>FALSE</b> if the list has not yet been filled.
      * @param int $i [optional] <p>List index to retrieve the value from. Defaults to 0.</p>
-     * @return string|boolean <p>single value, or <b>FALSE</b> if Non-numeric index</p>
+     * @return string|boolean single value, or <b>FALSE</b> if Non-numeric index
      */
     public function getLanguage($i = 0){
         if (!isset($this->marketplaceList)){
@@ -303,7 +303,7 @@ class AmazonParticipationList extends AmazonSellersCore{
      * 
      * This method will return <b>FALSE</b> if the list has not yet been filled.
      * @param int $i [optional] <p>List index to retrieve the value from. Defaults to 0.</p>
-     * @return string|boolean <p>single value, or <b>FALSE</b> if Non-numeric index</p>
+     * @return string|boolean single value, or <b>FALSE</b> if Non-numeric index
      */
     public function getDomain($i = 0){
         if (!isset($this->marketplaceList)){
@@ -321,7 +321,7 @@ class AmazonParticipationList extends AmazonSellersCore{
      * 
      * This method will return <b>FALSE</b> if the list has not yet been filled.
      * @param int $i [optional] <p>List index to retrieve the value from. Defaults to 0.</p>
-     * @return string|boolean <p>single value, or <b>FALSE</b> if Non-numeric index</p>
+     * @return string|boolean single value, or <b>FALSE</b> if Non-numeric index
      */
     public function getSellerId($i = 0){
         if (!isset($this->participationList)){
@@ -339,7 +339,7 @@ class AmazonParticipationList extends AmazonSellersCore{
      * 
      * This method will return <b>FALSE</b> if the list has not yet been filled.
      * @param int $i [optional] <p>List index to retrieve the value from. Defaults to 0.</p>
-     * @return string|boolean <p>"Yes" or "No", or <b>FALSE</b> if Non-numeric index</p>
+     * @return string|boolean "Yes" or "No", or <b>FALSE</b> if Non-numeric index
      */
     public function getSuspensionStatus($i = 0){
         if (!isset($this->participationList)){

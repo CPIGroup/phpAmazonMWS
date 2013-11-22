@@ -55,7 +55,7 @@ class AmazonOrderSet extends AmazonOrderCore implements Iterator{
      * If you wish to retrieve information for only one order, please use the 
      * <i>AmazonOrder</i> class instead.
      * @param array|string $s <p>A list of Feed Submission IDs, or a single ID string.</p>
-     * @return boolean <p><b>FALSE</b> if improper input</p>
+     * @return boolean <b>FALSE</b> if improper input
      */
     public function setOrderIds($o){
         if($o){
@@ -96,7 +96,7 @@ class AmazonOrderSet extends AmazonOrderCore implements Iterator{
      * Submits a <i>GetOrder</i> request to Amazon. In order to do this,
      * a list of Amazon order IDs is required. Amazon will send
      * the data back as a response, which can be retrieved using <i>getOrders</i>.
-     * @return boolean <p><b>FALSE</b> if something goes wrong</p>
+     * @return boolean <b>FALSE</b> if something goes wrong
      */
     public function fetchOrders(){
         if (!array_key_exists('AmazonOrderId.Id.1',$this->options)){
@@ -130,7 +130,7 @@ class AmazonOrderSet extends AmazonOrderCore implements Iterator{
      * 
      * This is what reads the response XML and converts it into an array.
      * @param SimpleXMLObject $xml <p>The XML response from Amazon.</p>
-     * @return boolean <p><b>FALSE</b> if no XML data is found</p>
+     * @return boolean <b>FALSE</b> if no XML data is found
      */
     protected function parseXML($xml){
         if (!$xml){
@@ -154,7 +154,7 @@ class AmazonOrderSet extends AmazonOrderCore implements Iterator{
      * this operation could take a while due to throttling. (Two seconds per order when throttled.)
      * @param boolean $token [optional] <p>whether or not to automatically use tokens when fetching items.</p>
      * @param int $i [optional] <p>List index to retrieve the value from. Defaults to null.</p>
-     * @return array|AmazonOrderItemList <p><i>AmazonOrderItemList</i> object or array of objects, or <b>FALSE</b> if non-numeric index</p>
+     * @return array|AmazonOrderItemList <i>AmazonOrderItemList</i> object or array of objects, or <b>FALSE</b> if non-numeric index
      */
     public function fetchItems($token = false, $i = null){
         if (!isset($this->orderList)){
@@ -175,7 +175,7 @@ class AmazonOrderSet extends AmazonOrderCore implements Iterator{
     }
     /**
      * Returns the list of orders.
-     * @return array|boolean <p>array of <i>AmazonOrder</i> objects, or <b>FALSE</b> if list not filled yet</p>
+     * @return array|boolean array of <i>AmazonOrder</i> objects, or <b>FALSE</b> if list not filled yet
      */
     public function getOrders(){
         if (isset($this->orderList) && $this->orderList){

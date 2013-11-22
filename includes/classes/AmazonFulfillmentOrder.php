@@ -39,7 +39,7 @@ class AmazonFulfillmentOrder extends AmazonOutboundCore{
      * This method sets the Fulfillment Order ID to be sent in the next request.
      * This parameter is required for fetching the fulfillment order from Amazon.
      * @param string $s <p>Maximum 40 characters.</p>
-     * @return boolean <p><b>FALSE</b> if improper input</p>
+     * @return boolean <b>FALSE</b> if improper input
      */
     public function setOrderId($s){
         if (is_string($s)){
@@ -55,7 +55,7 @@ class AmazonFulfillmentOrder extends AmazonOutboundCore{
      * Submits a <i>GetFulfillmentOrder</i> request to Amazon. In order to do this,
      * a fulfillment order ID is required. Amazon will send
      * the data back as a response, which can be retrieved using <i>getOrder</i>.
-     * @return boolean <p><b>FALSE</b> if something goes wrong</p>
+     * @return boolean <b>FALSE</b> if something goes wrong
      */
     public function fetchOrder(){
         if (!array_key_exists('SellerFulfillmentOrderId',$this->options)){
@@ -90,7 +90,7 @@ class AmazonFulfillmentOrder extends AmazonOutboundCore{
      * 
      * This is what reads the response XML and converts it into an array.
      * @param SimpleXMLObject $xml <p>The XML response from Amazon.</p>
-     * @return boolean <p><b>FALSE</b> if no XML data is found</p>
+     * @return boolean <b>FALSE</b> if no XML data is found
      */
     protected function parseXML($xml) {
         if (!$xml){
@@ -233,7 +233,7 @@ class AmazonFulfillmentOrder extends AmazonOutboundCore{
      * Submits a <i>CancelFulfillmentOrder</i> request to Amazon. In order to do this,
      * a fulfillment order ID is required. Amazon will send back an HTTP response,
      * so there is no data to retrieve afterwards.
-     * @return boolean <p><b>TRUE</b> if the cancellation was successful, <b>FALSE</b> if something goes wrong</p>
+     * @return boolean <b>TRUE</b> if the cancellation was successful, <b>FALSE</b> if something goes wrong
      */
     public function cancelOrder(){
         if (!array_key_exists('SellerFulfillmentOrderId',$this->options)){
@@ -270,7 +270,7 @@ class AmazonFulfillmentOrder extends AmazonOutboundCore{
      * <li><b>Items</b> - multi-dimensional array of item data</li>
      * <li><b>Shipments</b> - multi-dimensional array of shipment data</li>
      * </ul>
-     * @return array|boolean <p>data array, or <b>FALSE</b> if data not filled yet</p>
+     * @return array|boolean data array, or <b>FALSE</b> if data not filled yet
      */
     public function getOrder(){
         if (isset($this->order)){

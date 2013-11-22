@@ -44,7 +44,7 @@ class AmazonReportRequest extends AmazonReportsCore{
      * This method sets the report type to be sent in the next request.
      * This parameter is required for fetching the report from Amazon.
      * @param string|integer $n <p>See comment inside for a list of valid values.</p>
-     * @return boolean <p><b>FALSE</b> if improper input</p>
+     * @return boolean <b>FALSE</b> if improper input
      */
     public function setReportType($s){
         if (is_string($s) && $s){
@@ -155,7 +155,7 @@ class AmazonReportRequest extends AmazonReportsCore{
      * 
      * Setting this parameter to <b>TRUE</b> adds the Sales Channel column to the report.
      * @param string|boolean $s <p>"true" or "false", or boolean</p>
-     * @return boolean <p><b>FALSE</b> if improper input</p>
+     * @return boolean <b>FALSE</b> if improper input
      */
     public function setShowSalesChannel($s){
         if ($s == 'true' || (is_bool($s) && $s == true)){
@@ -174,7 +174,7 @@ class AmazonReportRequest extends AmazonReportsCore{
      * If this paramter is set, the report will only contain data relevant to the
      * marketplaces listed.
      * @param array|string $s <p>A list of marketplace IDs, or a single ID string.</p>
-     * @return boolean <p><b>FALSE</b> if improper input</p>
+     * @return boolean <b>FALSE</b> if improper input
      */
     public function setMarketplaces($s){
         if (is_string($s)){
@@ -213,7 +213,7 @@ class AmazonReportRequest extends AmazonReportsCore{
      * a Report Type is required. Amazon will send info back as a response,
      * which can be retrieved using <i>getResponse</i>.
      * Other methods are available for fetching specific values from the list.
-     * @return boolean <p><b>FALSE</b> if something goes wrong</p>
+     * @return boolean <b>FALSE</b> if something goes wrong
      */
     public function requestReport(){
         if (!array_key_exists('ReportType',$this->options)){
@@ -247,7 +247,7 @@ class AmazonReportRequest extends AmazonReportsCore{
      * 
      * This is what reads the response XML and converts it into an array.
      * @param SimpleXMLObject $xml <p>The XML response from Amazon.</p>
-     * @return boolean <p><b>FALSE</b> if no XML data is found</p>
+     * @return boolean <b>FALSE</b> if no XML data is found
      */
     protected function parseXML($xml){
         if (!$xml){
@@ -279,7 +279,7 @@ class AmazonReportRequest extends AmazonReportsCore{
      * <li><b>SubmittedDate</b></li>
      * <li><b>ReportProcessingStatus</b></li>
      * </ul>
-     * @return array|boolean <p>data array, or <b>FALSE</b> if list not filled yet</p>
+     * @return array|boolean data array, or <b>FALSE</b> if list not filled yet
      */
     public function getResponse(){
         if (isset($this->response)){
@@ -294,7 +294,7 @@ class AmazonReportRequest extends AmazonReportsCore{
      * 
      * This method will return <b>FALSE</b> if the response data has not yet been filled.
      * @param int $i [optional] <p>List index to retrieve the value from. Defaults to 0.</p>
-     * @return string|boolean <p>single value, or <b>FALSE</b> if Non-numeric index</p>
+     * @return string|boolean single value, or <b>FALSE</b> if Non-numeric index
      */
     public function getReportRequestId(){
         if (isset($this->response)){
@@ -309,7 +309,7 @@ class AmazonReportRequest extends AmazonReportsCore{
      * 
      * This method will return <b>FALSE</b> if the response data has not yet been filled.
      * @param int $i [optional] <p>List index to retrieve the value from. Defaults to 0.</p>
-     * @return string|boolean <p>single value, or <b>FALSE</b> if Non-numeric index</p>
+     * @return string|boolean single value, or <b>FALSE</b> if Non-numeric index
      */
     public function getReportType(){
         if (isset($this->response)){
@@ -324,7 +324,7 @@ class AmazonReportRequest extends AmazonReportsCore{
      * 
      * This method will return <b>FALSE</b> if the response data has not yet been filled.
      * @param int $i [optional] <p>List index to retrieve the value from. Defaults to 0.</p>
-     * @return string|boolean <p>single value, or <b>FALSE</b> if Non-numeric index</p>
+     * @return string|boolean single value, or <b>FALSE</b> if Non-numeric index
      */
     public function getStartDate(){
         if (isset($this->response)){
@@ -339,7 +339,7 @@ class AmazonReportRequest extends AmazonReportsCore{
      * 
      * This method will return <b>FALSE</b> if the response data has not yet been filled.
      * @param int $i [optional] <p>List index to retrieve the value from. Defaults to 0.</p>
-     * @return string|boolean <p>single value, or <b>FALSE</b> if Non-numeric index</p>
+     * @return string|boolean single value, or <b>FALSE</b> if Non-numeric index
      */
     public function getEndDate(){
         if (isset($this->response)){
@@ -354,7 +354,7 @@ class AmazonReportRequest extends AmazonReportsCore{
      * 
      * This method will return <b>FALSE</b> if the response data has not yet been filled.
      * @param int $i [optional] <p>List index to retrieve the value from. Defaults to 0.</p>
-     * @return string|boolean <p>"true" or "false", or <b>FALSE</b> if Non-numeric index</p>
+     * @return string|boolean "true" or "false", or <b>FALSE</b> if Non-numeric index
      */
     public function getIsScheduled(){
         if (isset($this->response)){
@@ -369,7 +369,7 @@ class AmazonReportRequest extends AmazonReportsCore{
      * 
      * This method will return <b>FALSE</b> if the response data has not yet been filled.
      * @param int $i [optional] <p>List index to retrieve the value from. Defaults to 0.</p>
-     * @return string|boolean <p>single value, or <b>FALSE</b> if Non-numeric index</p>
+     * @return string|boolean single value, or <b>FALSE</b> if Non-numeric index
      */
     public function getSubmittedDate(){
         if (isset($this->response)){
@@ -384,7 +384,7 @@ class AmazonReportRequest extends AmazonReportsCore{
      * 
      * This method will return <b>FALSE</b> if the response data has not yet been filled.
      * @param int $i [optional] <p>List index to retrieve the value from. Defaults to 0.</p>
-     * @return string|boolean <p>single value, or <b>FALSE</b> if Non-numeric index</p>
+     * @return string|boolean single value, or <b>FALSE</b> if Non-numeric index
      */
     public function getStatus(){
         if (isset($this->response)){

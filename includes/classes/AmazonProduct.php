@@ -37,7 +37,7 @@ class AmazonProduct extends AmazonProductsCore{
     /**
      * Takes in XML data and converts it to an array for the object to use.
      * @param SimpleXMLObject $xml <p>XML Product data from Amazon</p>
-     * @return boolean <p><b>FALSE</b> if no XML data is found</p>
+     * @return boolean <b>FALSE</b> if no XML data is found
      */
     public function loadXML($xml){
         if (!$xml){
@@ -234,7 +234,7 @@ class AmazonProduct extends AmazonProductsCore{
     /**
      * Takes in XML data for Categories and parses it for the object to use
      * @param SimpleXMLObject $xml <p>The XML data from Amazon.</p>
-     * @return boolean <p><b>FALSE</b> if no valid XML data is found</p>
+     * @return boolean <b>FALSE</b> if no valid XML data is found
      */
     protected function loadCategories($xml){
         //Categories
@@ -272,7 +272,7 @@ class AmazonProduct extends AmazonProductsCore{
     
     /**
      * See <i>getData</i>.
-     * @return array <p>Huge array of Product data.</p>
+     * @return array Huge array of Product data.
      */
     public function getProduct(){
         return $this->getData();
@@ -283,7 +283,7 @@ class AmazonProduct extends AmazonProductsCore{
      * 
      * The array returned will likely be very large and contain data too varied
      * to be described here.
-     * @return array <p>Huge array of Product data.</p>
+     * @return array Huge array of Product data.
      */
     public function getData(){
         if (isset($this->data)){

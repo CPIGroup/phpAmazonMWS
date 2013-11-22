@@ -46,7 +46,7 @@ class AmazonFulfillmentPreview extends AmazonOutboundCore{
      * <li><b>PhoneNumber</b> - max: 20 char</li>
      * </ul>
      * @param array $a <p>See above.</p>
-     * @return boolean <p><b>FALSE</b> if improper input</p>
+     * @return boolean <b>FALSE</b> if improper input
      */
     public function setAddress($a){
         if (is_null($a) || is_string($a) || !$a){
@@ -113,7 +113,7 @@ class AmazonFulfillmentPreview extends AmazonOutboundCore{
      * <li><b>Quantity</b> - numeric</li>
      * </ul>
      * @param array $a <p>See above.</p>
-     * @return boolean <p><b>FALSE</b> if improper input</p>
+     * @return boolean <b>FALSE</b> if improper input
      */
     public function setItems($a){
         if (is_null($a) || is_string($a) || !$a){
@@ -155,7 +155,7 @@ class AmazonFulfillmentPreview extends AmazonOutboundCore{
      * 
      * This method sets the shipping speed to be sent in the next request.
      * @param string|array $s <p>"Standard", "Expedited", or "Priority", or an array of these values</p>
-     * @return boolean <p><b>FALSE</b> if improper input</p>
+     * @return boolean <b>FALSE</b> if improper input
      */
     public function setShippingSpeeds($s){
         if (is_string($s)){
@@ -196,7 +196,7 @@ class AmazonFulfillmentPreview extends AmazonOutboundCore{
      * This is how you acquire Order IDs to use. Please note that this does not
      * actually create the fulfillment order, but simply makes a plan for what
      * the order would be like.
-     * @return boolean <p><b>FALSE</b> if something goes wrong</p>
+     * @return boolean <b>FALSE</b> if something goes wrong
      */
     public function fetchPreview(){
         if (!array_key_exists('Address.Name',$this->options)){
@@ -233,7 +233,7 @@ class AmazonFulfillmentPreview extends AmazonOutboundCore{
      * 
      * This is what reads the response XML and converts it into an array.
      * @param SimpleXMLObject $xml <p>The XML response from Amazon.</p>
-     * @return boolean <p><b>FALSE</b> if no XML data is found</p>
+     * @return boolean <b>FALSE</b> if no XML data is found
      */
     protected function parseXML($xml) {
         if (!$xml){
@@ -339,7 +339,7 @@ class AmazonFulfillmentPreview extends AmazonOutboundCore{
      * </ul>
      * @param int $i [optional] <p>List index to retrieve the value from.
      * If none is given, the entire list will be returned. Defaults to NULL.</p>
-     * @return array|boolean <p>array, multi-dimensional array, or <b>FALSE</b> if list not filled yet</p>
+     * @return array|boolean array, multi-dimensional array, or <b>FALSE</b> if list not filled yet
      */
     public function getPreview($i = null){
         if (!isset($this->previewList)){
@@ -358,7 +358,7 @@ class AmazonFulfillmentPreview extends AmazonOutboundCore{
      * The mode can be set to change what is returned: 0 = value, 1 = unit, 2 = value & unit
      * @param int $i [optional]<p>List index to retrieve the value from. Defaults to 0.</p>
      * @param int $mode [optional]<p>The type of value to return. Defaults to only value.</p>
-     * @return string|boolean <p>weight value, or <b>FALSE</b> if improper input</p>
+     * @return string|boolean weight value, or <b>FALSE</b> if improper input
      */
     public function getEstimatedWeight($i = 0,$mode = 0){
         if (!isset($this->previewList)){

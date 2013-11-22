@@ -52,7 +52,7 @@ class AmazonShipmentItemList extends AmazonInboundCore implements Iterator{
      * this option is off, the object will only ever retrieve the first section of
      * the list.
      * @param boolean $b [optional] <p>Defaults to <b>TRUE</b></p>
-     * @return boolean <p><b>FALSE</b> if improper input</p>
+     * @return boolean <b>FALSE</b> if improper input
      */
     public function setUseToken($b = true){
         if (is_bool($b)){
@@ -69,7 +69,7 @@ class AmazonShipmentItemList extends AmazonInboundCore implements Iterator{
      * This method sets the shipment ID to be sent in the next request.
      * This parameter is required for fetching the shipment's items from Amazon.
      * @param string $n <p>Shipment ID</p>
-     * @return boolean <p><b>FALSE</b> if improper input</p>
+     * @return boolean <b>FALSE</b> if improper input
      */
     public function setShipmentId($s){
         if (is_string($s)){
@@ -134,7 +134,7 @@ class AmazonShipmentItemList extends AmazonInboundCore implements Iterator{
      * Other methods are available for fetching specific values from the list.
      * This operation can potentially involve tokens.
      * @param boolean <p>When set to <b>FALSE</b>, the function will not recurse, defaults to <b>TRUE</b></p>
-     * @return boolean <p><b>FALSE</b> if something goes wrong</p>
+     * @return boolean <b>FALSE</b> if something goes wrong
      */
     public function fetchItems($r = true){
         if (!array_key_exists('ShipmentId', $this->options)){
@@ -200,7 +200,7 @@ class AmazonShipmentItemList extends AmazonInboundCore implements Iterator{
      * 
      * This is what reads the response XML and converts it into an array.
      * @param SimpleXMLObject $xml <p>The XML response from Amazon.</p>
-     * @return boolean <p><b>FALSE</b> if no XML data is found</p>
+     * @return boolean <b>FALSE</b> if no XML data is found
      */
     protected function parseXML($xml){
         if (!$xml){
@@ -234,7 +234,7 @@ class AmazonShipmentItemList extends AmazonInboundCore implements Iterator{
      * 
      * This method will return <b>FALSE</b> if the list has not yet been filled.
      * @param int $i [optional] <p>List index to retrieve the value from. Defaults to 0.</p>
-     * @return string|boolean <p>single value, or <b>FALSE</b> if Non-numeric index</p>
+     * @return string|boolean single value, or <b>FALSE</b> if Non-numeric index
      */
     public function getShipmentId($i = 0){
         if (!isset($this->itemList)){
@@ -252,7 +252,7 @@ class AmazonShipmentItemList extends AmazonInboundCore implements Iterator{
      * 
      * This method will return <b>FALSE</b> if the list has not yet been filled.
      * @param int $i [optional] <p>List index to retrieve the value from. Defaults to 0.</p>
-     * @return string|boolean <p>single value, or <b>FALSE</b> if Non-numeric index</p>
+     * @return string|boolean single value, or <b>FALSE</b> if Non-numeric index
      */
     public function getSellerSKU($i = 0){
         if (!isset($this->itemList)){
@@ -270,7 +270,7 @@ class AmazonShipmentItemList extends AmazonInboundCore implements Iterator{
      * 
      * This method will return <b>FALSE</b> if the list has not yet been filled.
      * @param int $i [optional] <p>List index to retrieve the value from. Defaults to 0.</p>
-     * @return string|boolean <p>single value, or <b>FALSE</b> if Non-numeric index</p>
+     * @return string|boolean single value, or <b>FALSE</b> if Non-numeric index
      */
     public function getFulfillmentNetworkSKU($i = 0){
         if (!isset($this->itemList)){
@@ -288,7 +288,7 @@ class AmazonShipmentItemList extends AmazonInboundCore implements Iterator{
      * 
      * This method will return <b>FALSE</b> if the list has not yet been filled.
      * @param int $i [optional] <p>List index to retrieve the value from. Defaults to 0.</p>
-     * @return string|boolean <p>single value, or <b>FALSE</b> if Non-numeric index</p>
+     * @return string|boolean single value, or <b>FALSE</b> if Non-numeric index
      */
     public function getQuantityShipped($i = 0){
         if (!isset($this->itemList)){
@@ -306,7 +306,7 @@ class AmazonShipmentItemList extends AmazonInboundCore implements Iterator{
      * 
      * This method will return <b>FALSE</b> if the list has not yet been filled.
      * @param int $i [optional] <p>List index to retrieve the value from. Defaults to 0.</p>
-     * @return string|boolean <p>single value, or <b>FALSE</b> if Non-numeric index</p>
+     * @return string|boolean single value, or <b>FALSE</b> if Non-numeric index
      */
     public function getQuantityReceived($i = 0){
         if (!isset($this->itemList)){
@@ -324,7 +324,7 @@ class AmazonShipmentItemList extends AmazonInboundCore implements Iterator{
      * 
      * This method will return <b>FALSE</b> if the list has not yet been filled.
      * @param int $i [optional] <p>List index to retrieve the value from. Defaults to 0.</p>
-     * @return string|boolean <p>single value, or <b>FALSE</b> if Non-numeric index</p>
+     * @return string|boolean single value, or <b>FALSE</b> if Non-numeric index
      */
     public function getQuantityInCase($i = 0){
         if (!isset($this->itemList)){
@@ -351,7 +351,7 @@ class AmazonShipmentItemList extends AmazonInboundCore implements Iterator{
      * <li><b>QuantityInCase</b></li>
      * </ul>
      * @param int $i [optional] <p>List index of the item to return. Defaults to NULL.</p>
-     * @return array|boolean <p>multi-dimensional array, or <b>FALSE</b> if list not filled yet</p>
+     * @return array|boolean multi-dimensional array, or <b>FALSE</b> if list not filled yet
      */
     public function getItems($i = null){
         if (!isset($this->itemList)){

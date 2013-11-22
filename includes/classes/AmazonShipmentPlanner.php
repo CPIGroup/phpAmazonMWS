@@ -45,7 +45,7 @@ class AmazonShipmentPlanner extends AmazonInboundCore implements Iterator{
      * <li><b>PostalCode</b> (recommended) - max: 30 char</li>
      * </ul>
      * @param array $a <p>See above.</p>
-     * @return boolean <p><b>FALSE</b> if improper input</p>
+     * @return boolean <b>FALSE</b> if improper input
      */
     public function setAddress($a){
         if (!$a || is_null($a) || is_string($a)){
@@ -95,7 +95,7 @@ class AmazonShipmentPlanner extends AmazonInboundCore implements Iterator{
      * 
      * If this paramter is not set, Amazon will assume SELLER_LABEL.
      * @param string $s <p>"SELLER_LABEL", "AMAZON_LABEL_ONLY", "AMAZON_LABEL_PREFERRED"</p>
-     * @return boolean <p><b>FALSE</b> if improper input</p>
+     * @return boolean <b>FALSE</b> if improper input
      */
     public function setLabelPreference($s){
         if (is_string($s) && $s){
@@ -143,7 +143,7 @@ class AmazonShipmentPlanner extends AmazonInboundCore implements Iterator{
      * </ul>
      * </ul>
      * @param array $a <p>See above.</p>
-     * @return boolean <p><b>FALSE</b> if improper input</p>
+     * @return boolean <b>FALSE</b> if improper input
      */
     public function setItems($a){
         if (!$a || is_null($a) || is_string($a)){
@@ -192,7 +192,7 @@ class AmazonShipmentPlanner extends AmazonInboundCore implements Iterator{
      * all required parameters must be set. Amazon will send back a list of Shipment Plans
      * as a response, which can be retrieved using <i>getPlan</i>.
      * Other methods are available for fetching specific values from the list.
-     * @return boolean <p><b>TRUE</b> if success, <b>FALSE</b> if something goes wrong</p>
+     * @return boolean <b>TRUE</b> if success, <b>FALSE</b> if something goes wrong
      */
     public function fetchPlan(){
         if (!array_key_exists('ShipFromAddress.Name',$this->options)){
@@ -229,7 +229,7 @@ class AmazonShipmentPlanner extends AmazonInboundCore implements Iterator{
      * 
      * This is what reads the response XML and converts it into an array.
      * @param SimpleXMLObject $xml <p>The XML response from Amazon.</p>
-     * @return boolean <p><b>FALSE</b> if no XML data is found</p>
+     * @return boolean <b>FALSE</b> if no XML data is found
      */
     protected function parseXML($xml) {
         if (!$xml){
@@ -270,7 +270,7 @@ class AmazonShipmentPlanner extends AmazonInboundCore implements Iterator{
      * <li><b>Items</b> - See <i>getItems</i> for details.</li>
      * </ul>
      * @param int $i [optional] <p>List index to retrieve the value from. Defaults to NULL.</p>
-     * @return array|boolean <p>plan array, multi-dimensional array, or <b>FALSE</b> if invalid index</p>
+     * @return array|boolean plan array, multi-dimensional array, or <b>FALSE</b> if invalid index
      */
     public function getPlan($i = null){
         if (!isset($this->planList)){
@@ -288,7 +288,7 @@ class AmazonShipmentPlanner extends AmazonInboundCore implements Iterator{
      * Returns an array of only the shipping IDs for convenient use.
      * 
      * This method will return <b>FALSE</b> if the list has not yet been filled.
-     * @return array|boolean <p>list of shipping IDs, or <b>FALSE</b> if list not fetched yet</p>
+     * @return array|boolean list of shipping IDs, or <b>FALSE</b> if list not fetched yet
      */
     public function getShipmentIdList(){
         if (!isset($this->planList)){
@@ -306,7 +306,7 @@ class AmazonShipmentPlanner extends AmazonInboundCore implements Iterator{
      * 
      * This method will return <b>FALSE</b> if the list has not yet been filled.
      * @param int $i [optional] <p>List index to retrieve the value from. Defaults to 0.</p>
-     * @return string|boolean <p>single value, or <b>FALSE</b> if Non-numeric index</p>
+     * @return string|boolean single value, or <b>FALSE</b> if Non-numeric index
      */
     public function getShipmentId($i = 0){
         if (!isset($this->planList)){

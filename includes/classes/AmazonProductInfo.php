@@ -34,7 +34,7 @@ class AmazonProductInfo extends AmazonProductsCore{
      * Setting this parameter tells Amazon to only return inventory supplies that match
      * the IDs in the list. If this parameter is set, ASINs cannot be set.
      * @param array|string $s <p>A list of Seller SKUs, or a single SKU string. (max: 20)</p>
-     * @return boolean <p><b>FALSE</b> if improper input</p>
+     * @return boolean <b>FALSE</b> if improper input
      */
     public function setSKUs($s){
         if (is_string($s)){
@@ -75,7 +75,7 @@ class AmazonProductInfo extends AmazonProductsCore{
      * Setting this parameter tells Amazon to only return inventory supplies that match
      * the IDs in the list. If this parameter is set, Seller SKUs cannot be set.
      * @param array|string $s <p>A list of ASINs, or a single ASIN string. (max: 20)</p>
-     * @return boolean <p><b>FALSE</b> if improper input</p>
+     * @return boolean <b>FALSE</b> if improper input
      */
     public function setASINs($s){
         if (is_string($s)){
@@ -116,7 +116,7 @@ class AmazonProductInfo extends AmazonProductsCore{
      * Setting this parameter tells Amazon to only return products with conditions that match
      * the one given. If this parameter is not set, Amazon will return products with any condition.
      * @param string $s <p>Single condition string.</p>
-     * @return boolean <p><b>FALSE</b> if improper input</p>
+     * @return boolean <b>FALSE</b> if improper input
      */
     public function setConditionFilter($s){
         if (is_string($s)){
@@ -131,7 +131,7 @@ class AmazonProductInfo extends AmazonProductsCore{
      * 
      * Sets whether or not the next Lowest Offer Listings request should exclude your own listings.
      * @param string|boolean $s <p>"true" or "false", or boolean</p>
-     * @return boolean <p><b>FALSE</b> if improper input</p>
+     * @return boolean <b>FALSE</b> if improper input
      */
     public function setExcludeSelf($s = 'true'){
         if ($s == 'true' || (is_bool($s) && $s == true)){
@@ -149,7 +149,7 @@ class AmazonProductInfo extends AmazonProductsCore{
      * Submits a <i>GetCompetitivePricingForSKU</i>
      * or <i>GetCompetitivePricingForASIN</i> request to Amazon. Amazon will send
      * the list back as a response, which can be retrieved using <i>getProduct</i>.
-     * @return boolean <p><b>FALSE</b> if something goes wrong</p>
+     * @return boolean <b>FALSE</b> if something goes wrong
      */
     public function fetchCompetitivePricing(){
         if (!array_key_exists('SellerSKUList.SellerSKU.1',$this->options) && !array_key_exists('ASINList.ASIN.1',$this->options)){
@@ -209,7 +209,7 @@ class AmazonProductInfo extends AmazonProductsCore{
      * Submits a <i>GetLowestOfferListingsForSKU</i>
      * or <i>GetLowestOfferListingsForASIN</i> request to Amazon. Amazon will send
      * the list back as a response, which can be retrieved using <i>getProduct</i>.
-     * @return boolean <p><b>FALSE</b> if something goes wrong</p>
+     * @return boolean <b>FALSE</b> if something goes wrong
      */
     public function fetchLowestOffer(){
         if (!array_key_exists('SellerSKUList.SellerSKU.1',$this->options) && !array_key_exists('ASINList.ASIN.1',$this->options)){
@@ -265,7 +265,7 @@ class AmazonProductInfo extends AmazonProductsCore{
      * Submits a <i>GetMyPriceForSKU</i>
      * or <i>GetMyPriceForASIN</i> request to Amazon. Amazon will send
      * the list back as a response, which can be retrieved using <i>getProduct</i>.
-     * @return boolean <p><b>FALSE</b> if something goes wrong</p>
+     * @return boolean <b>FALSE</b> if something goes wrong
      */
     public function fetchMyPrice(){
         if (!array_key_exists('SellerSKUList.SellerSKU.1',$this->options) && !array_key_exists('ASINList.ASIN.1',$this->options)){
@@ -324,7 +324,7 @@ class AmazonProductInfo extends AmazonProductsCore{
      * Submits a <i>GetProductCategoriesForSKU</i>
      * or <i>GetProductCategoriesForASIN</i> request to Amazon. Amazon will send
      * the list back as a response, which can be retrieved using <i>getProduct</i>.
-     * @return boolean <p><b>FALSE</b> if something goes wrong</p>
+     * @return boolean <b>FALSE</b> if something goes wrong
      */
     public function fetchCategories(){
         if (!array_key_exists('SellerSKUList.SellerSKU.1',$this->options) && !array_key_exists('ASINList.ASIN.1',$this->options)){

@@ -53,7 +53,7 @@ class AmazonReportAcknowledger extends AmazonReportsCore implements Iterator{
      * 
      * This method sets the list of Report IDs to be sent in the next request.
      * @param array|string $s <p>A list of Report IDs, or a single ID string.</p>
-     * @return boolean <p><b>FALSE</b> if improper input</p>
+     * @return boolean <b>FALSE</b> if improper input
      */
     public function setReportIds($s){
         if (is_string($s)){
@@ -92,7 +92,7 @@ class AmazonReportAcknowledger extends AmazonReportsCore implements Iterator{
      * acknowledged. Setting this parameter to <b>FALSE</b> lists only reports
      * that have not been acknowledged yet.
      * @param string|boolean $s <p>"true" or "false", or boolean</p>
-     * @return boolean <p><b>FALSE</b> if improper input</p>
+     * @return boolean <b>FALSE</b> if improper input
      */
     public function setAcknowledgedFilter($s){
         if ($s == 'true' || (is_bool($s) && $s == true)){
@@ -113,7 +113,7 @@ class AmazonReportAcknowledger extends AmazonReportsCore implements Iterator{
      * In order to do this, a list of Report IDs is required. Amazon will send
      * a list back as a response, which can be retrieved using <i>getList</i>.
      * Other methods are available for fetching specific values from the list.
-     * @return boolean <p><b>FALSE</b> if something goes wrong</p>
+     * @return boolean <b>FALSE</b> if something goes wrong
      */
     public function acknowledgeReports(){
         if (!array_key_exists('ReportIdList.Id.1',$this->options)){
@@ -147,7 +147,7 @@ class AmazonReportAcknowledger extends AmazonReportsCore implements Iterator{
      * 
      * This is what reads the response XML and converts it into an array.
      * @param SimpleXMLObject $xml <p>The XML response from Amazon.</p>
-     * @return boolean <p><b>FALSE</b> if no XML data is found</p>
+     * @return boolean <b>FALSE</b> if no XML data is found
      */
     protected function parseXML($xml){
         if (!$xml){
@@ -178,7 +178,7 @@ class AmazonReportAcknowledger extends AmazonReportsCore implements Iterator{
      * 
      * This method will return <b>FALSE</b> if the list has not yet been filled.
      * @param int $i [optional] <p>List index to retrieve the value from. Defaults to 0.</p>
-     * @return string|boolean <p>single value, or <b>FALSE</b> if Non-numeric index</p>
+     * @return string|boolean single value, or <b>FALSE</b> if Non-numeric index
      */
     public function getReportId($i = 0){
         if (!isset($this->reportList)){
@@ -196,7 +196,7 @@ class AmazonReportAcknowledger extends AmazonReportsCore implements Iterator{
      * 
      * This method will return <b>FALSE</b> if the list has not yet been filled.
      * @param int $i [optional] <p>List index to retrieve the value from. Defaults to 0.</p>
-     * @return string|boolean <p>single value, or <b>FALSE</b> if Non-numeric index</p>
+     * @return string|boolean single value, or <b>FALSE</b> if Non-numeric index
      */
     public function getReportType($i = 0){
         if (!isset($this->reportList)){
@@ -214,7 +214,7 @@ class AmazonReportAcknowledger extends AmazonReportsCore implements Iterator{
      * 
      * This method will return <b>FALSE</b> if the list has not yet been filled.
      * @param int $i [optional] <p>List index to retrieve the value from. Defaults to 0.</p>
-     * @return string|boolean <p>single value, or <b>FALSE</b> if Non-numeric index</p>
+     * @return string|boolean single value, or <b>FALSE</b> if Non-numeric index
      */
     public function getReportRequestId($i = 0){
         if (!isset($this->reportList)){
@@ -232,7 +232,7 @@ class AmazonReportAcknowledger extends AmazonReportsCore implements Iterator{
      * 
      * This method will return <b>FALSE</b> if the list has not yet been filled.
      * @param int $i [optional] <p>List index to retrieve the value from. Defaults to 0.</p>
-     * @return string|boolean <p>single value, or <b>FALSE</b> if Non-numeric index</p>
+     * @return string|boolean single value, or <b>FALSE</b> if Non-numeric index
      */
     public function getAvailableDate($i = 0){
         if (!isset($this->reportList)){
@@ -250,7 +250,7 @@ class AmazonReportAcknowledger extends AmazonReportsCore implements Iterator{
      * 
      * This method will return <b>FALSE</b> if the list has not yet been filled.
      * @param int $i [optional] <p>List index to retrieve the value from. Defaults to 0.</p>
-     * @return string|boolean <p>single value, or <b>FALSE</b> if Non-numeric index</p>
+     * @return string|boolean single value, or <b>FALSE</b> if Non-numeric index
      */
     public function getIsAcknowledged($i = 0){
         if (!isset($this->reportList)){
@@ -268,7 +268,7 @@ class AmazonReportAcknowledger extends AmazonReportsCore implements Iterator{
      * 
      * This method will return <b>FALSE</b> if the list has not yet been filled.
      * @param int $i [optional] <p>List index to retrieve the value from. Defaults to 0.</p>
-     * @return string|boolean <p>single value, or <b>FALSE</b> if Non-numeric index</p>
+     * @return string|boolean single value, or <b>FALSE</b> if Non-numeric index
      */
     public function getAcknowledgedDate($i = 0){
         if (!isset($this->reportList)){
@@ -285,7 +285,7 @@ class AmazonReportAcknowledger extends AmazonReportsCore implements Iterator{
      * Returns the report count.
      * 
      * This method will return <b>FALSE</b> if the count has not been set yet.
-     * @return number|boolean <p>number, or <b>FALSE</b> if count not set yet</p>
+     * @return number|boolean number, or <b>FALSE</b> if count not set yet
      */
     public function getCount(){
         if (isset($this->count)){
@@ -308,7 +308,7 @@ class AmazonReportAcknowledger extends AmazonReportsCore implements Iterator{
      * <li><b>Acknowledged</b></li>
      * <li><b>AcknowledgedDate</b></li>
      * </ul>
-     * @return array|boolean <p>array, multi-dimensional array, or <b>FALSE</b> if list not filled yet</p>
+     * @return array|boolean array, multi-dimensional array, or <b>FALSE</b> if list not filled yet
      */
     public function getList($i = null){
         if (!isset($this->reportList)){

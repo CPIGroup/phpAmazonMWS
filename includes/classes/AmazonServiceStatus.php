@@ -63,7 +63,7 @@ class AmazonServiceStatus extends AmazonCore{
      * <li>Sellers</li>
      * </ul>
      * @param string $s <p>See list.</p>
-     * @return boolean <p><b>TRUE</b> if valid input, <b>FALSE</b> if improper input</p>
+     * @return boolean <b>TRUE</b> if valid input, <b>FALSE</b> if improper input
      */
     public function setService($s){
         if (file_exists($this->config)){
@@ -139,7 +139,7 @@ class AmazonServiceStatus extends AmazonCore{
      * an service is required. Use <i>isReady</i> to see if you are ready to
      * retrieve the service status. Amazon will send data back as a response,
      * which can be retrieved using various methods.
-     * @return boolean <p><b>FALSE</b> if something goes wrong</p>
+     * @return boolean <b>FALSE</b> if something goes wrong
      */
     public function fetchServiceStatus(){
         if (!$this->ready){
@@ -172,7 +172,7 @@ class AmazonServiceStatus extends AmazonCore{
      * 
      * This is what reads the response XML and converts it into an array.
      * @param SimpleXMLObject $xml <p>The XML response from Amazon.</p>
-     * @return boolean <p><b>FALSE</b> if no XML data is found</p>
+     * @return boolean <b>FALSE</b> if no XML data is found
      */
     protected function parseXML($xml){
         if (!$xml){
@@ -203,7 +203,7 @@ class AmazonServiceStatus extends AmazonCore{
      * Returns the service status.
      * 
      * This method will return <b>FALSE</b> if the service status has not been checked yet.
-     * @return string|boolean <p>single value, or <b>FALSE</b> if status not checked yet</p>
+     * @return string|boolean single value, or <b>FALSE</b> if status not checked yet
      */
     public function getStatus(){
         if (isset($this->status)){
@@ -217,7 +217,7 @@ class AmazonServiceStatus extends AmazonCore{
      * Returns the timestamp of the last response.
      * 
      * This method will return <b>FALSE</b> if the service status has not been checked yet.
-     * @return string|boolean <p>single value, or <b>FALSE</b> if status not checked yet</p>
+     * @return string|boolean single value, or <b>FALSE</b> if status not checked yet
      */
     public function getTimestamp(){
         if (isset($this->lastTimestamp)){
@@ -231,7 +231,7 @@ class AmazonServiceStatus extends AmazonCore{
      * Returns the info message ID, if it exists.
      * 
      * This method will return <b>FALSE</b> if the service status has not been checked yet.
-     * @return string|boolean <p>single value, or <b>FALSE</b> if status not checked yet</p>
+     * @return string|boolean single value, or <b>FALSE</b> if status not checked yet
      */
     public function getMessageId(){
         if (isset($this->messageId)){
@@ -245,7 +245,7 @@ class AmazonServiceStatus extends AmazonCore{
      * Returns the list of info messages.
      * 
      * This method will return <b>FALSE</b> if the service status has not been checked yet.
-     * @return array|boolean <p>single value, or <b>FALSE</b> if status not checked yet</p>
+     * @return array|boolean single value, or <b>FALSE</b> if status not checked yet
      */
     public function getMessageList(){
         if (isset($this->messageList)){

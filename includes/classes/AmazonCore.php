@@ -245,9 +245,9 @@ abstract class AmazonCore{
      * <li><b>error</b> - error message, same value as answer, not set if status is 200</li>
      * <li><b>ok</b> - 1 or 0, depending on if the status is 200</li>
      * </ul>
-     * @return boolean|array <p>An array containing the HTTP response, or simply
+     * @return boolean|array An array containing the HTTP response, or simply
      * the value <b>FALSE</b> if the response could not be found or does not
-     * match the list of valid responses.</p>
+     * match the list of valid responses.
      */
     protected function fetchMockResponse(){
         if(!is_array($this->mockFiles) || !array_key_exists(0, $this->mockFiles)){
@@ -310,7 +310,7 @@ abstract class AmazonCore{
      * is not 200, the incident and error message returned are logged.
      * @param array $r <p>The HTTP response array. Expects the array to have
      * the fields <i>code</i>, <i>body</i>, and <i>error</i>.</p>
-     * @return boolean <p><b>TRUE</b> if the status is 200 OK, <b>FALSE</b> otherwise.</p>
+     * @return boolean <b>TRUE</b> if the status is 200 OK, <b>FALSE</b> otherwise.
      */
     protected function checkResponse($r){
         if (!is_array($r) || !array_key_exists('code', $r)){
@@ -333,7 +333,7 @@ abstract class AmazonCore{
      * been initiated. The file will not be set if it cannot be found or read.
      * This is useful for testing, in cases where you want to use a different file.
      * @param string $path <p>The path to the config file.</p>
-     * @throws Exception <p>If the file cannot be found or read.</p>
+     * @throws Exception If the file cannot be found or read.
      */
     public function setConfig($path){
         if (file_exists($path) && is_readable($path)){
@@ -353,7 +353,7 @@ abstract class AmazonCore{
      * Use this method to change the log file used. This method is called
      * each time the config file is changed.
      * @param string $path <p>The path to the log file.</p>
-     * @throws Exception <p>If the file cannot be found or read.</p>
+     * @throws Exception If the file cannot be found or read.
      */
     public function setLogPath($path){
         if (file_exists($path) && is_readable($path)){
@@ -373,7 +373,7 @@ abstract class AmazonCore{
      * config file, or if any of the key values are missing,
      * the incident will be logged.
      * @param string $s <p>The store name to look for.</p>
-     * @throws Exception <p>If the file can't be found.</p>
+     * @throws Exception If the file can't be found.
      */
     public function setStore($s){
         if (file_exists($this->config)){
@@ -413,8 +413,8 @@ abstract class AmazonCore{
      * This is merely for the benefit of the user and does not affect how
      * the code runs. The values used in this library are "Info", "Warning",
      * "Urgent", and "Throttle".</p>
-     * @return boolean <p><b>FALSE</b> if the message is empty, NULL if logging is muted</p>
-     * @throws Exception <p>If the file can't be written to.</p>
+     * @return boolean <b>FALSE</b> if the message is empty, NULL if logging is muted
+     * @throws Exception If the file can't be written to.
      */
     protected function log($msg, $level = 'Info'){
         if ($msg != false) {
@@ -481,7 +481,7 @@ abstract class AmazonCore{
      * 
      * Gets the options for the object, for debugging or recording purposes.
      * Note that this also includes key information such as your Amazon Access Key ID.
-     * @return array <p>All of the options for the object.</p>
+     * @return array All of the options for the object.
      */
     public function getOptions(){
         return $this->options;
@@ -497,7 +497,7 @@ abstract class AmazonCore{
      * @param string $time [optional] <p>The time to use. Since this value is
      * passed through <i>strtotime</i> first, values such as "-1 hour" are fine.
      * Defaults to the current time.</p>
-     * @return string <p>Unix timestamp of the time, minus 2 minutes.</p>
+     * @return string Unix timestamp of the time, minus 2 minutes.
      */
     protected function genTime($time=false){
         if (!$time){
@@ -516,8 +516,8 @@ abstract class AmazonCore{
      * This method uses the secret key from the config file to generate the
      * signed query string.
      * It also handles the creation of the timestamp option prior.
-     * @return string <p>query string to send to cURL</p>
-     * @throws Exception <p>when config file or secret key is missing</p>
+     * @return string query string to send to cURL
+     * @throws Exception if config file or secret key is missing
      */
     protected function genQuery(){
         if (file_exists($this->config)){
@@ -544,7 +544,7 @@ abstract class AmazonCore{
      * This method will keep trying if the request was throttled.
      * @param string $url <p>URL to feed to cURL</p>
      * @param array $param <p>parameter array to feed to cURL</p>
-     * @return array <p>cURL response array</p>
+     * @return array cURL response array
      */
     protected function sendRequest($url,$param){
         $this->log("Making request to Amazon: ".$this->options['Action']);
@@ -571,7 +571,7 @@ abstract class AmazonCore{
     /**
      * Checks for a token and changes the proper options
      * @param SimpleXMLObject $xml <p>response data</p>
-     * @return boolean <p><b>FALSE</b> if no XML data</p>
+     * @return boolean <b>FALSE</b> if no XML data
      */
     protected function checkToken($xml){
         if (!$xml){

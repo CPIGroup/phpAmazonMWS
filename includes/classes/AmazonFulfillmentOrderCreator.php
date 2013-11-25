@@ -34,7 +34,7 @@ class AmazonFulfillmentOrderCreator extends AmazonOutboundCore{
      * This parameter is required for creating a fulfillment order with Amazon.
      * A fulfillment order ID can be generated using the <i>AmazonFulfillmentPreview</i> object.
      * @param string $s <p>Maximum 40 characters.</p>
-     * @return boolean <p><b>FALSE</b> if improper input</p>
+     * @return boolean <b>FALSE</b> if improper input
      */
     public function setFulfillmentOrderId($s){
         if (is_string($s)){
@@ -51,7 +51,7 @@ class AmazonFulfillmentOrderCreator extends AmazonOutboundCore{
      * This parameter is required for creating a fulfillment order with Amazon.
      * This is your own order ID, and is the ID that is displayed on the packing slip.
      * @param string $s <p>Must be alpha-numeric or ISO-8559-1 compliant. Maximum 40 characters.</p>
-     * @return boolean <p><b>FALSE</b> if improper input</p>
+     * @return boolean <b>FALSE</b> if improper input
      */
     public function setDisplayableOrderId($s){
         if (is_string($s)){
@@ -68,7 +68,7 @@ class AmazonFulfillmentOrderCreator extends AmazonOutboundCore{
      * This parameter is required for creating a fulfillment order with Amazon.
      * The parameter is passed through <i>strtotime</i>, so values such as "-1 hour" are fine.
      * @param string $s <p>Time string.</p>
-     * @return boolean <p><b>FALSE</b> if improper input</p>
+     * @return boolean <b>FALSE</b> if improper input
      */
     public function setDate($s){
         if (is_string($s)){
@@ -85,7 +85,7 @@ class AmazonFulfillmentOrderCreator extends AmazonOutboundCore{
      * This method sets the displayed order comment to be sent in the next request.
      * This parameter is required for creating a fulfillment order with Amazon.
      * @param string $s <p>Maximum 1000 characters.</p>
-     * @return boolean <p><b>FALSE</b> if improper input</p>
+     * @return boolean <b>FALSE</b> if improper input
      */
     public function setComment($s){
         if (is_string($s)){
@@ -101,7 +101,7 @@ class AmazonFulfillmentOrderCreator extends AmazonOutboundCore{
      * This method sets the shipping speed to be sent in the next request.
      * This parameter is required for creating a fulfillment order with Amazon.
      * @param string $s <p>"Standard", "Expedited", or "Priority"</p>
-     * @return boolean <p><b>FALSE</b> if improper input</p>
+     * @return boolean <b>FALSE</b> if improper input
      */
     public function setShippingSpeed($s){
         if (is_string($s)){
@@ -135,7 +135,7 @@ class AmazonFulfillmentOrderCreator extends AmazonOutboundCore{
      * <li><b>PhoneNumber</b> - max: 20 char</li>
      * </ul>
      * @param array $a <p>See above.</p>
-     * @return boolean <p><b>FALSE</b> if improper input</p>
+     * @return boolean <b>FALSE</b> if improper input
      */
     public function setAddress($a){
         if (is_null($a) || is_string($a) || !$a){
@@ -202,7 +202,7 @@ class AmazonFulfillmentOrderCreator extends AmazonOutboundCore{
      * <li><b>FillAllAvailable</b> - send all possible, cancel any unfulfillable items</li>
      * </ul>
      * @param string $s <p>"FillOrKill", "FillAll", or "FillAllAvailable"</p>
-     * @return boolean <p><b>FALSE</b> if improper input</p>
+     * @return boolean <b>FALSE</b> if improper input
      */
     public function setFulfillmentPolicy($s){
         if (is_string($s)){
@@ -228,7 +228,7 @@ class AmazonFulfillmentOrderCreator extends AmazonOutboundCore{
      * <li><b>Removal</b> - inventory will be returned to the given address</li>
      * </ul>
      * @param string $s <p>"Consumer" or "Removal"</p>
-     * @return boolean <p><b>FALSE</b> if improper input</p>
+     * @return boolean <b>FALSE</b> if improper input
      */
     public function setFulfillmentMethod($s){
         if (is_string($s)){
@@ -250,7 +250,7 @@ class AmazonFulfillmentOrderCreator extends AmazonOutboundCore{
      * Setting this parameter tells Amazon who to send emails to regarding the
      * completion of the shipment.
      * @param array|string $s <p>A list of email addresses, or a single email address. (max: 64 chars each)</p>
-     * @return boolean <p><b>FALSE</b> if improper input</p>
+     * @return boolean <b>FALSE</b> if improper input
      */
     public function setEmails($s){
         if (is_string($s)){
@@ -303,7 +303,7 @@ class AmazonFulfillmentOrderCreator extends AmazonOutboundCore{
      * </ul>
      * </ul>
      * @param array $a <p>See above.</p>
-     * @return boolean <p><b>FALSE</b> if improper input</p>
+     * @return boolean <b>FALSE</b> if improper input
      */
     public function setItems($a){
         if (is_null($a) || is_string($a) || !$a){
@@ -365,7 +365,7 @@ class AmazonFulfillmentOrderCreator extends AmazonOutboundCore{
      * so there is no data to retrieve afterwards. The following parameters are required:
      * fulfillment order ID, displayed order ID, displayed timestamp, comment,
      * shipping speed, address, items.
-     * @return boolean <p><b>TRUE</b> if the order creation was successful, <b>FALSE</b> if something goes wrong</p>
+     * @return boolean <b>TRUE</b> if the order creation was successful, <b>FALSE</b> if something goes wrong
      */
     public function createOrder(){
         if (!array_key_exists('SellerFulfillmentOrderId',$this->options)){

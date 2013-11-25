@@ -52,7 +52,7 @@ class AmazonFeedResult extends AmazonFeedsCore{
      * This method sets the feed submission ID to be sent in the next request. This
      * parameter is required in order to retrieve a feed from Amazon.
      * @param string|integer $n <p>Must be numeric</p>
-     * @return boolean <p><b>FALSE</b> if improper input</p>
+     * @return boolean <b>FALSE</b> if improper input
      */
     public function setFeedId($n){
         if (is_numeric($n)){
@@ -68,7 +68,7 @@ class AmazonFeedResult extends AmazonFeedsCore{
      * Submits a <i>GetFeedSubmissionResult</i> request to Amazon. In order to
      * do this, a feed submission ID is required. Amazon will send back the raw results
      * of the feed as a response, which can be saved to a file using <i>saveFeed</i>.
-     * @return boolean <p><b>FALSE</b> if something goes wrong</p>
+     * @return boolean <b>FALSE</b> if something goes wrong
      */
     public function fetchFeedResult(){
         if (!array_key_exists('FeedSubmissionId',$this->options)){
@@ -99,7 +99,7 @@ class AmazonFeedResult extends AmazonFeedsCore{
      * 
      * This method will record in the log whether or not the save was successful.
      * @param string $path <p>path for the file to save the feed data in</p>
-     * @return boolean <p><b>FALSE</b> if something goes wrong</p>
+     * @return boolean <b>FALSE</b> if something goes wrong
      */
     public function saveFeed($path){
         if (!isset($this->rawFeed)){

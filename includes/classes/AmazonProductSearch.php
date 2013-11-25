@@ -47,7 +47,7 @@ class AmazonProductSearch extends AmazonProductsCore{
     /**
      * Sets the query to search for. (Required)
      * @param string $q <p>search query</p>
-     * @return boolean <p><b>FALSE</b> if improper input</p>
+     * @return boolean <b>FALSE</b> if improper input
      */
     public function setQuery($q){
         if (is_string($q)){
@@ -64,7 +64,7 @@ class AmazonProductSearch extends AmazonProductsCore{
      * context. If this parameter is not set, Amazon will return products from
      * any context.
      * @param string $q <p>See comment inside for list of valid values.</p>
-     * @return boolean <p><b>FALSE</b> if improper input</p>
+     * @return boolean <b>FALSE</b> if improper input
      */
     public function setContextId($q){
         if (is_string($q)){
@@ -124,7 +124,7 @@ class AmazonProductSearch extends AmazonProductsCore{
      * Submits a <i>ListMatchingProducts</i> request to Amazon. Amazon will send
      * the list back as a response, which can be retrieved using <i>getProduct</i>.
      * In order to perform this action, a search query is required.
-     * @return boolean <p><b>FALSE</b> if something goes wrong</p>
+     * @return boolean <b>FALSE</b> if something goes wrong
      */
     public function searchProducts(){
         if (!array_key_exists('Query',$this->options)){

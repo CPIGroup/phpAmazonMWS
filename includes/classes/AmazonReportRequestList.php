@@ -58,7 +58,7 @@ class AmazonReportRequestList extends AmazonReportsCore implements Iterator{
      * this option is off, the object will only ever retrieve the first section of
      * the list.
      * @param boolean $b [optional] <p>Defaults to <b>TRUE</b></p>
-     * @return boolean <p><b>FALSE</b> if improper input</p>
+     * @return boolean <b>FALSE</b> if improper input
      */
     public function setUseToken($b = true){
         if (is_bool($b)){
@@ -73,7 +73,7 @@ class AmazonReportRequestList extends AmazonReportsCore implements Iterator{
      * 
      * This method sets the list of report request IDs to be sent in the next request.
      * @param array|string $s <p>A list of report request IDs, or a single type string.</p>
-     * @return boolean <p><b>FALSE</b> if improper input</p>
+     * @return boolean <b>FALSE</b> if improper input
      */
     public function setRequestIds($s){
         if (is_string($s)){
@@ -110,7 +110,7 @@ class AmazonReportRequestList extends AmazonReportsCore implements Iterator{
      * 
      * This method sets the list of report types to be sent in the next request.
      * @param array|string $s <p>A list of report types, or a single type string.</p>
-     * @return boolean <p><b>FALSE</b> if improper input</p>
+     * @return boolean <b>FALSE</b> if improper input
      */
     public function setReportTypes($s){
         if (is_string($s)){
@@ -147,7 +147,7 @@ class AmazonReportRequestList extends AmazonReportsCore implements Iterator{
      * 
      * This method sets the list of report types to be sent in the next request.
      * @param array|string $s <p>A list of report types, or a single type string.</p>
-     * @return boolean <p><b>FALSE</b> if improper input</p>
+     * @return boolean <b>FALSE</b> if improper input
      */
     public function setReportStatuses($s){
         if (is_string($s)){
@@ -185,7 +185,7 @@ class AmazonReportRequestList extends AmazonReportsCore implements Iterator{
      * This method sets the maximum number of Report Requests for Amazon to return.
      * If this parameter is not set, Amazon will only send 10 at a time.
      * @param array|string $s <p>Positive integer from 1 to 100.</p>
-     * @return boolean <p><b>FALSE</b> if improper input</p>
+     * @return boolean <b>FALSE</b> if improper input
      */
     public function setMaxCount($s){
         if (is_int($s) && $s >= 1 && $s <= 100){
@@ -241,7 +241,7 @@ class AmazonReportRequestList extends AmazonReportsCore implements Iterator{
      * Other methods are available for fetching specific values from the list.
      * This operation can potentially involve tokens.
      * @param boolean <p>When set to <b>FALSE</b>, the function will not recurse, defaults to <b>TRUE</b></p>
-     * @return boolean <p><b>FALSE</b> if something goes wrong</p>
+     * @return boolean <b>FALSE</b> if something goes wrong
      */
     public function fetchRequestList($r = true){
         $this->prepareToken();
@@ -338,7 +338,7 @@ class AmazonReportRequestList extends AmazonReportsCore implements Iterator{
      * 
      * This is what reads the response XML and converts it into an array.
      * @param SimpleXMLObject $xml <p>The XML response from Amazon.</p>
-     * @return boolean <p><b>FALSE</b> if no XML data is found</p>
+     * @return boolean <b>FALSE</b> if no XML data is found
      */
     protected function parseXML($xml){
         if (!$xml){
@@ -377,7 +377,7 @@ class AmazonReportRequestList extends AmazonReportsCore implements Iterator{
      * as a response the list of feeds that were cancelled, along with the count
      * of the number of affected feeds. This data can be retrieved using the same
      * methods as with <i>fetchRequestList</i> and <i>fetchCount</i>.
-     * @return boolean <p><b>FALSE</b> if something goes wrong</p>
+     * @return boolean <b>FALSE</b> if something goes wrong
      */
     public function cancelRequests(){
         $this->prepareCancel();
@@ -409,7 +409,7 @@ class AmazonReportRequestList extends AmazonReportsCore implements Iterator{
      * 
      * Submits a <i>GetReportRequestCount</i> request to Amazon. Amazon will send
      * the number back as a response, which can be retrieved using <i>getCount</i>.
-     * @return boolean <p><b>FALSE</b> if something goes wrong</p>
+     * @return boolean <b>FALSE</b> if something goes wrong
      */
     public function fetchCount(){
         $this->prepareCount();
@@ -461,7 +461,7 @@ class AmazonReportRequestList extends AmazonReportsCore implements Iterator{
      * 
      * This method will return <b>FALSE</b> if the list has not yet been filled.
      * @param int $i [optional] <p>List index to retrieve the value from. Defaults to 0.</p>
-     * @return string|boolean <p>single value, or <b>FALSE</b> if Non-numeric index</p>
+     * @return string|boolean single value, or <b>FALSE</b> if Non-numeric index
      */
     public function getRequestId($i = 0){
         if (!isset($this->reportList)){
@@ -479,7 +479,7 @@ class AmazonReportRequestList extends AmazonReportsCore implements Iterator{
      * 
      * This method will return <b>FALSE</b> if the list has not yet been filled.
      * @param int $i [optional] <p>List index to retrieve the value from. Defaults to 0.</p>
-     * @return string|boolean <p>single value, or <b>FALSE</b> if Non-numeric index</p>
+     * @return string|boolean single value, or <b>FALSE</b> if Non-numeric index
      */
     public function getReportType($i = 0){
         if (!isset($this->reportList)){
@@ -497,7 +497,7 @@ class AmazonReportRequestList extends AmazonReportsCore implements Iterator{
      * 
      * This method will return <b>FALSE</b> if the list has not yet been filled.
      * @param int $i [optional] <p>List index to retrieve the value from. Defaults to 0.</p>
-     * @return string|boolean <p>single value, or <b>FALSE</b> if Non-numeric index</p>
+     * @return string|boolean single value, or <b>FALSE</b> if Non-numeric index
      */
     public function getStartDate($i = 0){
         if (!isset($this->reportList)){
@@ -515,7 +515,7 @@ class AmazonReportRequestList extends AmazonReportsCore implements Iterator{
      * 
      * This method will return <b>FALSE</b> if the list has not yet been filled.
      * @param int $i [optional] <p>List index to retrieve the value from. Defaults to 0.</p>
-     * @return string|boolean <p>single value, or <b>FALSE</b> if Non-numeric index</p>
+     * @return string|boolean single value, or <b>FALSE</b> if Non-numeric index
      */
     public function getEndDate($i = 0){
         if (!isset($this->reportList)){
@@ -533,7 +533,7 @@ class AmazonReportRequestList extends AmazonReportsCore implements Iterator{
      * 
      * This method will return <b>FALSE</b> if the list has not yet been filled.
      * @param int $i [optional] <p>List index to retrieve the value from. Defaults to 0.</p>
-     * @return string|boolean <p>single value, or <b>FALSE</b> if Non-numeric index</p>
+     * @return string|boolean single value, or <b>FALSE</b> if Non-numeric index
      */
     public function getIsScheduled($i = 0){
         if (!isset($this->reportList)){
@@ -551,7 +551,7 @@ class AmazonReportRequestList extends AmazonReportsCore implements Iterator{
      * 
      * This method will return <b>FALSE</b> if the list has not yet been filled.
      * @param int $i [optional] <p>List index to retrieve the value from. Defaults to 0.</p>
-     * @return string|boolean <p>single value, or <b>FALSE</b> if Non-numeric index</p>
+     * @return string|boolean single value, or <b>FALSE</b> if Non-numeric index
      */
     public function getSubmittedDate($i = 0){
         if (!isset($this->reportList)){
@@ -569,7 +569,7 @@ class AmazonReportRequestList extends AmazonReportsCore implements Iterator{
      * 
      * This method will return <b>FALSE</b> if the list has not yet been filled.
      * @param int $i [optional] <p>List index to retrieve the value from. Defaults to 0.</p>
-     * @return string|boolean <p>single value, or <b>FALSE</b> if Non-numeric index</p>
+     * @return string|boolean single value, or <b>FALSE</b> if Non-numeric index
      */
     public function getStatus($i = 0){
         if (!isset($this->reportList)){
@@ -587,7 +587,7 @@ class AmazonReportRequestList extends AmazonReportsCore implements Iterator{
      * 
      * This method will return <b>FALSE</b> if the list has not yet been filled.
      * @param int $i [optional] <p>List index to retrieve the value from. Defaults to 0.</p>
-     * @return string|boolean <p>single value, or <b>FALSE</b> if Non-numeric index</p>
+     * @return string|boolean single value, or <b>FALSE</b> if Non-numeric index
      */
     public function getReportId($i = 0){
         if (!isset($this->reportList)){
@@ -605,7 +605,7 @@ class AmazonReportRequestList extends AmazonReportsCore implements Iterator{
      * 
      * This method will return <b>FALSE</b> if the list has not yet been filled.
      * @param int $i [optional] <p>List index to retrieve the value from. Defaults to 0.</p>
-     * @return string|boolean <p>single value, or <b>FALSE</b> if Non-numeric index</p>
+     * @return string|boolean single value, or <b>FALSE</b> if Non-numeric index
      */
     public function getDateProcessingStarted($i = 0){
         if (!isset($this->reportList)){
@@ -623,7 +623,7 @@ class AmazonReportRequestList extends AmazonReportsCore implements Iterator{
      * 
      * This method will return <b>FALSE</b> if the list has not yet been filled.
      * @param int $i [optional] <p>List index to retrieve the value from. Defaults to 0.</p>
-     * @return string|boolean <p>single value, or <b>FALSE</b> if Non-numeric index</p>
+     * @return string|boolean single value, or <b>FALSE</b> if Non-numeric index
      */
     public function getDateProcessingCompleted($i = 0){
         if (!isset($this->reportList)){
@@ -653,7 +653,7 @@ class AmazonReportRequestList extends AmazonReportsCore implements Iterator{
      * <li><b>CompletedProcessingDate</b></li>
      * </ul>
      * @param int $i [optional] <p>List index to retrieve the value from. Defaults to NULL.</p>
-     * @return array|boolean <p>multi-dimensional array, or <b>FALSE</b> if list not filled yet</p>
+     * @return array|boolean multi-dimensional array, or <b>FALSE</b> if list not filled yet
      */
     public function getList($i = null){
         if (!isset($this->reportList)){
@@ -671,7 +671,7 @@ class AmazonReportRequestList extends AmazonReportsCore implements Iterator{
      * Returns the report request count.
      * 
      * This method will return <b>FALSE</b> if the count has not been set yet.
-     * @return number|boolean <p>number, or <b>FALSE</b> if count not set yet</p>
+     * @return number|boolean number, or <b>FALSE</b> if count not set yet
      */
     public function getCount(){
         if (isset($this->count)){

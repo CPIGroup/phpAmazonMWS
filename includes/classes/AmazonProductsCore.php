@@ -51,7 +51,7 @@ abstract class AmazonProductsCore extends AmazonCore{
      * 
      * This is what reads the response XML and converts it into an array.
      * @param SimpleXMLObject $xml <p>The XML response from Amazon.</p>
-     * @return boolean <p><b>FALSE</b> if no XML data is found</p>
+     * @return boolean <b>FALSE</b> if no XML data is found
      */
     protected function parseXML($xml){
         if (!$xml){
@@ -97,7 +97,7 @@ abstract class AmazonProductsCore extends AmazonCore{
      * 
      * See the <i>AmazonProduct</i> class for more information on the returned objects.
      * @param int $num [optional] <p>List index to retrieve the value from. Defaults to 0.</p>
-     * @return AmazonProduct|array <p>Product (or list of Products)</p>
+     * @return AmazonProduct|array Product (or list of Products)
      */
     public function getProduct($num = null){
         if (!isset($this->productList)){

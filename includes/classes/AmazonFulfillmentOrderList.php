@@ -41,7 +41,7 @@ class AmazonFulfillmentOrderList extends AmazonOutboundCore implements Iterator{
      * will only return orders that were updated in the past 36 hours.
      * The parameter is passed through <i>strtotime</i>, so values such as "-1 hour" are fine.
      * @param string $s <p>Time string.</p>
-     * @return boolean <p><b>FALSE</b> if improper input</p>
+     * @return boolean <b>FALSE</b> if improper input
      */
     public function setStartTime($s){
         if (is_string($s)){
@@ -65,7 +65,7 @@ class AmazonFulfillmentOrderList extends AmazonOutboundCore implements Iterator{
      * <li><b>Removal</b> - inventory will be returned to the given address</li>
      * </ul>
      * @param string $s <p>"Consumer" or "Removal"</p>
-     * @return boolean <p><b>FALSE</b> if improper input</p>
+     * @return boolean <b>FALSE</b> if improper input
      */
     public function setMethodFilter($s){
         if ($s == 'Consumer' || $s == 'Removal'){
@@ -91,7 +91,7 @@ class AmazonFulfillmentOrderList extends AmazonOutboundCore implements Iterator{
      * this option is off, the object will only ever retrieve the first section of
      * the list.
      * @param boolean $b [optional] <p>Defaults to <b>TRUE</b></p>
-     * @return boolean <p><b>FALSE</b> if improper input</p>
+     * @return boolean <b>FALSE</b> if improper input
      */
     public function setUseToken($b = true){
         if (is_bool($b)){
@@ -108,7 +108,7 @@ class AmazonFulfillmentOrderList extends AmazonOutboundCore implements Iterator{
      * the list back as a response, which can be retrieved using <i>getOrder</i>.
      * This operation can potentially involve tokens.
      * @param boolean <p>When set to <b>FALSE</b>, the function will not recurse, defaults to <b>TRUE</b></p>
-     * @return boolean <p><b>FALSE</b> if something goes wrong</p>
+     * @return boolean <b>FALSE</b> if something goes wrong
      */
     public function fetchOrderList($r = true){
         $this->prepareToken();
@@ -172,7 +172,7 @@ class AmazonFulfillmentOrderList extends AmazonOutboundCore implements Iterator{
      * 
      * This is what reads the response XML and converts it into an array.
      * @param SimpleXMLObject $xml <p>The XML response from Amazon.</p>
-     * @return boolean <p><b>FALSE</b> if no XML data is found</p>
+     * @return boolean <b>FALSE</b> if no XML data is found
      */
     protected function parseXML($xml){
         if (!$xml){
@@ -232,7 +232,7 @@ class AmazonFulfillmentOrderList extends AmazonOutboundCore implements Iterator{
      * This method automatically creates an array of <i>AmazonFulfillmentOrder</i> objects
      * and fetches all of their full information from Amazon. Because of throttling, this
      * could take a while if the list has more than a few orders.
-     * @return array|boolean <p>array of <i>AmazonFulfillmentOrder</i> objects, or <b>FALSE</b> if list not filled yet</p>
+     * @return array|boolean array of <i>AmazonFulfillmentOrder</i> objects, or <b>FALSE</b> if list not filled yet
      */
     public function getFullList(){
         if (!isset($this->orderList)){
@@ -269,7 +269,7 @@ class AmazonFulfillmentOrderList extends AmazonOutboundCore implements Iterator{
      * </ul>
      * @param int $i [optional] <p>List index to retrieve the value from.
      * If none is given, the entire list will be returned. Defaults to NULL.</p>
-     * @return array|boolean <p>array, multi-dimensional array, or <b>FALSE</b> if list not filled yet</p>
+     * @return array|boolean array, multi-dimensional array, or <b>FALSE</b> if list not filled yet
      */
     public function getOrder($i = null){
         if (!isset($this->orderList)){

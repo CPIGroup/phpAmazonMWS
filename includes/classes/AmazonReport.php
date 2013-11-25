@@ -50,7 +50,7 @@ class AmazonReport extends AmazonReportsCore{
      * This method sets the report ID to be sent in the next request.
      * This parameter is required for fetching the report from Amazon.
      * @param string|integer $n <p>Must be numeric</p>
-     * @return boolean <p><b>FALSE</b> if improper input</p>
+     * @return boolean <b>FALSE</b> if improper input
      */
     public function setReportId($n){
         if (is_numeric($n)){
@@ -66,7 +66,7 @@ class AmazonReport extends AmazonReportsCore{
      * Submits a <i>GetReport</i> request to Amazon. In order to do this,
      * a report ID is required. Amazon will send
      * the data back as a response, which can be saved using <i>saveReport</i>.
-     * @return boolean <p><b>FALSE</b> if something goes wrong</p>
+     * @return boolean <b>FALSE</b> if something goes wrong
      */
     public function fetchReport(){
         if (!array_key_exists('ReportId',$this->options)){

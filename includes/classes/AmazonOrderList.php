@@ -63,7 +63,7 @@ class AmazonOrderList extends AmazonOrderCore implements Iterator{
      * this option is off, the object will only ever retrieve the first section of
      * the list.
      * @param boolean $b [optional] <p>Defaults to <b>TRUE</b></p>
-     * @return boolean <p><b>FALSE</b> if improper input</p>
+     * @return boolean <b>FALSE</b> if improper input
      */
     public function setUseToken($b = true){
         if (is_bool($b)){
@@ -80,7 +80,7 @@ class AmazonOrderList extends AmazonOrderCore implements Iterator{
      * @param string $mode <p>"Created" or "Modified"</p>
      * @param string $lower [optional] <p>A time string for the earliest time.</p>
      * @param string $upper [optional] <p>A time string for the latest time.</p>
-     * @return boolean <p><b>FALSE</b> if improper input</p>
+     * @return boolean <b>FALSE</b> if improper input
      */
     public function setLimits($mode,$lower = null,$upper = null){
         try{
@@ -131,7 +131,7 @@ class AmazonOrderList extends AmazonOrderCore implements Iterator{
      * those in the list. If this parameter is not set, Amazon will return
      * Orders of any status.
      * @param array|string $s <p>A list of Order Statuses, or a single status string.</p>
-     * @return boolean <p><b>FALSE</b> if improper input</p>
+     * @return boolean <b>FALSE</b> if improper input
      */
     public function setOrderStatusFilter($list){
         if (is_string($list)){
@@ -167,8 +167,8 @@ class AmazonOrderList extends AmazonOrderCore implements Iterator{
     
     /**
      * Sets (or resets) the Fulfillment Channel Filter
-     * @param string $filter 'AFN' or 'MFN' or null
-     * @return boolean false on failure
+     * @param string $filter <p>'AFN' or 'MFN' or NULL</p>
+     * @return boolean <b>FALSE</b> on failure
      */
     public function setFulfillmentChannelFilter($filter){
         if ($filter == 'AFN' || $filter == 'MFN'){
@@ -188,7 +188,7 @@ class AmazonOrderList extends AmazonOrderCore implements Iterator{
      * that match those in the list. If this parameter is not set, Amazon will return
      * Orders with any payment method.
      * @param array|string $s <p>A list of Payment Methods, or a single method string.</p>
-     * @return boolean <p><b>FALSE</b> if improper input</p>
+     * @return boolean <b>FALSE</b> if improper input
      */
     public function setPaymentMethodFilter($list){
         if (is_string($list)){
@@ -229,7 +229,7 @@ class AmazonOrderList extends AmazonOrderCore implements Iterator{
      * that match the address given. If this parameter is set, the following options
      * will be removed: SellerOrderId, OrderStatus, PaymentMethod, FulfillmentChannel, LastUpdatedAfter, LastUpdatedBefore.
      * @param string $s <p>A single address string. Set to NULL to remove the option.</p>
-     * @return boolean <p><b>FALSE</b> if improper input</p>
+     * @return boolean <b>FALSE</b> if improper input
      */
     public function setEmailFilter($filter){
         if (is_string($filter)){
@@ -256,7 +256,7 @@ class AmazonOrderList extends AmazonOrderCore implements Iterator{
      * that match those in the list. If this parameter is set, the following options
      * will be removed: BuyerEmail, OrderStatus, PaymentMethod, FulfillmentChannel, LastUpdatedAfter, LastUpdatedBefore.
      * @param array|string $s <p>A list of Payment Methods, or a single type string. Set to NULL to remove the option.</p>
-     * @return boolean <p><b>FALSE</b> if improper input</p>
+     * @return boolean <b>FALSE</b> if improper input
      */
     public function setSellerOrderIdFilter($filter){
         if (is_string($filter)){
@@ -281,7 +281,7 @@ class AmazonOrderList extends AmazonOrderCore implements Iterator{
      * This method sets the maximum number of Feed Submissions for Amazon to return per page.
      * If this parameter is not set, Amazon will send 100 at a time.
      * @param array|string $s <p>Positive integer from 1 to 100.</p>
-     * @return boolean <p><b>FALSE</b> if improper input</p>
+     * @return boolean <b>FALSE</b> if improper input
      */
     public function setMaxResultsPerPage($num){
         if (is_int($num) && $num <= 100 && $num >= 1){
@@ -298,7 +298,7 @@ class AmazonOrderList extends AmazonOrderCore implements Iterator{
      * the list back as a response, which can be retrieved using <i>getList</i>.
      * This operation can potentially involve tokens.
      * @param boolean <p>When set to <b>FALSE</b>, the function will not recurse, defaults to <b>TRUE</b></p>
-     * @return boolean <p><b>FALSE</b> if something goes wrong</p>
+     * @return boolean <b>FALSE</b> if something goes wrong
      */
     public function fetchOrders($r = true){
         if (!array_key_exists('CreatedAfter', $this->options) && !array_key_exists('LastUpdatedAfter', $this->options)){
@@ -375,7 +375,7 @@ class AmazonOrderList extends AmazonOrderCore implements Iterator{
      * 
      * This is what reads the response XML and converts it into an array.
      * @param SimpleXMLObject $xml <p>The XML response from Amazon.</p>
-     * @return boolean <p><b>FALSE</b> if no XML data is found</p>
+     * @return boolean <b>FALSE</b> if no XML data is found
      */
     protected function parseXML($xml){
         if (!$xml){
@@ -404,7 +404,7 @@ class AmazonOrderList extends AmazonOrderCore implements Iterator{
      * this operation could take a while due to throttling. (Two seconds per order when throttled.)
      * @param boolean $token [optional] <p>whether or not to automatically use tokens when fetching items.</p>
      * @param int $i [optional] <p>List index to retrieve the value from. Defaults to null.</p>
-     * @return array|AmazonOrderItemList <p><i>AmazonOrderItemList</i> object or array of objects, or <b>FALSE</b> if non-numeric index</p>
+     * @return array|AmazonOrderItemList <i>AmazonOrderItemList</i> object or array of objects, or <b>FALSE</b> if non-numeric index
      */
     public function fetchItems($token = false, $i = null){
         if (!isset($this->orderList)){
@@ -426,7 +426,7 @@ class AmazonOrderList extends AmazonOrderCore implements Iterator{
     
     /**
      * Returns the list of orders.
-     * @return array|boolean <p>array of <i>AmazonOrder</i> objects, or <b>FALSE</b> if list not filled yet</p>
+     * @return array|boolean array of <i>AmazonOrder</i> objects, or <b>FALSE</b> if list not filled yet
      */
     public function getList(){
         if (isset($this->orderList)){

@@ -33,7 +33,7 @@ class AmazonShipment extends AmazonInboundCore{
      * 
      * This information is required to submit a shipment.
      * @param array $x <p>plan array from <i>AmazonShipmentPlanner</i></p>
-     * @return boolean <p><b>FALSE</b> if improper input</p>
+     * @return boolean <b>FALSE</b> if improper input
      */
     public function usePlan($x){
         if (is_array($x)){
@@ -71,7 +71,7 @@ class AmazonShipment extends AmazonInboundCore{
      * <li><b>PostalCode</b> - max: 30 char</li>
      * </ul>
      * @param array $a <p>See above.</p>
-     * @return boolean <p><b>FALSE</b> if improper input</p>
+     * @return boolean <b>FALSE</b> if improper input
      */
     public function setAddress($a){
         if (!$a || is_null($a) || is_string($a)){
@@ -131,7 +131,7 @@ class AmazonShipment extends AmazonInboundCore{
      * <li><b>QuantityInCase</b> (optional) - numeric</li>
      * </ul>
      * @param array $a <p>See above.</p>
-     * @return boolean <p><b>FALSE</b> if improper input</p>
+     * @return boolean <b>FALSE</b> if improper input
      */
     public function setItems($a){
         if (!$a || is_null($a) || is_string($a)){
@@ -177,7 +177,7 @@ class AmazonShipment extends AmazonInboundCore{
     /**
      * Sets the shipment status. (Required)
      * @param string $s <p>"WORKING", "SHIPPED", or "CANCELLED" (updating only)</p>
-     * @return boolean <p><b>FALSE</b> if improper input</p>
+     * @return boolean <b>FALSE</b> if improper input
      */
     public function setStatus($s){
         if (is_string($s) && $s){
@@ -194,7 +194,7 @@ class AmazonShipment extends AmazonInboundCore{
     /**
      * Sets the shipment ID. (Required)
      * @param string $s <p>Shipment ID</p>
-     * @return boolean <p><b>FALSE</b> if improper input</p>
+     * @return boolean <b>FALSE</b> if improper input
      */
     public function setShipmentId($s){
         if (is_string($s) && $s){
@@ -223,7 +223,7 @@ class AmazonShipment extends AmazonInboundCore{
      * all parameters must be set. Data for these headers can be generated using an
      * <i>AmazonShipmentPlanner</i> object. Amazon will send back the Shipment ID
      * as a response, which can be retrieved using <i>getShipmentId</i>.
-     * @return boolean <p><b>TRUE</b> if success, <b>FALSE</b> if something goes wrong</p>
+     * @return boolean <b>TRUE</b> if success, <b>FALSE</b> if something goes wrong
      */
     public function createShipment(){
         if (!isset($this->options['ShipmentId'])){
@@ -273,7 +273,7 @@ class AmazonShipment extends AmazonInboundCore{
      * all parameters must be set. Data for these headers can be generated using an
      * <i>AmazonShipmentPlanner</i> object. Amazon will send back the Shipment ID
      * as a response, which can be retrieved using <i>getShipmentId</i>.
-     * @return boolean <p><b>TRUE</b> if success, <b>FALSE</b> if something goes wrong</p>
+     * @return boolean <b>TRUE</b> if success, <b>FALSE</b> if something goes wrong
      */
     public function updateShipment(){
         if (!isset($this->options['ShipmentId'])){
@@ -318,7 +318,7 @@ class AmazonShipment extends AmazonInboundCore{
     
     /**
      * Returns the shipment ID of the newly created/modified order.
-     * @return string|boolean <p>single value, or <b>FALSE</b> if Shipment ID not fetched yet</p>
+     * @return string|boolean single value, or <b>FALSE</b> if Shipment ID not fetched yet
      */
     public function getShipmentId(){
         if (isset($this->shipmentId)){

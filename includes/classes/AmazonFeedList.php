@@ -59,7 +59,7 @@ class AmazonFeedList extends AmazonFeedsCore implements Iterator{
      * this option is off, the object will only ever retrieve the first section of
      * the list.
      * @param boolean $b [optional] <p>Defaults to <b>TRUE</b></p>
-     * @return boolean <p><b>FALSE</b> if improper input</p>
+     * @return boolean <b>FALSE</b> if improper input
      */
     public function setUseToken($b = true){
         if (is_bool($b)){
@@ -76,7 +76,7 @@ class AmazonFeedList extends AmazonFeedsCore implements Iterator{
      * Setting this parameter tells Amazon to only return Feed Submissions that match
      * the IDs in the list. If this parameter is set, all other parameters will be ignored.
      * @param array|string $s <p>A list of Feed Submission IDs, or a single ID string.</p>
-     * @return boolean <p><b>FALSE</b> if improper input</p>
+     * @return boolean <b>FALSE</b> if improper input
      */
     public function setFeedIds($s){
         if (is_string($s)){
@@ -116,7 +116,7 @@ class AmazonFeedList extends AmazonFeedsCore implements Iterator{
      * the types in the list. If this parameter is not set, Amazon will return
      * Feed Submissions of any type.
      * @param array|string $s <p>A list of Feed Types, or a single type string.</p>
-     * @return boolean <p><b>FALSE</b> if improper input</p>
+     * @return boolean <b>FALSE</b> if improper input
      */
     public function setFeedTypes($s){
         if (is_string($s)){
@@ -157,7 +157,7 @@ class AmazonFeedList extends AmazonFeedsCore implements Iterator{
      * Feed Submissions with any status.
      * @param array|string $s <p>A list of Feed Statuses, or a single status string.<br />
      * Valid values are "_SUBMITTED_", "_IN_PROGRESS_", "_CANCELLED_", and "_DONE_".</p>
-     * @return boolean <p><b>FALSE</b> if improper input</p>
+     * @return boolean <b>FALSE</b> if improper input
      */
     public function setFeedStatuses($s){
         if (is_string($s)){
@@ -195,7 +195,7 @@ class AmazonFeedList extends AmazonFeedsCore implements Iterator{
      * This method sets the maximum number of Feed Submissions for Amazon to return.
      * If this parameter is not set, Amazon will only send ten.
      * @param array|string $s <p>Positive integer from 1 to 100.</p>
-     * @return boolean <p><b>FALSE</b> if improper input</p>
+     * @return boolean <b>FALSE</b> if improper input
      */
     public function setMaxCount($s){
         if (is_numeric($s) && $s >= 1 && $s <= 100){
@@ -246,7 +246,7 @@ class AmazonFeedList extends AmazonFeedsCore implements Iterator{
      * Other methods are available for fetching specific values from the list.
      * This operation can potentially involve tokens.
      * @param boolean <p>When set to <b>FALSE</b>, the function will not recurse, defaults to <b>TRUE</b></p>
-     * @return boolean <p><b>FALSE</b> if something goes wrong</p>
+     * @return boolean <b>FALSE</b> if something goes wrong
      */
     public function fetchFeedSubmissions($r = true){
         $this->prepareToken();
@@ -322,7 +322,7 @@ class AmazonFeedList extends AmazonFeedsCore implements Iterator{
      * 
      * This is what reads the response XML and converts it into an array.
      * @param SimpleXMLObject $xml <p>The XML response from Amazon.</p>
-     * @return boolean <p><b>FALSE</b> if no XML data is found</p>
+     * @return boolean <b>FALSE</b> if no XML data is found
      */
     protected function parseXML($xml){
         if (!$xml){
@@ -352,7 +352,7 @@ class AmazonFeedList extends AmazonFeedsCore implements Iterator{
      * 
      * Submits a <i>GetFeedSubmissionCount</i> request to Amazon. Amazon will send
      * the number back as a response, which can be retrieved using <i>getCount</i>.
-     * @return boolean <p><b>FALSE</b> if something goes wrong</p>
+     * @return boolean <b>FALSE</b> if something goes wrong
      */
     public function countFeeds(){
         $this->prepareCount();
@@ -405,7 +405,7 @@ class AmazonFeedList extends AmazonFeedsCore implements Iterator{
      * as a response the list of feeds that were cancelled, along with the count
      * of the number of affected feeds. This data can be retrieved using the same
      * methods as with <i>fetchFeedSubmissions</i> and <i>countFeeds</i>.
-     * @return boolean <p><b>FALSE</b> if something goes wrong</p>
+     * @return boolean <b>FALSE</b> if something goes wrong
      */
     public function cancelFeeds(){
         $this->prepareCancel();
@@ -457,7 +457,7 @@ class AmazonFeedList extends AmazonFeedsCore implements Iterator{
      * 
      * This method will return <b>FALSE</b> if the list has not yet been filled.
      * @param int $i [optional] <p>List index to retrieve the value from. Defaults to 0.</p>
-     * @return string|boolean <p>single value, or <b>FALSE</b> if Non-numeric index</p>
+     * @return string|boolean single value, or <b>FALSE</b> if Non-numeric index
      */
     public function getFeedId($i = 0){
         if (is_numeric($i) && isset($this->feedList) && is_array($this->feedList)){
@@ -472,7 +472,7 @@ class AmazonFeedList extends AmazonFeedsCore implements Iterator{
      * 
      * This method will return <b>FALSE</b> if the list has not yet been filled.
      * @param int $i [optional] <p>List index to retrieve the value from. Defaults to 0.</p>
-     * @return string|boolean <p>single value, or <b>FALSE</b> if Non-numeric index</p>
+     * @return string|boolean single value, or <b>FALSE</b> if Non-numeric index
      */
     public function getFeedType($i = 0){
         if (is_numeric($i) && isset($this->feedList) && is_array($this->feedList)){
@@ -488,7 +488,7 @@ class AmazonFeedList extends AmazonFeedsCore implements Iterator{
      * This method will return <b>FALSE</b> if the list has not yet been filled.
      * The time will be in the ISO8601 date format.
      * @param int $i [optional] <p>List index to retrieve the value from. Defaults to 0.</p>
-     * @return string|boolean <p>single value, or <b>FALSE</b> if Non-numeric index</p>
+     * @return string|boolean single value, or <b>FALSE</b> if Non-numeric index
      */
     public function getDateSubmitted($i = 0){
         if (is_numeric($i) && isset($this->feedList) && is_array($this->feedList)){
@@ -504,7 +504,7 @@ class AmazonFeedList extends AmazonFeedsCore implements Iterator{
      * This method will return <b>FALSE</b> if the list has not yet been filled.
      * See <i>setFeedStatuses</i> for a list of possible values.
      * @param int $i [optional] <p>List index to retrieve the value from. Defaults to 0.</p>
-     * @return string|boolean <p>single value, or <b>FALSE</b> if Non-numeric index</p>
+     * @return string|boolean single value, or <b>FALSE</b> if Non-numeric index
      */
     public function getFeedStatus($i = 0){
         if (is_numeric($i) && isset($this->feedList) && is_array($this->feedList)){
@@ -526,7 +526,7 @@ class AmazonFeedList extends AmazonFeedsCore implements Iterator{
      * <li><b>FeedProcessingStatus</b> - see <i>setFeedStatuses</i> for a list of possible values</li>
      * </ul>
      * @param int $i [optional] <p>List index to retrieve the value from. Defaults to 0.</p>
-     * @return array|boolean <p>array of values, or <b>FALSE</b> if Non-numeric index</p>
+     * @return array|boolean array of values, or <b>FALSE</b> if Non-numeric index
      */
     public function getFeedInfo($i = 0){
         if (is_numeric($i) && isset($this->feedList) && is_array($this->feedList)){
@@ -540,7 +540,7 @@ class AmazonFeedList extends AmazonFeedsCore implements Iterator{
      * Returns the full list.
      * 
      * This method will return <b>FALSE</b> if the list has not yet been filled.
-     * @return array|boolean <p>multi-dimensional array, or <b>FALSE</b> if list not filled yet</p>
+     * @return array|boolean multi-dimensional array, or <b>FALSE</b> if list not filled yet
      */
     public function getFeedList(){
         if (isset($this->feedList)){
@@ -554,7 +554,7 @@ class AmazonFeedList extends AmazonFeedsCore implements Iterator{
      * Returns the feed count from either countFeeds or cancelFeeds.
      * 
      * This method will return <b>FALSE</b> if the count has not been set yet.
-     * @return number|boolean <p>number, or <b>FALSE</b> if count not set yet</p>
+     * @return number|boolean number, or <b>FALSE</b> if count not set yet
      */
     public function getFeedCount(){
         if (isset($this->count)){

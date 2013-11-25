@@ -97,7 +97,7 @@ class AmazonFeed extends AmazonFeedsCore{
      * This parameter is required in order to submit a feed to Amazon.
      * @param string $s <p>A value from the list of valid Feed Types.
      * See the comment inside the function for the complete list.</p>
-     * @return boolean <p><b>FALSE</b> if improper input</p>
+     * @return boolean <b>FALSE</b> if improper input
      */
     public function setFeedType($s){
         if (is_string($s) && $s){
@@ -153,7 +153,7 @@ class AmazonFeed extends AmazonFeedsCore{
      * to sell in. If this is not set, Amazon will only use the first Marketplace
      * you are registered for.
      * @param array|string $s <p>A list of Marketplace IDs, or a single ID string.</p>
-     * @return boolean <p><b>FALSE</b> if improper input</p>
+     * @return boolean <b>FALSE</b> if improper input
      */
     public function setMarketplaceIds($s){
         if ($s && is_string($s)){
@@ -196,7 +196,7 @@ class AmazonFeed extends AmazonFeedsCore{
      * If this is not set, Amazon assumes it to be false.
      * @param boolean|string $s [optional] <p>The value "true" or "false", either as
      * a boolean or a string. It defaults to "true".</p>
-     * @return boolean <p><b>FALSE</b> if improper input</p>
+     * @return boolean <b>FALSE</b> if improper input
      */
     public function setPurge($s = 'true'){
         if ($s == 'true' || ($s && is_bool($s))){
@@ -225,7 +225,7 @@ class AmazonFeed extends AmazonFeedsCore{
      * the feed's contents and feed type are required. The request will not be
      * sent if either of these are not set. Amazon will send a response back,
      * which can be retrieved using <i>getResponse</i>.
-     * @return boolean <p><b>FALSE</b> if something goes wrong</p>
+     * @return boolean <b>FALSE</b> if something goes wrong
      */
     public function submitFeed(){
         if (!$this->feedContent){
@@ -274,7 +274,7 @@ class AmazonFeed extends AmazonFeedsCore{
      * 
      * This is what reads the response XML and converts it into an array.
      * @param SimpleXMLObject $xml <p>The XML response from Amazon.</p>
-     * @return boolean <p><b>FALSE</b> if no XML data is found</p>
+     * @return boolean <b>FALSE</b> if no XML data is found
      */
     protected function parseXML($xml){
         if (!$xml){
@@ -321,7 +321,7 @@ class AmazonFeed extends AmazonFeedsCore{
      * 100 Continue responses in addition to the usual response.
      * @param array $r <p>The HTTP response array. Expects the array to have
      * the fields <i>code</i>, <i>body</i>, and <i>error</i>.</p>
-     * @return boolean <p><b>TRUE</b> if the status is 200 OK, <b>FALSE</b> otherwise.</p>
+     * @return boolean <b>TRUE</b> if the status is 200 OK, <b>FALSE</b> otherwise.
      */
     protected function checkResponse($r){
         if (!is_array($r)){

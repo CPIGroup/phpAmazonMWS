@@ -64,7 +64,7 @@ class AmazonOrderItemList extends AmazonOrderCore implements Iterator{
      * this option is off, the object will only ever retrieve the first section of
      * the list.
      * @param boolean $b [optional] <p>Defaults to <b>TRUE</b></p>
-     * @return boolean <p><b>FALSE</b> if improper input</p>
+     * @return boolean <b>FALSE</b> if improper input
      */
     public function setUseToken($b = true){
         if (is_bool($b)){
@@ -80,7 +80,7 @@ class AmazonOrderItemList extends AmazonOrderCore implements Iterator{
      * This method sets the Amazon Order ID to be sent in the next request.
      * This parameter is required for fetching the order's items from Amazon.
      * @param string $s <p>either string or number</p>
-     * @return boolean <p><b>FALSE</b> if improper input</p>
+     * @return boolean <b>FALSE</b> if improper input
      */
     public function setOrderId($id){
         if (is_string($id) || is_numeric($id)){
@@ -99,7 +99,7 @@ class AmazonOrderItemList extends AmazonOrderCore implements Iterator{
      * Other methods are available for fetching specific values from the order.
      * This operation can potentially involve tokens.
      * @param boolean <p>When set to <b>FALSE</b>, the function will not recurse, defaults to <b>TRUE</b></p>
-     * @return boolean <p><b>FALSE</b> if something goes wrong</p>
+     * @return boolean <b>FALSE</b> if something goes wrong
      */
     public function fetchItems($r = true){
         $this->prepareToken();
@@ -166,7 +166,7 @@ class AmazonOrderItemList extends AmazonOrderCore implements Iterator{
      * 
      * This is what reads the response XML and converts it into an array.
      * @param SimpleXMLObject $xml <p>The XML response from Amazon.</p>
-     * @return boolean <p><b>FALSE</b> if no XML data is found</p>
+     * @return boolean <b>FALSE</b> if no XML data is found
      */
     protected function parseXML($xml){
         if (!$xml){
@@ -270,7 +270,7 @@ class AmazonOrderItemList extends AmazonOrderCore implements Iterator{
      * </ul>
      * @param int $i [optional] <p>List index to retrieve the value from.
      * If none is given, the entire list will be returned. Defaults to NULL.</p>
-     * @return array|boolean <p>array, multi-dimensional array, or <b>FALSE</b> if list not filled yet</p>
+     * @return array|boolean array, multi-dimensional array, or <b>FALSE</b> if list not filled yet
      */
     public function getItems($i = null){
         if (isset($this->itemList)){
@@ -289,7 +289,7 @@ class AmazonOrderItemList extends AmazonOrderCore implements Iterator{
      * 
      * This method will return <b>FALSE</b> if the list has not yet been filled.
      * @param int $i [optional] <p>List index to retrieve the value from. Defaults to 0.</p>
-     * @return string|boolean <p>single value, or <b>FALSE</b> if Non-numeric index</p>
+     * @return string|boolean single value, or <b>FALSE</b> if Non-numeric index
      */
     public function getASIN($i = 0){
         if (isset($this->itemList[$i]['ASIN'])){
@@ -305,7 +305,7 @@ class AmazonOrderItemList extends AmazonOrderCore implements Iterator{
      * 
      * This method will return <b>FALSE</b> if the list has not yet been filled.
      * @param int $i [optional] <p>List index to retrieve the value from. Defaults to 0.</p>
-     * @return string|boolean <p>single value, or <b>FALSE</b> if Non-numeric index</p>
+     * @return string|boolean single value, or <b>FALSE</b> if Non-numeric index
      */
     public function getSellerSKU($i = 0){
         if (isset($this->itemList[$i]['SellerSKU'])){
@@ -320,7 +320,7 @@ class AmazonOrderItemList extends AmazonOrderCore implements Iterator{
      * 
      * This method will return <b>FALSE</b> if the list has not yet been filled.
      * @param int $i [optional] <p>List index to retrieve the value from. Defaults to 0.</p>
-     * @return string|boolean <p>single value, or <b>FALSE</b> if Non-numeric index</p>
+     * @return string|boolean single value, or <b>FALSE</b> if Non-numeric index
      */
     public function getOrderItemId($i = 0){
         if (isset($this->itemList[$i]['OrderItemId'])){
@@ -335,7 +335,7 @@ class AmazonOrderItemList extends AmazonOrderCore implements Iterator{
      * 
      * This method will return <b>FALSE</b> if the list has not yet been filled.
      * @param int $i [optional] <p>List index to retrieve the value from. Defaults to 0.</p>
-     * @return string|boolean <p>single value, or <b>FALSE</b> if Non-numeric index</p>
+     * @return string|boolean single value, or <b>FALSE</b> if Non-numeric index
      */
     public function getTitle($i = 0){
         if (isset($this->itemList[$i]['Title'])){
@@ -350,7 +350,7 @@ class AmazonOrderItemList extends AmazonOrderCore implements Iterator{
      * 
      * This method will return <b>FALSE</b> if the list has not yet been filled.
      * @param int $i [optional] <p>List index to retrieve the value from. Defaults to 0.</p>
-     * @return string|boolean <p>single value, or <b>FALSE</b> if Non-numeric index</p>
+     * @return string|boolean single value, or <b>FALSE</b> if Non-numeric index
      */
     public function getQuantityOrdered($i = 0){
         if (isset($this->itemList[$i]['QuantityOrdered'])){
@@ -365,7 +365,7 @@ class AmazonOrderItemList extends AmazonOrderCore implements Iterator{
      * 
      * This method will return <b>FALSE</b> if the list has not yet been filled.
      * @param int $i [optional] <p>List index to retrieve the value from. Defaults to 0.</p>
-     * @return string|boolean <p>single value, or <b>FALSE</b> if Non-numeric index</p>
+     * @return string|boolean single value, or <b>FALSE</b> if Non-numeric index
      */
     public function getQuantityShipped($i = 0){
         if (isset($this->itemList[$i]['QuantityShipped'])){
@@ -380,7 +380,7 @@ class AmazonOrderItemList extends AmazonOrderCore implements Iterator{
      * 
      * This method will return <b>FALSE</b> if the list has not yet been filled.
      * @param int $i [optional] <p>List index to retrieve the value from. Defaults to 0.</p>
-     * @return float|boolean <p>decimal number from 0 to 1, or <b>FALSE</b> if Non-numeric index</p>
+     * @return float|boolean decimal number from 0 to 1, or <b>FALSE</b> if Non-numeric index
      */
     public function getPercentShipped($i = 0){
         if (!$this->getQuantityOrdered($i) || !$this->getQuantityShipped($i)){
@@ -398,7 +398,7 @@ class AmazonOrderItemList extends AmazonOrderCore implements Iterator{
      * 
      * This method will return <b>FALSE</b> if the list has not yet been filled.
      * @param int $i [optional] <p>List index to retrieve the value from. Defaults to 0.</p>
-     * @return string|boolean <p>single value, or <b>FALSE</b> if Non-numeric index</p>
+     * @return string|boolean single value, or <b>FALSE</b> if Non-numeric index
      */
     public function getGiftMessageText($i = 0){
         if (isset($this->itemList[$i]['GiftMessageText'])){
@@ -413,7 +413,7 @@ class AmazonOrderItemList extends AmazonOrderCore implements Iterator{
      * 
      * This method will return <b>FALSE</b> if the list has not yet been filled.
      * @param int $i [optional] <p>List index to retrieve the value from. Defaults to 0.</p>
-     * @return string|boolean <p>single value, or <b>FALSE</b> if Non-numeric index</p>
+     * @return string|boolean single value, or <b>FALSE</b> if Non-numeric index
      */
     public function getGiftWrapLevel($i = 0){
         if (isset($this->itemList[$i]['GiftWrapLevel'])){
@@ -430,7 +430,7 @@ class AmazonOrderItemList extends AmazonOrderCore implements Iterator{
      * If an array is returned, it will have the fields <b>Amount</b> and <b>CurrencyCode</b>.
      * @param int $i [optional] <p>List index to retrieve the value from. Defaults to 0.</p>
      * @param boolean $only [optional] <p>set to <b>TRUE</b> to get only the amount</p>
-     * @return array|string|boolean <p>array, single value, or <b>FALSE</b> if Non-numeric index</p>
+     * @return array|string|boolean array, single value, or <b>FALSE</b> if Non-numeric index
      */
     public function getItemPrice($i = 0, $only = false){
         if (isset($this->itemList[$i]['ItemPrice'])){
@@ -451,7 +451,7 @@ class AmazonOrderItemList extends AmazonOrderCore implements Iterator{
      * If an array is returned, it will have the fields <b>Amount</b> and <b>CurrencyCode</b>.
      * @param int $i [optional] <p>List index to retrieve the value from. Defaults to 0.</p>
      * @param boolean $only [optional] <p>set to <b>TRUE</b> to get only the amount</p>
-     * @return array|string|boolean <p>array, single value, or <b>FALSE</b> if Non-numeric index</p>
+     * @return array|string|boolean array, single value, or <b>FALSE</b> if Non-numeric index
      */
     public function getShippingPrice($i = 0, $only = false){
         if (isset($this->itemList[$i]['ShippingPrice'])){
@@ -472,7 +472,7 @@ class AmazonOrderItemList extends AmazonOrderCore implements Iterator{
      * If an array is returned, it will have the fields <b>Amount</b> and <b>CurrencyCode</b>.
      * @param int $i [optional] <p>List index to retrieve the value from. Defaults to 0.</p>
      * @param boolean $only [optional] <p>set to <b>TRUE</b> to get only the amount</p>
-     * @return array|string|boolean <p>array, single value, or <b>FALSE</b> if Non-numeric index</p>
+     * @return array|string|boolean array, single value, or <b>FALSE</b> if Non-numeric index
      */
     public function getGiftWrapPrice($i = 0, $only = false){
         if (isset($this->itemList[$i]['GiftWrapPrice'])){
@@ -493,7 +493,7 @@ class AmazonOrderItemList extends AmazonOrderCore implements Iterator{
      * If an array is returned, it will have the fields <b>Amount</b> and <b>CurrencyCode</b>.
      * @param int $i [optional] <p>List index to retrieve the value from. Defaults to 0.</p>
      * @param boolean $only [optional] <p>set to <b>TRUE</b> to get only the amount</p>
-     * @return array|string|boolean <p>array, single value, or <b>FALSE</b> if Non-numeric index</p>
+     * @return array|string|boolean array, single value, or <b>FALSE</b> if Non-numeric index
      */
     public function getItemTax($i = 0, $only = false){
         if (isset($this->itemList[$i]['ItemTax'])){
@@ -514,7 +514,7 @@ class AmazonOrderItemList extends AmazonOrderCore implements Iterator{
      * If an array is returned, it will have the fields <b>Amount</b> and <b>CurrencyCode</b>.
      * @param int $i [optional] <p>List index to retrieve the value from. Defaults to 0.</p>
      * @param boolean $only [optional] <p>set to <b>TRUE</b> to get only the amount</p>
-     * @return array|string|boolean <p>array, single value, or <b>FALSE</b> if Non-numeric index</p>
+     * @return array|string|boolean array, single value, or <b>FALSE</b> if Non-numeric index
      */
     public function getShippingTax($i = 0, $only = false){
         if (isset($this->itemList[$i]['ShippingTax'])){
@@ -535,7 +535,7 @@ class AmazonOrderItemList extends AmazonOrderCore implements Iterator{
      * If an array is returned, it will have the fields <b>Amount</b> and <b>CurrencyCode</b>.
      * @param int $i [optional] <p>List index to retrieve the value from. Defaults to 0.</p>
      * @param boolean $only [optional] <p>set to <b>TRUE</b> to get only the amount</p>
-     * @return array|string|boolean <p>array, single value, or <b>FALSE</b> if Non-numeric index</p>
+     * @return array|string|boolean array, single value, or <b>FALSE</b> if Non-numeric index
      */
     public function getGiftWrapTax($i = 0, $only = false){
         if (isset($this->itemList[$i]['GiftWrapTax'])){
@@ -556,7 +556,7 @@ class AmazonOrderItemList extends AmazonOrderCore implements Iterator{
      * If an array is returned, it will have the fields <b>Amount</b> and <b>CurrencyCode</b>.
      * @param int $i [optional] <p>List index to retrieve the value from. Defaults to 0.</p>
      * @param boolean $only [optional] <p>set to <b>TRUE</b> to get only the amount</p>
-     * @return array|string|boolean <p>array, single value, or <b>FALSE</b> if Non-numeric index</p>
+     * @return array|string|boolean array, single value, or <b>FALSE</b> if Non-numeric index
      */
     public function getShippingDiscount($i = 0, $only = false){
         if (isset($this->itemList[$i]['ShippingDiscount'])){
@@ -577,7 +577,7 @@ class AmazonOrderItemList extends AmazonOrderCore implements Iterator{
      * If an array is returned, it will have the fields <b>Amount</b> and <b>CurrencyCode</b>.
      * @param int $i [optional] <p>List index to retrieve the value from. Defaults to 0.</p>
      * @param boolean $only [optional] <p>set to <b>TRUE</b> to get only the amount</p>
-     * @return array|string|boolean <p>array, single value, or <b>FALSE</b> if Non-numeric index</p>
+     * @return array|string|boolean array, single value, or <b>FALSE</b> if Non-numeric index
      */
     public function getPromotionDiscount($i = 0, $only = false){
         if (isset($this->itemList[$i]['PromotionDiscount'])){
@@ -597,7 +597,7 @@ class AmazonOrderItemList extends AmazonOrderCore implements Iterator{
      * This method will return the entire list of Promotion IDs if <i>$j</i> is not set.
      * @param int $i [optional] <p>List index to retrieve the value from. Defaults to 0.</p>
      * @param int $j [optional] <p>Second list index to retrieve the value from. Defaults to NULL.</p>
-     * @return array|string|boolean <p>array, single value, or <b>FALSE</b> if incorrect index</p>
+     * @return array|string|boolean array, single value, or <b>FALSE</b> if incorrect index
      */
     public function getPromotionIds($i = 0, $j = null){
         if (isset($this->itemList[$i]['PromotionIds'])){

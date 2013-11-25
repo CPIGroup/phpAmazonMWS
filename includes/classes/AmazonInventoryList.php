@@ -45,7 +45,7 @@ class AmazonInventoryList extends AmazonInventoryCore implements Iterator{
      * this option is off, the object will only ever retrieve the first section of
      * the list.
      * @param boolean $b [optional] <p>Defaults to <b>TRUE</b></p>
-     * @return boolean <p><b>FALSE</b> if improper input</p>
+     * @return boolean <b>FALSE</b> if improper input
      */
     public function setUseToken($b = true){
         if (is_bool($b)){
@@ -64,7 +64,7 @@ class AmazonInventoryList extends AmazonInventoryCore implements Iterator{
      * If this parameters is set, seller SKUs cannot be set.
      * The parameter is passed through <i>strtotime</i>, so values such as "-1 hour" are fine.
      * @param string $s <p>Time string.</p>
-     * @return boolean <p><b>FALSE</b> if improper input</p>
+     * @return boolean <b>FALSE</b> if improper input
      */
     public function setStartTime($t = null){
         if (is_string($t) && $t){
@@ -84,7 +84,7 @@ class AmazonInventoryList extends AmazonInventoryCore implements Iterator{
      * Setting this parameter tells Amazon to only return inventory supplies that match
      * the IDs in the list. If this parameter is set, Start Time cannot be set.
      * @param array|string $s <p>A list of Seller SKUs, or a single ID string.</p>
-     * @return boolean <p><b>FALSE</b> if improper input</p>
+     * @return boolean <b>FALSE</b> if improper input
      */
     public function setSellerSkus($a){
         if (is_string($a)){
@@ -124,7 +124,7 @@ class AmazonInventoryList extends AmazonInventoryCore implements Iterator{
      * extra information regarding availability. If this parameter is not set,
      * Amazon will return a Basic response.
      * @param string $s <p>"Basic" or "Detailed"</p>
-     * @return boolean <p><b>FALSE</b> if improper input</p>
+     * @return boolean <b>FALSE</b> if improper input
      */
     public function setResponseGroup($s){
         if ($s == 'Basic' || $s == 'Detailed'){
@@ -142,7 +142,7 @@ class AmazonInventoryList extends AmazonInventoryCore implements Iterator{
      * Other methods are available for fetching specific values from the list.
      * This operation can potentially involve tokens.
      * @param boolean <p>When set to <b>FALSE</b>, the function will not recurse, defaults to <b>TRUE</b></p>
-     * @return boolean <p><b>FALSE</b> if something goes wrong</p>
+     * @return boolean <b>FALSE</b> if something goes wrong
      */
     public function fetchInventoryList($r = true){
         if (!isset($this->options['QueryStartDateTime']) && !isset($this->options['SellerSkus.member.1'])){
@@ -209,7 +209,7 @@ class AmazonInventoryList extends AmazonInventoryCore implements Iterator{
      * 
      * This is what reads the response XML and converts it into an array.
      * @param SimpleXMLObject $xml <p>The XML response from Amazon.</p>
-     * @return boolean <p><b>FALSE</b> if no XML data is found</p>
+     * @return boolean <b>FALSE</b> if no XML data is found
      */
     protected function parseXML($xml){
         if (!$xml){
@@ -274,7 +274,7 @@ class AmazonInventoryList extends AmazonInventoryCore implements Iterator{
      * </ul>
      * @param int $i [optional] <p>List index to retrieve the value from.
      * If none is given, the entire list will be returned. Defaults to NULL.</p>
-     * @return array|boolean <p>array, multi-dimensional array, or <b>FALSE</b> if list not filled yet</p>
+     * @return array|boolean array, multi-dimensional array, or <b>FALSE</b> if list not filled yet
      */
     public function getSupply($i = null){
         if (!isset($this->supplyList)){
@@ -292,7 +292,7 @@ class AmazonInventoryList extends AmazonInventoryCore implements Iterator{
      * 
      * This method will return <b>FALSE</b> if the list has not yet been filled.
      * @param int $i [optional] <p>List index to retrieve the value from. Defaults to 0.</p>
-     * @return string|boolean <p>single value, or <b>FALSE</b> if Non-numeric index</p>
+     * @return string|boolean single value, or <b>FALSE</b> if Non-numeric index
      */
     public function getSellerSku($i = 0){
         if (!isset($this->supplyList)){
@@ -310,7 +310,7 @@ class AmazonInventoryList extends AmazonInventoryCore implements Iterator{
      * 
      * This method will return <b>FALSE</b> if the list has not yet been filled.
      * @param int $i [optional] <p>List index to retrieve the value from. Defaults to 0.</p>
-     * @return string|boolean <p>single value, or <b>FALSE</b> if Non-numeric index</p>
+     * @return string|boolean single value, or <b>FALSE</b> if Non-numeric index
      */
     public function getASIN($i = 0){
         if (!isset($this->supplyList)){
@@ -328,7 +328,7 @@ class AmazonInventoryList extends AmazonInventoryCore implements Iterator{
      * 
      * This method will return <b>FALSE</b> if the list has not yet been filled.
      * @param int $i [optional] <p>List index to retrieve the value from. Defaults to 0.</p>
-     * @return string|boolean <p>single value, or <b>FALSE</b> if Non-numeric index</p>
+     * @return string|boolean single value, or <b>FALSE</b> if Non-numeric index
      */
     public function getTotalSupplyQuantity($i = 0){
         if (!isset($this->supplyList)){
@@ -346,7 +346,7 @@ class AmazonInventoryList extends AmazonInventoryCore implements Iterator{
      * 
      * This method will return <b>FALSE</b> if the list has not yet been filled.
      * @param int $i [optional] <p>List index to retrieve the value from. Defaults to 0.</p>
-     * @return string|boolean <p>single value, or <b>FALSE</b> if Non-numeric index</p>
+     * @return string|boolean single value, or <b>FALSE</b> if Non-numeric index
      */
     public function getFNSKU($i = 0){
         if (!isset($this->supplyList)){
@@ -364,7 +364,7 @@ class AmazonInventoryList extends AmazonInventoryCore implements Iterator{
      * 
      * This method will return <b>FALSE</b> if the list has not yet been filled.
      * @param int $i [optional] <p>List index to retrieve the value from. Defaults to 0.</p>
-     * @return string|boolean <p>single value, or <b>FALSE</b> if Non-numeric index</p>
+     * @return string|boolean single value, or <b>FALSE</b> if Non-numeric index
      */
     public function getCondition($i = 0){
         if (!isset($this->supplyList)){
@@ -382,7 +382,7 @@ class AmazonInventoryList extends AmazonInventoryCore implements Iterator{
      * 
      * This method will return <b>FALSE</b> if the list has not yet been filled.
      * @param int $i [optional] <p>List index to retrieve the value from. Defaults to 0.</p>
-     * @return string|boolean <p>single value, or <b>FALSE</b> if Non-numeric index</p>
+     * @return string|boolean single value, or <b>FALSE</b> if Non-numeric index
      */
     public function getInStockSupplyQuantity($i = 0){
         if (!isset($this->supplyList)){
@@ -400,7 +400,7 @@ class AmazonInventoryList extends AmazonInventoryCore implements Iterator{
      * 
      * This method will return <b>FALSE</b> if the list has not yet been filled.
      * @param int $i [optional] <p>List index to retrieve the value from. Defaults to 0.</p>
-     * @return string|boolean <p>single value, or <b>FALSE</b> if Non-numeric index</p>
+     * @return string|boolean single value, or <b>FALSE</b> if Non-numeric index
      */
     public function getEarliestAvailability($i = 0){
         if (!isset($this->supplyList)){
@@ -421,7 +421,7 @@ class AmazonInventoryList extends AmazonInventoryCore implements Iterator{
      * it will return a list of all details for a given supply.
      * @param int $i [optional] <p>List index to retrieve the value from. Defaults to 0.</p>
      * @param int $j [optional] <p>Detail index to retrieve the value from. Defaults to NULL.</p>
-     * @return array|boolean <p>array of arrays, single detail array, or <b>FALSE</b> if Non-numeric index</p>
+     * @return array|boolean array of arrays, single detail array, or <b>FALSE</b> if Non-numeric index
      */
     public function getSupplyDetails($i = 0, $j = null){
         if (!isset($this->supplyList)){
@@ -444,7 +444,7 @@ class AmazonInventoryList extends AmazonInventoryCore implements Iterator{
      * This method will return <b>FALSE</b> if the list has not yet been filled.
      * @param int $i [optional] <p>List index to retrieve the value from. Defaults to 0.</p>
      * @param int $j [optional] <p>Detail index to retrieve the value from. Defaults to 0.</p>
-     * @return string|boolean <p>single value, or <b>FALSE</b> if Non-numeric index</p>
+     * @return string|boolean single value, or <b>FALSE</b> if Non-numeric index
      */
     public function getEarliestAvailableToPick($i = 0, $j = 0){
         if (!isset($this->supplyList)){
@@ -463,7 +463,7 @@ class AmazonInventoryList extends AmazonInventoryCore implements Iterator{
      * This method will return <b>FALSE</b> if the list has not yet been filled.
      * @param int $i [optional] <p>List index to retrieve the value from. Defaults to 0.</p>
      * @param int $j [optional] <p>Detail index to retrieve the value from. Defaults to 0.</p>
-     * @return string|boolean <p>single value, or <b>FALSE</b> if Non-numeric index</p>
+     * @return string|boolean single value, or <b>FALSE</b> if Non-numeric index
      */
     public function getLatestAvailableToPick($i = 0, $j = 0){
         if (!isset($this->supplyList)){
@@ -482,7 +482,7 @@ class AmazonInventoryList extends AmazonInventoryCore implements Iterator{
      * This method will return <b>FALSE</b> if the list has not yet been filled.
      * @param int $i [optional] <p>List index to retrieve the value from. Defaults to 0.</p>
      * @param int $j [optional] <p>Detail index to retrieve the value from. Defaults to 0.</p>
-     * @return string|boolean <p>single value, or <b>FALSE</b> if Non-numeric index</p>
+     * @return string|boolean single value, or <b>FALSE</b> if Non-numeric index
      */
     public function getQuantity($i = 0, $j = 0){
         if (!isset($this->supplyList)){
@@ -501,7 +501,7 @@ class AmazonInventoryList extends AmazonInventoryCore implements Iterator{
      * This method will return <b>FALSE</b> if the list has not yet been filled.
      * @param int $i [optional] <p>List index to retrieve the value from. Defaults to 0.</p>
      * @param int $j [optional] <p>Detail index to retrieve the value from. Defaults to 0.</p>
-     * @return string|boolean <p>single value, or <b>FALSE</b> if Non-numeric index</p>
+     * @return string|boolean single value, or <b>FALSE</b> if Non-numeric index
      */
     public function getSupplyType($i = 0, $j = 0){
         if (!isset($this->supplyList)){

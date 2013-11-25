@@ -39,7 +39,7 @@ class AmazonPackageTracker extends AmazonOutboundCore{
      * This method sets the package ID to be sent in the next request.
      * This parameter is required for fetching the tracking information from Amazon.
      * @param string|integer $n <p>Must be numeric</p>
-     * @return boolean <p><b>FALSE</b> if improper input</p>
+     * @return boolean <b>FALSE</b> if improper input
      */
     public function setPackageNumber($n){
         if (is_numeric($n)){
@@ -55,7 +55,7 @@ class AmazonPackageTracker extends AmazonOutboundCore{
      * Submits a <i>GetPackageTrackingDetails</i> request to Amazon. In order to do this,
      * a package ID is required. Amazon will send
      * the data back as a response, which can be retrieved using <i>getDetails</i>.
-     * @return boolean <p><b>FALSE</b> if something goes wrong</p>
+     * @return boolean <b>FALSE</b> if something goes wrong
      */
     public function fetchTrackingDetails(){
         if (!array_key_exists('PackageNumber',$this->options)){
@@ -88,7 +88,7 @@ class AmazonPackageTracker extends AmazonOutboundCore{
      * 
      * This is what reads the response XML and converts it into an array.
      * @param SimpleXMLObject $d <p>The XML response from Amazon.</p>
-     * @return boolean <p><b>FALSE</b> if no XML data is found</p>
+     * @return boolean <b>FALSE</b> if no XML data is found
      */
     protected function parseXML($d) {
         if (!$d){
@@ -149,7 +149,7 @@ class AmazonPackageTracker extends AmazonOutboundCore{
      * </ul>
      * <li><b>AdditionalLocationInfo</b> - further information on how the package was delivered (ex: to a front door)</li>
      * </ul>
-     * @return array|boolean <p>data array, or <b>FALSE</b> if data not filled yet</p>
+     * @return array|boolean data array, or <b>FALSE</b> if data not filled yet
      */
     public function getDetails(){
         if (isset($this->details)){

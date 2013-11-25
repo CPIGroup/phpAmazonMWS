@@ -40,7 +40,7 @@ class AmazonProductList extends AmazonProductsCore implements Iterator{
      * Sets the ID type. (Required)
      * 
      * @param string $s <p>"ASIN", "SellerSKU", "UPC", "EAN", "ISBN", or "JAN"</p>
-     * @return boolean <p><b>FALSE</b> if improper input</p>
+     * @return boolean <b>FALSE</b> if improper input
      */
     public function setIdType($s){
         if (is_string($s)){
@@ -55,7 +55,7 @@ class AmazonProductList extends AmazonProductsCore implements Iterator{
      * 
      * This method sets the list of product IDs to be sent in the next request.
      * @param array|string $s <p>A list of product IDs, or a single type string. (max: 5)</p>
-     * @return boolean <p><b>FALSE</b> if improper input</p>
+     * @return boolean <b>FALSE</b> if improper input
      */
     public function setProductIds($s){
         if (is_string($s)){
@@ -92,7 +92,7 @@ class AmazonProductList extends AmazonProductsCore implements Iterator{
      * 
      * Submits a <i>GetMatchingProductForId</i> request to Amazon. Amazon will send
      * the list back as a response, which can be retrieved using <i>getProduct</i>.
-     * @return boolean <p><b>FALSE</b> if something goes wrong</p>
+     * @return boolean <b>FALSE</b> if something goes wrong
      */
     public function fetchProductList(){
         if (!array_key_exists('IdList.Id.1',$this->options)){

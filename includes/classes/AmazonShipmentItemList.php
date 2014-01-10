@@ -4,7 +4,7 @@
  * 
  * This Amazon Inbound Core object retrieves a list of items for the given
  * shipment from Amazon. In order to get the list, a shipment ID is required.
- * An optional paramter is available to narrow the returned items.
+ * An optional parameter is available to narrow the returned items.
  */
 class AmazonShipmentItemList extends AmazonInboundCore implements Iterator{
     protected $tokenFlag = false;

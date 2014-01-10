@@ -93,7 +93,7 @@ class AmazonShipmentPlanner extends AmazonInboundCore implements Iterator{
     /**
      * Sets the labeling preference. (Optional)
      * 
-     * If this paramter is not set, Amazon will assume SELLER_LABEL.
+     * If this parameter is not set, Amazon will assume SELLER_LABEL.
      * @param string $s <p>"SELLER_LABEL", "AMAZON_LABEL_ONLY", "AMAZON_LABEL_PREFERRED"</p>
      * @return boolean <b>FALSE</b> if improper input
      */

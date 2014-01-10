@@ -3,7 +3,7 @@
  * Sends a report request to Amazon.
  * 
  * This AmazonReportsCore object makes a request to Amazon to generate a report.
- * In order to do this, a report type is required. Other paramters are also
+ * In order to do this, a report type is required. Other parameters are also
  * available to limit the scope of the report.
  */
 class AmazonReportRequest extends AmazonReportsCore{
@@ -171,7 +171,7 @@ class AmazonReportRequest extends AmazonReportsCore{
      * Sets the marketplace ID(s). (Optional)
      * 
      * This method sets the list of marketplace IDs to be sent in the next request.
-     * If this paramter is set, the report will only contain data relevant to the
+     * If this parameter is set, the report will only contain data relevant to the
      * marketplaces listed.
      * @param array|string $s <p>A list of marketplace IDs, or a single ID string.</p>
      * @return boolean <b>FALSE</b> if improper input

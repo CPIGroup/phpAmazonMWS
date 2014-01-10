@@ -60,7 +60,7 @@ class AmazonProductSearch extends AmazonProductsCore{
     /**
      * Sets the query context ID. (Optional)
      * 
-     * Setting this paramter tells Amazon to only return products from the given
+     * Setting this parameter tells Amazon to only return products from the given
      * context. If this parameter is not set, Amazon will return products from
      * any context.
      * @param string $q <p>See comment inside for list of valid values.</p>

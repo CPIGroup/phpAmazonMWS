@@ -175,7 +175,7 @@ class AmazonFeed extends AmazonFeedsCore{
      * Removes ID options.
      * 
      * Use this in case you change your mind and want to remove the Marketplace ID
-     * paramters you previously set.
+     * parameters you previously set.
      */
     public function resetMarketplaceIds(){
         foreach($this->options as $op=>$junk){

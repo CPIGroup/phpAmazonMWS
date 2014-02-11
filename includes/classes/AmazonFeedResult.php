@@ -4,8 +4,8 @@
  * 
  * This Amazon Feeds Core object can retrieve the results of a
  * processed feed from Amazon, which can then be saved to a file
- * specified by the user. In order to fetch feed results, the
- * feed's ID must be given.
+ * specified by the user or retrieved as a single string.
+ * In order to fetch feed results, the feed's ID must be given.
  */
 class AmazonFeedResult extends AmazonFeedsCore{
     private $rawFeed;
@@ -112,6 +112,19 @@ class AmazonFeedResult extends AmazonFeedsCore{
             $this->log("Unable to save feed #".$this->options['FeedSubmissionId']." at $path: ".$e->getMessage(),'Urgent');
             return false;
         }
+    }
+    
+    /**
+     * Returns the entire raw report data.
+     * 
+     * This is useful for handling the report with an external file management system.
+     * @return string|boolean The raw report data as a string, or <b>FALSE</b> if there is no data
+     */
+    public function getRawFeed() {
+        if (!isset($this->rawFeed)){
+            return false;
+        }
+        return $this->rawFeed;
     }
     
 }

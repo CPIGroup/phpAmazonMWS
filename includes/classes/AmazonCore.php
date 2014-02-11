@@ -80,6 +80,7 @@ abstract class AmazonCore{
     protected $throttleTime;
     protected $throttleSafe;
     protected $throttleGroup;
+    protected $throttleStop = false;
     protected $storeName;
     protected $options;
     protected $config;
@@ -404,6 +405,17 @@ abstract class AmazonCore{
     }
     
     /**
+     * Enables or disables the throttle stop.
+     * 
+     * When the throttle stop is enabled, throttled requests will not  be repeated.
+     * This setting is off by default.
+     * @param boolean $b <p>Defaults to <b>TRUE</b>.</p>
+     */
+    public function setThrottleStop($b=true) {
+        $this->throttleStop=!empty($b);
+    }
+    
+    /**
      * Writes a message to the log.
      * 
      * This method adds a message line to the log file defined by the config.
@@ -550,7 +562,7 @@ abstract class AmazonCore{
         $this->log("Making request to Amazon: ".$this->options['Action']);
         $response = $this->fetchURL($url,$param);
         
-        while ($response['code'] == '503'){
+        while ($response['code'] == '503' && $this->throttleStop==false){
             $this->sleep();
             $response = $this->fetchURL($url,$param);
         }

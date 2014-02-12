@@ -28,7 +28,7 @@ class AmazonProductSearchTest extends PHPUnit_Framework_TestCase {
     }
     
     public function testSetUp(){
-        $obj = new AmazonProductSearch('testStore', 'platinum');
+        $obj = new AmazonProductSearch('testStore', 'platinum', true, null, '/var/www/athena/plugins/amazon/newAmazon/test-cases/test-config.php');
         
         $o = $obj->getOptions();
         $this->assertArrayHasKey('Query',$o);

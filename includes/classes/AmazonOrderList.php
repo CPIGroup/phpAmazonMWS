@@ -403,10 +403,8 @@ class AmazonOrderList extends AmazonOrderCore implements Iterator{
             if ($key != 'Order'){
                 break;
             }
-            $this->orderList[$this->index] = new AmazonOrder($this->storeName,null,$data);
-            $this->orderList[$this->index]->setConfig($this->config);
+            $this->orderList[$this->index] = new AmazonOrder($this->storeName,null,$data,$this->mockMode,$this->mockFiles,$this->config);
             $this->orderList[$this->index]->setLogPath($this->logpath);
-            $this->orderList[$this->index]->setMock($this->mockMode,$this->mockFiles);
             $this->orderList[$this->index]->mockIndex = $this->mockIndex;
             $this->index++;
         }

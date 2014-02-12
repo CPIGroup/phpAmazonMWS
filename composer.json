@@ -2,6 +2,7 @@
     "name": "cpigroup/php-amazon-mws",
     "type": "library",
     "description": "An open-source library to connect to Amazon's MWS web services in an object-oriented manner, with a focus on intuitive usage.",
+    "license": "Apache-2.0",
     "keywords": ["API", "Amazon", "PHP"],
     "require":{
                 "php": "~5.4",

@@ -1,5 +1,6 @@
 ## Installing
-To install, simply add the library to your project. For any page or function you want to use the library in, include the file **includes/classes.php** to enable auto-loading of classes.
+To install, simply add the library to your project. Composer is the default installation tool for this library.
+If you do not use Composer for your project, you can still auto-load classes by  including the file **includes/classes.php** in the page or function.
 
 Before you use any commands,  you need to create a **amazon-config.php** file with your account credentials. Start by copying the template provided (*amazon-config.default.php*) and renaming the file.
 
@@ -18,3 +19,5 @@ The general work flow for using one of the objects is this:
 5. Monitor the performance of the library using built-in logging system.
 
 Note that if you want to act on more than one Amazon store, you will need a separate object for each store.
+
+Also note that the objects perform best when they are not treated as reusable. Otherwise, you may end up grabbing old response data if a new request fails.

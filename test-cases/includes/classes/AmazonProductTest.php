@@ -30,7 +30,7 @@ class AmazonProductTest extends PHPUnit_Framework_TestCase {
     public function testProduct(){
         $data = simplexml_load_file('/var/www/athena/plugins/amazon/newAmazon/test-cases/mock/searchProducts.xml');
         $p = $data->ListMatchingProductsResult->Products->Product;
-        $obj = new AmazonProduct('testStore', $p);
+        $obj = new AmazonProduct('testStore', $p, true, null, '/var/www/athena/plugins/amazon/newAmazon/test-cases/test-config.php');
         $o = $obj->getData();
         $this->assertInternalType('array',$o);
         $this->assertFalse($this->object->getData());

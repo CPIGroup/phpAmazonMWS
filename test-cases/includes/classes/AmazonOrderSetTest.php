@@ -101,7 +101,7 @@ class AmazonOrderSetTest extends PHPUnit_Framework_TestCase {
         $getOne = $this->object->fetchItems('string', 0); //$token will be set to false
         $this->assertInternalType('object',$getOne);
         
-        $o = new AmazonOrderList('testStore', null, true);
+        $o = new AmazonOrderList('testStore', true, null, '/var/www/athena/plugins/amazon/newAmazon/test-cases/test-config.php');
         $this->assertFalse($o->fetchItems()); //not fetched yet for this object
     }
     

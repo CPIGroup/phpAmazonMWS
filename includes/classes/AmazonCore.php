@@ -490,7 +490,11 @@ abstract class AmazonCore{
                     if($ip == '127.0.0.1')$ip = 'local';//save some char
             }else{
                     $ip = 'cli';
-            }	
+            }
+            if (!file_exists($this->logpath)) {
+                //attempt to create the file if it does not exist
+                file_put_contents($this->logpath, "This is the Amazon log, for Amazon classes to use.\n");
+            }
             if (file_exists($this->logpath) && is_writable($this->logpath)){
                 $str = "[$level][" . date("Y/m/d h:i:s", mktime()) . " $name@$ip $fileName:$line $function] " . $msg;
                 $fd = fopen($this->logpath, "a+");

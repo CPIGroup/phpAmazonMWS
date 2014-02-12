@@ -1,0 +1,16 @@
+{
+    "name": "cpigroup/phpAmazonMWS",
+    "type": "library",
+    "description": "An open-source library to connect to Amazon's MWS web services in an object-oriented manner, with a focus on intuitive usage.",
+    "keywords": ["API", "Amazon", "PHP"],
+    "require":{
+                "php": "~5.4",
+                "ext-curl": "*"
+    },
+    "require-dev": {
+                "phpunit/phpunit": "3.7.*"
+                   },
+    "autoload": {
+        "classmap": ["includes/classes/"]
+    }
+}

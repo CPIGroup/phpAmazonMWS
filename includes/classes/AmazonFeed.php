@@ -20,7 +20,7 @@
  * Submits feeds to Amazon.
  * 
  * This Amazon Feeds Core object can submit feeds to Amazon.
- * In order to submit a feed, the feed's contents (a filename)
+ * In order to submit a feed, the feed's contents (as direct input or from a file)
  * and feed type must be set. Once the feed has been submitted,
  * the response from Amazon can be viewed with <i>getResponse</i>.
  */
@@ -59,28 +59,18 @@ class AmazonFeed extends AmazonFeedsCore{
     }
     
     /**
-     * Sets the feed content. (Required*)
+     * Sets the Feed Content. (Required)
      * 
-     * This method creates a temporary file using the data you provide. It is
-     * recommended that you use <i>loadFeedFile</i> instead, as there is a good
-     * chance the data you provide here will be overwritten later.
+     * Thie method sets the feed's contents from direct input.
+     * This parameter is required in order to submit a feed to Amazon.
      * @param string $s <p>The contents to put in the file.</p>
-     * @param string $override [optional] <p>The path to a file you want to write to.
      * It can be relative or absolute.</p>
+     * @return boolean <b>FALSE</b> if improper input
      */
-    public function setFeedContent($s, $override = null){
+    public function setFeedContent($s){
         if (is_string($s) && $s){
-            if ($override && file_exists($override) && is_writable($override)){
-                if (strpos($override, '/') === 0){
-                    file_put_contents($override, $s);
-                } else {
-                    file_put_contents('../../'.$override, $s);
-                }
-                $this->loadFeedFile($override);
-            } else {
-                file_put_contents('../../temp.xml', $s);
-                $this->loadFeedFile('temp.xml');
-            }
+            $this->feedContent=$s;
+            $this->feedMD5 = base64_encode(md5($this->feedContent,true));
         } else {
             return false;
         }
@@ -89,7 +79,7 @@ class AmazonFeed extends AmazonFeedsCore{
     /**
      * Sets the Feed Content. (Required)
      * 
-     * This method sets the file path to be sent in the next request. This
+     * This method loads the contents of a file to send as the feed. This
      * parameter is required in order to submit a feed to Amazon.
      * @param string $url <p>The path to a file you want to use.
      * It can be relative or absolute.</p>
@@ -97,12 +87,12 @@ class AmazonFeed extends AmazonFeedsCore{
     public function loadFeedFile($path){
         if (file_exists($path)){
             if (strpos($path, '/') == 0){
-                $this->feedContent = $path;
+                $this->feedContent = file_get_contents($path);
             } else {
-                $url = '/var/www/athena/plugins/newAmazon/'.$path; //todo: change to current install dir
-                $this->feedContent = $url;
+                $url = __DIR__.'/../../'.$path; //todo: change to current install dir
+                $this->feedContent = file_get_contents($url);
             }
-            $this->feedMD5 = base64_encode(md5(file_get_contents($this->feedContent),true));
+            $this->feedMD5 = base64_encode(md5($this->feedContent,true));
         }
     }
     
@@ -263,15 +253,14 @@ class AmazonFeed extends AmazonFeedsCore{
            $xml = $this->fetchMockFile()->$path;
         } else {
             $headers = $this->genHeader();
-            $post = $this->genPost();
-            $response = $this->sendRequest("$url?$query",array('Header'=>$headers,'Post'=>$post));
+            $response = $this->sendRequest("$url?$query",array('Header'=>$headers,'Post'=>$this->feedContent));
             
             if (!$this->checkResponse($response)){
                 return false;
             }
             
             //getting Response 100?
-            if ($response['head'] == 'HTTP/1.1 100 Continue'){
+            if ($response['head'] == 'HTTP/1.1 100 Continue' || $response['code'] == '200'){
                 $body = strstr($response['body'],'<');
                 $xml = simplexml_load_string($body)->$path;
             } else {
@@ -315,17 +304,6 @@ class AmazonFeed extends AmazonFeedsCore{
      */
     protected function genHeader(){
         $return[0] = "Content-MD5:".$this->feedMD5;
-        return $return;
-    }
-    
-    /**
-     * Generates array for Post.
-     * 
-     * This method creates the Post array to use with cURL. It contains the Feed Content file path.
-     * @return array
-     */
-    protected function genPost(){
-        $return['file'] = '@'.$this->feedContent;
         return $return;
     }
     

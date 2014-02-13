@@ -16,7 +16,7 @@ class AmazonCoreTest extends PHPUnit_Framework_TestCase {
      */
     protected function setUp() {
         resetLog();
-        $this->object = new AmazonServiceStatus('testStore', 'Inbound', true, null, '/var/www/athena/plugins/amazon/newAmazon/test-cases/test-config.php');
+        $this->object = new AmazonServiceStatus('testStore', 'Inbound', true, null, __DIR__.'/../../test-config.php');
     }
 
     /**

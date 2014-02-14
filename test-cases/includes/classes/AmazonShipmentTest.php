@@ -16,7 +16,7 @@ class AmazonShipmentTest extends PHPUnit_Framework_TestCase {
      */
     protected function setUp() {
         resetLog();
-        $this->object = new AmazonShipment('testStore', true, null, '/var/www/athena/plugins/amazon/newAmazon/test-cases/test-config.php');
+        $this->object = new AmazonShipment('testStore', true, null, __DIR__.'/../../test-config.php');
     }
 
     /**
@@ -167,7 +167,7 @@ class AmazonShipmentTest extends PHPUnit_Framework_TestCase {
     }
     
     public function testUsePlan(){
-        $planner = new AmazonShipmentPlanner('testStore', true, 'fetchPlan.xml', '/var/www/athena/plugins/amazon/newAmazon/test-cases/test-config.php');
+        $planner = new AmazonShipmentPlanner('testStore', true, 'fetchPlan.xml', __DIR__.'/../../test-config.php');
         $a = array();
         $a['Name'] = 'Name';
         $a['AddressLine1'] = 'AddressLine1';
@@ -214,7 +214,7 @@ class AmazonShipmentTest extends PHPUnit_Framework_TestCase {
      */
     public function testCreateShipment($o){
         resetLog();
-        $this->object = new AmazonShipment('testStore',true, null, '/var/www/athena/plugins/amazon/newAmazon/test-cases/test-config.php');
+        $this->object = new AmazonShipment('testStore',true, null, __DIR__.'/../../test-config.php');
         $this->assertFalse($this->object->createShipment()); //no ID set
         
         $this->object->setShipmentId('55');
@@ -262,7 +262,7 @@ class AmazonShipmentTest extends PHPUnit_Framework_TestCase {
      */
     public function testUpdateShipment($o){
         resetLog();
-        $this->object = new AmazonShipment('testStore', true, null, '/var/www/athena/plugins/amazon/newAmazon/test-cases/test-config.php');
+        $this->object = new AmazonShipment('testStore', true, null, __DIR__.'/../../test-config.php');
         $this->assertFalse($this->object->updateShipment()); //no ID set
         
         $this->object->setShipmentId('55');

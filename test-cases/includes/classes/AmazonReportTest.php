@@ -16,7 +16,7 @@ class AmazonReportTest extends PHPUnit_Framework_TestCase {
      */
     protected function setUp() {
         resetLog();
-        $this->object = new AmazonReport('testStore', null, true, null, '/var/www/athena/plugins/amazon/newAmazon/test-cases/test-config.php');
+        $this->object = new AmazonReport('testStore', null, true, null, __DIR__.'/../../test-config.php');
     }
 
     /**
@@ -71,8 +71,8 @@ class AmazonReportTest extends PHPUnit_Framework_TestCase {
      * @depends testFetchReport
      */
     public function testSaveReport($o){
-        $path = '/var/www/athena/plugins/amazon/newAmazon/test-cases/mock/saveReport.xml';
-        $path2 = '/var/www/athena/plugins/amazon/newAmazon/test-cases/mock/fetchReport.xml';
+        $path = __DIR__.'/../../mock/saveReport.xml';
+        $path2 = __DIR__.'/../../mock/fetchReport.xml';
         $o->saveReport($path);
         $check = parseLog();
         $this->assertEquals("Successfully saved report #777 at $path",$check[1]);

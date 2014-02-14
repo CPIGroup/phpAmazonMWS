@@ -259,12 +259,11 @@ class AmazonFeed extends AmazonFeedsCore{
                 return false;
             }
             
-            //getting Response 100?
-            if ($response['head'] == 'HTTP/1.1 100 Continue' || $response['code'] == '200'){
+            if (isset($response['code']) && $response['code'] == '200'){
                 $body = strstr($response['body'],'<');
                 $xml = simplexml_load_string($body)->$path;
             } else {
-                $this->log("Unexpected response: ".$response['code'],'Warning');
+                $this->log("Unexpected response: ".print_r($response,true),'Warning');
                 $xml = simplexml_load_string($response['body'])->$path;
             }
             

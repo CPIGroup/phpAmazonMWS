@@ -656,6 +656,9 @@ abstract class AmazonCore{
                 return $return;
         }
         
+        if (is_numeric(strpos($data, 'HTTP/1.1 100 Continue'))) {
+            $data=str_replace('HTTP/1.1 100 Continue', '', $data);
+        }
         $data = preg_split("/\r\n\r\n/",$data, 2, PREG_SPLIT_NO_EMPTY);
         if (!empty($data)) {
                 $return['head'] = ( isset($data[0]) ? $data[0] : null );

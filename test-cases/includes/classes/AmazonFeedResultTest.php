@@ -16,7 +16,7 @@ class AmazonFeedResultTest extends PHPUnit_Framework_TestCase {
      */
     protected function setUp() {
         resetLog();
-        $this->object = new AmazonFeedResult('testStore', null, true, null, '/var/www/athena/plugins/amazon/newAmazon/test-cases/test-config.php');
+        $this->object = new AmazonFeedResult('testStore', null, true, null, __DIR__.'/../../test-config.php');
     }
 
     /**
@@ -66,9 +66,9 @@ class AmazonFeedResultTest extends PHPUnit_Framework_TestCase {
     public function testSaveFeed($o){
         resetLog();
         $this->assertFalse($this->object->saveFeed('mock/saveFeed.xml')); //nothing yet
-        $o->saveFeed('/var/www/athena/plugins/amazon/newAmazon/test-cases/mock/saveFeed.xml');
+        $o->saveFeed(__DIR__.'/../../mock/saveFeed.xml');
         $check = parseLog();
-        $this->assertEquals('Successfully saved feed #77 at /var/www/athena/plugins/amazon/newAmazon/test-cases/mock/saveFeed.xml',$check[0]);
+        $this->assertEquals('Successfully saved feed #77 at '.__DIR__.'/../../mock/saveFeed.xml',$check[0]);
     }
     
 }

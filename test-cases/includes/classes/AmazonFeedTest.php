@@ -16,7 +16,7 @@ class AmazonFeedTest extends PHPUnit_Framework_TestCase {
      */
     protected function setUp() {
         resetLog();
-        $this->object = new AmazonFeed('testStore', true, null, '/var/www/athena/plugins/amazon/newAmazon/test-cases/test-config.php');
+        $this->object = new AmazonFeed('testStore', true, null, __DIR__.'/../../test-config.php');
     }
 
     /**
@@ -25,18 +25,6 @@ class AmazonFeedTest extends PHPUnit_Framework_TestCase {
      */
     protected function tearDown() {
         
-    }
-    
-    /**
-     * 
-     */
-    public function testSetFeedContent() {
-        $ok = $this->object->setFeedContent('yes','/var/www/athena/plugins/amazon/newAmazon/test-cases/test-temp.xml');
-        $this->assertNull($ok);
-        $this->assertFileExists('/var/www/athena/plugins/amazon/newAmazon/test-cases/test-temp.xml');
-        $check = file_get_contents('/var/www/athena/plugins/amazon/newAmazon/test-cases/test-temp.xml');
-        $this->assertEquals('yes',$check);
-        $this->assertFalse($this->object->setFeedContent(null));
     }
     
     public function testSetFeedType(){
@@ -105,7 +93,7 @@ class AmazonFeedTest extends PHPUnit_Framework_TestCase {
         $this->assertFalse($this->object->submitFeed()); //nothing set yet
         $this->assertFalse($this->object->getResponse()); //no response yet either
         
-        $this->object->setFeedContent('yes','/var/www/athena/plugins/amazon/newAmazon/test-cases/test-temp.xml');
+        $this->object->setFeedContent('yes');
         $this->assertFalse($this->object->submitFeed()); //no feed type set yet
         
         $this->object->setFeedType('_MOCK_FEED_');

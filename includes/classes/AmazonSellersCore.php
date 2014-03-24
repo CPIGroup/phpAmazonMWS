@@ -38,11 +38,7 @@ abstract class AmazonSellersCore extends AmazonCore{
      */
     public function __construct($s, $mock = false, $m = null, $config = null){
         parent::__construct($s, $mock, $m, $config);
-        if (file_exists($this->config)){
-            include($this->config);
-        } else {
-            throw new Exception('Config file does not exist!');
-        }
+        include($this->env);
         
         if(isset($AMAZON_VERSION_SELLERS)){
             $this->urlbranch = 'Sellers/'.$AMAZON_VERSION_SELLERS;

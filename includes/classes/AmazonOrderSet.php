@@ -47,21 +47,19 @@ class AmazonOrderSet extends AmazonOrderCore implements Iterator{
     public function __construct($s, $o = null, $mock = false, $m = null, $config = null){
         parent::__construct($s, $mock, $m, $config);
         $this->i = 0;
-        if (file_exists($this->config)){
-            include($this->config);
-        } else {
-            throw new Exception('Config file does not exist!');
-        }
+        include($this->env);
         
         if($o){
             $this->setOrderIds($o);
         }
         
         $this->options['Action'] = 'GetOrder';
-        if(isset($THROTTLE_LIMIT_ORDER))
-        $this->throttleLimit = $THROTTLE_LIMIT_ORDER;
-        if(isset($THROTTLE_TIME_ORDER))
-        $this->throttleTime = $THROTTLE_TIME_ORDER;
+        if(isset($THROTTLE_LIMIT_ORDER)) {
+            $this->throttleLimit = $THROTTLE_LIMIT_ORDER;
+        }
+        if(isset($THROTTLE_TIME_ORDER)) {
+            $this->throttleTime = $THROTTLE_TIME_ORDER;
+        }
         $this->throttleGroup = 'GetOrder';
     }
     

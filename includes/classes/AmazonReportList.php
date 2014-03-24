@@ -45,16 +45,14 @@ class AmazonReportList extends AmazonReportsCore implements Iterator{
      */
     public function __construct($s, $mock = false, $m = null, $config = null) {
         parent::__construct($s, $mock, $m, $config);
-        if (file_exists($this->config)){
-            include($this->config);
-        } else {
-            throw new Exception('Config file does not exist!');
-        }
+        include($this->env);
         
-        if(isset($THROTTLE_LIMIT_REPORTLIST))
-        $this->throttleLimit = $THROTTLE_LIMIT_REPORTLIST;
-        if(isset($THROTTLE_TIME_REPORTLIST))
-        $this->throttleTime = $THROTTLE_TIME_REPORTLIST;
+        if(isset($THROTTLE_LIMIT_REPORTLIST)) {
+            $this->throttleLimit = $THROTTLE_LIMIT_REPORTLIST;
+        }
+        if(isset($THROTTLE_TIME_REPORTLIST)) {
+            $this->throttleTime = $THROTTLE_TIME_REPORTLIST;
+        }
     }
     
     /**
@@ -286,13 +284,15 @@ class AmazonReportList extends AmazonReportsCore implements Iterator{
      * parameters will be removed.
      */
     protected function prepareToken(){
-        include($this->config);
+        include($this->env);
         if ($this->tokenFlag && $this->tokenUseFlag){
             $this->options['Action'] = 'GetReportListByNextToken';
-            if(isset($THROTTLE_LIMIT_REPORTTOKEN))
-            $this->throttleLimit = $THROTTLE_LIMIT_REPORTTOKEN;
-            if(isset($THROTTLE_TIME_REPORTTOKEN))
-            $this->throttleTime = $THROTTLE_TIME_REPORTTOKEN;
+            if(isset($THROTTLE_LIMIT_REPORTTOKEN)) {
+                $this->throttleLimit = $THROTTLE_LIMIT_REPORTTOKEN;
+            }
+            if(isset($THROTTLE_TIME_REPORTTOKEN)) {
+                $this->throttleTime = $THROTTLE_TIME_REPORTTOKEN;
+            }
             $this->throttleGroup = 'GetReportListByNextToken';
             $this->resetRequestIds();
             $this->resetReportTypes();
@@ -301,10 +301,12 @@ class AmazonReportList extends AmazonReportsCore implements Iterator{
             unset($this->options['Acknowledged']);
         } else {
             $this->options['Action'] = 'GetReportList';
-            if(isset($THROTTLE_LIMIT_REPORTLIST))
-            $this->throttleLimit = $THROTTLE_LIMIT_REPORTLIST;
-            if(isset($THROTTLE_TIME_REPORTLIST))
-            $this->throttleTime = $THROTTLE_TIME_REPORTLIST;
+            if(isset($THROTTLE_LIMIT_REPORTLIST)) {
+                $this->throttleLimit = $THROTTLE_LIMIT_REPORTLIST;
+            }
+            if(isset($THROTTLE_TIME_REPORTLIST)) {
+                $this->throttleTime = $THROTTLE_TIME_REPORTLIST;
+            }
             $this->throttleGroup = 'GetReportList';
             unset($this->options['NextToken']);
             $this->reportList = array();
@@ -379,12 +381,14 @@ class AmazonReportList extends AmazonReportsCore implements Iterator{
      * request IDs, max count, and token.
      */
     protected function prepareCount(){
-        include($this->config);
+        include($this->env);
         $this->options['Action'] = 'GetReportCount';
-        if(isset($THROTTLE_LIMIT_REPORTREQUESTLIST))
-        $this->throttleLimit = $THROTTLE_LIMIT_REPORTREQUESTLIST;
-        if(isset($THROTTLE_TIME_REPORTREQUESTLIST))
-        $this->throttleTime = $THROTTLE_TIME_REPORTREQUESTLIST;
+        if(isset($THROTTLE_LIMIT_REPORTREQUESTLIST)) {
+            $this->throttleLimit = $THROTTLE_LIMIT_REPORTREQUESTLIST;
+        }
+        if(isset($THROTTLE_TIME_REPORTREQUESTLIST)) {
+            $this->throttleTime = $THROTTLE_TIME_REPORTREQUESTLIST;
+        }
         $this->throttleGroup = 'GetReportCount';
         unset($this->options['NextToken']);
         unset($this->options['MaxCount']);

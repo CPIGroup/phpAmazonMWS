@@ -47,21 +47,19 @@ class AmazonOrderItemList extends AmazonOrderCore implements Iterator{
      */
     public function __construct($s, $id=null, $mock = false, $m = null, $config = null){
         parent::__construct($s, $mock, $m, $config);
-        if (file_exists($this->config)){
-            include($this->config);
-        } else {
-            throw new Exception('Config file does not exist!');
-        }
+        include($this->env);
         
         
         if (!is_null($id)){
             $this->setOrderId($id);
         }
         
-        if(isset($THROTTLE_LIMIT_ITEM))
-        $this->throttleLimit = $THROTTLE_LIMIT_ITEM;
-        if(isset($THROTTLE_TIME_ITEM))
-        $this->throttleTime = $THROTTLE_TIME_ITEM;
+        if(isset($THROTTLE_LIMIT_ITEM)) {
+            $this->throttleLimit = $THROTTLE_LIMIT_ITEM;
+        }
+        if(isset($THROTTLE_TIME_ITEM)) {
+            $this->throttleTime = $THROTTLE_TIME_ITEM;
+        }
         $this->throttleGroup = 'ListOrderItems';
     }
     

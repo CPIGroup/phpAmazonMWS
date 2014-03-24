@@ -44,11 +44,7 @@ class AmazonProductSearch extends AmazonProductsCore{
      */
     public function __construct($s, $q = null, $mock = false, $m = null, $config = null){
         parent::__construct($s, $mock, $m, $config);
-        if (file_exists($this->config)){
-            include($this->config);
-        } else {
-            throw new Exception('Config file does not exist!');
-        }
+        include($this->env);
         
         if($q){
             $this->setQuery($q);
@@ -56,8 +52,9 @@ class AmazonProductSearch extends AmazonProductsCore{
         
         $this->options['Action'] = 'ListMatchingProducts';
         
-        if(isset($THROTTLE_TIME_PRODUCTMATCH))
-        $this->throttleTime = $THROTTLE_TIME_PRODUCTMATCH;
+        if(isset($THROTTLE_TIME_PRODUCTMATCH)) {
+            $this->throttleTime = $THROTTLE_TIME_PRODUCTMATCH;
+        }
         $this->throttleGroup = 'ListMatchingProducts';
     }
     

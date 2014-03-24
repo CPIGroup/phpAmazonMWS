@@ -45,6 +45,7 @@ class AmazonOrderList extends AmazonOrderCore implements Iterator{
      */
     public function __construct($s, $mock = false, $m = null, $config = null){
         parent::__construct($s, $mock, $m, $config);
+        include($this->env);
         if (file_exists($this->config)){
             include($this->config);
         } else {
@@ -57,10 +58,12 @@ class AmazonOrderList extends AmazonOrderCore implements Iterator{
             $this->log("Marketplace ID is missing",'Urgent');
         }
         
-        if(isset($THROTTLE_LIMIT_ORDERLIST))
-        $this->throttleLimit = $THROTTLE_LIMIT_ORDERLIST;
-        if(isset($THROTTLE_TIME_ORDERLIST))
-        $this->throttleTime = $THROTTLE_TIME_ORDERLIST;
+        if(isset($THROTTLE_LIMIT_ORDERLIST)) {
+            $this->throttleLimit = $THROTTLE_LIMIT_ORDERLIST;
+        }
+        if(isset($THROTTLE_TIME_ORDERLIST)) {
+            $this->throttleTime = $THROTTLE_TIME_ORDERLIST;
+        }
         $this->throttleGroup = 'ListOrders';
     }
     

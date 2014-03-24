@@ -104,6 +104,7 @@ abstract class AmazonCore{
     protected $mockFiles;
     protected $mockIndex = 0;
     protected $logpath;
+    protected $env;
     
     /**
      * AmazonCore constructor sets up key information used in all Amazon requests.
@@ -130,6 +131,7 @@ abstract class AmazonCore{
         $this->setStore($s);
         $this->setMock($mock,$m);
         
+        $this->env=__DIR__.'/../../environment.php';
         $this->options['SignatureVersion'] = 2;
         $this->options['SignatureMethod'] = 'HmacSHA256';
     }

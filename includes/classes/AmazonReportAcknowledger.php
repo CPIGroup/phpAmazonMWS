@@ -46,11 +46,7 @@ class AmazonReportAcknowledger extends AmazonReportsCore implements Iterator{
      */
     public function __construct($s, $id = null, $mock = false, $m = null, $config = null) {
         parent::__construct($s, $mock, $m, $config);
-        if (file_exists($this->config)){
-            include($this->config);
-        } else {
-            throw new Exception('Config file does not exist!');
-        }
+        include($this->env);
         
         if ($id){
             $this->setReportIds($id);
@@ -58,10 +54,12 @@ class AmazonReportAcknowledger extends AmazonReportsCore implements Iterator{
         
         $this->options['Action'] = 'UpdateReportAcknowledgements';
         
-        if(isset($THROTTLE_LIMIT_REPORTSCHEDULE))
-        $this->throttleLimit = $THROTTLE_LIMIT_REPORTSCHEDULE;
-        if(isset($THROTTLE_TIME_REPORTSCHEDULE))
-        $this->throttleTime = $THROTTLE_TIME_REPORTSCHEDULE;
+        if(isset($THROTTLE_LIMIT_REPORTSCHEDULE)) {
+            $this->throttleLimit = $THROTTLE_LIMIT_REPORTSCHEDULE;
+        }
+        if(isset($THROTTLE_TIME_REPORTSCHEDULE)) {
+            $this->throttleTime = $THROTTLE_TIME_REPORTSCHEDULE;
+        }
         $this->throttleGroup = 'UpdateReportAcknowledgements';
     }
     

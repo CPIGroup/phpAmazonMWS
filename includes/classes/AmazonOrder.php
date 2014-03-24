@@ -44,11 +44,7 @@ class AmazonOrder extends AmazonOrderCore{
      */
     public function __construct($s, $id = null, $data = null, $mock = false, $m = null, $config = null){
         parent::__construct($s, $mock, $m, $config);
-        if (file_exists($this->config)){
-            include($this->config);
-        } else {
-            throw new Exception('Config file does not exist!');
-        }
+        include($this->env);
         
         if($id){
             $this->setOrderId($id);
@@ -59,10 +55,12 @@ class AmazonOrder extends AmazonOrderCore{
         
         $this->options['Action'] = 'GetOrder';
         
-        if(isset($THROTTLE_LIMIT_ORDER))
-        $this->throttleLimit = $THROTTLE_LIMIT_ORDER;
-        if(isset($THROTTLE_TIME_ORDER))
-        $this->throttleTime = $THROTTLE_TIME_ORDER;
+        if(isset($THROTTLE_LIMIT_ORDER)) {
+            $this->throttleLimit = $THROTTLE_LIMIT_ORDER;
+        }
+        if(isset($THROTTLE_TIME_ORDER)) {
+            $this->throttleTime = $THROTTLE_TIME_ORDER;
+        }
         $this->throttleGroup = 'GetOrder';
     }
     

@@ -48,16 +48,14 @@ class AmazonFeedList extends AmazonFeedsCore implements Iterator{
      */
     public function __construct($s, $mock = false, $m = null, $config = null){
         parent::__construct($s, $mock, $m, $config);
-        if (file_exists($this->config)){
-            include($this->config);
-        } else {
-            throw new Exception('Config file does not exist!');
-        }
+        include($this->env);
         
-        if(isset($THROTTLE_LIMIT_FEEDLIST))
-        $this->throttleLimit = $THROTTLE_LIMIT_FEEDLIST;
-        if(isset($THROTTLE_TIME_FEEDLIST))
-        $this->throttleTime = $THROTTLE_TIME_FEEDLIST;
+        if(isset($THROTTLE_LIMIT_FEEDLIST)) {
+            $this->throttleLimit = $THROTTLE_LIMIT_FEEDLIST;
+        }
+        if(isset($THROTTLE_TIME_FEEDLIST)) {
+            $this->throttleTime = $THROTTLE_TIME_FEEDLIST;
+        }
     }
     
     /**
@@ -308,13 +306,15 @@ class AmazonFeedList extends AmazonFeedsCore implements Iterator{
      * parameters will be removed.
      */
     protected function prepareToken(){
-        include($this->config);
+        include($this->env);
         if ($this->tokenFlag && $this->tokenUseFlag){
             $this->options['Action'] = 'GetFeedSubmissionListByNextToken';
-            if(isset($THROTTLE_LIMIT_REPORTTOKEN))
-            $this->throttleLimit = $THROTTLE_LIMIT_REPORTTOKEN;
-            if(isset($THROTTLE_TIME_REPORTTOKEN))
-            $this->throttleTime = $THROTTLE_TIME_REPORTTOKEN;
+            if(isset($THROTTLE_LIMIT_REPORTTOKEN)) {
+                $this->throttleLimit = $THROTTLE_LIMIT_REPORTTOKEN;
+            }
+            if(isset($THROTTLE_TIME_REPORTTOKEN)) {
+                $this->throttleTime = $THROTTLE_TIME_REPORTTOKEN;
+            }
             $this->throttleGroup = 'GetFeedSubmissionListByNextToken';
             $this->resetFeedTypes();
             $this->resetFeedStatuses();
@@ -323,10 +323,12 @@ class AmazonFeedList extends AmazonFeedsCore implements Iterator{
             unset($this->options['MaxCount']);
         } else {
             $this->options['Action'] = 'GetFeedSubmissionList';
-            if(isset($THROTTLE_LIMIT_FEEDLIST))
-            $this->throttleLimit = $THROTTLE_LIMIT_FEEDLIST;
-            if(isset($THROTTLE_TIME_FEEDLIST))
-            $this->throttleTime = $THROTTLE_TIME_FEEDLIST;
+            if(isset($THROTTLE_LIMIT_FEEDLIST)) {
+                $this->throttleLimit = $THROTTLE_LIMIT_FEEDLIST;
+            }
+            if(isset($THROTTLE_TIME_FEEDLIST)) {
+                $this->throttleTime = $THROTTLE_TIME_FEEDLIST;
+            }
             $this->throttleGroup = 'GetFeedSubmissionList';
             unset($this->options['NextToken']);
             $this->feedList = array();
@@ -405,10 +407,12 @@ class AmazonFeedList extends AmazonFeedsCore implements Iterator{
      */
     protected function prepareCount(){
         $this->options['Action'] = 'GetFeedSubmissionCount';
-        if(isset($THROTTLE_LIMIT_FEEDLIST))
-        $this->throttleLimit = $THROTTLE_LIMIT_FEEDLIST;
-        if(isset($THROTTLE_TIME_FEEDLIST))
-        $this->throttleTime = $THROTTLE_TIME_FEEDLIST;
+        if(isset($THROTTLE_LIMIT_FEEDLIST)) {
+            $this->throttleLimit = $THROTTLE_LIMIT_FEEDLIST;
+        }
+        if(isset($THROTTLE_TIME_FEEDLIST)) {
+            $this->throttleTime = $THROTTLE_TIME_FEEDLIST;
+        }
         $this->throttleGroup = 'GetFeedSubmissionCount';
         $this->resetFeedIds();
         unset($this->options['MaxCount']);
@@ -457,12 +461,14 @@ class AmazonFeedList extends AmazonFeedsCore implements Iterator{
      * feed statuses, max count, and token.
      */
     protected function prepareCancel(){
-        include($this->config);
+        include($this->env);
         $this->options['Action'] = 'CancelFeedSubmissions';
-        if(isset($THROTTLE_LIMIT_FEEDLIST))
-        $this->throttleLimit = $THROTTLE_LIMIT_FEEDLIST;
-        if(isset($THROTTLE_TIME_FEEDLIST))
-        $this->throttleTime = $THROTTLE_TIME_FEEDLIST;
+        if(isset($THROTTLE_LIMIT_FEEDLIST)) {
+            $this->throttleLimit = $THROTTLE_LIMIT_FEEDLIST;
+        }
+        if(isset($THROTTLE_TIME_FEEDLIST)) {
+            $this->throttleTime = $THROTTLE_TIME_FEEDLIST;
+        }
         $this->throttleGroup = 'CancelFeedSubmissions';
         unset($this->options['MaxCount']);
         unset($this->options['NextToken']);

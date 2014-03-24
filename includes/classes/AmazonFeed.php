@@ -43,18 +43,16 @@ class AmazonFeed extends AmazonFeedsCore{
      */
     public function __construct($s, $mock = false, $m = null, $config = null){
         parent::__construct($s, $mock, $m, $config);
-        if (file_exists($this->config)){
-            include($this->config);
-        } else {
-            throw new Exception('Config file does not exist!');
-        }
+        include($this->env);
         
         $this->options['Action'] = 'SubmitFeed';
         
-        if(isset($THROTTLE_LIMIT_FEEDSUBMIT))
-        $this->throttleLimit = $THROTTLE_LIMIT_FEEDSUBMIT;
-        if(isset($THROTTLE_TIME_FEEDSUBMIT))
-        $this->throttleTime = $THROTTLE_TIME_FEEDSUBMIT;
+        if(isset($THROTTLE_LIMIT_FEEDSUBMIT)) {
+            $this->throttleLimit = $THROTTLE_LIMIT_FEEDSUBMIT;
+        }
+        if(isset($THROTTLE_TIME_FEEDSUBMIT)) {
+            $this->throttleTime = $THROTTLE_TIME_FEEDSUBMIT;
+        }
         $this->throttleGroup = 'SubmitFeed';
     }
     
@@ -213,12 +211,9 @@ class AmazonFeed extends AmazonFeedsCore{
         } else if ($s == 'false' || (!$s && is_bool($s))){
             $this->log("Purge mode deactivated.");
             $this->options['PurgeAndReplace'] = 'false';
-            if (file_exists($this->config)){
-                include($this->config);
-                if(isset($THROTTLE_TIME_FEEDSUBMIT))
+            include($this->env);
+            if(isset($THROTTLE_TIME_FEEDSUBMIT)) {
                 $this->throttleTime = $THROTTLE_TIME_FEEDSUBMIT;
-            } else {
-                return false;
             }
         } else {
             return false;

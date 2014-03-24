@@ -43,11 +43,7 @@ class AmazonReport extends AmazonReportsCore{
      */
     public function __construct($s, $id = null, $mock = false, $m = null, $config = null) {
         parent::__construct($s, $mock, $m, $config);
-        if (file_exists($this->config)){
-            include($this->config);
-        } else {
-            throw new Exception('Config file does not exist!');
-        }
+        include($this->env);
         
         if($id){
             $this->setReportId($id);
@@ -55,10 +51,12 @@ class AmazonReport extends AmazonReportsCore{
         
         $this->options['Action'] = 'GetReport';
         
-        if(isset($THROTTLE_LIMIT_REPORT))
-        $this->throttleLimit = $THROTTLE_LIMIT_REPORT;
-        if(isset($THROTTLE_TIME_REPORT))
-        $this->throttleTime = $THROTTLE_TIME_REPORT;
+        if(isset($THROTTLE_LIMIT_REPORT)) {
+            $this->throttleLimit = $THROTTLE_LIMIT_REPORT;
+        }
+        if(isset($THROTTLE_TIME_REPORT)) {
+            $this->throttleTime = $THROTTLE_TIME_REPORT;
+        }
     }
     
     /**

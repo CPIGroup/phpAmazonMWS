@@ -40,16 +40,13 @@ class AmazonProductList extends AmazonProductsCore implements Iterator{
      */
     public function __construct($s, $mock = false, $m = null, $config = null){
         parent::__construct($s, $mock, $m, $config);
-        if (file_exists($this->config)){
-            include($this->config);
-        } else {
-            throw new Exception('Config file does not exist!');
-        }
+        include($this->env);
         
         $this->options['Action'] = 'GetMatchingProductForId';
         
-        if(isset($THROTTLE_TIME_PRODUCTLIST))
-        $this->throttleTime = $THROTTLE_TIME_PRODUCTLIST;
+        if(isset($THROTTLE_TIME_PRODUCTLIST)) {
+            $this->throttleTime = $THROTTLE_TIME_PRODUCTLIST;
+        }
         $this->throttleGroup = 'GetMatchingProductForId';
     }
     

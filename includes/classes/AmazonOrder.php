@@ -218,6 +218,18 @@ class AmazonOrder extends AmazonOrderCore{
         if (isset($xml->ShipServiceLevelCategory)){
             $d['ShipServiceLevelCategory'] = (string)$xml->ShipServiceLevelCategory;
         }
+        if (isset($xml->EarliestShipDate)){
+            $d['EarliestShipDate'] = (string)$xml->EarliestShipDate;
+        }
+        if (isset($xml->LatestShipDate)){
+            $d['LatestShipDate'] = (string)$xml->LatestShipDate;
+        }
+        if (isset($xml->EarliestDeliveryDate)){
+            $d['EarliestDeliveryDate'] = (string)$xml->EarliestDeliveryDate;
+        }
+        if (isset($xml->LatestDeliveryDate)){
+            $d['LatestDeliveryDate'] = (string)$xml->LatestDeliveryDate;
+        }
         
         $this->data = $d;
     }
@@ -574,6 +586,66 @@ class AmazonOrder extends AmazonOrderCore{
     public function getShipServiceLevelCategory(){
         if (isset($this->data['ShipServiceLevelCategory'])){
             return $this->data['ShipServiceLevelCategory'];
+        } else {
+            return false;
+        }
+    }
+    
+    /**
+     * Returns the timestamp of the earliest shipping date.
+     * 
+     * This method will return <b>FALSE</b> if the timestamp has not been set yet.
+     * @return string|boolean timestamp, or <b>FALSE</b> if timestamp not set yet
+     */
+    public function getEarliestShipDate(){
+        if (isset($this->data['EarliestShipDate'])){
+            return $this->data['EarliestShipDate'];
+        } else {
+            return false;
+        }
+    }
+    
+    /**
+     * Returns the timestamp of the latest shipping date.
+     * 
+     * Note that this is usually set to midnight of the day after the last date,
+     * so the timestamp "2013-09-025T00:00:00Z" indicates the last day is the 24th and not the 25th.
+     * This method will return <b>FALSE</b> if the timestamp has not been set yet.
+     * @return string|boolean timestamp, or <b>FALSE</b> if timestamp not set yet
+     */
+    public function getLatestShipDate(){
+        if (isset($this->data['LatestShipDate'])){
+            return $this->data['LatestShipDate'];
+        } else {
+            return false;
+        }
+    }
+    
+    /**
+     * Returns the timestamp of the estimated earliest delivery date.
+     * 
+     * This method will return <b>FALSE</b> if the timestamp has not been set yet.
+     * @return string|boolean timestamp, or <b>FALSE</b> if timestamp not set yet
+     */
+    public function getEarliestDeliveryDate(){
+        if (isset($this->data['EarliestDeliveryDate'])){
+            return $this->data['EarliestDeliveryDate'];
+        } else {
+            return false;
+        }
+    }
+    
+    /**
+     * Returns the timestamp of the estimated latest delivery date.
+     * 
+     * Note that this is usually set to midnight of the day after the last date,
+     * so the timestamp "2013-09-025T00:00:00Z" indicates the last day is the 24th and not the 25th.
+     * This method will return <b>FALSE</b> if the timestamp has not been set yet.
+     * @return string|boolean timestamp, or <b>FALSE</b> if timestamp not set yet
+     */
+    public function getLatestDeliveryDate(){
+        if (isset($this->data['LatestDeliveryDate'])){
+            return $this->data['LatestDeliveryDate'];
         } else {
             return false;
         }

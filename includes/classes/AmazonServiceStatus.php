@@ -46,11 +46,7 @@ class AmazonServiceStatus extends AmazonCore{
      */
     public function __construct($s, $service = null, $mock = false, $m = null, $config = null){
         parent::__construct($s, $mock, $m, $config);
-        if (file_exists($this->config)){
-            include($this->config);
-        } else {
-            throw new Exception('Config file does not exist!');
-        }
+        include($this->env);
         
         if ($service){
             $this->setService($service);
@@ -58,10 +54,12 @@ class AmazonServiceStatus extends AmazonCore{
         
         $this->options['Action'] = 'GetServiceStatus';
         
-        if(isset($THROTTLE_LIMIT_STATUS))
-        $this->throttleLimit = $THROTTLE_LIMIT_STATUS;
-        if(isset($THROTTLE_TIME_STATUS))
-        $this->throttleTime = $THROTTLE_TIME_STATUS;
+        if(isset($THROTTLE_LIMIT_STATUS)) {
+            $this->throttleLimit = $THROTTLE_LIMIT_STATUS;
+        }
+        if(isset($THROTTLE_TIME_STATUS)) {
+            $this->throttleTime = $THROTTLE_TIME_STATUS;
+        }
         $this->throttleGroup = 'GetServiceStatus';
     }
     
@@ -83,8 +81,8 @@ class AmazonServiceStatus extends AmazonCore{
      * @return boolean <b>TRUE</b> if valid input, <b>FALSE</b> if improper input
      */
     public function setService($s){
-        if (file_exists($this->config)){
-            include($this->config);
+        if (file_exists($this->env)){
+            include($this->env);
         } else {
             return false;
         }

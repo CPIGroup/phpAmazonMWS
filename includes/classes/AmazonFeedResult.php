@@ -44,11 +44,7 @@ class AmazonFeedResult extends AmazonFeedsCore{
      */
     public function __construct($s, $id = null, $mock = false, $m = null, $config = null){
         parent::__construct($s, $mock, $m, $config);
-        if (file_exists($this->config)){
-            include($this->config);
-        } else {
-            throw new Exception('Config file does not exist!');
-        }
+        include($this->env);
         
         if($id){
             $this->options['FeedSubmissionId'] = $id;
@@ -56,10 +52,12 @@ class AmazonFeedResult extends AmazonFeedsCore{
         
         $this->options['Action'] = 'GetFeedSubmissionResult';
         
-        if(isset($THROTTLE_LIMIT_FEEDRESULT))
-        $this->throttleLimit = $THROTTLE_LIMIT_FEEDRESULT;
-        if(isset($THROTTLE_TIME_FEEDRESULT))
-        $this->throttleTime = $THROTTLE_TIME_FEEDRESULT;
+        if(isset($THROTTLE_LIMIT_FEEDRESULT)) {
+            $this->throttleLimit = $THROTTLE_LIMIT_FEEDRESULT;
+        }
+        if(isset($THROTTLE_TIME_FEEDRESULT)) {
+            $this->throttleTime = $THROTTLE_TIME_FEEDRESULT;
+        }
         $this->throttleGroup = 'GetFeedSubmissionResult';
     }
     

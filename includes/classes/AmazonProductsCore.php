@@ -41,6 +41,7 @@ abstract class AmazonProductsCore extends AmazonCore{
      */
     public function __construct($s, $mock = false, $m = null, $config = null){
         parent::__construct($s, $mock, $m, $config);
+        include($this->env);
         if (file_exists($this->config)){
             include($this->config);
         } else {
@@ -59,8 +60,9 @@ abstract class AmazonProductsCore extends AmazonCore{
             $this->log("Marketplace ID is missing",'Urgent');
         }
         
-        if(isset($THROTTLE_LIMIT_PRODUCT))
-        $this->throttleLimit = $THROTTLE_LIMIT_PRODUCT;
+        if(isset($THROTTLE_LIMIT_PRODUCT)) {
+            $this->throttleLimit = $THROTTLE_LIMIT_PRODUCT;
+        }
     }
     
     /**

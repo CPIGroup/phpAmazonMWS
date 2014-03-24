@@ -45,18 +45,16 @@ class AmazonReportScheduleManager extends AmazonReportsCore implements Iterator{
      */
     public function __construct($s, $mock = false, $m = null, $config = null) {
         parent::__construct($s, $mock, $m, $config);
-        if (file_exists($this->config)){
-            include($this->config);
-        } else {
-            throw new Exception('Config file does not exist!');
-        }
+        include($this->env);
         
         $this->options['Action'] = 'ManageReportSchedule';
         
-        if(isset($THROTTLE_LIMIT_REPORTSCHEDULE))
-        $this->throttleLimit = $THROTTLE_LIMIT_REPORTSCHEDULE;
-        if(isset($THROTTLE_TIME_REPORTSCHEDULE))
-        $this->throttleTime = $THROTTLE_TIME_REPORTSCHEDULE;
+        if(isset($THROTTLE_LIMIT_REPORTSCHEDULE)) {
+            $this->throttleLimit = $THROTTLE_LIMIT_REPORTSCHEDULE;
+        }
+        if(isset($THROTTLE_TIME_REPORTSCHEDULE)) {
+            $this->throttleTime = $THROTTLE_TIME_REPORTSCHEDULE;
+        }
     }
     
     /**

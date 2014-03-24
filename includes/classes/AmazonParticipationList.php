@@ -45,16 +45,14 @@ class AmazonParticipationList extends AmazonSellersCore{
      */
     public function __construct($s, $mock = false, $m = null, $config = null) {
         parent::__construct($s, $mock, $m, $config);
-        if (file_exists($this->config)){
-            include($this->config);
-        } else {
-            throw new Exception('Config file does not exist!');
-        }
+        include($this->env);
         
-        if(isset($THROTTLE_LIMIT_SELLERS))
-        $this->throttleLimit = $THROTTLE_LIMIT_SELLERS;
-        if(isset($THROTTLE_TIME_SELLERS))
-        $this->throttleTime = $THROTTLE_TIME_SELLERS;
+        if(isset($THROTTLE_LIMIT_SELLERS)) {
+            $this->throttleLimit = $THROTTLE_LIMIT_SELLERS;
+        }
+        if(isset($THROTTLE_TIME_SELLERS)) {
+            $this->throttleTime = $THROTTLE_TIME_SELLERS;
+        }
         $this->throttleGroup = 'ParticipationList';
     }
     

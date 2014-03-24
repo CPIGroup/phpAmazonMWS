@@ -38,11 +38,7 @@ abstract class AmazonOutboundCore extends AmazonCore{
      */
     public function __construct($s, $mock = false, $m = null, $config = null){
         parent::__construct($s, $mock, $m, $config);
-        if (file_exists($this->config)){
-            include($this->config);
-        } else {
-            throw new Exception('Config file does not exist!');
-        }
+        include($this->env);
         
         if(isset($AMAZON_VERSION_OUTBOUND)){
             $this->urlbranch = 'FulfillmentOutboundShipment/'.$AMAZON_VERSION_OUTBOUND;
@@ -50,10 +46,12 @@ abstract class AmazonOutboundCore extends AmazonCore{
         }
         
         
-        if(isset($THROTTLE_LIMIT_INVENTORY))
-        $this->throttleLimit = $THROTTLE_LIMIT_INVENTORY;
-        if(isset($THROTTLE_TIME_INVENTORY))
-        $this->throttleTime = $THROTTLE_TIME_INVENTORY;
+        if(isset($THROTTLE_LIMIT_INVENTORY)) {
+            $this->throttleLimit = $THROTTLE_LIMIT_INVENTORY;
+        }
+        if(isset($THROTTLE_TIME_INVENTORY)) {
+            $this->throttleTime = $THROTTLE_TIME_INVENTORY;
+        }
         $this->throttleGroup = 'Inventory';
     }
 }

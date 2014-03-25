@@ -608,7 +608,7 @@ class AmazonOrder extends AmazonOrderCore{
     /**
      * Returns the timestamp of the latest shipping date.
      * 
-     * Note that this is usually set to midnight of the day after the last date,
+     * Note that this could be set to midnight of the day after the last date,
      * so the timestamp "2013-09-025T00:00:00Z" indicates the last day is the 24th and not the 25th.
      * This method will return <b>FALSE</b> if the timestamp has not been set yet.
      * @return string|boolean timestamp, or <b>FALSE</b> if timestamp not set yet
@@ -638,7 +638,7 @@ class AmazonOrder extends AmazonOrderCore{
     /**
      * Returns the timestamp of the estimated latest delivery date.
      * 
-     * Note that this is usually set to midnight of the day after the last date,
+     * Note that this could be set to midnight of the day after the last date,
      * so the timestamp "2013-09-025T00:00:00Z" indicates the last day is the 24th and not the 25th.
      * This method will return <b>FALSE</b> if the timestamp has not been set yet.
      * @return string|boolean timestamp, or <b>FALSE</b> if timestamp not set yet

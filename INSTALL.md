@@ -10,8 +10,12 @@ You can also link the built-in logging system to your own logging system by putt
 
 In the event that PHP does not have the correct permissions to create a file in the library's main directory, you will have to create the log file as "log.txt" and give all users permission to edit it.
 
-## Example Usage
+## Usage
+All of the technical details required by the API are handled behind the scenes,
+so users can easily build code for sending requests to Amazon
+without having to jump hurdles such as parameter URL formatting and token management. 
 The general work flow for using one of the objects is this:
+
 1. Create an object for the task you need to perform.
 2. Load it up with parameters, depending on the object, using *set____* methods.
 3. Submit the request to Amazon. The methods to do this are usually named *fetch____* or *submit____* and have no parameters.
@@ -21,3 +25,27 @@ The general work flow for using one of the objects is this:
 Note that if you want to act on more than one Amazon store, you will need a separate object for each store.
 
 Also note that the objects perform best when they are not treated as reusable. Otherwise, you may end up grabbing old response data if a new request fails.
+
+## Examples
+Here is an example of a function used to get all warehouse-fulfilled orders from Amazon updated in the past 24 hours:
+```php
+function getAmazonOrders() {
+    $amz = new AmazonOrderList("myStore");
+    $amz->setLimits('Modified', "- 24 hours");
+    $amz->setFulfillmentChannelFilter("MFN"); //no Amazon-fulfilled orders
+    $amz->setOrderStatusFilter(array("Unshipped", "Canceled", "Unfulfillable")); //no shipped or pending
+    $amz->setUseToken(); //Amazon sends orders 100 at a time, but we want them all
+    $amz->fetchOrders();
+    return $amz->getList();
+}
+```
+This example shows a function used to send a previously-created XML feed to Amazon to update Inventory numbers:
+```php
+function sendInventoryFeed($feed) {
+    $amz=new AmazonFeed("myStore");
+    $amz->setFeedType("_POST_INVENTORY_AVAILABILITY_DATA_"); //feed types listed in documentation
+    $amz->setFeedContent($feed);
+    $amz->submitFeed();
+    return $amz->getResponse();
+}
+```

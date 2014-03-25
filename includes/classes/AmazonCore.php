@@ -105,6 +105,7 @@ abstract class AmazonCore{
     protected $mockIndex = 0;
     protected $logpath;
     protected $env;
+    protected $lastResponse;
     
     /**
      * AmazonCore constructor sets up key information used in all Amazon requests.
@@ -589,7 +590,20 @@ abstract class AmazonCore{
             $response = $this->fetchURL($url,$param);
         }
         
+        $this->lastResponse=$response['code'];
         return $response;
+    }
+    
+    /**
+     * Gives the last response code received from Amazon.
+     * @return int|boolean HTTP reponse code (200, 404, etc) or <b>FALSE</b> if not set yet
+     */
+    public function getLastResponse() {
+        if (isset($this->lastResponse)) {
+            return $this->lastResponse;
+        } else {
+            return false;
+        }
     }
     
     /**

@@ -18,7 +18,9 @@ function getAmazonOrders() {
     $amz = new AmazonOrderList("myStore"); //store name matches the array key in the config file
     $amz->setLimits('Modified', "- 24 hours");
     $amz->setFulfillmentChannelFilter("MFN"); //no Amazon-fulfilled orders
-    $amz->setOrderStatusFilter(array("Unshipped", "Canceled", "Unfulfillable")); //no shipped or pending
+    $amz->setOrderStatusFilter(
+        array("Unshipped"," PartiallyShipped", "Canceled", "Unfulfillable")
+        ); //no shipped or pending
     $amz->setUseToken(); //Amazon sends orders 100 at a time, but we want them all
     $amz->fetchOrders();
     return $amz->getList();

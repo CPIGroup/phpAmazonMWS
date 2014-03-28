@@ -3,7 +3,7 @@ phpAmazonMWS
 
 A library to connect to Amazon's Merchant Web Services (MWS) in an object-oriented manner, with a focus on intuitive usage.  
 
-This is __NOT__ for Amazon Web Services (AWS) - Cloud Computing Services
+This is __NOT__ for Amazon Web Services (AWS) - Cloud Computing Services.
 
 
 ## Example Usage
@@ -19,7 +19,7 @@ function getAmazonOrders() {
     $amz->setLimits('Modified', "- 24 hours");
     $amz->setFulfillmentChannelFilter("MFN"); //no Amazon-fulfilled orders
     $amz->setOrderStatusFilter(
-        array("Unshipped"," PartiallyShipped", "Canceled", "Unfulfillable")
+        array("Unshipped", "PartiallyShipped", "Canceled", "Unfulfillable")
         ); //no shipped or pending
     $amz->setUseToken(); //Amazon sends orders 100 at a time, but we want them all
     $amz->fetchOrders();

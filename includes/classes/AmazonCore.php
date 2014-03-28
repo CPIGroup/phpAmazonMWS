@@ -590,7 +590,7 @@ abstract class AmazonCore{
             $response = $this->fetchURL($url,$param);
         }
         
-        $this->lastResponse=$response['code'];
+        $this->lastResponse=$response;
         return $response;
     }
     

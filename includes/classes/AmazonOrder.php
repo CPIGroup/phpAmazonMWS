@@ -219,6 +219,18 @@ class AmazonOrder extends AmazonOrderCore{
         if (isset($xml->ShipServiceLevelCategory)){
             $d['ShipServiceLevelCategory'] = (string)$xml->ShipServiceLevelCategory;
         }
+        if (isset($xml->CbaDisplayableShippingLabel)){
+            $d['CbaDisplayableShippingLabel'] = (string)$xml->CbaDisplayableShippingLabel;
+        }
+        if (isset($xml->ShippedByAmazonTFM)){
+            $d['ShippedByAmazonTFM'] = (string)$xml->ShippedByAmazonTFM;
+        }
+        if (isset($xml->TFMShipmentStatus)){
+            $d['TFMShipmentStatus'] = (string)$xml->TFMShipmentStatus;
+        }
+        if (isset($xml->OrderType)){
+            $d['OrderType'] = (string)$xml->OrderType;
+        }
         if (isset($xml->EarliestShipDate)){
             $d['EarliestShipDate'] = (string)$xml->EarliestShipDate;
         }
@@ -587,6 +599,78 @@ class AmazonOrder extends AmazonOrderCore{
     public function getShipServiceLevelCategory(){
         if (isset($this->data['ShipServiceLevelCategory'])){
             return $this->data['ShipServiceLevelCategory'];
+        } else {
+            return false;
+        }
+    }
+    
+    /**
+     * Returns the customized Checkout by Amazon (CBA) label of the Order.
+     * 
+     * This method will return <b>FALSE</b> if the CBA label category has not been set yet.
+     * @return string|boolean single value, or <b>FALSE</b> if label not set yet
+     */
+    public function getCbaDisplayableShippingLabel(){
+        if (isset($this->data['CbaDisplayableShippingLabel'])){
+            return $this->data['CbaDisplayableShippingLabel'];
+        } else {
+            return false;
+        }
+    }
+    
+    /**
+     * Returns an indication of whether or not the Order was shipped with the Amazon TFM service.
+     * 
+     * This method will return <b>FALSE</b> if the status has not been set yet.
+     * @return string|boolean single value, or <b>FALSE</b> if value not set yet
+     */
+    public function getShippedByAmazonTfm(){
+        if (isset($this->data['ShippedByAmazonTFM'])){
+            return $this->data['ShippedByAmazonTFM'];
+        } else {
+            return false;
+        }
+    }
+    
+    /**
+     * Returns the status of an Order shipped using Amazon TFM.
+     * 
+     * This method will return <b>FALSE</b> if the status has not been set yet.
+     * Valid values for the status are...
+     * <ul>
+     * <li>PendingPickUp</li>
+     * <li>LabelCanceled</li>
+     * <li>PickedUp</li>
+     * <li>AtDestinationFC</li>
+     * <li>Delivered</li>
+     * <li>RejectedByBuyer</li>
+     * <li>Undeliverable</li>
+     * <li>ReturnedToSeller</li>
+     * </ul>
+     * @return string|boolean single value, or <b>FALSE</b> if status not set yet
+     */
+    public function getTfmShipmentStatus(){
+        if (isset($this->data['TFMShipmentStatus'])){
+            return $this->data['TFMShipmentStatus'];
+        } else {
+            return false;
+        }
+    }
+    
+    /**
+     * Returns the type of the order.
+     * 
+     * This method will return <b>FALSE</b> if the type has not been set yet.
+     * Valid values for the type are...
+     * <ul>
+     * <li>StandardOrder</li>
+     * <li>Preorder</li>
+     * </ul>
+     * @return string|boolean single value, or <b>FALSE</b> if order type not set yet
+     */
+    public function getOrderType(){
+        if (isset($this->data['OrderType'])){
+            return $this->data['OrderType'];
         } else {
             return false;
         }

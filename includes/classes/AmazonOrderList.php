@@ -53,8 +53,8 @@ class AmazonOrderList extends AmazonOrderCore implements Iterator{
             throw new Exception('Config file does not exist!');
         }
         
-        if(isset($store[$s]) && array_key_exists('marketplaceId', $store[$s])){
-            $this->options['MarketplaceId.Id.1'] = $store[$s]['marketplaceId'];
+        if(isset($store[$this->storeName]) && array_key_exists('marketplaceId', $store[$this->storeName])){
+            $this->options['MarketplaceId.Id.1'] = $store[$this->storeName]['marketplaceId'];
         } else {
             $this->log("Marketplace ID is missing",'Urgent');
         }

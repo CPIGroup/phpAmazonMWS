@@ -55,8 +55,8 @@ abstract class AmazonProductsCore extends AmazonCore{
         }
         
         
-        if(isset($store[$s]) && array_key_exists('marketplaceId', $store[$s])){
-            $this->options['MarketplaceId'] = $store[$s]['marketplaceId'];
+        if(isset($store[$this->storeName]) && array_key_exists('marketplaceId', $store[$this->storeName])){
+            $this->options['MarketplaceId'] = $store[$this->storeName]['marketplaceId'];
         } else {
             $this->log("Marketplace ID is missing",'Urgent');
         }

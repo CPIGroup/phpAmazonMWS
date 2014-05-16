@@ -43,7 +43,7 @@ function getAmazonFeedStatus(){
  */
 function sendInventoryFeed($feed) {
     try {
-        $amz=new AmazonFeed("myStore"); //store name matches the array key in the config file
+        $amz=new AmazonFeed(); //if there is only one store in config, it can be omitted
         $amz->setFeedType("_POST_INVENTORY_AVAILABILITY_DATA_"); //feed types listed in documentation
         $amz->setFeedContent($feed); //can be either XML or CSV data; a file upload method is available as well
         $amz->submitFeed(); //this is what actually sends the request

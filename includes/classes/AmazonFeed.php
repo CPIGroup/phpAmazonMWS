@@ -303,32 +303,6 @@ class AmazonFeed extends AmazonFeedsCore{
     }
     
     /**
-     * Checks whether or not the response is OK.
-     * 
-     * Verifies whether or not the HTTP response has the 200 OK code. If the code
-     * is not 200, the incident and error message returned are logged. This method
-     * is different than the ones used by other objects due to Amazon sending
-     * 100 Continue responses in addition to the usual response.
-     * @param array $r <p>The HTTP response array. Expects the array to have
-     * the fields <i>code</i>, <i>body</i>, and <i>error</i>.</p>
-     * @return boolean <b>TRUE</b> if the status is 200 OK, <b>FALSE</b> otherwise.
-     */
-    protected function checkResponse($r){
-        if (!is_array($r)){
-            $this->log("No Response found",'Warning');
-            return false;
-        }
-        //for dealing with 100 response
-        if (array_key_exists('error', $r) && $r['ok'] == 0){
-            $this->log("Response Not OK! Error: ".$r['error'],'Urgent');
-            return false;
-        } else {
-            $this->log("Response OK!");
-            return true;
-        }
-    }
-    
-    /**
      * Returns the response data in array.
      * 
      * It will contain the following fields:

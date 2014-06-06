@@ -361,8 +361,9 @@ abstract class AmazonCore{
             include($path);
             $this->config = $path;
             $this->setLogPath($logpath);
-            if (isset($AMAZON_SERVICE_URL))
-            $this->urlbase = $AMAZON_SERVICE_URL;
+            if (isset($AMAZON_SERVICE_URL)) {
+                $this->urlbase = $AMAZON_SERVICE_URL;
+            }
         } else {
             throw new Exception("Config file does not exist or cannot be read! ($path)");
         }
@@ -426,6 +427,9 @@ abstract class AmazonCore{
             }
             if(!array_key_exists('secretKey', $store[$s])){
                 $this->log("Secret Key is missing!",'Warning');
+            }
+            if (!empty($store[$s]['serviceUrl'])) {
+                $this->urlbase = $store[$s]['serviceUrl'];
             }
             
         } else {

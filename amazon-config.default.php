@@ -21,6 +21,7 @@ $store['YourAmazonStore']['merchantId'] = '';//Merchant ID for this store
 $store['YourAmazonStore']['marketplaceId'] = ''; //Marketplace ID for this store
 $store['YourAmazonStore']['keyId'] = ''; //Access Key ID
 $store['YourAmazonStore']['secretKey'] = ''; //Secret Access Key for this store
+$store['YourAmazonStore']['serviceUrl'] = ''; //optional override for Service URL
 
 //Service URL Base
 //Current setting is United States

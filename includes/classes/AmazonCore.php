@@ -499,7 +499,7 @@ abstract class AmazonCore{
                 file_put_contents($this->logpath, "This is the Amazon log, for Amazon classes to use.\n");
             }
             if (file_exists($this->logpath) && is_writable($this->logpath)){
-                $str = "[$level][" . date("Y/m/d h:i:s", mktime()) . " $name@$ip $fileName:$line $function] " . $msg;
+                $str = "[$level][" . date("Y/m/d h:i:s", time()) . " $name@$ip $fileName:$line $function] " . $msg;
                 $fd = fopen($this->logpath, "a+");
                 fwrite($fd,$str . "\r\n");
                 fclose($fd);

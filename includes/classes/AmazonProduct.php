@@ -142,6 +142,16 @@ class AmazonProduct extends AmazonProductsCore{
                     }
                 }
             }
+            //child relations use namespace but parent does not
+            foreach($xml->Relationships->children('ns2',true) as $x){
+                foreach($x->children() as $y){
+                    foreach($y->children() as $z){
+                        foreach($z->children() as $zzz){
+                            $this->data['Relationships'][$x->getName()][$y->getName()][$z->getName()][$zzz->getName()] = (string)$zzz;
+                        }
+                    }
+                }
+            }
         }
         
         //CompetitivePricing

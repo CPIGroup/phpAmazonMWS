@@ -23,7 +23,7 @@
      * plan from Amazon using the provided information. In order to generate a
      * shipment plan, an address and a list of items are required.
      */
-    class AmazonShipmentPlanner extends AmazonInboundCore implements Iterator
+    class AmazonShipmentPlanner extends AmazonInboundCore implements \Iterator
     {
 
         private $planList;

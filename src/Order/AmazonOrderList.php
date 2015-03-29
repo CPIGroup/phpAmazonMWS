@@ -24,7 +24,7 @@
      * are available to narrow the number of orders returned, but none of them
      * are required. This object can use tokens when retrieving the list.
      */
-    class AmazonOrderList extends AmazonOrderCore implements Iterator
+    class AmazonOrderList extends AmazonOrderCore implements \Iterator
     {
 
         private   $orderList;
@@ -55,7 +55,7 @@
             if (file_exists( $this->config )) {
                 include( $this->config );
             } else {
-                throw new Exception( 'Config file does not exist!' );
+                throw new \Exception( 'Config file does not exist!' );
             }
 
             if (isset( $store[ $this->storeName ] )

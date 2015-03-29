@@ -24,7 +24,7 @@
  * that match the given product IDs. In order to do this, both the ID type
  * and product ID(s) must be given.
  */
-class AmazonProductList extends AmazonProductsCore implements Iterator
+class AmazonProductList extends AmazonProductsCore implements \Iterator
 {
 
     private $i = 0;

@@ -23,7 +23,7 @@
      * In order to this, either a list of IDs or a list of statuses are required.
      * This object can use tokens when fetching the list.
      */
-    class AmazonShipmentList extends AmazonInboundCore implements Iterator
+    class AmazonShipmentList extends AmazonInboundCore implements \Iterator
     {
 
         protected $tokenFlag    = false;

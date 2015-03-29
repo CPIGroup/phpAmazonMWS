@@ -1,0 +1,52 @@
+<phpunit bootstrap="vendor/autoload.php">
+    <testsuites>
+        <testsuite name="Feed">
+            <file>test/Feed/AmazonFeedListTest.php</file>
+            <file>test/Feed/AmazonFeedResultTest.php</file>
+            <file>test/Feed/AmazonFeedTest.php</file>
+        </testsuite>
+        <testsuite name="Inbound">
+            <file>test/Inbound/AmazonShipmentItemListTest.php</file>
+            <file>test/Inbound/AmazonShipmentListTest.php</file>
+            <file>test/Inbound/AmazonShipmentPlannerTest.php</file>
+            <file>test/Inbound/AmazonShipmentTest.php</file>
+        </testsuite>
+        <testsuite name="Inventory">
+            <file>test/Inventory/AmazonInventoryListTest.php</file>
+        </testsuite>
+        <testsuite name="Order">
+            <file>test/Order/AmazonOrderItemListTest.php</file>
+            <file>test/Order/AmazonOrderListTest.php</file>
+            <file>test/Order/AmazonOrderSetTest.php</file>
+            <file>test/Order/AmazonOrderTest.php</file>
+        </testsuite>
+        <testsuite name="Outbound">
+            <file>test/Outbound/AmazonFulfillmentOrderCreatorTest.php</file>
+            <file>test/Outbound/AmazonFulfillmentOrderListTest.php</file>
+            <file>test/Outbound/AmazonFulfillmentOrderTest.php</file>
+            <file>test/Outbound/AmazonFulfillmentPreviewTest.php</file>
+            <file>test/Outbound/AmazonPackageTrackerTest.php</file>
+        </testsuite>
+        <testsuite name="Product">
+            <file>test/Product/AmazonProductInfoTest.php</file>
+            <file>test/Product/AmazonProductListTest.php</file>
+            <file>test/Product/AmazonProductSearchTest.php</file>
+            <file>test/Product/AmazonProductTest.php</file>
+        </testsuite>
+        <testsuite name="Report">
+            <file>test/Report/AmazonReportAcknowledgerTest.php</file>
+            <file>test/Report/AmazonReportListTest.php</file>
+            <file>test/Report/AmazonReportRequestListTest.php</file>
+            <file>test/Report/AmazonReportRequestTest.php</file>
+            <file>test/Report/AmazonReportScheduleListTest.php</file>
+            <file>test/Report/AmazonReportScheduleManagerTest.php</file>
+            <file>test/Report/AmazonReportTest.php</file>
+        </testsuite>
+        <testsuite name="Seller">
+            <file>test/Seller/AmazonParticipationListTest.php</file>
+        </testsuite>
+        <testsuite name="AllTests">
+            <file>tests</file>
+        </testsuite>
+    </testsuites>
+</phpunit>

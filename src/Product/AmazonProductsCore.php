@@ -15,6 +15,7 @@
      * See the License for the specific language governing permissions and
      * limitations under the License.
      */
+    use CPIGroup\AmazonCore;
 
     /**
      * Core class for Amazon Products API.
@@ -51,7 +52,7 @@
             if (file_exists( $this->config )) {
                 include( $this->config );
             } else {
-                throw new Exception( 'Config file does not exist!' );
+                throw new \Exception( 'Config file does not exist!' );
             }
 
             if (isset( $AMAZON_VERSION_PRODUCTS )) {

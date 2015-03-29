@@ -17,8 +17,8 @@
   },
   "autoload": {
     "psr-4": {
-      "CPIGroup": "src/",
-      "CPIGroupTest": "test/"
+      "CPIGroup\\": "src/",
+      "CPIGroupTest\\": "test/"
     }
   }
 }

@@ -26,7 +26,7 @@
  * Amazon will return a count of the number of report schedules affected,
  * which will usually be 1.
  */
-class AmazonReportScheduleManager extends AmazonReportsCore implements Iterator
+class AmazonReportScheduleManager extends AmazonReportsCore implements \Iterator
 {
 
     private $scheduleList;

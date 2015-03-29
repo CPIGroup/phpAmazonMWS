@@ -139,7 +139,7 @@
             $this->setStore( $s );
             $this->setMock( $mock, $m );
 
-            $this->env                           = __DIR__ . '/../../environment.php';
+            $this->env                           = __DIR__ . '/../environment.php';
             $this->options[ 'SignatureVersion' ] = 2;
             $this->options[ 'SignatureMethod' ]  = 'HmacSHA256';
         }
@@ -228,7 +228,7 @@
             ) {
                 $url = $this->mockFiles[ $this->mockIndex ];
             } else {
-                $url = 'mock/' . $this->mockFiles[ $this->mockIndex ];
+                $url = 'test/mock/' . $this->mockFiles[ $this->mockIndex ];
             }
             $this->mockIndex++;
 
@@ -403,7 +403,7 @@
                     $this->urlbase = $AMAZON_SERVICE_URL;
                 }
             } else {
-                throw new Exception( "Config file does not exist or cannot be read! ($path)" );
+                throw new \Exception( "Config file does not exist or cannot be read! ($path)" );
             }
         }
 
@@ -423,7 +423,7 @@
             if (file_exists( $path ) && is_readable( $path )) {
                 $this->logpath = $path;
             } else {
-                throw new Exception( "Log file does not exist or cannot be read! ($path)" );
+                throw new \Exception( "Log file does not exist or cannot be read! ($path)" );
             }
 
         }
@@ -448,11 +448,11 @@
             if (file_exists( $this->config )) {
                 include( $this->config );
             } else {
-                throw new Exception( "Config file does not exist!" );
+                throw new \Exception( "Config file does not exist!" );
             }
 
             if (empty( $store ) || !is_array( $store )) {
-                throw new Exception( "No stores defined!" );
+                throw new \Exception( "No stores defined!" );
             }
 
             if (!isset( $s ) && count( $store ) === 1) {
@@ -521,7 +521,7 @@
                 if (file_exists( $this->config )) {
                     include( $this->config );
                 } else {
-                    throw new Exception( "Config file does not exist!" );
+                    throw new \Exception( "Config file does not exist!" );
                 }
                 if (isset( $logfunction ) && $logfunction != '' && function_exists( $logfunction )) {
                     switch ($level) {
@@ -585,7 +585,7 @@
                     fwrite( $fd, $str . "\r\n" );
                     fclose( $fd );
                 } else {
-                    throw new Exception( 'Error! Cannot write to log! (' . $this->logpath . ')' );
+                    throw new \Exception( 'Error! Cannot write to log! (' . $this->logpath . ')' );
                 }
             } else {
                 return false;
@@ -650,7 +650,7 @@
             if (file_exists( $this->config )) {
                 include( $this->config );
             } else {
-                throw new Exception( "Config file does not exist!" );
+                throw new \Exception( "Config file does not exist!" );
             }
 
             if (array_key_exists( $this->storeName, $store )
@@ -658,7 +658,7 @@
             ) {
                 $secretKey = $store[ $this->storeName ][ 'secretKey' ];
             } else {
-                throw new Exception( "Secret Key is missing!" );
+                throw new \Exception( "Secret Key is missing!" );
             }
 
             unset( $this->options[ 'Signature' ] );
@@ -918,7 +918,7 @@
                 $stringToSign = $this->_calculateStringToSignV2( $parameters );
                 //            var_dump($stringToSign);
             } else {
-                throw new Exception( "Invalid Signature Version specified" );
+                throw new \Exception( "Invalid Signature Version specified" );
             }
 
             return $this->_sign( $stringToSign, $key, $algorithm );
@@ -970,7 +970,7 @@
             } else if ($algorithm === 'HmacSHA256') {
                 $hash = 'sha256';
             } else {
-                throw new Exception ( "Non-supported signing method specified" );
+                throw new \Exception ( "Non-supported signing method specified" );
             }
 
             return base64_encode(

@@ -15,8 +15,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+    use CPIGroup\AmazonCore;
 
-/**
+    /**
  * Core class for Amazon Outbound Shipment API.
  * 
  * This is the core class for all objects in the Amazon Outbound section.

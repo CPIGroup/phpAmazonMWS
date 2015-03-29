@@ -24,7 +24,7 @@
      * wish to retrieve information for only one order, please use the <i>AmazonOrder</i>
      * class instead.
      */
-    class AmazonOrderSet extends AmazonOrderCore implements Iterator
+    class AmazonOrderSet extends AmazonOrderCore implements \Iterator
     {
 
         private $i     = 0;

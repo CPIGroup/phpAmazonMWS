@@ -28,7 +28,7 @@ $store['YourAmazonStore']['serviceUrl'] = ''; //optional override for Service UR
 $AMAZON_SERVICE_URL = 'https://mws.amazonservices.com/';
 
 //Location of log file to use
-$logpath = __DIR__.'/log.txt';
+$logpath = __DIR__.'/test/log.txt';
 
 //Name of custom log function to use
 $logfunction = '';

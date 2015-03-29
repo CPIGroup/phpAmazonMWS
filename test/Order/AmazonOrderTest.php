@@ -13,26 +13,6 @@ class AmazonOrderTest extends \PHPUnit_Framework_TestCase
      */
     protected $object;
 
-    /**
-     * Sets up the fixture, for example, opens a network connection.
-     * This method is called before a test is executed.
-     */
-    protected function setUp()
-    {
-
-        resetLog();
-        $this->object = new AmazonOrder( 'testStore', null, null, true, null, __DIR__ . '/../test-config.php' );
-    }
-
-    /**
-     * Tears down the fixture, for example, closes a network connection.
-     * This method is called after a test is executed.
-     */
-    protected function tearDown()
-    {
-
-    }
-
     public function testSetUp()
     {
 
@@ -42,7 +22,7 @@ class AmazonOrderTest extends \PHPUnit_Framework_TestCase
         $this->assertArrayHasKey( 'AmazonOrderId.Id.1', $o );
         $this->assertEquals( '77', $o[ 'AmazonOrderId.Id.1' ] );
 
-        $data = simplexml_load_file( __DIR__ . '/../../mock/fetchOrder.xml' );
+        $data = simplexml_load_file( __DIR__ . '/../mock/fetchOrder.xml' );
         $obj2 = new AmazonOrder( 'testStore', null, $data->GetOrderResult->Orders->Order );
 
         $get = $obj2->getAmazonOrderId();
@@ -475,6 +455,28 @@ class AmazonOrderTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals( $x, $altget );
 
         $this->assertFalse( $this->object->fetchItems() ); //not fetched yet for this object
+    }
+
+    /**
+     * Sets up the fixture, for example, opens a network connection.
+     * This method is called before a test is executed.
+     */
+    protected function setUp()
+    {
+
+        setupDummyConfigFile();
+        resetLog();
+        $this->object = new AmazonOrder( 'testStore', null, null, true, null, __DIR__ . '/../test-config.php' );
+    }
+
+    /**
+     * Tears down the fixture, for example, closes a network connection.
+     * This method is called after a test is executed.
+     */
+    protected function tearDown()
+    {
+
+        removeDummyConfigFile();
     }
 
 }

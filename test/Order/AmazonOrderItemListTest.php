@@ -13,26 +13,6 @@ class AmazonOrderItemListTest extends \PHPUnit_Framework_TestCase
      */
     protected $object;
 
-    /**
-     * Sets up the fixture, for example, opens a network connection.
-     * This method is called before a test is executed.
-     */
-    protected function setUp()
-    {
-
-        resetLog();
-        $this->object = new AmazonOrderItemList( 'testStore', null, true, null, __DIR__ . '/../test-config.php' );
-    }
-
-    /**
-     * Tears down the fixture, for example, closes a network connection.
-     * This method is called after a test is executed.
-     */
-    protected function tearDown()
-    {
-
-    }
-
     public function testSetUp()
     {
 
@@ -489,6 +469,28 @@ class AmazonOrderItemListTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals( 'CBA_OTF_5', $r[ 1 ][ 'SellerSKU' ] );
         $this->assertEquals( 2, count( $r ) );
         $this->assertNotEquals( $r[ 0 ], $r[ 1 ] );
+    }
+
+    /**
+     * Sets up the fixture, for example, opens a network connection.
+     * This method is called before a test is executed.
+     */
+    protected function setUp()
+    {
+
+        setupDummyConfigFile();
+        resetLog();
+        $this->object = new AmazonOrderItemList( 'testStore', null, true, null, __DIR__ . '/../test-config.php' );
+    }
+
+    /**
+     * Tears down the fixture, for example, closes a network connection.
+     * This method is called after a test is executed.
+     */
+    protected function tearDown()
+    {
+
+        removeDummyConfigFile();
     }
 
 }

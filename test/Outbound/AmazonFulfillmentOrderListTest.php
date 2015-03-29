@@ -13,26 +13,6 @@ class AmazonFulfillmentOrderListTest extends \PHPUnit_Framework_TestCase
      */
     protected $object;
 
-    /**
-     * Sets up the fixture, for example, opens a network connection.
-     * This method is called before a test is executed.
-     */
-    protected function setUp()
-    {
-
-        resetLog();
-        $this->object = new AmazonFulfillmentOrderList( 'testStore', true, null, __DIR__ . '/../test-config.php' );
-    }
-
-    /**
-     * Tears down the fixture, for example, closes a network connection.
-     * This method is called after a test is executed.
-     */
-    protected function tearDown()
-    {
-
-    }
-
     public function testSetStartTime()
     {
 
@@ -189,6 +169,28 @@ class AmazonFulfillmentOrderListTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals( 'extern_id_1154539615776', $r[ 0 ][ 'SellerFulfillmentOrderId' ] );
         $this->assertEquals( 'external-order-ebaytime1154557376014', $r[ 1 ][ 'SellerFulfillmentOrderId' ] );
         $this->assertNotEquals( $r[ 0 ], $r[ 1 ] );
+    }
+
+    /**
+     * Sets up the fixture, for example, opens a network connection.
+     * This method is called before a test is executed.
+     */
+    protected function setUp()
+    {
+
+        setupDummyConfigFile();
+        resetLog();
+        $this->object = new AmazonFulfillmentOrderList( 'testStore', true, null, __DIR__ . '/../test-config.php' );
+    }
+
+    /**
+     * Tears down the fixture, for example, closes a network connection.
+     * This method is called after a test is executed.
+     */
+    protected function tearDown()
+    {
+
+        removeDummyConfigFile();
     }
 
 }

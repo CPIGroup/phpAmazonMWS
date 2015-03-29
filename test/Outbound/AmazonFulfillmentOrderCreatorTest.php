@@ -13,27 +13,6 @@ class AmazonFulfillmentOrderCreatorTest extends \PHPUnit_Framework_TestCase
      */
     protected $object;
 
-    /**
-     * Sets up the fixture, for example, opens a network connection.
-     * This method is called before a test is executed.
-     */
-    protected function setUp()
-    {
-
-        resetLog();
-        $this->object = new AmazonFulfillmentOrderCreator( 'testStore', true, null,
-            __DIR__ . '/../test-config.php' );
-    }
-
-    /**
-     * Tears down the fixture, for example, closes a network connection.
-     * This method is called after a test is executed.
-     */
-    protected function tearDown()
-    {
-
-    }
-
     public function testSetFulfillmentOrderId()
     {
 
@@ -378,6 +357,29 @@ class AmazonFulfillmentOrderCreatorTest extends \PHPUnit_Framework_TestCase
             $check[ 10 ] );
         $this->assertEquals( 'Returning Mock Response: 200', $check[ 11 ] );
         $this->assertEquals( 'Successfully created Fulfillment Order 123ABC / ABC123', $check[ 12 ] );
+    }
+
+    /**
+     * Sets up the fixture, for example, opens a network connection.
+     * This method is called before a test is executed.
+     */
+    protected function setUp()
+    {
+
+        setupDummyConfigFile();
+        resetLog();
+        $this->object = new AmazonFulfillmentOrderCreator( 'testStore', true, null,
+            __DIR__ . '/../test-config.php' );
+    }
+
+    /**
+     * Tears down the fixture, for example, closes a network connection.
+     * This method is called after a test is executed.
+     */
+    protected function tearDown()
+    {
+
+        removeDummyConfigFile();
     }
 
 }

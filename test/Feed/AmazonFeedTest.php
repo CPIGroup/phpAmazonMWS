@@ -13,26 +13,6 @@ class AmazonFeedTest extends \PHPUnit_Framework_TestCase
      */
     protected $object;
 
-    /**
-     * Sets up the fixture, for example, opens a network connection.
-     * This method is called before a test is executed.
-     */
-    protected function setUp()
-    {
-
-        resetLog();
-        $this->object = new AmazonFeed( 'testStore', true, null, __DIR__ . '/../test-config.php' );
-    }
-
-    /**
-     * Tears down the fixture, for example, closes a network connection.
-     * This method is called after a test is executed.
-     */
-    protected function tearDown()
-    {
-
-    }
-
     public function testSetFeedType()
     {
 
@@ -136,6 +116,28 @@ class AmazonFeedTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals( '2012-12-12T12:12:12+00:00', $r[ 'SubmittedDate' ] );
         $this->assertArrayHasKey( 'FeedProcessingStatus', $r );
         $this->assertEquals( '_SUBMITTED_', $r[ 'FeedProcessingStatus' ] );
+    }
+
+    /**
+     * Sets up the fixture, for example, opens a network connection.
+     * This method is called before a test is executed.
+     */
+    protected function setUp()
+    {
+
+        setupDummyConfigFile();
+        resetLog();
+        $this->object = new AmazonFeed( 'testStore', true, null, __DIR__ . '/../test-config.php' );
+    }
+
+    /**
+     * Tears down the fixture, for example, closes a network connection.
+     * This method is called after a test is executed.
+     */
+    protected function tearDown()
+    {
+
+        removeDummyConfigFile();
     }
 
 }

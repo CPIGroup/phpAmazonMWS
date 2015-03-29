@@ -13,26 +13,6 @@ class AmazonShipmentPlannerTest extends \PHPUnit_Framework_TestCase
      */
     protected $object;
 
-    /**
-     * Sets up the fixture, for example, opens a network connection.
-     * This method is called before a test is executed.
-     */
-    protected function setUp()
-    {
-
-        resetLog();
-        $this->object = new AmazonShipmentPlanner( 'testStore', true, null, __DIR__ . '/../test-config.php' );
-    }
-
-    /**
-     * Tears down the fixture, for example, closes a network connection.
-     * This method is called after a test is executed.
-     */
-    protected function tearDown()
-    {
-
-    }
-
     public function testSetAddress()
     {
 
@@ -176,15 +156,6 @@ class AmazonShipmentPlannerTest extends \PHPUnit_Framework_TestCase
         $this->assertArrayNotHasKey( 'InboundShipmentPlanRequestItems.member.1.Quantity', $o3 );
     }
 
-    //    public function testSetShipmentId(){
-    //        $this->assertFalse($this->object->setShipmentId(null)); //can't be nothing
-    //        $this->assertFalse($this->object->setShipmentId(5)); //can't be an int
-    //        $this->assertNull($this->object->setShipmentId('777'));
-    //        $o = $this->object->getOptions();
-    //        $this->assertArrayHasKey('ShipmentId',$o);
-    //        $this->assertEquals('777',$o['ShipmentId']);
-    //    }
-
     public function testFetchPlan()
     {
 
@@ -220,6 +191,79 @@ class AmazonShipmentPlannerTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals( 'Fetched Mock File: test/mock/fetchPlan.xml', $check[ 4 ] );
 
         return $this->object;
+    }
+
+    /**
+     * @depends testFetchPlan
+     */
+    public function testGetPlan( $o )
+    {
+
+        $x                                      = [ ];
+        $x1                                     = [ ];
+        $a1                                     = [ ];
+        $a1[ 'PostalCode' ]                     = '85043';
+        $a1[ 'Name' ]                           = 'Amazon.com';
+        $a1[ 'CountryCode' ]                    = 'US';
+        $a1[ 'StateOrProvinceCode' ]            = 'AZ';
+        $a1[ 'AddressLine1' ]                   = '4750 West Mohave St';
+        $a1[ 'City' ]                           = 'Phoenix';
+        $x1[ 'ShipToAddress' ]                  = $a1;
+        $x1[ 'ShipmentId' ]                     = 'FBA63J76R';
+        $x1[ 'DestinationFulfillmentCenterId' ] = 'PHX6';
+        $x1[ 'LabelPrepType' ]                  = 'NO_LABEL';
+        $i1                                     = [ ];
+        $i1[ 0 ][ 'SellerSKU' ]                 = 'Football2415';
+        $i1[ 0 ][ 'Quantity' ]                  = '3';
+        $i1[ 0 ][ 'FulfillmentNetworkSKU' ]     = 'B000FADVPQ';
+        $i1[ 1 ][ 'SellerSKU' ]                 = 'TeeballBall3251';
+        $i1[ 1 ][ 'Quantity' ]                  = '5';
+        $i1[ 1 ][ 'FulfillmentNetworkSKU' ]     = 'B0011VECH4';
+        $x1[ 'Items' ]                          = $i1;
+        $x[ 0 ]                                 = $x1;
+        $x2                                     = [ ];
+        $a2                                     = $a1;
+        $a2[ 'AddressLine1' ]                   = '6835 West Buckeye Road';
+        $x2[ 'ShipToAddress' ]                  = $a2;
+        $x2[ 'ShipmentId' ]                     = 'FBA63HGKJ';
+        $x2[ 'DestinationFulfillmentCenterId' ] = 'PHX3';
+        $x2[ 'LabelPrepType' ]                  = 'SELLER_LABEL';
+        $i2                                     = [ ];
+        $i2[ 0 ][ 'SellerSKU' ]                 = 'DVD2468';
+        $i2[ 0 ][ 'Quantity' ]                  = '2';
+        $i2[ 0 ][ 'FulfillmentNetworkSKU' ]     = 'X000579L45';
+        $x2[ 'Items' ]                          = $i2;
+        $x[ 1 ]                                 = $x2;
+
+        $this->assertEquals( $x, $o->getPlan() );
+        $this->assertEquals( $x1, $o->getPlan( 0 ) );
+        $this->assertEquals( $x2, $o->getPlan( 1 ) );
+
+        $this->assertFalse( $this->object->getPlan() ); //not fetched yet for this object
+    }
+
+    //    public function testSetShipmentId(){
+    //        $this->assertFalse($this->object->setShipmentId(null)); //can't be nothing
+    //        $this->assertFalse($this->object->setShipmentId(5)); //can't be an int
+    //        $this->assertNull($this->object->setShipmentId('777'));
+    //        $o = $this->object->getOptions();
+    //        $this->assertArrayHasKey('ShipmentId',$o);
+    //        $this->assertEquals('777',$o['ShipmentId']);
+    //    }
+
+    /**
+     * @depends testFetchPlan
+     */
+    public function testGetShipmentIdList( $o )
+    {
+
+        $x      = [ ];
+        $x[ 0 ] = 'FBA63J76R';
+        $x[ 1 ] = 'FBA63HGKJ';
+
+        $this->assertEquals( $x, $o->getShipmentIdList() );
+
+        $this->assertFalse( $this->object->getShipmentIdList() ); //not fetched yet for this object
     }
 
     //    /**
@@ -276,70 +320,6 @@ class AmazonShipmentPlannerTest extends \PHPUnit_Framework_TestCase
     /**
      * @depends testFetchPlan
      */
-    public function testGetPlan( $o )
-    {
-
-        $x                                      = [ ];
-        $x1                                     = [ ];
-        $a1                                     = [ ];
-        $a1[ 'PostalCode' ]                     = '85043';
-        $a1[ 'Name' ]                           = 'Amazon.com';
-        $a1[ 'CountryCode' ]                    = 'US';
-        $a1[ 'StateOrProvinceCode' ]            = 'AZ';
-        $a1[ 'AddressLine1' ]                   = '4750 West Mohave St';
-        $a1[ 'City' ]                           = 'Phoenix';
-        $x1[ 'ShipToAddress' ]                  = $a1;
-        $x1[ 'ShipmentId' ]                     = 'FBA63J76R';
-        $x1[ 'DestinationFulfillmentCenterId' ] = 'PHX6';
-        $x1[ 'LabelPrepType' ]                  = 'NO_LABEL';
-        $i1                                     = [ ];
-        $i1[ 0 ][ 'SellerSKU' ]                 = 'Football2415';
-        $i1[ 0 ][ 'Quantity' ]                  = '3';
-        $i1[ 0 ][ 'FulfillmentNetworkSKU' ]     = 'B000FADVPQ';
-        $i1[ 1 ][ 'SellerSKU' ]                 = 'TeeballBall3251';
-        $i1[ 1 ][ 'Quantity' ]                  = '5';
-        $i1[ 1 ][ 'FulfillmentNetworkSKU' ]     = 'B0011VECH4';
-        $x1[ 'Items' ]                          = $i1;
-        $x[ 0 ]                                 = $x1;
-        $x2                                     = [ ];
-        $a2                                     = $a1;
-        $a2[ 'AddressLine1' ]                   = '6835 West Buckeye Road';
-        $x2[ 'ShipToAddress' ]                  = $a2;
-        $x2[ 'ShipmentId' ]                     = 'FBA63HGKJ';
-        $x2[ 'DestinationFulfillmentCenterId' ] = 'PHX3';
-        $x2[ 'LabelPrepType' ]                  = 'SELLER_LABEL';
-        $i2                                     = [ ];
-        $i2[ 0 ][ 'SellerSKU' ]                 = 'DVD2468';
-        $i2[ 0 ][ 'Quantity' ]                  = '2';
-        $i2[ 0 ][ 'FulfillmentNetworkSKU' ]     = 'X000579L45';
-        $x2[ 'Items' ]                          = $i2;
-        $x[ 1 ]                                 = $x2;
-
-        $this->assertEquals( $x, $o->getPlan() );
-        $this->assertEquals( $x1, $o->getPlan( 0 ) );
-        $this->assertEquals( $x2, $o->getPlan( 1 ) );
-
-        $this->assertFalse( $this->object->getPlan() ); //not fetched yet for this object
-    }
-
-    /**
-     * @depends testFetchPlan
-     */
-    public function testGetShipmentIdList( $o )
-    {
-
-        $x      = [ ];
-        $x[ 0 ] = 'FBA63J76R';
-        $x[ 1 ] = 'FBA63HGKJ';
-
-        $this->assertEquals( $x, $o->getShipmentIdList() );
-
-        $this->assertFalse( $this->object->getShipmentIdList() ); //not fetched yet for this object
-    }
-
-    /**
-     * @depends testFetchPlan
-     */
     public function testGetShipmentId( $o )
     {
 
@@ -349,6 +329,28 @@ class AmazonShipmentPlannerTest extends \PHPUnit_Framework_TestCase
         $this->assertFalse( $o->getShipmentId( 'wrong' ) ); //not number
         $this->assertFalse( $o->getShipmentId( 1.5 ) ); //not integer
         $this->assertFalse( $this->object->getShipmentId() ); //not fetched yet for this object
+    }
+
+    /**
+     * Sets up the fixture, for example, opens a network connection.
+     * This method is called before a test is executed.
+     */
+    protected function setUp()
+    {
+
+        setupDummyConfigFile();
+        resetLog();
+        $this->object = new AmazonShipmentPlanner( 'testStore', true, null, __DIR__ . '/../test-config.php' );
+    }
+
+    /**
+     * Tears down the fixture, for example, closes a network connection.
+     * This method is called after a test is executed.
+     */
+    protected function tearDown()
+    {
+
+        removeDummyConfigFile();
     }
 
 }

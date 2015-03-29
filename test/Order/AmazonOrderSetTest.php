@@ -21,6 +21,7 @@ class AmazonOrderSetTest extends \PHPUnit_Framework_TestCase
     protected function setUp()
     {
 
+        setupDummyConfigFile();
         resetLog();
         $this->object = new AmazonOrderSet( 'testStore', null, true, null, __DIR__ . '/../test-config.php' );
     }
@@ -32,6 +33,7 @@ class AmazonOrderSetTest extends \PHPUnit_Framework_TestCase
     protected function tearDown()
     {
 
+        removeDummyConfigFile();
     }
 
     public function testSetUp()

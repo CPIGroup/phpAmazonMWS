@@ -21,6 +21,7 @@ class AmazonShipmentTest extends \PHPUnit_Framework_TestCase
     protected function setUp()
     {
 
+        setupDummyConfigFile();
         resetLog();
         $this->object = new AmazonShipment( 'testStore', true, null, __DIR__ . '/../test-config.php' );
     }
@@ -32,6 +33,7 @@ class AmazonShipmentTest extends \PHPUnit_Framework_TestCase
     protected function tearDown()
     {
 
+        removeDummyConfigFile();
     }
 
     public function testSetAddress()

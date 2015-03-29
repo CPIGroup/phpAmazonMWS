@@ -13,26 +13,6 @@ class AmazonParticipationListTest extends \PHPUnit_Framework_TestCase
      */
     protected $object;
 
-    /**
-     * Sets up the fixture, for example, opens a network connection.
-     * This method is called before a test is executed.
-     */
-    protected function setUp()
-    {
-
-        resetLog();
-        $this->object = new AmazonParticipationList( 'testStore', true, null, __DIR__ . '/../test-config.php' );
-    }
-
-    /**
-     * Tears down the fixture, for example, closes a network connection.
-     * This method is called after a test is executed.
-     */
-    protected function tearDown()
-    {
-
-    }
-
     public function testSetUseToken()
     {
 
@@ -260,6 +240,28 @@ class AmazonParticipationListTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals( 'A135KKEKJAIBJ56', $p[ 0 ][ 'SellerId' ] );
         $this->assertEquals( 'A135KKEKWF1JAI6', $p[ 1 ][ 'SellerId' ] );
         $this->assertNotEquals( $p[ 0 ], $p[ 1 ] );
+    }
+
+    /**
+     * Sets up the fixture, for example, opens a network connection.
+     * This method is called before a test is executed.
+     */
+    protected function setUp()
+    {
+
+        setupDummyConfigFile();
+        resetLog();
+        $this->object = new AmazonParticipationList( 'testStore', true, null, __DIR__ . '/../test-config.php' );
+    }
+
+    /**
+     * Tears down the fixture, for example, closes a network connection.
+     * This method is called after a test is executed.
+     */
+    protected function tearDown()
+    {
+
+        removeDummyConfigFile();
     }
 
 }

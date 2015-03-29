@@ -133,7 +133,7 @@
         {
 
             if (is_null( $config )) {
-                $config = __DIR__ . '/../../amazon-config.php';
+                $config = __DIR__ . '/../amazon-config.php';
             }
             $this->setConfig( $config );
             $this->setStore( $s );

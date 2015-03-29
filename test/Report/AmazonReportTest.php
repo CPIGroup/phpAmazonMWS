@@ -13,26 +13,6 @@ class AmazonReportTest extends \PHPUnit_Framework_TestCase
      */
     protected $object;
 
-    /**
-     * Sets up the fixture, for example, opens a network connection.
-     * This method is called before a test is executed.
-     */
-    protected function setUp()
-    {
-
-        resetLog();
-        $this->object = new AmazonReport( 'testStore', null, true, null, __DIR__ . '/../test-config.php' );
-    }
-
-    /**
-     * Tears down the fixture, for example, closes a network connection.
-     * This method is called after a test is executed.
-     */
-    protected function tearDown()
-    {
-
-    }
-
     public function testSetUp()
     {
 
@@ -92,6 +72,32 @@ class AmazonReportTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals( "Successfully saved report #777 at $path", $check[ 1 ] );
         $this->assertFileEquals( $path2, $path );
         $this->assertFalse( $this->object->saveReport( 'here' ) ); //not fetched yet for this object
+        $path = __DIR__ . '/../mock/saveReport.xml';
+        if (file_exists( $path )) {
+            unlink( $path );
+        }
+    }
+
+    /**
+     * Sets up the fixture, for example, opens a network connection.
+     * This method is called before a test is executed.
+     */
+    protected function setUp()
+    {
+
+        setupDummyConfigFile();
+        resetLog();
+        $this->object = new AmazonReport( 'testStore', null, true, null, __DIR__ . '/../test-config.php' );
+    }
+
+    /**
+     * Tears down the fixture, for example, closes a network connection.
+     * This method is called after a test is executed.
+     */
+    protected function tearDown()
+    {
+
+        removeDummyConfigFile();
     }
 
 }

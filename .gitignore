@@ -2,8 +2,9 @@
 amazon-config.php
 test.php
 log.txt
-/test-cases/log.txt
 composer.lock
+dummy.used
+test/log.txt
 
 # Created by https://www.gitignore.io
 

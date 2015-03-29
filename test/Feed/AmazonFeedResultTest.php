@@ -14,26 +14,6 @@ class AmazonFeedResultTest extends \PHPUnit_Framework_TestCase
     protected $object;
 
     /**
-     * Sets up the fixture, for example, opens a network connection.
-     * This method is called before a test is executed.
-     */
-    protected function setUp()
-    {
-
-        resetLog();
-        $this->object = new AmazonFeedResult( 'testStore', null, true, null, __DIR__ . '/../test-config.php' );
-    }
-
-    /**
-     * Tears down the fixture, for example, closes a network connection.
-     * This method is called after a test is executed.
-     */
-    protected function tearDown()
-    {
-
-    }
-
-    /**
      * testSetUp
      *
      * @author  Vincent Sposato <vincent.sposato@gmail.com>
@@ -89,6 +69,28 @@ class AmazonFeedResultTest extends \PHPUnit_Framework_TestCase
         $o->saveFeed( __DIR__ . '/../../mock/saveFeed.xml' );
         $check = parseLog();
         $this->assertEquals( 'Successfully saved feed #77 at ' . __DIR__ . '/../../mock/saveFeed.xml', $check[ 0 ] );
+    }
+
+    /**
+     * Sets up the fixture, for example, opens a network connection.
+     * This method is called before a test is executed.
+     */
+    protected function setUp()
+    {
+
+        setupDummyConfigFile();
+        resetLog();
+        $this->object = new AmazonFeedResult( 'testStore', null, true, null, __DIR__ . '/../test-config.php' );
+    }
+
+    /**
+     * Tears down the fixture, for example, closes a network connection.
+     * This method is called after a test is executed.
+     */
+    protected function tearDown()
+    {
+
+        removeDummyConfigFile();
     }
 
 }

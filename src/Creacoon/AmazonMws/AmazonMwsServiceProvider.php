@@ -27,7 +27,7 @@ class AmazonMwsServiceProvider extends ServiceProvider {
 		$this->package('creacoon/amazon-mws');
 
 		AliasLoader::getInstance()->alias('AmazonOrderList', 'Creacoon\AmazonMws\AmazonOrderList');
-		AliasLoader::getInstance()->alias('AmazonOrderList', 'Creacoon\AmazonMws\AmazonOrderItemList');
+		AliasLoader::getInstance()->alias('AmazonOrderItemList', 'Creacoon\AmazonMws\AmazonOrderItemList');
 	}
 
 	/**

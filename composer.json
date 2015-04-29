@@ -1,0 +1,20 @@
+{
+    "name": "creacoon/amazon-mws",
+    "description": "",
+    "authors": [
+        {
+            "name": "Tom Coonen",
+            "email": "tom@creacoon.nl"
+        }
+    ],
+    "require": {
+        "php": ">=5.4.0",
+        "illuminate/support": "4.2.*"
+    },
+    "autoload": {
+        "psr-0": {
+            "Creacoon\\AmazonMws": "src/"
+        }
+    },
+    "minimum-stability": "stable"
+}

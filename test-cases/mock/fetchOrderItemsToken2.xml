@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+<ListOrderItemsByNextTokenResponse xmlns="https://mws.amazonservices.com/Orders/2011-01-01">
+    <ListOrderItemsByNextTokenResult>
+        <AmazonOrderId>058-1233752-8214740</AmazonOrderId>
+        <OrderItems>
+            <OrderItem>
+                <ASIN>BCTU1104UEFB</ASIN>
+                <OrderItemId>79039765272157</OrderItemId>
+                <SellerSKU>CBA_OTF_5</SellerSKU>
+                <Title>Example item name</Title>
+                <QuantityOrdered>2</QuantityOrdered>
+                <ItemPrice>
+                    <CurrencyCode>USD</CurrencyCode>
+                    <Amount>17.95</Amount>
+                </ItemPrice>
+                <PromotionIds>
+                    <PromotionId>FREESHIP</PromotionId>
+                </PromotionIds>
+            </OrderItem>
+        </OrderItems>
+    </ListOrderItemsByNextTokenResult>
+    <ResponseMetadata>
+        <RequestId>88faca76-b600-46d2-b53c-0c8c4533e43a</RequestId>
+    </ResponseMetadata>
+</ListOrderItemsByNextTokenResponse>

@@ -1,0 +1,31 @@
+<?xml version="1.0"?>
+<ListAllFulfillmentOrdersByNextTokenResponse xmlns="http://mws.amazonaws.com/FulfillmentOutboundShipment/2010-10-01/">
+    <ListAllFulfillmentOrdersByNextTokenResult>
+        <FulfillmentOrders>
+            <member>
+                <ShippingSpeedCategory>Standard</ShippingSpeedCategory>
+                <StatusUpdatedDateTime>2011-03-05T18:48:53Z</StatusUpdatedDateTime>
+                <SellerFulfillmentOrderId>external-order-ebaytime1154557376014</SellerFulfillmentOrderId>
+                <DestinationAddress>
+                    <PostalCode>98104</PostalCode>
+                    <PhoneNumber>123-123-4567</PhoneNumber>
+                    <Name>George Jones</Name>
+                    <CountryCode>US</CountryCode>
+                    <Line1>2345 5th Ave</Line1>
+                    <StateOrProvinceCode>WA</StateOrProvinceCode>
+                    <City>Seattle</City>
+                </DestinationAddress>
+                <FulfillmentMethod>Consumer</FulfillmentMethod>
+                <DisplayableOrderDateTime>2011-03-11T18:48:52Z</DisplayableOrderDateTime>
+                <FulfillmentPolicy>FillAllAvailable</FulfillmentPolicy>
+                <ReceivedDateTime>2011-03-03T18:48:53Z</ReceivedDateTime>
+                <DisplayableOrderId>test-order-test-1159210132812</DisplayableOrderId>
+                <DisplayableOrderComment>Sample order comment.</DisplayableOrderComment>
+                <FulfillmentOrderStatus>PLANNING</FulfillmentOrderStatus>
+            </member>
+        </FulfillmentOrders>
+    </ListAllFulfillmentOrdersByNextTokenResult>
+    <ResponseMetadata>
+        <RequestId>7e9c8d48-8e79-11df-929f-87c80302f8f6</RequestId>
+    </ResponseMetadata>
+</ListAllFulfillmentOrdersByNextTokenResponse>

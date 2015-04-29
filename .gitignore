@@ -2,3 +2,8 @@
 composer.phar
 composer.lock
 .DS_Store
+amazon-config.php
+test.php
+log.txt
+/test-cases/log.txt
+composer.lock

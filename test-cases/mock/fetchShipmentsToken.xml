@@ -1,0 +1,28 @@
+<?xml version="1.0"?>
+<ListInboundShipmentsResponse xmlns="http://mws.amazonaws.com/FulfillmentInboundShipment/2010-10-01/">
+    <ListInboundShipmentsResult>
+        <NextToken>Token!</NextToken>
+        <ShipmentData>
+            <member>
+                <ShipFromAddress>
+                    <PostalCode>98109</PostalCode>
+                    <Name>John Smith</Name>
+                    <CountryCode>US</CountryCode>
+                    <StateOrProvinceCode>WA</StateOrProvinceCode>
+                    <AddressLine2>Apt 401</AddressLine2>
+                    <AddressLine1>2345 3rd Ave</AddressLine1>
+                    <City>Seattle</City>
+                </ShipFromAddress>
+                <AreCasesRequired>false</AreCasesRequired>
+                <ShipmentId>FBA44JV8R</ShipmentId>
+                <ShipmentStatus>CLOSED</ShipmentStatus>
+                <ShipmentName>FBA (11/8/10 5:34 PM)</ShipmentName>
+                <DestinationFulfillmentCenterId>PHX3</DestinationFulfillmentCenterId>
+                <LabelPrepType>AMAZON_LABEL</LabelPrepType>
+            </member>
+        </ShipmentData>
+    </ListInboundShipmentsResult>
+    <ResponseMetadata>
+        <RequestId>06097697-41c3-4120-b952-bce655ae1690</RequestId>
+    </ResponseMetadata>
+</ListInboundShipmentsResponse>

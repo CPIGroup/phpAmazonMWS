@@ -1,0 +1,67 @@
+<?xml version="1.0"?>
+<GetOrderResponse xmlns="https://mws.amazonservices.com/Orders/2011-01-01">
+    <GetOrderResult>
+        <NextToken>2YgYW55IGNhcm5hbCBwbGVhc3VyZS4=</NextToken>
+        <LastUpdatedBefore>2010-10-05T18%3A12%3A20.687Z</LastUpdatedBefore>
+        <Orders>
+            <Order>
+                <AmazonOrderId>058-1233752-8214740</AmazonOrderId>
+                <SellerOrderId>123ABC</SellerOrderId>
+                <PurchaseDate>2010-10-05T00:06:07.000Z</PurchaseDate>
+                <LastUpdateDate>2010-10-05T12:43:16.000Z</LastUpdateDate>
+                <OrderStatus>Unshipped</OrderStatus>
+                <SalesChannel>Checkout by Amazon</SalesChannel>
+                <OrderChannel>OrderChannel</OrderChannel>
+                <ShipServiceLevel>Std DE Dom</ShipServiceLevel>
+                <FulfillmentChannel>MFN</FulfillmentChannel>
+                <OrderTotal>
+                    <CurrencyCode>USD</CurrencyCode>
+                    <Amount>4.78</Amount>
+                </OrderTotal>
+                <ShippingAddress>
+                    <Name>John Smith</Name>
+                    <AddressLine1>2700 First Avenue</AddressLine1>
+                    <AddressLine2>Apartment 1</AddressLine2>
+                    <AddressLine3>Suite 16</AddressLine3>
+                    <City>Seattle</City>
+                    <County>County</County>
+                    <District>District</District>
+                    <StateOrRegion>WA</StateOrRegion>
+                    <PostalCode>98102</PostalCode>
+                    <CountryCode>US</CountryCode>
+                    <Phone>123</Phone>
+                </ShippingAddress>
+                <NumberOfItemsShipped>1</NumberOfItemsShipped>
+                <NumberOfItemsUnshipped>1</NumberOfItemsUnshipped>
+                <PaymentExecutionDetail>
+                    <PaymentExecutionDetailItem>
+                        <Payment>
+                            <CurrencyCode>USD</CurrencyCode>
+                            <Amount>101.01</Amount>
+                        </Payment>
+                        <SubPaymentMethod>COD</SubPaymentMethod>
+                    </PaymentExecutionDetailItem>
+                    <PaymentExecutionDetailItem>
+                        <Payment>
+                            <CurrencyCode>USD</CurrencyCode>
+                            <Amount>10.00</Amount>
+                        </Payment>
+                        <SubPaymentMethod>GC</SubPaymentMethod>
+                    </PaymentExecutionDetailItem>
+                </PaymentExecutionDetail>
+                <PaymentMethod>COD</PaymentMethod>
+                <MarketplaceId>ATVPDKIKX0DER</MarketplaceId>
+                <BuyerName>Amazon User</BuyerName>
+                <BuyerEmail>5vlh04mgfmjh9h5@marketplace.amazon.com</BuyerEmail>
+                <ShipServiceLevelCategory>Standard</ShipServiceLevelCategory>
+                <OrderTotal>
+                    <CurrencyCode>USD</CurrencyCode>
+                    <Amount>25.75</Amount>
+                </OrderTotal>
+            </Order>
+        </Orders>
+    </GetOrderResult>
+    <ResponseMetadata>
+        <RequestId>88faca76-b600-46d2-b53c-0c8c4533e43a</RequestId>
+    </ResponseMetadata>
+</GetOrderResponse>

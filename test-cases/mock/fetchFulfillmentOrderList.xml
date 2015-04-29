@@ -1,0 +1,58 @@
+<?xml version="1.0"?>
+<ListAllFulfillmentOrdersResponse xmlns="http://mws.amazonaws.com/FulfillmentOutboundShipment/2010-10-01/">
+    <ListAllFulfillmentOrdersResult>
+        <FulfillmentOrders>
+            <member>
+                <ShippingSpeedCategory>Standard</ShippingSpeedCategory>
+                <StatusUpdatedDateTime>2011-01-28T23:48:48Z</StatusUpdatedDateTime>
+                <NotificationEmailList>
+                    <member>o8c2EXAMPLsfr7o@marketplace.amazon.com</member>
+                </NotificationEmailList>
+                <SellerFulfillmentOrderId>extern_id_1154539615776</SellerFulfillmentOrderId>
+                <DestinationAddress>
+                    <PostalCode>98101</PostalCode>
+                    <PhoneNumber>321-098-7654</PhoneNumber>
+                    <Name>Jane Adams</Name>
+                    <CountryCode>US</CountryCode>
+                    <Line1>123 Oak St.</Line1>
+                    <StateOrProvinceCode>WA</StateOrProvinceCode>
+                    <City>Seattle</City>
+                    <Line2>Apt. 321</Line2>
+                    <Line3>Suite 16</Line3>
+                    <DistrictOrCounty>9</DistrictOrCounty>
+                </DestinationAddress>
+                <FulfillmentMethod>Consumer</FulfillmentMethod>
+                <DisplayableOrderDateTime>2011-02-05T17:26:56Z</DisplayableOrderDateTime>
+                <FulfillmentPolicy>FillOrKill</FulfillmentPolicy>
+                <ReceivedDateTime>2011-02-06T17:26:56Z</ReceivedDateTime>
+                <DisplayableOrderId>test_displayable_id</DisplayableOrderId>
+                <DisplayableOrderComment>Sample comment text.</DisplayableOrderComment>
+                <FulfillmentOrderStatus>PROCESSING</FulfillmentOrderStatus>
+            </member>
+            <member>
+                <ShippingSpeedCategory>Standard</ShippingSpeedCategory>
+                <StatusUpdatedDateTime>2011-03-05T18:48:53Z</StatusUpdatedDateTime>
+                <SellerFulfillmentOrderId>external-order-ebaytime1154557376014</SellerFulfillmentOrderId>
+                <DestinationAddress>
+                    <PostalCode>98104</PostalCode>
+                    <PhoneNumber>123-123-4567</PhoneNumber>
+                    <Name>George Jones</Name>
+                    <CountryCode>US</CountryCode>
+                    <Line1>2345 5th Ave</Line1>
+                    <StateOrProvinceCode>WA</StateOrProvinceCode>
+                    <City>Seattle</City>
+                </DestinationAddress>
+                <FulfillmentMethod>Consumer</FulfillmentMethod>
+                <DisplayableOrderDateTime>2011-03-11T18:48:52Z</DisplayableOrderDateTime>
+                <FulfillmentPolicy>FillAllAvailable</FulfillmentPolicy>
+                <ReceivedDateTime>2011-03-03T18:48:53Z</ReceivedDateTime>
+                <DisplayableOrderId>test-order-test-1159210132812</DisplayableOrderId>
+                <DisplayableOrderComment>Sample order comment.</DisplayableOrderComment>
+                <FulfillmentOrderStatus>PLANNING</FulfillmentOrderStatus>
+            </member>
+        </FulfillmentOrders>
+    </ListAllFulfillmentOrdersResult>
+    <ResponseMetadata>
+        <RequestId>7e9c8d48-8e79-11df-929f-87c80302f8f6</RequestId>
+    </ResponseMetadata>
+</ListAllFulfillmentOrdersResponse>

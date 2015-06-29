@@ -143,6 +143,24 @@ class AmazonOrderList extends AmazonOrderCore implements Iterator{
         }
         
     }
+
+    public function setMarketPlaceFilter($list){
+        if (is_string($list)){
+            //if single string, set as filter
+            $this->resetMarketPlaceFilter();
+            $this->options['MarketplaceId.Id.1'] = $list;
+        } else if (is_array($list)){
+            //if array of strings, set all filters
+            $this->resetMarketPlaceFilter();
+            $i = 1;
+            foreach($list as $x){
+                $this->options['MarketplaceId.Id.'.$i] = $x;
+                $i++;
+            }
+        } else {
+            return false;
+        }
+    }
     
     /**
      * Sets the order status(es). (Optional)
@@ -181,6 +199,14 @@ class AmazonOrderList extends AmazonOrderCore implements Iterator{
     public function resetOrderStatusFilter(){
         foreach($this->options as $op=>$junk){
             if(preg_match("#OrderStatus#",$op)){
+                unset($this->options[$op]);
+            }
+        }
+    }
+
+    public function resetMarketPlaceFilter(){
+        foreach($this->options as $op=>$junk){
+            if(preg_match("#MarketplaceId#",$op)){
                 unset($this->options[$op]);
             }
         }

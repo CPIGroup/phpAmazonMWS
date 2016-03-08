@@ -125,7 +125,7 @@ abstract class AmazonCore{
      * @param string $config [optional] <p>An alternate config file to set. Used for testing.</p>
      */
     protected function __construct($s, $mock=false, $m = null, $config = null){
-        if (is_null($config)){
+        if (!is_array($config) && is_null($config)){
             $config = __DIR__.'/../../amazon-config.php';
         }
         $this->setConfig($config);
@@ -356,7 +356,12 @@ abstract class AmazonCore{
      * @throws Exception If the file cannot be found or read.
      */
     public function setConfig($path){
-        if (file_exists($path) && is_readable($path)){
+        if(is_array($path)){
+        	$configData = $path;
+        	$this->config = $configData;
+        	$this->setLogPath(__dir__ . '/log.txt');
+            
+        } else if (file_exists($path) && is_readable($path)){
             include($path);
             $this->config = $path;
             $this->setLogPath($logpath);
@@ -396,7 +401,9 @@ abstract class AmazonCore{
      * @throws Exception If the file can't be found.
      */
     public function setStore($s){
-        if (file_exists($this->config)){
+        if(is_array($this->config)){
+        	$store = $this->config;
+        } else if (file_exists($this->config)){
             include($this->config);
         } else {
             throw new Exception("Config file does not exist!");
@@ -416,6 +423,11 @@ abstract class AmazonCore{
             }
             if(!array_key_exists('secretKey', $store[$s])){
                 $this->log("Secret Key is missing!",'Warning');
+            }
+            if(array_key_exists('serviceUrl', $store[$s])){
+                $this->urlbase = $store[$s]['serviceUrl'];
+            } else {
+                $this->log("ServiceURL is missing!",'Warning');
             }
             
         } else {
@@ -451,7 +463,12 @@ abstract class AmazonCore{
         if ($msg != false) {
             $backtrace = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS);
             
-            if (file_exists($this->config)){
+            if(is_array($this->config)){
+            	// This is a bit of a hack, but we don't really care for now.
+            	$logFunction = $this->config['logFunction'];
+            	$muteLog = $this->config['muteLog'];
+            	
+            } else if (file_exists($this->config)){
                 include($this->config);
             } else {
                 throw new Exception("Config file does not exist!");
@@ -555,7 +572,9 @@ abstract class AmazonCore{
      * @throws Exception if config file or secret key is missing
      */
     protected function genQuery(){
-        if (file_exists($this->config)){
+        if(is_array($this->config)){ 
+        	$store = $this->config;
+        } else if (file_exists($this->config)){
             include($this->config);
         } else {
             throw new Exception("Config file does not exist!");

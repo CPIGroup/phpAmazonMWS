@@ -360,7 +360,7 @@ abstract class AmazonCore{
         	$configData = $path;
         	$this->config = $configData;
         	if(isset($configData['logPath'])){
-        		$this->setLogPath($configData['logPath'] . "log-amazon.txt");
+        		$this->setLogPath($configData['logPath'] . "/log-amazon.txt");
         	}else{
         		$this->setLogPath(__dir__ . '/log-amazon.txt');
             }

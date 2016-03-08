@@ -468,8 +468,8 @@ abstract class AmazonCore{
             
             if(is_array($this->config)){
             	// This is a bit of a hack, but we don't really care for now.
-            	$logFunction = $this->config['logFunction'];
-            	$muteLog = $this->config['muteLog'];
+            	if(isset($this->config['logFunction'])) $logFunction = $this->config['logFunction'];
+            	if(isset($this->config['muteLog'])) $muteLog = $this->config['muteLog'];
             	
             } else if (file_exists($this->config)){
                 include($this->config);

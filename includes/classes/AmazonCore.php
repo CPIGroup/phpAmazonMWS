@@ -359,8 +359,11 @@ abstract class AmazonCore{
         if(is_array($path)){
         	$configData = $path;
         	$this->config = $configData;
-        	$this->setLogPath(__dir__ . '/log.txt');
-            
+        	if(isset($configData['logPath'])){
+        		$this->setLogPath($configData['logPath']);
+        	}else{
+        		$this->setLogPath(__dir__ . '/log.txt');
+            }
         } else if (file_exists($path) && is_readable($path)){
             include($path);
             $this->config = $path;

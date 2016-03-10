@@ -34,13 +34,14 @@ class AmazonProductInfo extends AmazonProductsCore{
      * The parameters are passed to the parent constructor, which are
      * in turn passed to the AmazonCore constructor. See it for more information
      * on these parameters and common methods.
-     * @param string $s <p>Name for the store you want to use.</p>
+     * @param string $s [optional] <p>Name for the store you want to use.
+     * This parameter is optional if only one store is defined in the config file.</p>
      * @param boolean $mock [optional] <p>This is a flag for enabling Mock Mode.
      * This defaults to <b>FALSE</b>.</p>
      * @param array|string $m [optional] <p>The files (or file) to use in Mock Mode.</p>
      * @param string $config [optional] <p>An alternate config file to set. Used for testing.</p>
      */
-    public function __construct($s, $mock = false, $m = null, $config = null){
+    public function __construct($s = null, $mock = false, $m = null, $config = null){
         parent::__construct($s, $mock, $m, $config);
     }
     
@@ -83,6 +84,8 @@ class AmazonProductInfo extends AmazonProductsCore{
                 unset($this->options[$op]);
             }
         }
+        //remove Category-specific name
+        unset($this->options['SellerSKU']);
     }
     
     /**
@@ -124,6 +127,8 @@ class AmazonProductInfo extends AmazonProductsCore{
                 unset($this->options[$op]);
             }
         }
+        //remove Category-specific name
+        unset($this->options['ASIN']);
     }
     
     /**
@@ -393,9 +398,11 @@ class AmazonProductInfo extends AmazonProductsCore{
         if (array_key_exists('SellerSKUList.SellerSKU.1',$this->options)){
             $this->options['Action'] = 'GetProductCategoriesForSKU';
             $this->resetASINs();
+            $this->options['SellerSKU'] = $this->options['SellerSKUList.SellerSKU.1'];
         } else if (array_key_exists('ASINList.ASIN.1',$this->options)){
             $this->options['Action'] = 'GetProductCategoriesForASIN';
             $this->resetSKUs();
+            $this->options['ASIN'] = $this->options['ASINList.ASIN.1'];
         }
     }
     

@@ -112,8 +112,9 @@ abstract class AmazonCore{
      * 
      * This constructor is called when initializing all objects in this library.
      * The parameters are passed by the child objects' constructors.
-     * @param string $s <p>Name for the store you want to use as seen in the config file.
-     * If this is not set to a valid name, none of these objects will work.</p>
+     * @param string $s [optional] <p>Name for the store you want to use as seen in the config file.
+     * If there is only one store defined in the config file, this parameter is not necessary.
+     * If there is more than one store and this is not set to a valid name, none of these objects will work.</p>
      * @param boolean $mock [optional] <p>This is a flag for enabling Mock Mode.
      * When this is set to <b>TRUE</b>, the object will fetch responses from
      * files you specify instead of sending the requests to Amazon.
@@ -124,7 +125,7 @@ abstract class AmazonCore{
      * from the list to use as a response. See <i>setMock</i> for more information.</p>
      * @param string $config [optional] <p>An alternate config file to set. Used for testing.</p>
      */
-    protected function __construct($s, $mock=false, $m = null, $config = null){
+    protected function __construct($s = null, $mock = false, $m = null, $config = null){
         if (is_null($config)){
             $config = __DIR__.'/../../amazon-config.php';
         }
@@ -360,8 +361,9 @@ abstract class AmazonCore{
             include($path);
             $this->config = $path;
             $this->setLogPath($logpath);
-            if (isset($AMAZON_SERVICE_URL))
-            $this->urlbase = $AMAZON_SERVICE_URL;
+            if (isset($AMAZON_SERVICE_URL)) {
+                $this->urlbase = $AMAZON_SERVICE_URL;
+            }
         } else {
             throw new Exception("Config file does not exist or cannot be read! ($path)");
         }
@@ -392,14 +394,23 @@ abstract class AmazonCore{
      * for making requests with Amazon. If the store cannot be found in the
      * config file, or if any of the key values are missing,
      * the incident will be logged.
-     * @param string $s <p>The store name to look for.</p>
+     * @param string $s [optional] <p>The store name to look for.
+     * This parameter is not required if there is only one store defined in the config file.</p>
      * @throws Exception If the file can't be found.
      */
-    public function setStore($s){
+    public function setStore($s=null){
         if (file_exists($this->config)){
             include($this->config);
         } else {
             throw new Exception("Config file does not exist!");
+        }
+        
+        if (empty($store) || !is_array($store)) {
+            throw new Exception("No stores defined!");
+        }
+        
+        if (!isset($s) && count($store)===1) {
+            $s=key($store);
         }
         
         if(array_key_exists($s, $store)){
@@ -416,6 +427,9 @@ abstract class AmazonCore{
             }
             if(!array_key_exists('secretKey', $store[$s])){
                 $this->log("Secret Key is missing!",'Warning');
+            }
+            if (!empty($store[$s]['serviceUrl'])) {
+                $this->urlbase = $store[$s]['serviceUrl'];
             }
             
         } else {
@@ -499,7 +513,7 @@ abstract class AmazonCore{
                 file_put_contents($this->logpath, "This is the Amazon log, for Amazon classes to use.\n");
             }
             if (file_exists($this->logpath) && is_writable($this->logpath)){
-                $str = "[$level][" . date("Y/m/d h:i:s", mktime()) . " $name@$ip $fileName:$line $function] " . $msg;
+                $str = "[$level][" . date("Y/m/d H:i:s") . " $name@$ip $fileName:$line $function] " . $msg;
                 $fd = fopen($this->logpath, "a+");
                 fwrite($fd,$str . "\r\n");
                 fclose($fd);

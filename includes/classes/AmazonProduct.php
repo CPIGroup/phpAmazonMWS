@@ -33,14 +33,15 @@ class AmazonProduct extends AmazonProductsCore{
      * on these parameters and common methods.
      * Please note that an extra parameter comes before the usual Mock Mode parameters,
      * so be careful when setting up the object.
-     * @param string $s <p>Name for the store you want to use.</p>
+     * @param string $s [optional] <p>Name for the store you want to use.
+     * This parameter is optional if only one store is defined in the config file.</p>
      * @param SimpleXMLElement $data [optional] <p>XML data from Amazon to be parsed.</p>
      * @param boolean $mock [optional] <p>This is a flag for enabling Mock Mode.
      * This defaults to <b>FALSE</b>.</p>
      * @param array|string $m [optional] <p>The files (or file) to use in Mock Mode.</p>
      * @param string $config [optional] <p>An alternate config file to set. Used for testing.</p>
      */
-    public function __construct($s, $data = null, $mock = false, $m = null, $config = null){
+    public function __construct($s = null, $data = null, $mock = false, $m = null, $config = null){
         parent::__construct($s, $mock, $m, $config);
         
         if ($data){
@@ -133,6 +134,16 @@ class AmazonProduct extends AmazonProductsCore{
         //Relationships
         if ($xml->Relationships){
             foreach($xml->Relationships->children() as $x){
+                foreach($x->children() as $y){
+                    foreach($y->children() as $z){
+                        foreach($z->children() as $zzz){
+                            $this->data['Relationships'][$x->getName()][$y->getName()][$z->getName()][$zzz->getName()] = (string)$zzz;
+                        }
+                    }
+                }
+            }
+            //child relations use namespace but parent does not
+            foreach($xml->Relationships->children('ns2',true) as $x){
                 foreach($x->children() as $y){
                     foreach($y->children() as $z){
                         foreach($z->children() as $zzz){
@@ -291,7 +302,7 @@ class AmazonProduct extends AmazonProductsCore{
      * See <i>getData</i>.
      * @return array Huge array of Product data.
      */
-    public function getProduct(){
+    public function getProduct($num=null){
         return $this->getData();
     }
     

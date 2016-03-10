@@ -37,14 +37,15 @@ class AmazonServiceStatus extends AmazonCore{
      * on these parameters and common methods.
      * Please note that an extra parameter comes before the usual Mock Mode parameters,
      * so be careful when setting up the object.
-     * @param string $s <p>Name for the store you want to use.</p>
+     * @param string $s [optional] <p>Name for the store you want to use.
+     * This parameter is optional if only one store is defined in the config file.</p>
      * @param string $service [optional] <p>The service to set for the object.</p>
      * @param boolean $mock [optional] <p>This is a flag for enabling Mock Mode.
      * This defaults to <b>FALSE</b>.</p>
      * @param array|string $m [optional] <p>The files (or file) to use in Mock Mode.</p>
      * @param string $config [optional] <p>An alternate config file to set. Used for testing.</p>
      */
-    public function __construct($s, $service = null, $mock = false, $m = null, $config = null){
+    public function __construct($s = null, $service = null, $mock = false, $m = null, $config = null){
         parent::__construct($s, $mock, $m, $config);
         include($this->env);
         

@@ -44,7 +44,7 @@ function getAmazonOrders() {
 This example shows a function used to send a previously-created XML feed to Amazon to update Inventory numbers:
 ```php
 function sendInventoryFeed($feed) {
-    $amz=new AmazonFeed("myStore"); //store name matches the array key in the config file
+    $amz=new AmazonFeed(); //if there is only one store in config, it can be omitted
     $amz->setFeedType("_POST_INVENTORY_AVAILABILITY_DATA_"); //feed types listed in documentation
     $amz->setFeedContent($feed);
     $amz->submitFeed();

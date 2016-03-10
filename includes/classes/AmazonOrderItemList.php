@@ -38,14 +38,15 @@ class AmazonOrderItemList extends AmazonOrderCore implements Iterator{
      * on these parameters and common methods.
      * Please note that an extra parameter comes before the usual Mock Mode parameters,
      * so be careful when setting up the object.
-     * @param string $s <p>Name for the store you want to use.</p>
+     * @param string $s [optional] <p>Name for the store you want to use.
+     * This parameter is optional if only one store is defined in the config file.</p>
      * @param string $id [optional] <p>The order ID to set for the object.</p>
      * @param boolean $mock [optional] <p>This is a flag for enabling Mock Mode.
      * This defaults to <b>FALSE</b>.</p>
      * @param array|string $m [optional] <p>The files (or file) to use in Mock Mode.</p>
      * @param string $config [optional] <p>An alternate config file to set. Used for testing.</p>
      */
-    public function __construct($s, $id=null, $mock = false, $m = null, $config = null){
+    public function __construct($s = null, $id=null, $mock = false, $m = null, $config = null){
         parent::__construct($s, $mock, $m, $config);
         include($this->env);
         
@@ -251,6 +252,35 @@ class AmazonOrderItemList extends AmazonOrderCore implements Iterator{
                     $this->itemList[$n]['PromotionIds'][$i] = (string)$x;
                     $i++;
                 }
+            }
+            if (isset($item->InvoiceData)){
+                if (isset($item->InvoiceData->InvoiceRequirement)){
+                    $this->itemList[$n]['InvoiceData']['InvoiceRequirement'] = (string)$item->InvoiceData->InvoiceRequirement;
+                }
+                if (isset($item->InvoiceData->BuyerSelectedInvoiceCategory)){
+                    $this->itemList[$n]['InvoiceData']['BuyerSelectedInvoiceCategory'] = (string)$item->InvoiceData->BuyerSelectedInvoiceCategory;
+                }
+                if (isset($item->InvoiceData->InvoiceTitle)){
+                    $this->itemList[$n]['InvoiceData']['InvoiceTitle'] = (string)$item->InvoiceData->InvoiceTitle;
+                }
+                if (isset($item->InvoiceData->InvoiceInformation)){
+                    $this->itemList[$n]['InvoiceData']['InvoiceInformation'] = (string)$item->InvoiceData->InvoiceInformation;
+                }
+            }
+            if (isset($item->ConditionId)){
+                $this->itemList[$n]['ConditionId'] = (string)$item->ConditionId;
+            }
+            if (isset($item->ConditionSubtypeId)){
+                $this->itemList[$n]['ConditionSubtypeId'] = (string)$item->ConditionSubtypeId;
+            }
+            if (isset($item->ConditionNote)){
+                $this->itemList[$n]['ConditionNote'] = (string)$item->ConditionNote;
+            }
+            if (isset($item->ScheduledDeliveryStartDate)){
+                $this->itemList[$n]['ScheduledDeliveryStartDate'] = (string)$item->ScheduledDeliveryStartDate;
+            }
+            if (isset($item->ScheduledDeliveryEndDate)){
+                $this->itemList[$n]['ScheduledDeliveryEndDate'] = (string)$item->ScheduledDeliveryEndDate;
             }
             $this->index++;
         }
@@ -607,7 +637,7 @@ class AmazonOrderItemList extends AmazonOrderCore implements Iterator{
     }
     
     /**
-     * Returns specified promotion ID for specified item.
+     * Returns specified promotion ID for the specified item.
      * 
      * This method will return the entire list of Promotion IDs if <i>$j</i> is not set.
      * @param int $i [optional] <p>List index to retrieve the value from. Defaults to 0.</p>
@@ -624,7 +654,129 @@ class AmazonOrderItemList extends AmazonOrderCore implements Iterator{
         } else {
             return false;
         }
-        
+    }
+    
+    /**
+     * Returns invoice data for the specified item.
+     * 
+     * This method will return <b>FALSE</b> if the list has not yet been filled.
+     * The array for invoice data may have the following fields:
+     * <ul>
+     * <li><b>InvoiceRequirement</b> - invoice requirement information</li>
+     * <li><b>BuyerSelectedInvoiceCategory</b> - invoice category information selected by the buyer</li>
+     * <li><b>InvoiceTitle</b> - the title of the invoice as specified by the buyer</li>
+     * <li><b>InvoiceInformation</b> - additional invoice information</li>
+     * </ul>
+     * @param int $i [optional] <p>List index to retrieve the value from. Defaults to 0.</p>
+     * @return array|boolean array, or <b>FALSE</b> if incorrect index
+     */
+    public function getInvoiceData($i = 0){
+        if (isset($this->itemList[$i]['InvoiceData'])){
+            return $this->itemList[$i]['InvoiceData'];
+        } else {
+            return false;
+        }
+    }
+    
+    /**
+     * Returns the condition for the specified item.
+     * 
+     * This method will return <b>FALSE</b> if the list has not yet been filled.
+     * Possible values for the condition ID are...
+     * <ul>
+     * <li>New</li>
+     * <li>Used</li>
+     * <li>Collectible</li>
+     * <li>Refurbished</li>
+     * <li>Preorder</li>
+     * <li>Club</li>
+     * </ul>
+     * @param int $i [optional] <p>List index to retrieve the value from. Defaults to 0.</p>
+     * @return string|boolean single value, or <b>FALSE</b> if incorrect index
+     */
+    public function getConditionId($i = 0){
+        if (isset($this->itemList[$i]['ConditionId'])){
+            return $this->itemList[$i]['ConditionId'];
+        } else {
+            return false;
+        }
+    }
+    
+    /**
+     * Returns the subcondition for the specified item.
+     * 
+     * This method will return <b>FALSE</b> if the list has not yet been filled.
+     * Possible values for the subcondition ID are...
+     * <ul>
+     * <li>New</li>
+     * <li>Mint</li>
+     * <li>Very Good</li>
+     * <li>Good</li>
+     * <li>Acceptable</li>
+     * <li>Poor</li>
+     * <li>Club</li>
+     * <li>OEM</li>
+     * <li>Warranty</li>
+     * <li>Refurbished Warranty</li>
+     * <li>Refurbished</li>
+     * <li>Open Box</li>
+     * <li>Any</li>
+     * <li>Other</li>
+     * </ul>
+     * @param int $i [optional] <p>List index to retrieve the value from. Defaults to 0.</p>
+     * @return string|boolean single value, or <b>FALSE</b> if incorrect index
+     */
+    public function getConditionSubtypeId($i = 0){
+        if (isset($this->itemList[$i]['ConditionSubtypeId'])){
+            return $this->itemList[$i]['ConditionSubtypeId'];
+        } else {
+            return false;
+        }
+    }
+    
+    /**
+     * Returns the condition description for the specified item.
+     * 
+     * This method will return <b>FALSE</b> if the list has not yet been filled.
+     * @param int $i [optional] <p>List index to retrieve the value from. Defaults to 0.</p>
+     * @return string|boolean single value, or <b>FALSE</b> if incorrect index
+     */
+    public function getConditionNote($i = 0){
+        if (isset($this->itemList[$i]['ConditionNote'])){
+            return $this->itemList[$i]['ConditionNote'];
+        } else {
+            return false;
+        }
+    }
+    
+    /**
+     * Returns the earliest date in the scheduled delivery window for the specified item.
+     * 
+     * This method will return <b>FALSE</b> if the list has not yet been filled.
+     * @param int $i [optional] <p>List index to retrieve the value from. Defaults to 0.</p>
+     * @return string|boolean single value, or <b>FALSE</b> if incorrect index
+     */
+    public function getScheduledDeliveryStartDate($i = 0){
+        if (isset($this->itemList[$i]['ScheduledDeliveryStartDate'])){
+            return $this->itemList[$i]['ScheduledDeliveryStartDate'];
+        } else {
+            return false;
+        }
+    }
+    
+    /**
+     * Returns the latest date in the scheduled delivery window for the specified item.
+     * 
+     * This method will return <b>FALSE</b> if the list has not yet been filled.
+     * @param int $i [optional] <p>List index to retrieve the value from. Defaults to 0.</p>
+     * @return string|boolean single value, or <b>FALSE</b> if incorrect index
+     */
+    public function getScheduledDeliveryEndDate($i = 0){
+        if (isset($this->itemList[$i]['ScheduledDeliveryEndDate'])){
+            return $this->itemList[$i]['ScheduledDeliveryEndDate'];
+        } else {
+            return false;
+        }
     }
     
     /**

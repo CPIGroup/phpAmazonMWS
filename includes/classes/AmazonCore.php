@@ -89,14 +89,6 @@
  * only non-"get" functions that will return the information.</li>
  * </ul>
  */
- 
- 
-use Monolog\Logger;
-use Monolog\Formatter\LineFormatter;
-use Monolog\Handler\StreamHandler;
-use Monolog\Handler\NativeMailerHandler;
-
-
 abstract class AmazonCore{
     protected $urlbase;
     protected $urlbranch;
@@ -113,8 +105,7 @@ abstract class AmazonCore{
     protected $mockIndex = 0;
     protected $env;
     protected $rawResponses = array();
-	
-	protected $monologLogger;
+
     protected $logpath;
     
     /**
@@ -472,8 +463,6 @@ abstract class AmazonCore{
     
     /**
      * Writes a message to the log.
-     * This uses a Monolog logger that should be provided to it.
-     * There may be a better way to implement this - but oh well.
      * 
      * This method adds a message line to the log file defined by the config.
      * This includes the priority level, user IP, and a backtrace of the call.
@@ -485,30 +474,15 @@ abstract class AmazonCore{
      * @return boolean <b>FALSE</b> if the message is empty, NULL if logging is muted
      * @throws Exception If the file can't be written to.
      */
-    protected function log($msg, $level = Logger::INFO){
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
+    protected function log($msg, $level = 'Info'){
         if ($msg != false) {
             $backtrace = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS);
             
             if(is_array($this->config)){
             	// This is a bit of a hack, but we don't really care for now.
-            	if(isset($this->config['logFunction'])) $logFunction = $this->config['logFunction'];
+            	if(isset($this->config['logFunction'])){ $logFunction = $this->config['logFunction'];
+            	echo "log function set to $logFunction\n";
+            	}
             	if(isset($this->config['muteLog'])) $muteLog = $this->config['muteLog'];
             	
             } else if (file_exists($this->config)){

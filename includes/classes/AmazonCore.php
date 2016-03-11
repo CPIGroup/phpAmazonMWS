@@ -89,6 +89,14 @@
  * only non-"get" functions that will return the information.</li>
  * </ul>
  */
+ 
+ 
+ use Monolog\Logger;
+use Monolog\Formatter\LineFormatter;
+use Monolog\Handler\StreamHandler;
+use Monolog\Handler\NativeMailerHandler;
+
+
 abstract class AmazonCore{
     protected $urlbase;
     protected $urlbranch;
@@ -103,9 +111,10 @@ abstract class AmazonCore{
     protected $mockMode = false;
     protected $mockFiles;
     protected $mockIndex = 0;
-    protected $logpath;
     protected $env;
     protected $rawResponses = array();
+
+    protected $logpath;
     
     /**
      * AmazonCore constructor sets up key information used in all Amazon requests.

@@ -6,7 +6,8 @@
     "keywords": ["API", "Amazon", "PHP"],
     "require":{
                 "php": "~5.4",
-                "ext-curl": "*"
+                "ext-curl": "*",
+        		"monolog/monolog": "1.*"
     },
     "require-dev": {
                 "phpunit/phpunit": "3.7.*"

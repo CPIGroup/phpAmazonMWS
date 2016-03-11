@@ -47,7 +47,9 @@ class AmazonOrderList extends AmazonOrderCore implements Iterator{
     public function __construct($s = null, $mock = false, $m = null, $config = null){
         parent::__construct($s, $mock, $m, $config);
         include($this->env);
-        if (file_exists($this->config)){
+        if(is_array($this->config)){
+        	$store = $this->config;
+        } else if (file_exists($this->config)){
             include($this->config);
         } else {
             throw new Exception('Config file does not exist!');

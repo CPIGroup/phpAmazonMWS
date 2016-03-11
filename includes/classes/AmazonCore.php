@@ -490,7 +490,7 @@ abstract class AmazonCore{
             } else {
                 throw new Exception("Config file does not exist!");
             }
-            if (isset($logfunction) && $logfunction != '' && function_exists($logfunction)){
+            if (isset($logfunction) && $logfunction != '' ){
                 switch ($level){
                    case('Info'): $loglevel = LOG_INFO; break; 
                    case('Throttle'): $loglevel = LOG_INFO; break; 

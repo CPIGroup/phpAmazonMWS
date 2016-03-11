@@ -491,6 +491,7 @@ abstract class AmazonCore{
                 throw new Exception("Config file does not exist!");
             }
             if (isset($logfunction) && $logfunction != '' ){
+            echo "call_user_func($logfunction,$msg,$loglevel)\n";
                 switch ($level){
                    case('Info'): $loglevel = LOG_INFO; break; 
                    case('Throttle'): $loglevel = LOG_INFO; break; 

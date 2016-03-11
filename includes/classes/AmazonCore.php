@@ -472,6 +472,8 @@ abstract class AmazonCore{
     
     /**
      * Writes a message to the log.
+     * This uses a Monolog logger that should be provided to it.
+     * There may be a better way to implement this - but oh well.
      * 
      * This method adds a message line to the log file defined by the config.
      * This includes the priority level, user IP, and a backtrace of the call.
@@ -484,6 +486,23 @@ abstract class AmazonCore{
      * @throws Exception If the file can't be written to.
      */
     protected function log($msg, $level = Logger::INFO){
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
         if ($msg != false) {
             $backtrace = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS);
             

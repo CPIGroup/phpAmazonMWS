@@ -91,7 +91,7 @@
  */
  
  
- use Monolog\Logger;
+use Monolog\Logger;
 use Monolog\Formatter\LineFormatter;
 use Monolog\Handler\StreamHandler;
 use Monolog\Handler\NativeMailerHandler;
@@ -113,7 +113,8 @@ abstract class AmazonCore{
     protected $mockIndex = 0;
     protected $env;
     protected $rawResponses = array();
-
+	
+	protected $monologLogger;
     protected $logpath;
     
     /**
@@ -482,7 +483,7 @@ abstract class AmazonCore{
      * @return boolean <b>FALSE</b> if the message is empty, NULL if logging is muted
      * @throws Exception If the file can't be written to.
      */
-    protected function log($msg, $level = 'Info'){
+    protected function log($msg, $level = Logger::INFO){
         if ($msg != false) {
             $backtrace = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS);
             

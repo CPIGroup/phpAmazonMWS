@@ -244,7 +244,7 @@ class AmazonOrder extends AmazonOrderCore{
             $d['LatestDeliveryDate'] = (string)$xml->LatestDeliveryDate;
         }
         if (isset($xml->IsPrime)){
-            $d['IsPrime'] = (bool)$xml->isPrime;
+            $d['IsPrime'] = (bool)$xml->IsPrime;
         }
         
         $this->data = $d;

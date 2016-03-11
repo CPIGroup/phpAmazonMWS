@@ -1,6 +1,8 @@
 phpAmazonMWS
 ============
 
+[![Build Status](https://travis-ci.org/CPIGroup/phpAmazonMWS.svg?branch=stable)](https://travis-ci.org/CPIGroup/phpAmazonMWS)
+
 A library to connect to Amazon's Merchant Web Services (MWS) in an object-oriented manner, with a focus on intuitive usage.  
 
 This is __NOT__ for Amazon Web Services (AWS) - Cloud Computing Services.

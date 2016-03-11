@@ -28,7 +28,7 @@ class AmazonOrderItemListTest extends PHPUnit_Framework_TestCase {
     }
     
     public function testSetUp(){
-        $obj = new AmazonOrderItemList('testStore', '77');
+        $obj = new AmazonOrderItemList('testStore', '77', true, null, __DIR__.'/../../test-config.php');
         
         $o = $obj->getOptions();
         $this->assertArrayHasKey('AmazonOrderId',$o);

@@ -28,7 +28,7 @@ class AmazonReportTest extends PHPUnit_Framework_TestCase {
     }
     
     public function testSetUp(){
-        $obj = new AmazonReport('testStore', '77');
+        $obj = new AmazonReport('testStore', '77', true, null, __DIR__.'/../../test-config.php');
         
         $o = $obj->getOptions();
         $this->assertArrayHasKey('ReportId',$o);

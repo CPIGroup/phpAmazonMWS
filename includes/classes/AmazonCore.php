@@ -431,6 +431,9 @@ abstract class AmazonCore{
             if (!empty($store[$s]['serviceUrl'])) {
                 $this->urlbase = $store[$s]['serviceUrl'];
             }
+            if (!empty($store[$s]['MWSAuthToken'])) {
+                $this->options['MWSAuthToken'] = $store[$s]['MWSAuthToken'];
+            }
             
         } else {
             $this->log("Store $s does not exist!",'Warning');

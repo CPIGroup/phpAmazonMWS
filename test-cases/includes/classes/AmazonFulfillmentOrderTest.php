@@ -28,7 +28,7 @@ class AmazonFulfillmentOrderTest extends PHPUnit_Framework_TestCase {
     }
     
     public function testSetUp(){
-        $obj = new AmazonFulfillmentOrder('testStore', '77');
+        $obj = new AmazonFulfillmentOrder('testStore', '77', true, null, __DIR__.'/../../test-config.php');
         
         $o = $obj->getOptions();
         $this->assertArrayHasKey('SellerFulfillmentOrderId',$o);

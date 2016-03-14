@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<phpunit
+    convertErrorsToExceptions="true"
+    convertNoticesToExceptions="true"
+    convertWarningsToExceptions="true"
+    colors="true"
+    strict="false"
+    processIsolation="false"
+    stopOnFailure="false"
+    syntaxCheck="true"
+    backupGlobals="false"
+    bootstrap="bootstrap.php"
+    verbose="true">
+    <testsuites>
+        <testsuite name='all'>
+            <directory>includes/classes/</directory>
+        </testsuite>
+    </testsuites>
+</phpunit>

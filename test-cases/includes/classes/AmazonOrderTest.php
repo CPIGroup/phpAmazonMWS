@@ -28,14 +28,14 @@ class AmazonOrderTest extends PHPUnit_Framework_TestCase {
     }
     
     public function testSetUp(){
-        $obj = new AmazonOrder('testStore', '77');
+        $obj = new AmazonOrder('testStore', '77', null, true, null, __DIR__.'/../../test-config.php');
         
         $o = $obj->getOptions();
         $this->assertArrayHasKey('AmazonOrderId.Id.1',$o);
         $this->assertEquals('77', $o['AmazonOrderId.Id.1']);
         
         $data = simplexml_load_file(__DIR__.'/../../mock/fetchOrder.xml');
-        $obj2 = new AmazonOrder('testStore', null, $data->GetOrderResult->Orders->Order);
+        $obj2 = new AmazonOrder('testStore', null, $data->GetOrderResult->Orders->Order, true, null, __DIR__.'/../../test-config.php');
         
         $get = $obj2->getAmazonOrderId();
         $this->assertEquals('058-1233752-8214740', $get);

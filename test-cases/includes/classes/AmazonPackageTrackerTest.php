@@ -28,7 +28,7 @@ class AmazonPackageTrackerTest extends PHPUnit_Framework_TestCase {
     }
     
     public function testSetUp(){
-        $obj = new AmazonPackageTracker('testStore', '77');
+        $obj = new AmazonPackageTracker('testStore', '77', true, null, __DIR__.'/../../test-config.php');
         
         $o = $obj->getOptions();
         $this->assertArrayHasKey('PackageNumber',$o);

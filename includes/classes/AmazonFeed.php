@@ -113,40 +113,43 @@ class AmazonFeed extends AmazonFeedsCore{
         }
         /*
          * List of valid Feed Types:
-         * XML Feeds:
+         * Product & Inventory Feeds (XML):
          *      Product Feed ~ _POST_PRODUCT_DATA_
-         *      Relationships Feed ~ _POST_PRODUCT_RELATIONSHIP_DATA_
-         *      Single Format Item Feed ~ _POST_ITEM_DATA_
-         *      Shipping Override Feed ~ _POST_PRODUCT_OVERRIDES_DATA_
-         *      Product Images Feed ~ _POST_PRODUCT_IMAGE_DATA_
-         *      Pricing Feed ~ _POST_PRODUCT_PRICING_DATA_
          *      Inventory Feed ~ _POST_INVENTORY_AVAILABILITY_DATA_
-         *      Order Acknowledgement Feed ~ _POST_ORDER_ACKNOWLEDGEMENT_DATA_
-         *      Order Fulfillment Feed ~ _POST_ORDER_FULFILLMENT_DATA_
-         *      FBA Shipment Injection Fulfillment Feed~  _POST_FULFILLMENT_ORDER_REQUEST_DATA_
-         *      FBA Shipment Injection ~ _POST_FULFILLMENT_ORDER_CANCELLATION_
-         *      Cancellation Feed ~ _REQUEST_DATA_
-         *      Order Adjustment Feed ~ _POST_PAYMENT_ADJUSTMENT_DATA_
-         *      Invoice Confirmation Feed ~ _POST_INVOICE_CONFIRMATION_DATA_
-         * Tab Delimited Feeds:
-         *      Flat File Listings Feed ~ _POST_FLAT_FILE_LISTINGS_DATA_
-         *      Flat File Order Acknowledgement Feed ~ _POST_FLAT_FILE_ORDER_ACKNOWLEDGEMENT_DATA_
-         *      Flat File Order Fulfillment Feed ~ _POST_FLAT_FILE_FULFILLMENT_DATA_
-         *      Flat File FBA Shipment Injection Fulfillment Feed ~ _POST_FLAT_FILE_FULFILLMENT_ORDER_REQUEST_DATA_
-         *      Flat File FBA Shipment Injection Cancellation Feed ~ _POST_FLAT_FILE_FULFILLMENT_ORDER_CANCELLATION_REQUEST_DATA_
-         *      FBA Flat File Create Inbound Shipment Feed ~ _POST_FLAT_FILE_FBA_CREATE_INBOUND_SHIPMENT_
-         *      FBA Flat File Update Inbound Shipment Feed ~ _POST_FLAT_FILE_FBA_UPDATE_INBOUND_SHIPMENT_
-         *      FBA Flat File Shipment Notification Feed ~ _POST_FLAT_FILE_FBA_SHIPMENT_NOTIFICATION_FEED_
-         *      Flat File Order Adjustment Feed ~ _POST_FLAT_FILE_PAYMENT_ADJUSTMENT_DATA_
-         *      Flat File Invoice Confirmation Feed ~ _POST_FLAT_FILE_INVOICE_CONFIRMATION_DATA_
+         *      Overrides Feed ~ _POST_PRODUCT_OVERRIDES_DATA_
+         *      Pricing Feed ~ _POST_PRODUCT_PRICING_DATA_
+         *      Product Images Feed ~ _POST_PRODUCT_IMAGE_DATA_
+         *      Relationships Feed ~ _POST_PRODUCT_RELATIONSHIP_DATA_
+         *      ACES 3.0 Data (Automotive Part Finder) Feed ~ _POST_STD_ACES_DATA_
+         * Product & Inventory Feeds (Tab Delimited):
          *      Flat File Inventory Loader Feed ~ _POST_FLAT_FILE_INVLOADER_DATA_
-         *      Flat File Music Loader File ~ _POST_FLAT_FILE_CONVERGENCE_LISTINGS_DATA_
+         *      Flat File Listings Feed ~ _POST_FLAT_FILE_LISTINGS_DATA_
          *      Flat File Book Loader File ~ _POST_FLAT_FILE_BOOKLOADER_DATA_
+         *      Flat File Music Loader File ~ _POST_FLAT_FILE_CONVERGENCE_LISTINGS_DATA_
          *      Flat File Video Loader File ~ _POST_FLAT_FILE_LISTINGS_DATA_
          *      Flat File Price and Quantity Update File ~ _POST_FLAT_FILE_PRICEANDQUANTITYONLY_UPDATE_DATA_
-         *      Product Ads Flat File Feed ~ _POST_FLAT_FILE_SHOPZILLA_DATA_
-         * Universal Information Exchange Environment (UIEE) Feeds:
+         * Product & Inventory Feeds (Other):
          *      UIEE Inventory File ~ _POST_UIEE_BOOKLOADER_DATA_
+         * Order Feeds (XML):
+         *      Order Acknowledgement Feed ~ _POST_ORDER_ACKNOWLEDGEMENT_DATA_
+         *      Order Adjustment Feed ~ _POST_PAYMENT_ADJUSTMENT_DATA_
+         *      Order Fulfillment Feed ~ _POST_ORDER_FULFILLMENT_DATA_
+         *      Invoice Confirmation Feed ~ _POST_INVOICE_CONFIRMATION_DATA_
+         * Order Feeds (Tab Delimited):
+         *      Flat File Order Acknowledgement Feed ~ _POST_FLAT_FILE_ORDER_ACKNOWLEDGEMENT_DATA_
+         *      Flat File Order Adjustment Feed ~ _POST_FLAT_FILE_PAYMENT_ADJUSTMENT_DATA_
+         *      Flat File Order Fulfillment Feed ~ _POST_FLAT_FILE_FULFILLMENT_DATA_
+         *      Flat File Invoice Confirmation Feed ~ _POST_FLAT_FILE_INVOICE_CONFIRMATION_DATA_
+         * Fulfillment By Amazon Feeds (XML):
+         *      FBA Fulfillment Order Feed ~ _POST_FULFILLMENT_ORDER_REQUEST_DATA_
+         *      FBA Fulfillment Order Cancellation Request ~ _POST_FULFILLMENT_ORDER_CANCELLATION_REQUEST_DATA_
+         *      FBA Inbound Shipment Carton Information Feed ~ _POST_FBA_INBOUND_CARTON_CONTENTS_
+         * Fulfillment By Amazon Feeds (Tab Delimited):
+         *      Flat File FBA Fulfillment Order Feed ~ _POST_FLAT_FILE_FULFILLMENT_ORDER_REQUEST_DATA_
+         *      Flat File FBA Fulfillment Order Cancellation Feed ~ _POST_FLAT_FILE_FULFILLMENT_ORDER_CANCELLATION_REQUEST_DATA_
+         *      Flat File FBA Create Inbound Shipment Plan Feed ~ _POST_FLAT_FILE_FBA_CREATE_INBOUND_PLAN_
+         *      Flat File FBA Update Inbound Shipment Plan Feed ~ _POST_FLAT_FILE_FBA_UPDATE_INBOUND_PLAN_
+         *      Flat File FBA Create Removal Feed ~ _POST_FLAT_FILE_FBA_CREATE_REMOVAL_
          */
     }
     

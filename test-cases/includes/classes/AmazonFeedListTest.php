@@ -193,8 +193,6 @@ class AmazonFeedListTest extends PHPUnit_Framework_TestCase {
         $type = $o->getFeedType();
         $date = $o->getDateSubmitted();
         $status = $o->getFeedStatus();
-        $start = $o->getDateStarted();
-        $finish = $o->getDateCompleted();
         
         $this->assertEquals($list[0],$info);
         $this->assertEquals($info['FeedSubmissionId'],$id);

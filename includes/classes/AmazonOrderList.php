@@ -47,17 +47,7 @@ class AmazonOrderList extends AmazonOrderCore implements Iterator{
     public function __construct($s = null, $mock = false, $m = null, $config = null){
         parent::__construct($s, $mock, $m, $config);
         include($this->env);
-        if (file_exists($this->config)){
-            include($this->config);
-        } else {
-            throw new Exception('Config file does not exist!');
-        }
-        
-        if(isset($store[$this->storeName]) && array_key_exists('marketplaceId', $store[$this->storeName])){
-            $this->options['MarketplaceId.Id.1'] = $store[$this->storeName]['marketplaceId'];
-        } else {
-            $this->log("Marketplace ID is missing",'Urgent');
-        }
+        $this->resetMarketplaceFilter();
         
         if(isset($THROTTLE_LIMIT_ORDERLIST)) {
             $this->throttleLimit = $THROTTLE_LIMIT_ORDERLIST;
@@ -185,6 +175,61 @@ class AmazonOrderList extends AmazonOrderCore implements Iterator{
             }
         }
     }
+
+    /**
+     * Sets the marketplace(s). (Optional)
+     *
+     * This method sets the list of Marketplaces to be sent in the next request.
+     * Setting this parameter tells Amazon to only return Orders made in marketplaces that match
+     * those in the list. If this parameter is not set, Amazon will return
+     * Orders belonging to the current store's default marketplace.
+     * @param array|string $list <p>A list of Order Statuses, or a single status string.</p>
+     * @return boolean <b>FALSE</b> if improper input
+     */
+    public function setMarketplaceFilter($list){
+        if (is_string($list)){
+            //if single string, set as filter
+            $this->resetMarketplaceFilter();
+            $this->options['MarketplaceId.Id.1'] = $list;
+        } else if (is_array($list)){
+            //if array of strings, set all filters
+            $this->resetMarketplaceFilter();
+            $i = 1;
+            foreach($list as $x){
+                $this->options['MarketplaceId.Id.'.$i] = $x;
+                $i++;
+            }
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * Removes marketplace ID options and sets the current store's marketplace instead.
+     *
+     * Use this in case you change your mind and want to remove the Marketplace ID
+     * parameters you previously set.
+     * @throws Exception if config file is missing
+     */
+    public function resetMarketplaceFilter(){
+        foreach($this->options as $op=>$junk){
+            if(preg_match("#MarketplaceId#",$op)){
+                unset($this->options[$op]);
+            }
+        }
+
+        //reset to store's default marketplace
+        if (file_exists($this->config)){
+            include($this->config);
+        } else {
+            throw new Exception('Config file does not exist!');
+        }
+        if(isset($store[$this->storeName]) && array_key_exists('marketplaceId', $store[$this->storeName])){
+            $this->options['MarketplaceId.Id.1'] = $store[$this->storeName]['marketplaceId'];
+        } else {
+            $this->log("Marketplace ID is missing",'Urgent');
+        }
+    }
     
     /**
      * Sets (or resets) the Fulfillment Channel Filter
@@ -309,6 +354,48 @@ class AmazonOrderList extends AmazonOrderCore implements Iterator{
             $this->options['MaxResultsPerPage'] = $num;
         } else {
             return false;
+        }
+    }
+
+    /**
+     * Sets the TFM shipment status(es). (Optional)
+     *
+     * This method sets the list of TFM Shipment Statuses to be sent in the next request.
+     * Setting this parameter tells Amazon to only return TFM Orders with statuses that match
+     * those in the list. If this parameter is not set, Amazon will return
+     * Orders of any status, including non-TFM orders.
+     * @param array|string $list <p>A list of TFM Shipment Statuses, or a single status string.</p>
+     * @return boolean <b>FALSE</b> if improper input
+     */
+    public function setTfmShipmentStatusFilter($list){
+        if (is_string($list)){
+            //if single string, set as filter
+            $this->resetOrderStatusFilter();
+            $this->options['TFMShipmentStatus.Status.1'] = $list;
+        } else if (is_array($list)){
+            //if array of strings, set all filters
+            $this->resetOrderStatusFilter();
+            $i = 1;
+            foreach($list as $x){
+                $this->options['TFMShipmentStatus.Status.'.$i] = $x;
+                $i++;
+            }
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * Removes order status options.
+     *
+     * Use this in case you change your mind and want to remove the TFM Shipment Status
+     * parameters you previously set.
+     */
+    public function resetTfmShipmentStatusFilter(){
+        foreach($this->options as $op=>$junk){
+            if(preg_match("#TFMShipmentStatus#",$op)){
+                unset($this->options[$op]);
+            }
         }
     }
     

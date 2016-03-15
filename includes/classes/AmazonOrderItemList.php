@@ -200,6 +200,17 @@ class AmazonOrderItemList extends AmazonOrderCore implements Iterator{
             if (isset($item->QuantityShipped)){
                 $this->itemList[$n]['QuantityShipped'] = (string)$item->QuantityShipped;
             }
+            if (isset($item->BuyerCustomizedInfo->CustomizedURL)){
+                $this->itemList[$n]['BuyerCustomizedInfo'] = (string)$item->BuyerCustomizedInfo->CustomizedURL;
+            }
+            if (isset($item->PointsGranted)){
+                $this->itemList[$n]['PointsGranted']['PointsNumber'] = (string)$item->PointsGranted->PointsNumber;
+                $this->itemList[$n]['PointsGranted']['Amount'] = (string)$item->PointsGranted->PointsMonetaryValue->Amount;
+                $this->itemList[$n]['PointsGranted']['CurrencyCode'] = (string)$item->PointsGranted->PointsMonetaryValue->CurrencyCode;
+            }
+            if (isset($item->PriceDesignation)){
+                $this->itemList[$n]['PriceDesignation'] = (string)$item->PriceDesignation;
+            }
             if (isset($item->GiftMessageText)){
                 $this->itemList[$n]['GiftMessageText'] = (string)$item->GiftMessageText;
             }
@@ -415,6 +426,57 @@ class AmazonOrderItemList extends AmazonOrderCore implements Iterator{
     public function getQuantityShipped($i = 0){
         if (isset($this->itemList[$i]['QuantityShipped'])){
             return $this->itemList[$i]['QuantityShipped'];
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * Returns the URL for the ZIP file containing the customized options for the specified entry.
+     *
+     * This method will return <b>FALSE</b> if the list has not yet been filled.
+     * @param int $i [optional] <p>List index to retrieve the value from. Defaults to 0.</p>
+     * @return string|boolean single value, or <b>FALSE</b> if Non-numeric index
+     */
+    public function getCustomizedInfo($i = 0){
+        if (isset($this->itemList[$i]['BuyerCustomizedInfo'])){
+            return $this->itemList[$i]['BuyerCustomizedInfo'];
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * Returns the number of Amazon Points granted for the specified entry.
+     *
+     * This method will return <b>FALSE</b> if the list has not yet been filled.
+     * If an array is returned, it will have the fields <b>PointsNumber</b>, <b>Amount</b> and <b>CurrencyCode</b>.
+     * @param int $i [optional] <p>List index to retrieve the value from. Defaults to 0.</p>
+     * @param boolean $only [optional] <p>set to <b>TRUE</b> to get only the number of points</p>
+     * @return array|string|boolean array, single value, or <b>FALSE</b> if Non-numeric index
+     */
+    public function getPointsGranted($i = 0, $only = false){
+        if (isset($this->itemList[$i]['PointsGranted'])){
+            if ($only){
+                return $this->itemList[$i]['PointsGranted']['PointsNumber'];
+            } else {
+                return $this->itemList[$i]['PointsGranted'];
+            }
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * Returns the price designation for the specified entry.
+     *
+     * This method will return <b>FALSE</b> if the list has not yet been filled.
+     * @param int $i [optional] <p>List index to retrieve the value from. Defaults to 0.</p>
+     * @return string|boolean single value, or <b>FALSE</b> if Non-numeric index
+     */
+    public function getPriceDesignation($i = 0){
+        if (isset($this->itemList[$i]['PriceDesignation'])){
+            return $this->itemList[$i]['PriceDesignation'];
         } else {
             return false;
         }

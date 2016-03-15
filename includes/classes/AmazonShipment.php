@@ -25,7 +25,7 @@
  * Use the AmazonShipmentPlanner object to retrieve this information.
  */
 class AmazonShipment extends AmazonInboundCore{
-    private $shipmentId;
+    protected $shipmentId;
     
     /**
      * AmazonShipment ubmits a shipment to Amazon or updates it.
@@ -184,7 +184,7 @@ class AmazonShipment extends AmazonInboundCore{
      * Since the list of items is a required parameter, these options should not be removed
      * without replacing them, so this method is not public.
      */
-    private function resetItems(){
+    protected function resetItems(){
         foreach($this->options as $op=>$junk){
             if(preg_match("#InboundShipmentItems#",$op)){
                 unset($this->options[$op]);

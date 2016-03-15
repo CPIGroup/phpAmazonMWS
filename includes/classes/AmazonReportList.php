@@ -27,9 +27,9 @@
 class AmazonReportList extends AmazonReportsCore implements Iterator{
     protected $tokenFlag = false;
     protected $tokenUseFlag = false;
-    private $index = 0;
-    private $i = 0;
-    private $reportList;
+    protected $index = 0;
+    protected $i = 0;
+    protected $reportList;
     
     /**
      * AmazonReportList gets a list of reports from Amazon.

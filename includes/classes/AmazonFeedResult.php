@@ -25,7 +25,7 @@
  * In order to fetch feed results, the feed's ID must be given.
  */
 class AmazonFeedResult extends AmazonFeedsCore{
-    private $rawFeed;
+    protected $rawFeed;
     
     /**
      * AmazonFeedResult gets the result of a Feed from Amazon.

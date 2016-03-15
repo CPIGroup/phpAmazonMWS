@@ -24,11 +24,11 @@
  * required. This object can use tokens when retrieving the list.
  */
 class AmazonOrderItemList extends AmazonOrderCore implements Iterator{
-    private $itemList;
+    protected $itemList;
     protected $tokenFlag = false;
     protected $tokenUseFlag = false;
-    private $i = 0;
-    private $index = 0;
+    protected $i = 0;
+    protected $index = 0;
 
     /**
      * AmazonItemLists contain all of the items for a given order.

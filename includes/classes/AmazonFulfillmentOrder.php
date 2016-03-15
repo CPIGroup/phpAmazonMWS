@@ -25,7 +25,7 @@
  * using the <i>AmazonFulfillmentPreview</i> object.
  */
 class AmazonFulfillmentOrder extends AmazonOutboundCore{
-    private $order;
+    protected $order;
     
     /**
      * AmazonFulfillmentOrder fetches a fulfillment order from Amazon. You need a Fulfillment Order ID.

@@ -24,7 +24,7 @@
  * Shipment IDs, which are needed for dealing with fulfillment orders.
  */
 class AmazonFulfillmentPreview extends AmazonOutboundCore{
-    private $previewList;
+    protected $previewList;
     
     /**
      * AmazonFulfillmentPreview sends a request to Amazon to generate a Fulfillment Shipment Preview.

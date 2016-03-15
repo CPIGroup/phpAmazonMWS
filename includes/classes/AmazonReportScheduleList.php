@@ -28,10 +28,10 @@
 class AmazonReportScheduleList extends AmazonReportsCore implements Iterator{
     protected $tokenFlag = false;
     protected $tokenUseFlag = false;
-    private $index = 0;
-    private $i = 0;
-    private $scheduleList;
-    private $count;
+    protected $index = 0;
+    protected $i = 0;
+    protected $scheduleList;
+    protected $count;
     
     /**
      * AmazonReportScheduleList sets a list of report schedules from Amazon.

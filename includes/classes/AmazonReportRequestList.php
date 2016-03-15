@@ -28,10 +28,10 @@
 class AmazonReportRequestList extends AmazonReportsCore implements Iterator{
     protected $tokenFlag = false;
     protected $tokenUseFlag = false;
-    private $index = 0;
-    private $i = 0;
-    private $reportList;
-    private $count;
+    protected $index = 0;
+    protected $i = 0;
+    protected $reportList;
+    protected $count;
     
     /**
      * AmazonReportRequestList fetches a list of report requests from Amazon.

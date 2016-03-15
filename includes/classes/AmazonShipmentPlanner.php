@@ -24,8 +24,8 @@
  * shipment plan, an address and a list of items are required.
  */
 class AmazonShipmentPlanner extends AmazonInboundCore implements Iterator{
-    private $planList;
-    private $i = 0;
+    protected $planList;
+    protected $i = 0;
     
     /**
      * AmazonShipmentPlanner fetches a shipment plan from Amazon. This is how you get a Shipment ID.

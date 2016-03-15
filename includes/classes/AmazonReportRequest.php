@@ -24,7 +24,7 @@
  * available to limit the scope of the report.
  */
 class AmazonReportRequest extends AmazonReportsCore{
-    private $response;
+    protected $response;
     
     /**
      * AmazonReportRequest sends a report request to Amazon.

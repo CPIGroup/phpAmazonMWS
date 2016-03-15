@@ -26,9 +26,9 @@
 class AmazonShipmentItemList extends AmazonInboundCore implements Iterator{
     protected $tokenFlag = false;
     protected $tokenUseFlag = false;
-    private $itemList;
-    private $index = 0;
-    private $i = 0;
+    protected $itemList;
+    protected $index = 0;
+    protected $i = 0;
     
     /**
      * Fetches a list of items from Amazon.

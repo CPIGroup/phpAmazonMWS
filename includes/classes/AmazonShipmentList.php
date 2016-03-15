@@ -26,9 +26,9 @@
 class AmazonShipmentList extends AmazonInboundCore implements Iterator{
     protected $tokenFlag = false;
     protected $tokenUseFlag = false;
-    private $shipmentList;
-    private $index = 0;
-    private $i = 0;
+    protected $shipmentList;
+    protected $index = 0;
+    protected $i = 0;
     
     /**
      * AmazonShipmentList fetches a list of shipments from Amazon.
@@ -117,7 +117,7 @@ class AmazonShipmentList extends AmazonInboundCore implements Iterator{
      * Since status is a required parameter, these options should not be removed
      * without replacing them, so this method is not public.
      */
-    private function resetStatusFilter(){
+    protected function resetStatusFilter(){
         foreach($this->options as $op=>$junk){
             if(preg_match("#ShipmentStatusList#",$op)){
                 unset($this->options[$op]);
@@ -157,7 +157,7 @@ class AmazonShipmentList extends AmazonInboundCore implements Iterator{
      * Since shipment ID is a required parameter, these options should not be removed
      * without replacing them, so this method is not public.
      */
-    private function resetIdFilter(){
+    protected function resetIdFilter(){
         foreach($this->options as $op=>$junk){
             if(preg_match("#ShipmentIdList#",$op)){
                 unset($this->options[$op]);

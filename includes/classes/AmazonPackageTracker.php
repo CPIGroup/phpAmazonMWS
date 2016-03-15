@@ -23,7 +23,7 @@
  * from Amazon. A package number is required for this.
  */
 class AmazonPackageTracker extends AmazonOutboundCore{
-    private $details;
+    protected $details;
     
     /**
      * AmazonPackageTracker fetches package tracking details from Amazon.

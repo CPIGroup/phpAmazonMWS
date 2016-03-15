@@ -25,11 +25,11 @@
  * This object can use tokens when retrieving the list.
  */
 class AmazonFulfillmentOrderList extends AmazonOutboundCore implements Iterator{
-    private $orderList;
+    protected $orderList;
     protected $tokenFlag = false;
     protected $tokenUseFlag = false;
-    private $i = 0;
-    private $index = 0;
+    protected $i = 0;
+    protected $index = 0;
     
     /**
      * AmazonFulfillmentOrderList retrieves a list of fulfillment orders from Amazon.

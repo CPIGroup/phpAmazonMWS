@@ -771,7 +771,8 @@ abstract class AmazonCore{
      */
     protected function _urlencode($value) {
         return rawurlencode($value);
-		return str_replace('%7E', '~', rawurlencode($value));
+        //Amazon suggests doing this, but it seems to break things rather than fix them:
+        //return str_replace('%7E', '~', rawurlencode($value));
     }
     
     /**

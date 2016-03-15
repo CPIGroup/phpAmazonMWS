@@ -188,8 +188,6 @@ class AmazonFeedListTest extends PHPUnit_Framework_TestCase {
         $this->assertArrayHasKey('FeedType',$info);
         $this->assertArrayHasKey('SubmittedDate',$info);
         $this->assertArrayHasKey('FeedProcessingStatus',$info);
-        $this->assertArrayHasKey('StartedProcessingDate',$info);
-        $this->assertArrayHasKey('CompletedProcessingDate',$info);
         
         $id = $o->getFeedId();
         $type = $o->getFeedType();
@@ -203,8 +201,6 @@ class AmazonFeedListTest extends PHPUnit_Framework_TestCase {
         $this->assertEquals($info['FeedType'],$type);
         $this->assertEquals($info['SubmittedDate'],$date);
         $this->assertEquals($info['FeedProcessingStatus'],$status);
-        $this->assertEquals($info['StartedProcessingDate'],$start);
-        $this->assertEquals($info['CompletedProcessingDate'],$finish);
         
         $this->assertFalse($o->getFeedInfo(null));
         $this->assertFalse($o->getFeedId(null));

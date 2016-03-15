@@ -364,8 +364,6 @@ class AmazonFeedList extends AmazonFeedsCore implements Iterator{
             $this->feedList[$i]['SubmittedDate'] = (string)$x->SubmittedDate;
             $this->feedList[$i]['FeedProcessingStatus'] = (string)$x->FeedProcessingStatus;
             //this fields are not always returned
-            $this->feedList[$i]['StartedProcessingDate'] = NULL;
-            $this->feedList[$i]['CompletedProcessingDate'] = NULL;
             if (isset($x->StartedProcessingDate)) {
                 $this->feedList[$i]['StartedProcessingDate'] = (string)$x->StartedProcessingDate;
             }
@@ -557,7 +555,7 @@ class AmazonFeedList extends AmazonFeedsCore implements Iterator{
      * @return string|boolean single value, or <b>FALSE</b> if Non-numeric index
      */
     public function getDateStarted($i = 0){
-        if (is_numeric($i) && isset($this->feedList) && is_array($this->feedList)){
+        if (is_numeric($i) && isset($this->feedList) && is_array($this->feedList) && isset($this->feedList[$i]['StartedProcessingDate'])){
             return $this->feedList[$i]['StartedProcessingDate'];
         } else {
             return false;
@@ -573,7 +571,7 @@ class AmazonFeedList extends AmazonFeedsCore implements Iterator{
      * @return string|boolean single value, or <b>FALSE</b> if Non-numeric index
      */
     public function getDateCompleted($i = 0){
-        if (is_numeric($i) && isset($this->feedList) && is_array($this->feedList)){
+        if (is_numeric($i) && isset($this->feedList) && is_array($this->feedList) && isset($this->feedList[$i]['CompletedProcessingDate'])){
             return $this->feedList[$i]['CompletedProcessingDate'];
         } else {
             return false;

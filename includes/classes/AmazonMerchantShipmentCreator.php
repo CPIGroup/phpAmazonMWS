@@ -447,7 +447,8 @@ class AmazonMerchantShipmentCreator extends AmazonMerchantCore {
         $services->mockIndex = $this->mockIndex;
         $services->setLogPath($this->logpath);
         $services->setDetailsByCreator($this);
-        return $services->fetchServices();
+        $services->fetchServices();
+        return $services;
     }
 
     /**

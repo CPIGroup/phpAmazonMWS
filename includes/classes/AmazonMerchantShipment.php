@@ -175,12 +175,12 @@ class AmazonMerchantShipment extends AmazonMerchantCore {
             $this->data['ShipFromAddress']['DistrictOrCounty'] = (string)$d->ShipFromAddress->DistrictOrCounty;
         }
         $this->data['ShipFromAddress']['Email'] = (string)$d->ShipFromAddress->Email;
-        $this->data['City'] = (string)$d->City;
+        $this->data['ShipFromAddress']['City'] = (string)$d->ShipFromAddress->City;
         if (isset($d->ShipFromAddress->StateOrProvinceCode)) {
             $this->data['ShipFromAddress']['StateOrProvinceCode'] = (string)$d->ShipFromAddress->StateOrProvinceCode;
         }
-        $this->data['PostalCode'] = (string)$d->PostalCode;
-        $this->data['CountryCode'] = (string)$d->CountryCode;
+        $this->data['ShipFromAddress']['PostalCode'] = (string)$d->ShipFromAddress->PostalCode;
+        $this->data['ShipFromAddress']['CountryCode'] = (string)$d->ShipFromAddress->CountryCode;
         $this->data['ShipFromAddress']['Phone'] = (string)$d->ShipFromAddress->Phone;
 
         //Ship To Address
@@ -196,12 +196,12 @@ class AmazonMerchantShipment extends AmazonMerchantCore {
             $this->data['ShipToAddress']['DistrictOrCounty'] = (string)$d->ShipToAddress->DistrictOrCounty;
         }
         $this->data['ShipToAddress']['Email'] = (string)$d->ShipToAddress->Email;
-        $this->data['City'] = (string)$d->City;
+        $this->data['ShipToAddress']['City'] = (string)$d->ShipToAddress->City;
         if (isset($d->ShipToAddress->StateOrProvinceCode)) {
             $this->data['ShipToAddress']['StateOrProvinceCode'] = (string)$d->ShipToAddress->StateOrProvinceCode;
         }
-        $this->data['PostalCode'] = (string)$d->PostalCode;
-        $this->data['CountryCode'] = (string)$d->CountryCode;
+        $this->data['ShipToAddress']['PostalCode'] = (string)$d->ShipToAddress->PostalCode;
+        $this->data['ShipToAddress']['CountryCode'] = (string)$d->ShipToAddress->CountryCode;
         $this->data['ShipToAddress']['Phone'] = (string)$d->ShipToAddress->Phone;
 
         //Service
@@ -536,7 +536,7 @@ class AmazonMerchantShipment extends AmazonMerchantCore {
      * <ul>
      * <li><b>Length</b></li>
      * <li><b>Width</b></li>
-     * <li><b>Width</b></li>
+     * <li><b>Unit</b></li>
      * </ul>
      * </li>
      * <li><b>FileContents</b>:

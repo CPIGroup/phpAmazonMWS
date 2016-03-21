@@ -67,7 +67,7 @@ class AmazonMerchantShipment extends AmazonMerchantCore {
         if (is_string($id) || is_numeric($id)){
             $this->options['ShipmentId'] = $id;
         } else {
-            $this->log("Attempted to set ShipmentId to invalid value",'Warning');
+            $this->log("Tried to set ShipmentId to invalid value",'Warning');
             return false;
         }
     }

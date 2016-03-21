@@ -57,7 +57,7 @@ class AmazonMerchantShipmentCreator extends AmazonMerchantCore {
         if (is_string($id)){
             $this->options['ShipmentRequestDetails.AmazonOrderId'] = $id;
         } else {
-            $this->log("Attempted to set AmazonOrderId to invalid value",'Warning');
+            $this->log("Tried to set AmazonOrderId to invalid value",'Warning');
             return false;
         }
     }
@@ -73,7 +73,7 @@ class AmazonMerchantShipmentCreator extends AmazonMerchantCore {
         if (is_string($id) || is_numeric($id)){
             $this->options['ShipmentRequestDetails.SellerOrderId'] = $id;
         } else {
-            $this->log("Attempted to set SellerOrderId to invalid value",'Warning');
+            $this->log("Tried to set SellerOrderId to invalid value",'Warning');
             return false;
         }
     }
@@ -149,7 +149,7 @@ class AmazonMerchantShipmentCreator extends AmazonMerchantCore {
      */
     public function setAddress($a){
         if (empty($a) || !is_array($a)){
-            $this->log("Tried to set address to invalid values",'Warning');
+            $this->log("Tried to set ShipFromAddress to invalid values",'Warning');
             return false;
         }
         $this->resetAddress();
@@ -206,7 +206,7 @@ class AmazonMerchantShipmentCreator extends AmazonMerchantCore {
      */
     public function setPackageDimensions($d) {
         if (empty($d) || !is_array($d)){
-            $this->log("Tried to set address to invalid values",'Warning');
+            $this->log("Tried to set PackageDimensions to invalid values",'Warning');
             return false;
         }
         $this->resetPackageDimensions();
@@ -360,7 +360,7 @@ class AmazonMerchantShipmentCreator extends AmazonMerchantCore {
         if (in_array($s, $options)){
             $this->options['ShipmentRequestDetails.ShippingServiceOptions.DeliveryExperience'] = $s;
         } else {
-            $this->log("Attempted to set SellerOrderId to invalid value",'Warning');
+            $this->log("Tried to set DeliveryExperience to invalid value",'Warning');
             return false;
         }
     }
@@ -413,7 +413,7 @@ class AmazonMerchantShipmentCreator extends AmazonMerchantCore {
         if (is_string($id)){
             $this->options['ShippingServiceId'] = $id;
         } else {
-            $this->log("Attempted to set ShippingServiceId to invalid value",'Warning');
+            $this->log("Tried to set ShippingServiceId to invalid value",'Warning');
             return false;
         }
     }
@@ -429,7 +429,7 @@ class AmazonMerchantShipmentCreator extends AmazonMerchantCore {
         if (is_string($id)){
             $this->options['ShippingServiceOfferId'] = $id;
         } else {
-            $this->log("Attempted to set ShippingServiceOfferId to invalid value",'Warning');
+            $this->log("Tried to set ShippingServiceOfferId to invalid value",'Warning');
             return false;
         }
     }

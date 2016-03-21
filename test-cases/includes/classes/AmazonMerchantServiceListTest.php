@@ -16,6 +16,252 @@ class AmazonMerchantServiceListTest extends PHPUnit_Framework_TestCase {
         $this->object = new AmazonMerchantServiceList('testStore', true, null, __DIR__.'/../../test-config.php');
     }
 
+    public function testSetOrderId(){
+        $key = 'ShipmentRequestDetails.AmazonOrderId';
+        $this->assertNull($this->object->setOrderId('777'));
+        $o = $this->object->getOptions();
+        $this->assertArrayHasKey($key, $o);
+        $this->assertEquals('777', $o[$key]);
+
+        $this->assertFalse($this->object->setOrderId(77)); //won't work for this
+        $this->assertFalse($this->object->setOrderId(array())); //won't work for other things
+        $this->assertFalse($this->object->setOrderId(null)); //won't work for other things
+
+        $check = parseLog();
+        $this->assertEquals('Tried to set AmazonOrderId to invalid value',$check[1]);
+        $this->assertEquals('Tried to set AmazonOrderId to invalid value',$check[2]);
+        $this->assertEquals('Tried to set AmazonOrderId to invalid value',$check[3]);
+    }
+
+    public function testSetSellerOrderId(){
+        $key = 'ShipmentRequestDetails.SellerOrderId';
+        $this->assertNull($this->object->setSellerOrderId('777'));
+        $o = $this->object->getOptions();
+        $this->assertArrayHasKey($key, $o);
+        $this->assertEquals('777', $o[$key]);
+        $this->assertNull($this->object->setSellerOrderId(77));
+        $o2 = $this->object->getOptions();
+        $this->assertArrayHasKey($key, $o2);
+        $this->assertEquals(77, $o2[$key]);
+
+        $this->assertFalse($this->object->setSellerOrderId(array())); //won't work for this
+        $this->assertFalse($this->object->setSellerOrderId(null)); //won't work for other things
+
+        $check = parseLog();
+        $this->assertEquals('Tried to set SellerOrderId to invalid value',$check[1]);
+        $this->assertEquals('Tried to set SellerOrderId to invalid value',$check[2]);
+    }
+
+    public function testSetItems(){
+        $key = 'ShipmentRequestDetails.ItemList.Item.';
+        $items = array(
+            array('OrderItemId' => '123987', 'Quantity' => 2),
+            array('OrderItemId' => '555432', 'Quantity' => 1),
+        );
+        $this->assertNull($this->object->setItems($items));
+        $o = $this->object->getOptions();
+        $this->assertArrayHasKey($key.'1.OrderItemId', $o);
+        $this->assertArrayHasKey($key.'1.Quantity', $o);
+        $this->assertArrayHasKey($key.'2.OrderItemId', $o);
+        $this->assertArrayHasKey($key.'2.Quantity', $o);
+        $this->assertEquals($items[0]['OrderItemId'], $o[$key.'1.OrderItemId']);
+        $this->assertEquals($items[0]['Quantity'], $o[$key.'1.Quantity']);
+        $this->assertEquals($items[1]['OrderItemId'], $o[$key.'2.OrderItemId']);
+        $this->assertEquals($items[1]['Quantity'], $o[$key.'2.Quantity']);
+
+        //remove one item and do it again
+        unset($items[0]);
+        $this->assertNull($this->object->setItems($items));
+        $o2 = $this->object->getOptions();
+        $this->assertArrayHasKey($key.'1.OrderItemId', $o2);
+        $this->assertArrayHasKey($key.'1.Quantity', $o2);
+        $this->assertArrayNotHasKey($key.'2.OrderItemId', $o2);
+        $this->assertArrayNotHasKey($key.'2.Quantity', $o2);
+        $this->assertEquals($items[1]['OrderItemId'], $o2[$key.'1.OrderItemId']);
+        $this->assertEquals($items[1]['Quantity'], $o2[$key.'1.Quantity']);
+
+        $this->assertFalse($this->object->setItems(array())); //won't work for this
+        $this->assertFalse($this->object->setItems('something')); //won't work for other things
+        $this->assertFalse($this->object->setItems(null)); //won't work for other things
+
+        $check = parseLog();
+        $this->assertEquals('Tried to set Items to invalid values',$check[1]);
+        $this->assertEquals('Tried to set Items to invalid values',$check[2]);
+        $this->assertEquals('Tried to set Items to invalid values',$check[3]);
+    }
+
+    public function testSetAddress(){
+        $key = 'ShipmentRequestDetails.ShipFromAddress.';
+        $address = $this->genAddress();
+        $address['AddressLine2'] = 'line 2';
+        $address['AddressLine3'] = 'line 3';
+        $address['DistrictOrCounty'] = 'North';
+        $this->assertNull($this->object->setAddress($address));
+        $o = $this->object->getOptions();
+        $this->assertArrayHasKey($key.'Name', $o);
+        $this->assertArrayHasKey($key.'AddressLine1', $o);
+        $this->assertArrayHasKey($key.'AddressLine2', $o);
+        $this->assertArrayHasKey($key.'AddressLine3', $o);
+        $this->assertArrayHasKey($key.'DistrictOrCounty', $o);
+        $this->assertArrayHasKey($key.'Email', $o);
+        $this->assertArrayHasKey($key.'City', $o);
+        $this->assertArrayHasKey($key.'StateOrProvinceCode', $o);
+        $this->assertArrayHasKey($key.'PostalCode', $o);
+        $this->assertArrayHasKey($key.'CountryCode', $o);
+        $this->assertArrayHasKey($key.'Phone', $o);
+        $this->assertEquals($address['Name'], $o[$key.'Name']);
+        $this->assertEquals($address['AddressLine1'], $o[$key.'AddressLine1']);
+        $this->assertEquals($address['AddressLine2'], $o[$key.'AddressLine2']);
+        $this->assertEquals($address['AddressLine3'], $o[$key.'AddressLine3']);
+        $this->assertEquals($address['DistrictOrCounty'], $o[$key.'DistrictOrCounty']);
+        $this->assertEquals($address['Email'], $o[$key.'Email']);
+        $this->assertEquals($address['City'], $o[$key.'City']);
+        $this->assertEquals($address['StateOrProvinceCode'], $o[$key.'StateOrProvinceCode']);
+        $this->assertEquals($address['PostalCode'], $o[$key.'PostalCode']);
+        $this->assertEquals($address['CountryCode'], $o[$key.'CountryCode']);
+        $this->assertEquals($address['Phone'], $o[$key.'Phone']);
+
+        $this->assertFalse($this->object->setAddress(array())); //won't work for this
+        $this->assertFalse($this->object->setAddress('something')); //won't work for other things
+        $this->assertFalse($this->object->setAddress(null)); //won't work for other things
+
+        $check = parseLog();
+        $this->assertEquals('Tried to set ShipFromAddress to invalid values',$check[1]);
+        $this->assertEquals('Tried to set ShipFromAddress to invalid values',$check[2]);
+        $this->assertEquals('Tried to set ShipFromAddress to invalid values',$check[3]);
+    }
+
+    public function testSetPackageDimensions(){
+        $key = 'ShipmentRequestDetails.PackageDimensions.';
+        $dims = array('Length' => 5, 'Width' => 5, 'Height' => 5, 'Unit' => 'inches');
+        $this->assertNull($this->object->setPredefinedPackage('something'));
+        $this->assertNull($this->object->setPackageDimensions($dims));
+        $o = $this->object->getOptions();
+        $this->assertArrayHasKey($key.'Length', $o);
+        $this->assertArrayHasKey($key.'Width', $o);
+        $this->assertArrayHasKey($key.'Height', $o);
+        $this->assertArrayHasKey($key.'Unit', $o);
+        $this->assertArrayNotHasKey($key.'PredefinedPackageDimensions', $o);
+        $this->assertEquals($dims['Length'], $o[$key.'Length']);
+        $this->assertEquals($dims['Width'], $o[$key.'Width']);
+        $this->assertEquals($dims['Height'], $o[$key.'Height']);
+        $this->assertEquals($dims['Unit'], $o[$key.'Unit']);
+
+        $this->assertFalse($this->object->setPackageDimensions(array())); //won't work for this
+        $this->assertFalse($this->object->setPackageDimensions('something')); //won't work for other things
+        $this->assertFalse($this->object->setPackageDimensions(null)); //won't work for other things
+
+        $check = parseLog();
+        $this->assertEquals('Tried to set PackageDimensions to invalid values',$check[1]);
+        $this->assertEquals('Tried to set PackageDimensions to invalid values',$check[2]);
+        $this->assertEquals('Tried to set PackageDimensions to invalid values',$check[3]);
+    }
+
+    public function testSetPredefinedPackage(){
+        $key = 'ShipmentRequestDetails.PackageDimensions.';
+        $dims = array('Length' => 5, 'Width' => 5, 'Height' => 5, 'Unit' => 'inches');
+        $this->assertNull($this->object->setPackageDimensions($dims));
+        $this->assertNull($this->object->setPredefinedPackage('something'));
+        $o = $this->object->getOptions();
+        $this->assertArrayHasKey($key.'PredefinedPackageDimensions', $o);
+        $this->assertArrayNotHasKey($key.'Length', $o);
+        $this->assertArrayNotHasKey($key.'Width', $o);
+        $this->assertArrayNotHasKey($key.'Height', $o);
+        $this->assertArrayNotHasKey($key.'Unit', $o);
+        $this->assertEquals('something', $o[$key.'PredefinedPackageDimensions']);
+
+        $this->assertFalse($this->object->setPredefinedPackage(77)); //won't work for this
+        $this->assertFalse($this->object->setPredefinedPackage(array())); //won't work for other things
+        $this->assertFalse($this->object->setPredefinedPackage(null)); //won't work for other things
+    }
+
+    public function testSetWeight() {
+        $key = 'ShipmentRequestDetails.Weight.';
+        $this->assertNull($this->object->setWeight('777'));
+        $o = $this->object->getOptions();
+        $this->assertArrayHasKey($key.'Value', $o);
+        $this->assertArrayHasKey($key.'Unit', $o);
+        $this->assertEquals('777', $o[$key.'Value']);
+        $this->assertEquals('g', $o[$key.'Unit']);
+        $this->assertNull($this->object->setWeight(77, 'oz'));
+        $o2 = $this->object->getOptions();
+        $this->assertArrayHasKey($key.'Value', $o2);
+        $this->assertArrayHasKey($key.'Unit', $o2);
+        $this->assertEquals(77, $o2[$key.'Value']);
+        $this->assertEquals('oz', $o2[$key.'Unit']);
+
+        $this->assertFalse($this->object->setWeight('word')); //won't work for this
+        $this->assertFalse($this->object->setWeight(array())); //won't work for other things
+        $this->assertFalse($this->object->setWeight(null)); //won't work for other things
+    }
+
+    public function testSetMaxArrivalDate(){
+        $key = 'ShipmentRequestDetails.MustArriveByDate';
+        $this->assertNull($this->object->setMaxArrivalDate('+50 min'));
+        $o = $this->object->getOptions();
+        $this->assertArrayHasKey($key, $o);
+        $this->assertNotEmpty($o[$key]);
+
+        $this->assertFalse($this->object->setMaxArrivalDate(array(5))); //won't work for this
+
+        $check = parseLog();
+        $this->assertEquals('Error: strtotime() expects parameter 1 to be string, array given',$check[1]);
+    }
+
+    public function testSetDeliveryOption(){
+        $key = 'ShipmentRequestDetails.ShippingServiceOptions.DeliveryExperience';
+        $this->assertNull($this->object->setDeliveryOption('NoTracking'));
+        $o = $this->object->getOptions();
+        $this->assertArrayHasKey($key, $o);
+        $this->assertEquals('NoTracking', $o[$key]);
+
+        $this->assertFalse($this->object->setDeliveryOption('something')); //won't work for this
+        $this->assertFalse($this->object->setDeliveryOption(array())); //won't work for other things
+        $this->assertFalse($this->object->setDeliveryOption(null)); //won't work for other things
+
+        $check = parseLog();
+        $this->assertEquals('Tried to set DeliveryExperience to invalid value',$check[1]);
+        $this->assertEquals('Tried to set DeliveryExperience to invalid value',$check[2]);
+        $this->assertEquals('Tried to set DeliveryExperience to invalid value',$check[3]);
+    }
+
+    public function testSetDeclaredValue() {
+        $key = 'ShipmentRequestDetails.ShippingServiceOptions.DeclaredValue.';
+        $this->assertNull($this->object->setDeclaredValue('777', 'USD'));
+        $o = $this->object->getOptions();
+        $this->assertArrayHasKey($key.'Amount', $o);
+        $this->assertArrayHasKey($key.'CurrencyCode', $o);
+        $this->assertEquals('777', $o[$key.'Amount']);
+        $this->assertEquals('USD', $o[$key.'CurrencyCode']);
+
+        $this->assertFalse($this->object->setDeclaredValue('word', 'USD')); //won't work for this
+        $this->assertFalse($this->object->setDeclaredValue('777', '77')); //won't work for this
+        $this->assertFalse($this->object->setDeclaredValue('777', array())); //won't work for this
+        $this->assertFalse($this->object->setDeclaredValue(array(), 'USD')); //won't work for this
+        $this->assertFalse($this->object->setDeclaredValue('777', NULL)); //won't work for this
+        $this->assertFalse($this->object->setDeclaredValue(NULL, 'USD')); //won't work for this
+    }
+
+    public function testSetCarrierWillPickUp() {
+        $key = 'ShipmentRequestDetails.ShippingServiceOptions.CarrierWillPickUp';
+        $this->assertNull($this->object->setCarrierWillPickUp());
+        $o = $this->object->getOptions();
+        $this->assertArrayHasKey($key, $o);
+        $this->assertEquals('true', $o[$key]);
+        $this->assertNull($this->object->setCarrierWillPickUp(false));
+        $o2 = $this->object->getOptions();
+        $this->assertArrayHasKey($key, $o2);
+        $this->assertEquals('false', $o2[$key]);
+        $this->assertNull($this->object->setCarrierWillPickUp(1));
+        $o3 = $this->object->getOptions();
+        $this->assertArrayHasKey($key, $o3);
+        $this->assertEquals('true', $o3[$key]);
+        $this->assertNull($this->object->setCarrierWillPickUp(0));
+        $o4 = $this->object->getOptions();
+        $this->assertArrayHasKey($key, $o4);
+        $this->assertEquals('false', $o4[$key]);
+    }
+
     public function testListFetchServices(){
         resetLog();
         $this->object->setMock(true,'fetchMerchantServiceList.xml');

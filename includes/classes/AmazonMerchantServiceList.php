@@ -350,9 +350,9 @@ class AmazonMerchantServiceList extends AmazonMerchantCore implements Iterator{
      * This method sets the delivery experience shipping option to be sent in the next request.
      * This parameter is required for fetching a list of eligible services from Amazon.
      * @param string $s <p>"DeliveryConfirmationWithAdultSignature",
-            "DeliveryConfirmationWithSignature",
-            "DeliveryConfirmationWithoutSignature",
-            or "NoTracking"</p>
+     *      "DeliveryConfirmationWithSignature",
+     *      "DeliveryConfirmationWithoutSignature",
+     *      or "NoTracking"</p>
      * @return boolean <b>FALSE</b> if improper input
      */
     public function setDeliveryOption($s) {

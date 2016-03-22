@@ -59,7 +59,7 @@ class AmazonReportRequest extends AmazonReportsCore{
      * 
      * This method sets the report type to be sent in the next request.
      * This parameter is required for fetching the report from Amazon.
-     * @param string|integer $n <p>See comment inside for a list of valid values.</p>
+     * @param string|integer $s <p>See comment inside for a list of valid values.</p>
      * @return boolean <b>FALSE</b> if improper input
      */
     public function setReportType($s){

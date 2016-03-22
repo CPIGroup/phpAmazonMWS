@@ -95,7 +95,7 @@ class AmazonOrderItemList extends AmazonOrderCore implements Iterator{
      * 
      * This method sets the Amazon Order ID to be sent in the next request.
      * This parameter is required for fetching the order's items from Amazon.
-     * @param string $s <p>either string or number</p>
+     * @param string $id <p>Amazon Order ID</p>
      * @return boolean <b>FALSE</b> if improper input
      */
     public function setOrderId($id){
@@ -114,7 +114,7 @@ class AmazonOrderItemList extends AmazonOrderCore implements Iterator{
      * the data back as a response, which can be retrieved using <i>getItems</i>.
      * Other methods are available for fetching specific values from the order.
      * This operation can potentially involve tokens.
-     * @param boolean <p>When set to <b>FALSE</b>, the function will not recurse, defaults to <b>TRUE</b></p>
+     * @param boolean $r [optional] <p>When set to <b>FALSE</b>, the function will not recurse, defaults to <b>TRUE</b></p>
      * @return boolean <b>FALSE</b> if something goes wrong
      */
     public function fetchItems($r = true){

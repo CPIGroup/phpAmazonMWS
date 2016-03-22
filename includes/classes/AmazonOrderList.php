@@ -141,7 +141,7 @@ class AmazonOrderList extends AmazonOrderCore implements Iterator{
      * Setting this parameter tells Amazon to only return Orders with statuses that match
      * those in the list. If this parameter is not set, Amazon will return
      * Orders of any status.
-     * @param array|string $s <p>A list of Order Statuses, or a single status string.</p>
+     * @param array|string $list <p>A list of Order Statuses, or a single status string.</p>
      * @return boolean <b>FALSE</b> if improper input
      */
     public function setOrderStatusFilter($list){
@@ -183,7 +183,7 @@ class AmazonOrderList extends AmazonOrderCore implements Iterator{
      * Setting this parameter tells Amazon to only return Orders made in marketplaces that match
      * those in the list. If this parameter is not set, Amazon will return
      * Orders belonging to the current store's default marketplace.
-     * @param array|string $list <p>A list of Order Statuses, or a single status string.</p>
+     * @param array|string $list <p>A list of Marketplace IDs, or a single Marketplace ID.</p>
      * @return boolean <b>FALSE</b> if improper input
      */
     public function setMarketplaceFilter($list){
@@ -253,7 +253,7 @@ class AmazonOrderList extends AmazonOrderCore implements Iterator{
      * Setting this parameter tells Amazon to only return Orders with payment methods
      * that match those in the list. If this parameter is not set, Amazon will return
      * Orders with any payment method.
-     * @param array|string $s <p>A list of Payment Methods, or a single method string.</p>
+     * @param array|string $list <p>A list of Payment Methods, or a single method string.</p>
      * @return boolean <b>FALSE</b> if improper input
      */
     public function setPaymentMethodFilter($list){
@@ -291,10 +291,10 @@ class AmazonOrderList extends AmazonOrderCore implements Iterator{
      * Sets (or resets) the email address. (Optional)
      * 
      * This method sets the email address to be sent in the next request.
-     * Setting this parameter tells Amazon to only return Orders with addresses
-     * that match the address given. If this parameter is set, the following options
+     * Setting this parameter tells Amazon to only return Orders with email addresses
+     * that match the email address given. If this parameter is set, the following options
      * will be removed: SellerOrderId, OrderStatus, PaymentMethod, FulfillmentChannel, LastUpdatedAfter, LastUpdatedBefore.
-     * @param string $s <p>A single address string. Set to NULL to remove the option.</p>
+     * @param string $filter <p>A single email address string. Set to NULL to remove the option.</p>
      * @return boolean <b>FALSE</b> if improper input
      */
     public function setEmailFilter($filter){
@@ -317,11 +317,11 @@ class AmazonOrderList extends AmazonOrderCore implements Iterator{
     /**
      * Sets (or resets) the seller order ID(s). (Optional)
      * 
-     * This method sets the list of seller order IDs to be sent in the next request.
-     * Setting this parameter tells Amazon to only return Orders with addresses
-     * that match those in the list. If this parameter is set, the following options
+     * This method sets the list of seller order ID to be sent in the next request.
+     * Setting this parameter tells Amazon to only return Orders with seller order IDs
+     * that match the seller order ID given. If this parameter is set, the following options
      * will be removed: BuyerEmail, OrderStatus, PaymentMethod, FulfillmentChannel, LastUpdatedAfter, LastUpdatedBefore.
-     * @param array|string $s <p>A list of Payment Methods, or a single type string. Set to NULL to remove the option.</p>
+     * @param array|string $filter <p>A single seller order ID. Set to NULL to remove the option.</p>
      * @return boolean <b>FALSE</b> if improper input
      */
     public function setSellerOrderIdFilter($filter){
@@ -346,7 +346,7 @@ class AmazonOrderList extends AmazonOrderCore implements Iterator{
      * 
      * This method sets the maximum number of Feed Submissions for Amazon to return per page.
      * If this parameter is not set, Amazon will send 100 at a time.
-     * @param array|string $s <p>Positive integer from 1 to 100.</p>
+     * @param array|string $num <p>Positive integer from 1 to 100.</p>
      * @return boolean <b>FALSE</b> if improper input
      */
     public function setMaxResultsPerPage($num){
@@ -405,7 +405,7 @@ class AmazonOrderList extends AmazonOrderCore implements Iterator{
      * Submits a <i>ListOrders</i> request to Amazon. Amazon will send
      * the list back as a response, which can be retrieved using <i>getList</i>.
      * This operation can potentially involve tokens.
-     * @param boolean <p>When set to <b>FALSE</b>, the function will not recurse, defaults to <b>TRUE</b></p>
+     * @param boolean $r [optional] <p>When set to <b>FALSE</b>, the function will not recurse, defaults to <b>TRUE</b></p>
      * @return boolean <b>FALSE</b> if something goes wrong
      */
     public function fetchOrders($r = true){

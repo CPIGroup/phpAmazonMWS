@@ -80,7 +80,7 @@ class AmazonFeed extends AmazonFeedsCore{
      * 
      * This method loads the contents of a file to send as the feed. This
      * parameter is required in order to submit a feed to Amazon.
-     * @param string $url <p>The path to a file you want to use.
+     * @param string $path <p>The path to a file you want to use.
      * It can be relative or absolute.</p>
      */
     public function loadFeedFile($path){
@@ -315,7 +315,7 @@ class AmazonFeed extends AmazonFeedsCore{
      * <li><b>SubmittedDate</b> - The timestamp for when the Feed was received</li>
      * <li><b>FeedProcessingStatus</b> - The status of the feed, likely "_SUBMITTED_"</li>
      * </ul>
-     * @return array
+     * @return array|boolean associative array, or <b>FALSE</b> if no response is found
      */
     public function getResponse(){
         if (isset($this->response)){

@@ -262,7 +262,7 @@ class AmazonFeedList extends AmazonFeedsCore implements Iterator{
      * the list back as a response, which can be retrieved using <i>getFeedList</i>.
      * Other methods are available for fetching specific values from the list.
      * This operation can potentially involve tokens.
-     * @param boolean <p>When set to <b>FALSE</b>, the function will not recurse, defaults to <b>TRUE</b></p>
+     * @param boolean $r [optional] <p>When set to <b>FALSE</b>, the function will not recurse, defaults to <b>TRUE</b></p>
      * @return boolean <b>FALSE</b> if something goes wrong
      */
     public function fetchFeedSubmissions($r = true){

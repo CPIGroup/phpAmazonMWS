@@ -377,7 +377,7 @@ class AmazonMerchantServiceList extends AmazonMerchantCore implements Iterator{
      * If this parameter is set and is higher than the carrier's minimum insurance amount,
      * the seller will be charged more for the additional insurance.
      * @param string $v <p>Money amount</p>
-     * @param string $c <p>Currency code</p>
+     * @param string $c <p>ISO 4217 currency code (ex: USD)</p>
      * @return boolean <b>FALSE</b> if improper input
      */
     public function setDeclaredValue($v, $c) {

@@ -1,0 +1,120 @@
+<?xml version="1.0"?>
+<GetEligibleShippingServicesResponse xmlns="https://mws.amazonservices.com/MerchantFulfillment/2015-06-01">
+  <GetEligibleShippingServicesResult>
+    <ShippingServiceList>
+      <ShippingService>
+        <CarrierName>FEDEX</CarrierName>
+        <ShippingServiceOptions>
+          <CarrierWillPickUp>false</CarrierWillPickUp>
+          <DeclaredValue>
+            <CurrencyCode>USD</CurrencyCode>
+            <Amount>10.00</Amount>
+          </DeclaredValue>
+          <DeliveryExperience>DeliveryConfirmationWithoutSignature</DeliveryExperience>
+        </ShippingServiceOptions>
+        <ShippingServiceId>FEDEX_PTP_PRIORITY_OVERNIGHT</ShippingServiceId>
+        <Rate>
+          <CurrencyCode>USD</CurrencyCode>
+          <Amount>27.81</Amount>
+        </Rate>
+        <LatestEstimatedDeliveryDate>2015-09-24T10:30:00Z
+        </LatestEstimatedDeliveryDate>
+        <EarliestEstimatedDeliveryDate>2015-09-24T10:30:00Z
+        </EarliestEstimatedDeliveryDate>
+        <ShippingServiceOfferId>HDDUKqtQVFetpBZAqx5c1yaCZ9vuFfND0kudyw3lLWCa3
+mN2+zUOsRCAZS2oYt0ey6fXKdOAucmYVXR9LAkU9P8hOWw6qYvxYfGr3QxB6dif9iACvBG7fTm0y3
+x5aKoyyj7mlrrOUEutSK4PbpMepC3deb5GjoVHIIdeKhVZYRU=</ShippingServiceOfferId>
+        <ShipDate>2015-09-23T19:32:08.727Z</ShipDate>
+        <ShippingServiceName>FedEx Priority Overnight®</ShippingServiceName>
+      </ShippingService>
+      <ShippingService>
+        <CarrierName>FEDEX</CarrierName>
+        <ShippingServiceOptions>
+          <CarrierWillPickUp>false</CarrierWillPickUp>
+          <DeclaredValue>
+            <CurrencyCode>USD</CurrencyCode>
+            <Amount>10.00</Amount>
+          </DeclaredValue>
+          <DeliveryExperience>DeliveryConfirmationWithoutSignature</DeliveryExperience>
+        </ShippingServiceOptions>
+        <ShippingServiceId>FEDEX_PTP_STANDARD_OVERNIGHT</ShippingServiceId>
+        <Rate>
+          <CurrencyCode>USD</CurrencyCode>
+          <Amount>26.57</Amount>
+        </Rate>
+        <LatestEstimatedDeliveryDate>2015-09-24T20:00:00Z
+        </LatestEstimatedDeliveryDate>
+        <EarliestEstimatedDeliveryDate>2015-09-24T20:00:00Z
+        </EarliestEstimatedDeliveryDate>
+        <ShippingServiceOfferId>HDDUKqtQVFetpBZAqx5c1yaCZ9vuFfND0kudyw3lLWCa3
+mN2+zUOsRCAZS2oYt0elYmXI8AA2YaB4Q0etqj8XeAkNr4oeJBer1ZX9y4YQN+jHo37NejjUkmDTD
+TxHRbtUIKRYtC9pDb7UCg/VJRff5NpQHcMmBbY/Q/tFdxYM5c=</ShippingServiceOfferId>
+        <ShipDate>2015-09-23T19:32:08.727Z</ShipDate>
+        <ShippingServiceName>FedEx Standard Overnight®</ShippingServiceName>
+      </ShippingService>
+      <ShippingService>
+        <CarrierName>UPS</CarrierName>
+        <ShippingServiceOptions>
+          <CarrierWillPickUp>false</CarrierWillPickUp>
+          <DeclaredValue>
+            <CurrencyCode>USD</CurrencyCode>
+            <Amount>10.00</Amount>
+          </DeclaredValue>
+          <DeliveryExperience>DeliveryConfirmationWithoutSignature</DeliveryExperience>
+        </ShippingServiceOptions>
+        <ShippingServiceId>UPS_PTP_GND</ShippingServiceId>
+        <Rate>
+          <CurrencyCode>USD</CurrencyCode>
+          <Amount>6.89</Amount>
+        </Rate>
+        <LatestEstimatedDeliveryDate>2015-09-25T06:00:00Z
+        </LatestEstimatedDeliveryDate>
+        <EarliestEstimatedDeliveryDate>2015-09-25T06:00:00Z
+        </EarliestEstimatedDeliveryDate>
+        <ShippingServiceOfferId>HDDUKqtQVFetpBZAqx5c12nyrBg+Utzz6zmIwjhbP5DEb
+C2ZiP0hJRCyAda4ne5EiFGyivXnPjg4kMabInnyVrqdSXRj9TCk88N3BHctTV4lY+0YW647Dm0ahK
+hTc4vU9OqMqYLWbnESwE/V/iydXw==</ShippingServiceOfferId>
+        <ShipDate>2015-09-23T19:32:08.727Z</ShipDate>
+        <ShippingServiceName>UPS Ground</ShippingServiceName>
+      </ShippingService>
+      <ShippingService>
+        <CarrierName>UPS</CarrierName>
+        <ShippingServiceOptions>
+          <CarrierWillPickUp>false</CarrierWillPickUp>
+          <DeclaredValue>
+            <CurrencyCode>USD</CurrencyCode>
+            <Amount>10.00</Amount>
+          </DeclaredValue>
+          <DeliveryExperience>DeliveryConfirmationWithoutSignature</DeliveryExperience>
+        </ShippingServiceOptions>
+        <ShippingServiceId>UPS_PTP_NEXT_DAY_AIR_SAVER</ShippingServiceId>
+        <Rate>
+          <CurrencyCode>USD</CurrencyCode>
+          <Amount>22.91</Amount>
+        </Rate>
+        <LatestEstimatedDeliveryDate>2015-09-25T06:00:00Z
+        </LatestEstimatedDeliveryDate>
+        <EarliestEstimatedDeliveryDate>2015-09-25T06:00:00Z
+        </EarliestEstimatedDeliveryDate>
+        <ShippingServiceOfferId>HDDUKqtQVFetpBZAqx5c12nyrBg+Utzz6zmIwjhbP5AI
+OD5oqRXbXz/IF3ZW5Q10AweW6+i5eN09ZqJR1mzQzFPPfKibDD4Rp4AgmbgfThY8CFviXQhKSKsU
+aEdmFUlijYAwbgH9yJ7QHoA7K6+C2Qv6VrhsAhuOJWrI87rqSTA=</ShippingServiceOfferId>
+        <ShipDate>2015-09-23T19:32:08.727Z</ShipDate>
+        <ShippingServiceName>UPS Next Day Air Saver</ShippingServiceName>
+      </ShippingService>
+    </ShippingServiceList>
+    <TemporarilyUnavailableCarrierList>
+      <TemporarilyUnavailableCarrier>
+        <CarrierName>USPS</CarrierName>
+      </TemporarilyUnavailableCarrier>
+    </TemporarilyUnavailableCarrierList>
+    <TermsAndConditionsNotAcceptedCarrierList>
+      <TermsAndConditionsNotAcceptedCarrier>
+        <CarrierName>ACME</CarrierName>
+      </TermsAndConditionsNotAcceptedCarrier>
+    </TermsAndConditionsNotAcceptedCarrierList>
+  </GetEligibleShippingServicesResult>
+  <ResponseMetadata>
+    <RequestId>5b7997fb-efd1-495b-b7db-03ecfa691038</RequestId>
+  </ResponseMetadata>
+</GetEligibleShippingServicesResponse>

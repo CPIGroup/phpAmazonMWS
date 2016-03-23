@@ -337,7 +337,7 @@ class AmazonReportList extends AmazonReportsCore implements Iterator{
             $this->reportList[$i]['ReportRequestId'] = (string)$x->ReportRequestId;
             $this->reportList[$i]['AvailableDate'] = (string)$x->AvailableDate;
             $this->reportList[$i]['Acknowledged'] = (string)$x->Acknowledged;
-            if (isset($x)) {
+            if (isset($x->AcknowledgedDate)) {
                 $this->reportList[$i]['AcknowledgedDate'] = (string)$x->AcknowledgedDate;
             }
             

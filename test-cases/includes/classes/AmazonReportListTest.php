@@ -289,7 +289,6 @@ class AmazonReportListTest extends PHPUnit_Framework_TestCase {
         $x1['ReportRequestId'] = '2278662938';
         $x1['AvailableDate'] = '2009-02-10T09:22:33+00:00';
         $x1['Acknowledged'] = 'false';
-        $x1['AcknowledgedDate'] = '';
         $x[0] = $x1;
         
         $this->assertEquals($x,$o->getList());

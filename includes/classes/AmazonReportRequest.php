@@ -59,7 +59,7 @@ class AmazonReportRequest extends AmazonReportsCore{
      * 
      * This method sets the report type to be sent in the next request.
      * This parameter is required for fetching the report from Amazon.
-     * @param string|integer $n <p>See comment inside for a list of valid values.</p>
+     * @param string|integer $s <p>See comment inside for a list of valid values.</p>
      * @return boolean <b>FALSE</b> if improper input
      */
     public function setReportType($s){
@@ -77,10 +77,11 @@ class AmazonReportRequest extends AmazonReportsCore{
          *      Merchant Listings Lite Report ~ _GET_MERCHANT_LISTINGS_DATA_LITE_
          *      Merchant Listings Liter Report ~ _GET_MERCHANT_LISTINGS_DATA_LITER_
          *      Canceled Listings Report ~ _GET_MERCHANT_CANCELLED_LISTINGS_DATA_
+         *      Sold Listings Report ~ _GET_CONVERGED_FLAT_FILE_SOLD_LISTINGS_DATA_
          *      Quality Listing Report ~ _GET_MERCHANT_LISTINGS_DEFECT_DATA_
          * Order Reports:
          *      Unshipped Orders Report ~ _GET_FLAT_FILE_ACTIONABLE_ORDER_DATA_
-         *      Flat File Order Report ~ _GET_FLAT_FILE_ORDER_REPORT_DATA_
+         *      Scheduled XML Order Report ~ _GET_ORDERS_DATA_
          *      Requested Flat File Order Report ~ _GET_FLAT_FILE_ORDERS_DATA_
          *      Flat File Order Report ~ _GET_CONVERGED_FLAT_FILE_ORDER_REPORT_DATA_
          * Order Tracking Reports:
@@ -91,40 +92,50 @@ class AmazonReportRequest extends AmazonReportsCore{
          * Pending Order Reports:
          *      Flat File Pending Orders Report ~ _GET_FLAT_FILE_PENDING_ORDERS_DATA_
          *      XML Pending Orders Report ~ _GET_PENDING_ORDERS_DATA_
-         *      Converged Flat File Pending Orders Report ~ GET_CONVERGED_FLAT_FILE_PENDING_ORDERS_DATA_
+         *      Converged Flat File Pending Orders Report ~ _GET_CONVERGED_FLAT_FILE_PENDING_ORDERS_DATA_
          * Performance Reports:
          *      Flat File Feedback Report ~ _GET_SELLER_FEEDBACK_DATA_
-         * FBA Reports:
+         *      XML Customer Metrics Report ~ _GET_V1_SELLER_PERFORMANCE_REPORT_
+         * Settlement Reports:
+         *      Flat File Settlement Report ~ _GET_V2_SETTLEMENT_REPORT_DATA_FLAT_FILE_
+         *      XML Settlement Report ~ _GET_V2_SETTLEMENT_REPORT_DATA_XML_
+         *      Flat File V2 Settlement Report ~ _GET_V2_SETTLEMENT_REPORT_DATA_FLAT_FILE_V2_
+         * FBA Sales Reports:
+         *      FBA Fulfilled Shipments Report ~ _GET_AMAZON_FULFILLED_SHIPMENTS_DATA_
          *      Flat File All Orders Report by Last Update ~ _GET_FLAT_FILE_ALL_ORDERS_DATA_BY_LAST_UPDATE_
          *      Flat File All Orders Report by Order Date ~ _GET_FLAT_FILE_ALL_ORDERS_DATA_BY_ORDER_DATE_
          *      XML All Orders Report by Last Update ~ _GET_XML_ALL_ORDERS_DATA_BY_LAST_UPDATE_
          *      XML All Orders Report by Order Date ~ _GET_XML_ALL_ORDERS_DATA_BY_ORDER_DATE_
-         *      FBA Inventory Report ~ _GET_AFN_INVENTORY_DATA_
-         *      FBA Fulfilled Shipments Report ~ _GET_AMAZON_FULFILLED_SHIPMENTS_DATA_
-         *      FBA Returns Report ~ _GET_FBA_FULFILLMENT_CUSTOMER_RETURNS_
          *      FBA Customer Shipment Sales Report ~ _GET_FBA_FULFILLMENT_CUSTOMER_SHIPMENT_SALES_DATA_
-         *      Customer Taxes ~ _GET_FBA_FULFILLMENT_CUSTOMER_TAXES_DATA_
          *      FBA Promotions Report ~ _GET_FBA_FULFILLMENT_CUSTOMER_SHIPMENT_PROMOTION_DATA_
-         *      FBA Inbound Compliance Report ~ _GET_FBA_FULFILLMENT_INBOUND_NONCOMPLIANCE_DATA_
+         *      Customer Taxes ~ _GET_FBA_FULFILLMENT_CUSTOMER_TAXES_DATA_
+         * FBA Inventory Reports:
+         *      FBA Inventory Report ~ _GET_AFN_INVENTORY_DATA_
+         *      FBA Multi-Country Inventory Report ~ _GET_AFN_INVENTORY_DATA_BY_COUNTRY_
          *      FBA Daily Inventory History Report ~ _GET_FBA_FULFILLMENT_CURRENT_INVENTORY_DATA_
          *      FBA Monthly Inventory History Repoty ~ _GET_FBA_FULFILLMENT_MONTHLY_INVENTORY_DATA_
          *      FBA Received Inventory Report ~ _GET_FBA_FULFILLMENT_INVENTORY_RECEIPTS_DATA_
+         *      FBA Reserved Inventory Report ~ _GET_RESERVED_INVENTORY_DATA_
          *      FBA Inventory Event Detail Report ~ _GET_FBA_FULFILLMENT_INVENTORY_SUMMARY_DATA_
          *      FBA Inventory Adjustments Report ~ _GET_FBA_FULFILLMENT_INVENTORY_ADJUSTMENTS_DATA_
          *      FBA Inventory Health Report ~ _GET_FBA_FULFILLMENT_INVENTORY_HEALTH_DATA_
          *      FBA Manage Inventory ~ _GET_FBA_MYI_UNSUPPRESSED_INVENTORY_DATA_
          *      FBA Manage Inventory - Archived ~ _GET_FBA_MYI_ALL_INVENTORY_DATA_
-         *      FBA Replacements Report ~ _GET_FBA_FULFILLMENT_CUSTOMER_SHIPMENT_REPLACEMENT_DATA_
          *      FBA Cross-Border Inventory Movement Report ~ _GET_FBA_FULFILLMENT_CROSS_BORDER_INVENTORY_MOVEMENT_DATA_
+         *      FBA Inbound Compliance Report ~ _GET_FBA_FULFILLMENT_INBOUND_NONCOMPLIANCE_DATA_
+         * FBA Payments Reports:
+         *      FBA Fee Preview Report ~ _GET_FBA_ESTIMATED_FBA_FEES_TXT_DATA_
+         *      FBA Reimbursements Report ~ _GET_FBA_REIMBURSEMENTS_DATA_
+         * FBA Customer Concessions Reports:
+         *      FBA Returns Report ~ _GET_FBA_FULFILLMENT_CUSTOMER_RETURNS_
+         *      FBA Replacements Report ~ _GET_FBA_FULFILLMENT_CUSTOMER_SHIPMENT_REPLACEMENT_DATA_
+         * FBA Removals Reports:
          *      FBA Recommended Removal Report ~ _GET_FBA_RECOMMENDED_REMOVAL_DATA_
-         * Amazon Product Ads Report:
-         *      Product Ads Listings Report ~ _GET_NEMO_MERCHANT_LISTINGS_DATA_
-         *      Product Ads Daily Performance by SKU Report, flat file ~ _GET_PADS_PRODUCT_PERFORMANCE_OVER_TIME_DAILY_DATA_TSV_
-         *      Product Ads Daily Performance by SKU Report, XML ~ _GET_PADS_PRODUCT_PERFORMANCE_OVER_TIME_DAILY_DATA_XML_
-         *      Product Ads Weekly Performance by SKU Report, flat file ~ _GET_PADS_PRODUCT_PERFORMANCE_OVER_TIME_WEEKLY_DATA_TSV_
-         *      Product Ads Weekly Performance by SKU Report, XML ~ _GET_PADS_PRODUCT_PERFORMANCE_OVER_TIME_WEEKLY_DATA_XML_
-         *      Product Ads Monthly Performance by SKU Report, flat file ~ _GET_PADS_PRODUCT_PERFORMANCE_OVER_TIME_MONTHLY_DATA_TSV_
-         *      Product Ads Monthly Performance by SKU Report, XML ~ _GET_PADS_PRODUCT_PERFORMANCE_OVER_TIME_MONTHLY_DATA_XML_
+         *      FBA Removal Order Detail Report ~ _GET_FBA_FULFILLMENT_REMOVAL_ORDER_DETAIL_DATA_
+         *      FBA Removal Shipment Detail Report ~ _GET_FBA_FULFILLMENT_REMOVAL_SHIPMENT_DETAIL_DATA_
+         * Other:
+         *      Sales Tax Report ~ _GET_FLAT_FILE_SALES_TAX_DATA_
+         *      Browse Tree Report ~ _GET_XML_BROWSE_TREE_DATA_
          */
     }
     

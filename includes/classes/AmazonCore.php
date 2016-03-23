@@ -362,7 +362,7 @@ abstract class AmazonCore{
             $this->config = $path;
             $this->setLogPath($logpath);
             if (isset($AMAZON_SERVICE_URL)) {
-                $this->urlbase = $AMAZON_SERVICE_URL;
+                $this->urlbase = rtrim($AMAZON_SERVICE_URL, '/') . '/';
             }
         } else {
             throw new Exception("Config file does not exist or cannot be read! ($path)");
@@ -430,6 +430,9 @@ abstract class AmazonCore{
             }
             if (!empty($store[$s]['serviceUrl'])) {
                 $this->urlbase = $store[$s]['serviceUrl'];
+            }
+            if (!empty($store[$s]['MWSAuthToken'])) {
+                $this->options['MWSAuthToken'] = $store[$s]['MWSAuthToken'];
             }
             
         } else {
@@ -768,7 +771,8 @@ abstract class AmazonCore{
      */
     protected function _urlencode($value) {
         return rawurlencode($value);
-		return str_replace('%7E', '~', rawurlencode($value));
+        //Amazon suggests doing this, but it seems to break things rather than fix them:
+        //return str_replace('%7E', '~', rawurlencode($value));
     }
     
     /**

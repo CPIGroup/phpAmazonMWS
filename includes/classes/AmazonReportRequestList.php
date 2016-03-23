@@ -256,7 +256,7 @@ class AmazonReportRequestList extends AmazonReportsCore implements Iterator{
      * the list back as a response, which can be retrieved using <i>getList</i>.
      * Other methods are available for fetching specific values from the list.
      * This operation can potentially involve tokens.
-     * @param boolean <p>When set to <b>FALSE</b>, the function will not recurse, defaults to <b>TRUE</b></p>
+     * @param boolean $r <p>When set to <b>FALSE</b>, the function will not recurse, defaults to <b>TRUE</b></p>
      * @return boolean <b>FALSE</b> if something goes wrong
      */
     public function fetchRequestList($r = true){
@@ -386,7 +386,7 @@ class AmazonReportRequestList extends AmazonReportsCore implements Iterator{
             $this->reportList[$i]['ReportProcessingStatus'] = (string)$x->ReportProcessingStatus;
             $this->reportList[$i]['GeneratedReportId'] = (string)$x->GeneratedReportId;
             $this->reportList[$i]['StartedProcessingDate'] = (string)$x->StartedProcessingDate;
-            $this->reportList[$i]['CompletedProcessingDate'] = (string)$x->CompletedProcessingDate;
+            $this->reportList[$i]['CompletedDate'] = (string)$x->CompletedDate;
             
             $this->index++;
         }
@@ -649,15 +649,26 @@ class AmazonReportRequestList extends AmazonReportsCore implements Iterator{
      * @param int $i [optional] <p>List index to retrieve the value from. Defaults to 0.</p>
      * @return string|boolean single value, or <b>FALSE</b> if Non-numeric index
      */
-    public function getDateProcessingCompleted($i = 0){
+    public function getDateCompleted($i = 0){
         if (!isset($this->reportList)){
             return false;
         }
         if (is_int($i)){
-            return $this->reportList[$i]['CompletedProcessingDate'];
+            return $this->reportList[$i]['CompletedDate'];
         } else {
             return false;
         }
+    }
+
+    /**
+     * Alias of getDateCompleted.
+     * @param int $i [optional] <p>List index to retrieve the value from. Defaults to 0.</p>
+     * @return string|boolean single value, or <b>FALSE</b> if Non-numeric index
+     * @see getDateCompleted
+     * @deprecated since 1.3.0
+     */
+    public function getDateProcessingCompleted($i = 0){
+        return $this->getDateCompleted($i);
     }
     
     /**
@@ -674,7 +685,7 @@ class AmazonReportRequestList extends AmazonReportsCore implements Iterator{
      * <li><b>ReportProcessingStatus</b></li>
      * <li><b>GeneratedReportId</b></li>
      * <li><b>StartedProcessingDate</b></li>
-     * <li><b>CompletedProcessingDate</b></li>
+     * <li><b>CompletedDate</b></li>
      * </ul>
      * @param int $i [optional] <p>List index to retrieve the value from. Defaults to NULL.</p>
      * @return array|boolean multi-dimensional array, or <b>FALSE</b> if list not filled yet

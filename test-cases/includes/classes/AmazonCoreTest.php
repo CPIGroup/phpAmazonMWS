@@ -98,6 +98,7 @@ class AmazonCoreTest extends PHPUnit_Framework_TestCase {
         $this->assertInternalType('array',$o);
         $this->assertArrayHasKey('SellerId',$o);
         $this->assertArrayHasKey('AWSAccessKeyId',$o);
+        $this->assertArrayHasKey('MWSAuthToken',$o);
         $this->assertArrayHasKey('SignatureVersion',$o);
         $this->assertArrayHasKey('SignatureMethod',$o);
         $this->assertArrayHasKey('Version',$o);

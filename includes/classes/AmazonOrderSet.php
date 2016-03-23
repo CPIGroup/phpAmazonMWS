@@ -70,7 +70,7 @@ class AmazonOrderSet extends AmazonOrderCore implements Iterator{
      * This method sets the list of Order IDs to be sent in the next request.
      * If you wish to retrieve information for only one order, please use the 
      * <i>AmazonOrder</i> class instead.
-     * @param array|string $s <p>A list of Feed Submission IDs, or a single ID string.</p>
+     * @param array|string $o <p>A list of Amazon Order IDs, or a single ID string.</p>
      * @return boolean <b>FALSE</b> if improper input
      */
     public function setOrderIds($o){

@@ -464,32 +464,36 @@ class AmazonMerchantShipmentCreator extends AmazonMerchantCore {
      */
     public function createShipment(){
         if (!array_key_exists('ShipmentRequestDetails.AmazonOrderId',$this->options)){
-            $this->log("Amazon Order ID must be set in order to fetch a service list",'Warning');
+            $this->log("Amazon Order ID must be set in order to create a shipment",'Warning');
             return false;
         }
         if (!array_key_exists('ShipmentRequestDetails.ItemList.Item.1.OrderItemId',$this->options)){
-            $this->log("Items must be set in order to fetch a service list",'Warning');
+            $this->log("Items must be set in order to create a shipment",'Warning');
             return false;
         }
         if (!array_key_exists('ShipmentRequestDetails.ShipFromAddress.Name',$this->options)){
-            $this->log("Shipping Address must be set in order to fetch a service list",'Warning');
+            $this->log("Shipping Address must be set in order to create a shipment",'Warning');
             return false;
         }
         if (!array_key_exists('ShipmentRequestDetails.PackageDimensions.Length',$this->options) &&
                 !array_key_exists('ShipmentRequestDetails.PackageDimensions.PredefinedPackageDimensions',$this->options)){
-            $this->log("Package Dimensions must be set in order to fetch a service list",'Warning');
+            $this->log("Package Dimensions must be set in order to create a shipment",'Warning');
             return false;
         }
         if (!array_key_exists('ShipmentRequestDetails.Weight.Value',$this->options)){
-            $this->log("Weight must be set in order to fetch a service list",'Warning');
+            $this->log("Weight must be set in order to create a shipment",'Warning');
             return false;
         }
         if (!array_key_exists('ShipmentRequestDetails.ShippingServiceOptions.DeliveryExperience',$this->options)){
-            $this->log("Delivery Experience must be set in order to fetch a service list",'Warning');
+            $this->log("Delivery Experience must be set in order to create a shipment",'Warning');
             return false;
         }
         if (!array_key_exists('ShipmentRequestDetails.ShippingServiceOptions.CarrierWillPickUp',$this->options)){
-            $this->log("Carrier Pick-Up Option must be set in order to fetch a service list",'Warning');
+            $this->log("Carrier Pick-Up Option must be set in order to create a shipment",'Warning');
+            return false;
+        }
+        if (!array_key_exists('ShippingServiceId',$this->options)){
+            $this->log("Shipping Service must be set in order to create a shipment",'Warning');
             return false;
         }
 

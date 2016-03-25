@@ -283,6 +283,8 @@ class AmazonMerchantShipmentTest extends PHPUnit_Framework_TestCase {
         $this->object->setDeliveryOption('DeliveryConfirmationWithoutSignature');
         $this->assertFalse($this->object->createShipment()); //no pickup option yet
         $this->object->setCarrierWillPickUp();
+        $this->assertFalse($this->object->createShipment()); //no service yet
+        $this->object->setService('UPS_PTP_GND');
         $this->assertFalse($this->object->getShipment()); //still no data yet
         $this->assertNull($this->object->createShipment()); //now it is good
 

@@ -128,7 +128,7 @@ class AmazonMerchantShipmentCreator extends AmazonMerchantCore {
     /**
      * Sets the address. (Required)
      *
-     * This method sets the destination address to be sent in the next request.
+     * This method sets the shipper's address to be sent in the next request.
      * This parameter is required for creating a shipment on Amazon.
      * The array provided should have the following fields:
      * <ul>
@@ -290,9 +290,9 @@ class AmazonMerchantShipmentCreator extends AmazonMerchantCore {
     }
 
     /**
-     * Resets the address options.
+     * Resets the package dimension options.
      *
-     * Since address is a required parameter, these options should not be removed
+     * Since dimensions are a required parameter, these options should not be removed
      * without replacing them, so this method is not public.
      */
     protected function resetPackageDimensions(){

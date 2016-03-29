@@ -499,15 +499,24 @@ class AmazonMerchantShipmentTest extends PHPUnit_Framework_TestCase {
         $x['Dimensions']['Width'] = '8.50000';
         $x['Dimensions']['Unit'] = 'inches';
         $x['FileContents'] = array();
-        $x['FileContents']['Contents'] = 'H4sIAAAAAAAAAK16WbeqyrLmO2Pc/zBVRLG6nycD/Bd+Zx3S8LwAA';
+        $x['FileContents']['Contents'] = 'This is a test';
         $x['FileContents']['FileType'] = 'application/pdf';
         $x['FileContents']['Checksum'] = 'DmsWbJpdMPALN3jV4wHOrg==';
         $this->assertEquals($x, $get);
         $this->assertEquals($x['FileContents']['Contents'], $o->getLabelFileContents());
 
+        //try with raw file
+        $x['FileContents']['Contents'] = 'H4sIAAAAAAAAAwvJyCxWAKJEhZLU4hIAMp96wA4AAAA=';
+        $get2 = $o->getLabelData(TRUE);
+        $this->assertInternalType('array', $get2);
+        $this->assertEquals($x, $get2);
+        $this->assertEquals($x['FileContents']['Contents'], $o->getLabelFileContents(TRUE));
+
         $new = $this->genEmptyShipment();
         $this->assertFalse($new->getLabelData()); //not fetched yet for this object
+        $this->assertFalse($new->getLabelData(TRUE)); //not fetched yet for this object
         $this->assertFalse($new->getLabelFileContents()); //not fetched yet for this object
+        $this->assertFalse($new->getLabelFileContents(TRUE)); //not fetched yet for this object
     }
 
     /**

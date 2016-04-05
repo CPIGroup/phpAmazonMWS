@@ -340,6 +340,23 @@ class AmazonMerchantShipmentCreator extends AmazonMerchantCore {
     }
 
     /**
+     * Sets the date on which the package will be shipped. (Optional)
+     *
+     * This method sets the ship date to be sent in the next request.
+     * @param string $d <p>A time string</p>
+     * @return boolean <b>FALSE</b> if improper input
+     */
+    public function setShipDate($d) {
+        try{
+            $this->options['ShipmentRequestDetails.ShipDate'] = $this->genTime($d);
+        } catch (Exception $e){
+            unset($this->options['ShipmentRequestDetails.ShipDate']);
+            $this->log('Error: '.$e->getMessage(), 'Warning');
+            return false;
+        }
+    }
+
+    /**
      * Sets the Delivery Experience Option. (Required)
      *
      * This method sets the delivery experience shipping option to be sent in the next request.

@@ -208,6 +208,19 @@ class AmazonMerchantShipmentTest extends PHPUnit_Framework_TestCase {
         $this->assertEquals('Error: strtotime() expects parameter 1 to be string, array given',$check[1]);
     }
 
+    public function testSetShipDate(){
+        $key = 'ShipmentRequestDetails.ShipDate';
+        $this->assertNull($this->object->setShipDate('+50 min'));
+        $o = $this->object->getOptions();
+        $this->assertArrayHasKey($key, $o);
+        $this->assertNotEmpty($o[$key]);
+
+        $this->assertFalse($this->object->setShipDate(array(5))); //won't work for this
+
+        $check = parseLog();
+        $this->assertEquals('Error: strtotime() expects parameter 1 to be string, array given',$check[1]);
+    }
+
     public function testSetDeliveryOption(){
         $key = 'ShipmentRequestDetails.ShippingServiceOptions.DeliveryExperience';
         $this->assertNull($this->object->setDeliveryOption('NoTracking'));

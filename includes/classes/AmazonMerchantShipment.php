@@ -138,12 +138,14 @@ class AmazonMerchantShipment extends AmazonMerchantCore {
         $this->data['Weight']['Unit'] = (string)$d->Weight->Unit;
         $this->data['Insurance']['Amount'] = (string)$d->Insurance->Amount;
         $this->data['Insurance']['CurrencyCode'] = (string)$d->Insurance->CurrencyCode;
-        $this->data['Label']['Dimensions']['Length'] = (string)$d->Label->Dimensions->Length;
-        $this->data['Label']['Dimensions']['Width'] = (string)$d->Label->Dimensions->Width;
-        $this->data['Label']['Dimensions']['Unit'] = (string)$d->Label->Dimensions->Unit;
-        $this->data['Label']['FileContents']['Contents'] = (string)$d->Label->FileContents->Contents;
-        $this->data['Label']['FileContents']['FileType'] = (string)$d->Label->FileContents->FileType;
-        $this->data['Label']['FileContents']['Checksum'] = (string)$d->Label->FileContents->Checksum;
+        if (isset($d->Label)) {
+            $this->data['Label']['Dimensions']['Length'] = (string)$d->Label->Dimensions->Length;
+            $this->data['Label']['Dimensions']['Width'] = (string)$d->Label->Dimensions->Width;
+            $this->data['Label']['Dimensions']['Unit'] = (string)$d->Label->Dimensions->Unit;
+            $this->data['Label']['FileContents']['Contents'] = (string)$d->Label->FileContents->Contents;
+            $this->data['Label']['FileContents']['FileType'] = (string)$d->Label->FileContents->FileType;
+            $this->data['Label']['FileContents']['Checksum'] = (string)$d->Label->FileContents->Checksum;
+        }
 
         $this->data['ItemList'] = array();
         foreach ($d->ItemList->children() as $x) {
@@ -547,11 +549,21 @@ class AmazonMerchantShipment extends AmazonMerchantCore {
      * </ul>
      * </li>
      * </ul>
+     * @param boolean $raw [optional] <p>Set to TRUE to get the raw, double-encoded file contents.</p>
      * @return array|boolean multi-dimensional array, or <b>FALSE</b> if label not set yet
      */
-    public function getLabelData(){
+    public function getLabelData($raw = FALSE){
         if (isset($this->data['Label'])){
-            return $this->data['Label'];
+            if ($raw) {
+                return $this->data['Label'];
+            }
+            //decode label file automatically
+            $r = $this->data['Label'];
+            $convert = $this->getLabelFileContents(FALSE);
+            if ($convert) {
+                $r['FileContents']['Contents'] = $convert;
+            }
+            return $r;
         } else {
             return false;
         }
@@ -561,11 +573,20 @@ class AmazonMerchantShipment extends AmazonMerchantCore {
      * Returns the file contents for the Label.
      *
      * This method will return <b>FALSE</b> if the status has not been set yet.
+     * @param boolean $raw [optional] <p>Set to TRUE to get the raw, double-encoded file contents.</p>
      * @return string|boolean single value, or <b>FALSE</b> if status not set yet
      */
-    public function getLabelFileContents(){
-        if (isset($this->data['Label'])){
-            return $this->data['Label']['FileContents']['Contents'];
+    public function getLabelFileContents($raw = FALSE){
+        if (isset($this->data['Label']['FileContents']['Contents'])){
+            if ($raw) {
+                return $this->data['Label']['FileContents']['Contents'];
+            }
+            try {
+                return gzdecode(base64_decode($this->data['Label']['FileContents']['Contents']));
+            } catch (Exception $ex) {
+                $this->log('Failed to convert label file, file might be corrupt: '.$ex->getMessage(), 'Urgent');
+            }
+            return false;
         } else {
             return false;
         }

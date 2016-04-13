@@ -133,7 +133,7 @@ class AmazonMerchantServiceList extends AmazonMerchantCore implements Iterator{
     /**
      * Sets the address. (Required)
      *
-     * This method sets the destination address to be sent in the next request.
+     * This method sets the shipper's address to be sent in the next request.
      * This parameter is required for fetching a list of eligible services from Amazon.
      * The array provided should have the following fields:
      * <ul>
@@ -295,9 +295,9 @@ class AmazonMerchantServiceList extends AmazonMerchantCore implements Iterator{
     }
 
     /**
-     * Resets the address options.
+     * Resets the package dimension options.
      *
-     * Since address is a required parameter, these options should not be removed
+     * Since dimensions are a required parameter, these options should not be removed
      * without replacing them, so this method is not public.
      */
     protected function resetPackageDimensions(){
@@ -339,6 +339,23 @@ class AmazonMerchantServiceList extends AmazonMerchantCore implements Iterator{
             $this->options['ShipmentRequestDetails.MustArriveByDate'] = $this->genTime($d);
         } catch (Exception $e){
             unset($this->options['ShipmentRequestDetails.MustArriveByDate']);
+            $this->log('Error: '.$e->getMessage(), 'Warning');
+            return false;
+        }
+    }
+
+    /**
+     * Sets the date on which the package will be shipped. (Optional)
+     *
+     * This method sets the ship date to be sent in the next request.
+     * @param string $d <p>A time string</p>
+     * @return boolean <b>FALSE</b> if improper input
+     */
+    public function setShipDate($d) {
+        try{
+            $this->options['ShipmentRequestDetails.ShipDate'] = $this->genTime($d);
+        } catch (Exception $e){
+            unset($this->options['ShipmentRequestDetails.ShipDate']);
             $this->log('Error: '.$e->getMessage(), 'Warning');
             return false;
         }

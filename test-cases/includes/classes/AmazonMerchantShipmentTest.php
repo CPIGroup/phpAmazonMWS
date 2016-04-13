@@ -208,6 +208,19 @@ class AmazonMerchantShipmentTest extends PHPUnit_Framework_TestCase {
         $this->assertEquals('Error: strtotime() expects parameter 1 to be string, array given',$check[1]);
     }
 
+    public function testSetShipDate(){
+        $key = 'ShipmentRequestDetails.ShipDate';
+        $this->assertNull($this->object->setShipDate('+50 min'));
+        $o = $this->object->getOptions();
+        $this->assertArrayHasKey($key, $o);
+        $this->assertNotEmpty($o[$key]);
+
+        $this->assertFalse($this->object->setShipDate(array(5))); //won't work for this
+
+        $check = parseLog();
+        $this->assertEquals('Error: strtotime() expects parameter 1 to be string, array given',$check[1]);
+    }
+
     public function testSetDeliveryOption(){
         $key = 'ShipmentRequestDetails.ShippingServiceOptions.DeliveryExperience';
         $this->assertNull($this->object->setDeliveryOption('NoTracking'));
@@ -283,6 +296,8 @@ class AmazonMerchantShipmentTest extends PHPUnit_Framework_TestCase {
         $this->object->setDeliveryOption('DeliveryConfirmationWithoutSignature');
         $this->assertFalse($this->object->createShipment()); //no pickup option yet
         $this->object->setCarrierWillPickUp();
+        $this->assertFalse($this->object->createShipment()); //no service yet
+        $this->object->setService('UPS_PTP_GND');
         $this->assertFalse($this->object->getShipment()); //still no data yet
         $this->assertNull($this->object->createShipment()); //now it is good
 
@@ -497,15 +512,24 @@ class AmazonMerchantShipmentTest extends PHPUnit_Framework_TestCase {
         $x['Dimensions']['Width'] = '8.50000';
         $x['Dimensions']['Unit'] = 'inches';
         $x['FileContents'] = array();
-        $x['FileContents']['Contents'] = 'H4sIAAAAAAAAAK16WbeqyrLmO2Pc/zBVRLG6nycD/Bd+Zx3S8LwAA';
+        $x['FileContents']['Contents'] = 'This is a test';
         $x['FileContents']['FileType'] = 'application/pdf';
         $x['FileContents']['Checksum'] = 'DmsWbJpdMPALN3jV4wHOrg==';
         $this->assertEquals($x, $get);
         $this->assertEquals($x['FileContents']['Contents'], $o->getLabelFileContents());
 
+        //try with raw file
+        $x['FileContents']['Contents'] = 'H4sIAAAAAAAAAwvJyCxWAKJEhZLU4hIAMp96wA4AAAA=';
+        $get2 = $o->getLabelData(TRUE);
+        $this->assertInternalType('array', $get2);
+        $this->assertEquals($x, $get2);
+        $this->assertEquals($x['FileContents']['Contents'], $o->getLabelFileContents(TRUE));
+
         $new = $this->genEmptyShipment();
         $this->assertFalse($new->getLabelData()); //not fetched yet for this object
+        $this->assertFalse($new->getLabelData(TRUE)); //not fetched yet for this object
         $this->assertFalse($new->getLabelFileContents()); //not fetched yet for this object
+        $this->assertFalse($new->getLabelFileContents(TRUE)); //not fetched yet for this object
     }
 
     /**

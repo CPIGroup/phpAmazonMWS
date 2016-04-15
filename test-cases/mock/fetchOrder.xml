@@ -53,7 +53,7 @@
                 <MarketplaceId>ATVPDKIKX0DER</MarketplaceId>
                 <BuyerName>Amazon User</BuyerName>
                 <BuyerEmail>5vlh04mgfmjh9h5@marketplace.amazon.com</BuyerEmail>
-                <ShipServiceLevelCategory>Standard</ShipServiceLevelCategory>
+                <ShipmentServiceLevelCategory>Standard</ShipmentServiceLevelCategory>
                 <OrderTotal>
                     <CurrencyCode>USD</CurrencyCode>
                     <Amount>25.75</Amount>

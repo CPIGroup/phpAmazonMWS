@@ -801,7 +801,7 @@ class AmazonOrder extends AmazonOrderCore{
      * Returns an indication of whether or not the Order uses the Amazon Prime service.
      *
      * This method will return <b>FALSE</b> if the Prime flag has not been set yet.
-     * @return string|boolean single value, or <b>FALSE</b> if value not set yet
+     * @return string|boolean "true" or "false", or <b>FALSE</b> if value not set yet
      */
     public function getIsPrime(){
         if (isset($this->data['IsPrime'])){

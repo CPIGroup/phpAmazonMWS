@@ -649,6 +649,69 @@ abstract class AmazonCore{
             return false;
         }
     }
+
+    /**
+     * Gives the response code from the last response.
+     * This data can also be found in the array given by getLastResponse.
+     * @return string|int standard REST response code (200, 404, etc.) or <b>NULL</b> if no response
+     * @see getLastResponse
+     */
+    public function getLastResponseCode() {
+        $last = $this->getLastResponse();
+        if (!empty($last['code'])) {
+            return $last['code'];
+        }
+    }
+
+    /**
+     * Gives the last response with an error code.
+     * This may or may not be the same as the last response if multiple requests were made.
+     * @return array associative array of HTTP response or <b>NULL</b> if no error response yet
+     * @see getLastResponse
+     */
+    public function getLastErrorResponse() {
+        if (!empty($this->rawResponses)) {
+            foreach (array_reverse($this->rawResponses) as $x) {
+                if (isset($x['error'])) {
+                    return $x;
+                }
+            }
+        }
+    }
+
+    /**
+     * Gives the Amazon error code from the last error response.
+     * The error code uses words rather than numbers. (Ex: "InvalidParameterValue")
+     * This data can also be found in the XML body given by getLastErrorResponse.
+     * @return string Amazon error code or <b>NULL</b> if not set yet or no error response yet
+     * @see getLastErrorResponse
+     */
+    public function getLastErrorCode() {
+        $last = $this->getLastErrorResponse();
+        if (!empty($last['body'])) {
+            $xml = simplexml_load_string($last['body']);
+            if (isset($xml->Error->Code)) {
+                return $xml->Error->Code;
+            }
+        }
+    }
+
+    /**
+     * Gives the error message from the last error response.
+     * Not all error responses will have error messages.
+     * This data can also be found in the XML body given by getLastErrorResponse.
+     * @return string Amazon error code or <b>NULL</b> if not set yet or no error response yet
+     * @see getLastErrorResponse
+     */
+    public function getLastErrorMessage() {
+        $last = $this->getLastErrorResponse();
+        if (!empty($last['body'])) {
+            $xml = simplexml_load_string($last['body']);
+            if (isset($xml->Error->Message)) {
+                return $xml->Error->Message;
+            }
+        }
+    }
     
     /**
      * Sleeps for the throttle time and records to the log.

@@ -54,7 +54,7 @@ class AmazonOrderListTest extends PHPUnit_Framework_TestCase {
         $this->assertFalse($this->object->setLimits('Created',array(5)));
         $check = parseLog();
         $this->assertEquals('First parameter should be either "Created" or "Modified".',$check[1]);
-        $this->assertEquals('Error: strtotime() expects parameter 1 to be string, array given',$check[2]);
+        $this->assertEquals('Error: Invalid time input given',$check[2]);
     }
     
     public function testSetOrderStatusFilter(){

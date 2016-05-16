@@ -205,7 +205,7 @@ class AmazonMerchantShipmentTest extends PHPUnit_Framework_TestCase {
         $this->assertFalse($this->object->setMaxArrivalDate(array(5))); //won't work for this
 
         $check = parseLog();
-        $this->assertEquals('Error: strtotime() expects parameter 1 to be string, array given',$check[1]);
+        $this->assertEquals('Error: Invalid time input given',$check[1]);
     }
 
     public function testSetShipDate(){
@@ -218,7 +218,7 @@ class AmazonMerchantShipmentTest extends PHPUnit_Framework_TestCase {
         $this->assertFalse($this->object->setShipDate(array(5))); //won't work for this
 
         $check = parseLog();
-        $this->assertEquals('Error: strtotime() expects parameter 1 to be string, array given',$check[1]);
+        $this->assertEquals('Error: Invalid time input given',$check[1]);
     }
 
     public function testSetDeliveryOption(){

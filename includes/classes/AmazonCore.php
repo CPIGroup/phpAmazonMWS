@@ -546,17 +546,22 @@ abstract class AmazonCore{
      * The string given is passed through <i>strtotime</i> before being used. The
      * value returned is actually two minutes early, to prevent it from tripping up
      * Amazon. If no time is given, the current time is used.
-     * @param string $time [optional] <p>The time to use. Since this value is
+     * @param string|int $time [optional] <p>The time to use. Since any string values are
      * passed through <i>strtotime</i> first, values such as "-1 hour" are fine.
+     * Unix timestamps are also allowed. Purely numeric values are treated as unix timestamps.
      * Defaults to the current time.</p>
      * @return string Unix timestamp of the time, minus 2 minutes.
+     * @throws InvalidArgumentException
      */
     protected function genTime($time=false){
         if (!$time){
             $time = time();
-        } else {
+        } else if (is_numeric($time)) {
+            $time = (int)$time;
+        } else if (is_string($time)) {
             $time = strtotime($time);
-            
+        } else {
+            throw new InvalidArgumentException('Invalid time input given');
         }
         return date('Y-m-d\TH:i:sO',$time-120);
             

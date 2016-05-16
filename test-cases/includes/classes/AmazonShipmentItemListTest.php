@@ -57,8 +57,9 @@ class AmazonShipmentItemListTest extends PHPUnit_Framework_TestCase {
     public function timeProvider() {
         return array(
             array(null, null), //nothing given, so no change
-            array(true, true), //not strings or numbers
+            array(time(), time(), 1), //numbers
             array('', ''), //strings, but empty
+            array(0, 0), //numbers, but empty
             array('-1 min', null), //one set
             array(null, '-1 min'), //other set
             array('-1 min', '-1 min'), //both set

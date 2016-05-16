@@ -418,7 +418,7 @@ class AmazonShipmentList extends AmazonInboundCore implements Iterator{
      * <li><b>AddressLine2</b> (optional)</li>
      * <li><b>City</b></li>
      * <li><b>DistrictOrCounty</b> (optional)</li>
-     * <li><b>StateOrProvidenceCode</b> (optional)</li>
+     * <li><b>StateOrProvinceCode</b> (optional)</li>
      * <li><b>CountryCode</b></li>
      * <li><b>PostalCode</b></li>
      * </ul>

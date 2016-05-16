@@ -71,7 +71,7 @@ class AmazonShipmentPlannerTest extends PHPUnit_Framework_TestCase {
         $a2['Name'] = 'Name2';
         $a2['AddressLine1'] = 'AddressLine1-2';
         $a2['City'] = 'City2';
-        $a2['StateOrProvidenceCode'] = 'StateOrProvidenceCode2';
+        $a2['StateOrProvinceCode'] = 'StateOrProvinceCode2';
         $a2['CountryCode'] = 'CountryCode2';
         $a2['PostalCode'] = 'PostalCode2';
         
@@ -183,7 +183,7 @@ class AmazonShipmentPlannerTest extends PHPUnit_Framework_TestCase {
         $a['Name'] = 'Name';
         $a['AddressLine1'] = 'AddressLine1';
         $a['City'] = 'City';
-        $a['StateOrProvidenceCode'] = 'StateOrProvidenceCode';
+        $a['StateOrProvinceCode'] = 'StateOrProvinceCode';
         $a['CountryCode'] = 'CountryCode';
         $a['PostalCode'] = 'PostalCode';
         

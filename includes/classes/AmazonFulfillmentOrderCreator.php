@@ -147,7 +147,7 @@ class AmazonFulfillmentOrderCreator extends AmazonOutboundCore{
      * <li><b>Line3</b> (optional) - max: 60 char</li>
      * <li><b>DistrictOrCounty</b> (optional) - max: 150 char</li>
      * <li><b>City</b> - max: 50 char</li>
-     * <li><b>StateOrProvidenceCode</b> - max: 150 char</li>
+     * <li><b>StateOrProvinceCode</b> - max: 150 char</li>
      * <li><b>CountryCode</b> - 2 digits</li>
      * <li><b>PostalCode</b> - max: 20 char</li>
      * <li><b>PhoneNumber</b> - max: 20 char</li>
@@ -179,7 +179,7 @@ class AmazonFulfillmentOrderCreator extends AmazonOutboundCore{
             $this->options['DestinationAddress.DistrictOrCounty'] = null;
         }
         $this->options['DestinationAddress.City'] = $a['City'];
-        $this->options['DestinationAddress.StateOrProvidenceCode'] = $a['StateOrProvidenceCode'];
+        $this->options['DestinationAddress.StateOrProvinceCode'] = $a['StateOrProvinceCode'];
         $this->options['DestinationAddress.CountryCode'] = $a['CountryCode'];
         $this->options['DestinationAddress.PostalCode'] = $a['PostalCode'];
         if (array_key_exists('PhoneNumber', $a)){
@@ -202,7 +202,7 @@ class AmazonFulfillmentOrderCreator extends AmazonOutboundCore{
         unset($this->options['DestinationAddress.Line3']);
         unset($this->options['DestinationAddress.DistrictOrCounty']);
         unset($this->options['DestinationAddress.City']);
-        unset($this->options['DestinationAddress.StateOrProvidenceCode']);
+        unset($this->options['DestinationAddress.StateOrProvinceCode']);
         unset($this->options['DestinationAddress.CountryCode']);
         unset($this->options['DestinationAddress.PostalCode']);
         unset($this->options['DestinationAddress.PhoneNumber']);

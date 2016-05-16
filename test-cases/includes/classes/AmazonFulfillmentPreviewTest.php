@@ -44,7 +44,7 @@ class AmazonFulfillmentPreviewTest extends PHPUnit_Framework_TestCase {
         $a1['Line3'] = 'Line3';
         $a1['DistrictOrCounty'] = 'DistrictOrCounty';
         $a1['City'] = 'City';
-        $a1['StateOrProvidenceCode'] = 'StateOrProvidenceCode';
+        $a1['StateOrProvinceCode'] = 'StateOrProvinceCode';
         $a1['CountryCode'] = 'CountryCode';
         $a1['PostalCode'] = 'PostalCode';
         $a1['PhoneNumber'] = 'PhoneNumber';
@@ -64,8 +64,8 @@ class AmazonFulfillmentPreviewTest extends PHPUnit_Framework_TestCase {
         $this->assertEquals('DistrictOrCounty',$o['Address.DistrictOrCounty']);
         $this->assertArrayHasKey('Address.City',$o);
         $this->assertEquals('City',$o['Address.City']);
-        $this->assertArrayHasKey('Address.StateOrProvidenceCode',$o);
-        $this->assertEquals('StateOrProvidenceCode',$o['Address.StateOrProvidenceCode']);
+        $this->assertArrayHasKey('Address.StateOrProvinceCode',$o);
+        $this->assertEquals('StateOrProvinceCode',$o['Address.StateOrProvinceCode']);
         $this->assertArrayHasKey('Address.CountryCode',$o);
         $this->assertEquals('CountryCode',$o['Address.CountryCode']);
         $this->assertArrayHasKey('Address.PostalCode',$o);
@@ -77,7 +77,7 @@ class AmazonFulfillmentPreviewTest extends PHPUnit_Framework_TestCase {
         $a2['Name'] = 'Name2';
         $a2['Line1'] = 'Line1-2';
         $a2['City'] = 'City2';
-        $a2['StateOrProvidenceCode'] = 'StateOrProvidenceCode2';
+        $a2['StateOrProvinceCode'] = 'StateOrProvinceCode2';
         $a2['CountryCode'] = 'CountryCode2';
         $a2['PostalCode'] = 'PostalCode2';
         
@@ -199,7 +199,7 @@ class AmazonFulfillmentPreviewTest extends PHPUnit_Framework_TestCase {
         $a['Name'] = 'Name';
         $a['Line1'] = 'Line1';
         $a['City'] = 'City';
-        $a['StateOrProvidenceCode'] = 'StateOrProvidenceCode';
+        $a['StateOrProvinceCode'] = 'StateOrProvinceCode';
         $a['CountryCode'] = 'CountryCode';
         $a['PostalCode'] = 'PostalCode';
         $this->object->setAddress($a);

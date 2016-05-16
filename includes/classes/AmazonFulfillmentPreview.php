@@ -58,7 +58,7 @@ class AmazonFulfillmentPreview extends AmazonOutboundCore{
      * <li><b>Line3</b> (optional) - max: 60 char</li>
      * <li><b>DistrictOrCounty</b> (optional) - max: 150 char</li>
      * <li><b>City</b> - max: 50 char</li>
-     * <li><b>StateOrProvidenceCode</b> - max: 150 char</li>
+     * <li><b>StateOrProvinceCode</b> - max: 150 char</li>
      * <li><b>CountryCode</b> - 2 digits</li>
      * <li><b>PostalCode</b> - max: 20 char</li>
      * <li><b>PhoneNumber</b> - max: 20 char</li>
@@ -90,7 +90,7 @@ class AmazonFulfillmentPreview extends AmazonOutboundCore{
             $this->options['Address.DistrictOrCounty'] = null;
         }
         $this->options['Address.City'] = $a['City'];
-        $this->options['Address.StateOrProvidenceCode'] = $a['StateOrProvidenceCode'];
+        $this->options['Address.StateOrProvinceCode'] = $a['StateOrProvinceCode'];
         $this->options['Address.CountryCode'] = $a['CountryCode'];
         $this->options['Address.PostalCode'] = $a['PostalCode'];
         if (array_key_exists('PhoneNumber', $a)){
@@ -113,7 +113,7 @@ class AmazonFulfillmentPreview extends AmazonOutboundCore{
         unset($this->options['Address.Line3']);
         unset($this->options['Address.DistrictOrCounty']);
         unset($this->options['Address.City']);
-        unset($this->options['Address.StateOrProvidenceCode']);
+        unset($this->options['Address.StateOrProvinceCode']);
         unset($this->options['Address.CountryCode']);
         unset($this->options['Address.PostalCode']);
         unset($this->options['Address.PhoneNumber']);

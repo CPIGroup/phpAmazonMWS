@@ -164,15 +164,6 @@ class AmazonShipmentPlannerTest extends PHPUnit_Framework_TestCase {
         $this->assertArrayNotHasKey('InboundShipmentPlanRequestItems.member.1.Quantity',$o3);
     }
     
-//    public function testSetShipmentId(){
-//        $this->assertFalse($this->object->setShipmentId(null)); //can't be nothing
-//        $this->assertFalse($this->object->setShipmentId(5)); //can't be an int
-//        $this->assertNull($this->object->setShipmentId('777'));
-//        $o = $this->object->getOptions();
-//        $this->assertArrayHasKey('ShipmentId',$o);
-//        $this->assertEquals('777',$o['ShipmentId']);
-//    }
-    
     public function testFetchPlan(){
         resetLog();
         $this->object->setMock(true,'fetchPlan.xml');
@@ -208,56 +199,6 @@ class AmazonShipmentPlannerTest extends PHPUnit_Framework_TestCase {
         return $this->object;
     }
     
-//    /**
-//     * @depends testFetchPlan
-//     */
-//    public function testGetData($o){
-//        $get = $o->getData();
-//        $this->assertInternalType('array',$get);
-//        
-//        $x = array();
-//        $x['AmazonOrderId'] = '058-1233752-8214740';
-//        $x['SellerOrderId'] = '123ABC';
-//        $x['PurchaseDate'] = '2010-10-05T00:06:07.000Z';
-//        $x['LastUpdateDate'] = '2010-10-05T12:43:16.000Z';
-//        $x['OrderStatus'] = 'Unshipped';
-//        $x['FulfillmentChannel'] = 'MFN';
-//        $x['SalesChannel'] = 'Checkout by Amazon';
-//        $x['OrderChannel'] = 'OrderChannel';
-//        $x['ShipServiceLevel'] = 'Std DE Dom';
-//        $a = array();
-//            $a['Name'] = 'John Smith';
-//            $a['AddressLine1'] = '2700 First Avenue';
-//            $a['AddressLine2'] = 'Apartment 1';
-//            $a['AddressLine3'] = 'Suite 16';
-//            $a['City'] = 'Seattle';
-//            $a['County'] = 'County';
-//            $a['District'] = 'District';
-//            $a['StateOrRegion'] = 'WA';
-//            $a['PostalCode'] = '98102';
-//            $a['CountryCode'] = 'US';
-//            $a['Phone'] = '123';
-//        $x['ShippingAddress'] = $a;
-//        $x['OrderTotal']['Amount'] = '4.78';
-//        $x['OrderTotal']['CurrencyCode'] = 'USD';
-//        $x['NumberOfItemsShipped'] = '1';
-//        $x['NumberOfItemsUnshipped'] = '1';
-//        $x['PaymentExecutionDetail'][0]['Amount'] = '101.01';
-//        $x['PaymentExecutionDetail'][0]['CurrencyCode'] = 'USD';
-//        $x['PaymentExecutionDetail'][0]['SubPaymentMethod'] = 'COD';
-//        $x['PaymentExecutionDetail'][1]['Amount'] = '10.00';
-//        $x['PaymentExecutionDetail'][1]['CurrencyCode'] = 'USD';
-//        $x['PaymentExecutionDetail'][1]['SubPaymentMethod'] = 'GC';
-//        $x['PaymentMethod'] = 'COD';
-//        $x['MarketplaceId'] = 'ATVPDKIKX0DER';
-//        $x['BuyerName'] = 'Amazon User';
-//        $x['BuyerEmail'] = '5vlh04mgfmjh9h5@marketplace.amazon.com';
-//        $x['ShipServiceLevelCategory'] = 'Standard';
-//        
-//        $this->assertEquals($x,$get);
-//        
-//        $this->assertFalse($this->object->getData()); //not fetched yet for this object
-//    }
     
     /**
      * @depends testFetchPlan

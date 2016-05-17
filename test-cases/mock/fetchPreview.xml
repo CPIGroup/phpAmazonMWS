@@ -61,11 +61,30 @@
                         <Name>FBATransportationFee</Name>
                     </member>
                 </EstimatedFees>
+                <ScheduledDeliveryInfo>
+                    <DeliveryTimeZone>Asia/Tokyo</DeliveryTimeZone>
+                    <DeliveryWindows>
+                        <member>
+                            <DeliveryWindow>
+                                <StartDateTime>2014-01-04T23:00:00Z</StartDateTime>
+                                <EndDateTime>2014-01-05T03:00:00Z</EndDateTime>
+                            </DeliveryWindow>
+                        </member>
+                        <member>
+                            <DeliveryWindow>
+                                <StartDateTime>2014-01-14T03:00:00Z</StartDateTime>
+                                <EndDateTime>2014-01-15T05:00:00Z</EndDateTime>
+                            </DeliveryWindow>
+                        </member>
+                    </DeliveryWindows>
+                </ScheduledDeliveryInfo>
                 <UnfulfillablePreviewItems/>
                 <OrderUnfulfillableReasons>
                     <member>Because.</member>
                 </OrderUnfulfillableReasons>
                 <IsFulfillable>true</IsFulfillable>
+                <IsCODCapable>true</IsCODCapable>
+                <MarketplaceId>ATVPDKIKX0DER</MarketplaceId>
             </member>
             <member>
                 <EstimatedShippingWeight>
@@ -135,6 +154,8 @@
                     </member>
                 </UnfulfillablePreviewItems>
                 <IsFulfillable>true</IsFulfillable>
+                <IsCODCapable>false</IsCODCapable>
+                <MarketplaceId>ATVPDKIKX0DER</MarketplaceId>
             </member>
         </FulfillmentPreviews>
     </GetFulfillmentPreviewResult>

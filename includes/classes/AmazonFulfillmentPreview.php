@@ -204,6 +204,38 @@ class AmazonFulfillmentPreview extends AmazonOutboundCore{
             }
         }
     }
+
+    /**
+     * Sets the option for getting previews that are for COD (Cash On Delivery). (Optional)
+     *
+     * If this option is set, Amazon will give previews for COD in addition to the normal previews.
+     * If this option is not set or is set to FALSE, Amazon will not give previews that are for COD.
+     * @param boolean $s [optional] <p>Defaults to TRUE</p>
+     */
+    public function setIncludeCod($s = 'true') {
+        if (filter_var($s, FILTER_VALIDATE_BOOLEAN)) {
+            $s = 'true';
+        } else {
+            $s = 'false';
+        }
+        $this->options['IncludeCODFulfillmentPreview'] = $s;
+    }
+
+    /**
+     * Sets the option for getting delivery window data in the fetched previews. (Optional)
+     *
+     * If this option is set, Amazon will give delivery window data for applicable order previews.
+     * If this option is not set or is set to FALSE, Amazon will not give delivery window data.
+     * @param boolean $s [optional] <p>Defaults to TRUE</p>
+     */
+    public function setIncludeDeliveryWindows($s = 'true') {
+        if (filter_var($s, FILTER_VALIDATE_BOOLEAN)) {
+            $s = 'true';
+        } else {
+            $s = 'false';
+        }
+        $this->options['IncludeDeliveryWindows'] = $s;
+    }
     
     /**
      * Generates a Fulfillment Preview with Amazon.
@@ -259,11 +291,14 @@ class AmazonFulfillmentPreview extends AmazonOutboundCore{
         }
         $i = 0;
         foreach($xml->children() as $x){
+            $this->previewList[$i]['ShippingSpeedCategory'] = (string)$x->ShippingSpeedCategory;
+            $this->previewList[$i]['IsFulfillable'] = (string)$x->IsFulfillable;
+            $this->previewList[$i]['IsCODCapable'] = (string)$x->IsCODCapable;
+            $this->previewList[$i]['MarketplaceId'] = (string)$x->MarketplaceId;
             if (isset($x->EstimatedShippingWeight)){
                 $this->previewList[$i]['EstimatedShippingWeight']['Unit'] = (string)$x->EstimatedShippingWeight->Unit;
                 $this->previewList[$i]['EstimatedShippingWeight']['Value'] = (string)$x->EstimatedShippingWeight->Value;
             }
-            $this->previewList[$i]['ShippingSpeedCategory'] = (string)$x->ShippingSpeedCategory;
             if (isset($x->FulfillmentPreviewShipments)){
                 $j = 0;
                 foreach ($x->FulfillmentPreviewShipments->children() as $y){
@@ -310,7 +345,15 @@ class AmazonFulfillmentPreview extends AmazonOutboundCore{
                     $j++;
                 }
             }
-            $this->previewList[$i]['IsFulfillable'] = (string)$x->IsFulfillable;
+            if (isset($x->ScheduledDeliveryInfo)){
+                $this->previewList[$i]['ScheduledDeliveryInfo']['DeliveryTimeZone'] = (string)$x->ScheduledDeliveryInfo->DeliveryTimeZone;
+                foreach ($x->ScheduledDeliveryInfo->DeliveryWindows->children() as $y){
+                    $temp = array();
+                    $temp['StartDateTime'] = (string)$y->DeliveryWindow->StartDateTime;
+                    $temp['EndDateTime'] = (string)$y->DeliveryWindow->EndDateTime;
+                    $this->previewList[$i]['ScheduledDeliveryInfo']['DeliveryWindows'][] = $temp;
+                }
+            }
             
             $i++;
         }
@@ -324,6 +367,8 @@ class AmazonFulfillmentPreview extends AmazonOutboundCore{
      * <ul>
      * <li><b>ShippingSpeedCategory</b> - "Standard", "Expedited", or "Priority"</li>
      * <li><b>IsFulfillable</b> - "true" or "false"</li>
+     * <li><b>IsCODCapable</b> - "true" or "false"</li>
+     * <li><b>MarketplaceId</b> - marketplace ID</li>
      * <li><b>EstimatedShippingWeight</b> (optional) - an array with the fields <b>Unit</b> and <b>Value</b></li>
      * <li><b>FulfillmentPreviewShipments</b> (optional)- array of shipments:</li>
      * <ul>
@@ -354,6 +399,15 @@ class AmazonFulfillmentPreview extends AmazonOutboundCore{
      * <li><b>ItemUnfulfillableReasons</b> - message as to why the item is unfulfillable</li>
      * </ul>
      * <li><b>OrderUnfulfillableReasons</b> (optional)- array of message strings</li>
+     * <li><b>ScheduledDeliveryInfo</b> (optional)- time zone and array of delivery windows</li>
+     * <ul>
+     * <li><b>DeliveryTimeZone</b> - IANA time zone name</li>
+     * <li><b>DeliveryWindows</b> - array of delivery windows</li>
+     * <ul>
+     * <li><b>StartDateTime</b> - ISO 8601 date format</li>
+     * <li><b>EndDateTime</b> - ISO 8601 date format</li>
+     * </ul>
+     * </ul>
      * </ul>
      * @param int $i [optional] <p>List index to retrieve the value from.
      * If none is given, the entire list will be returned. Defaults to NULL.</p>

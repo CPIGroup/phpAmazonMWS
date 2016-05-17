@@ -188,6 +188,46 @@ class AmazonFulfillmentPreviewTest extends PHPUnit_Framework_TestCase {
         $o3 = $this->object->getOptions();
         $this->assertArrayNotHasKey('ShippingSpeedCategories.1',$o3);
     }
+
+    public function testSetIncludeCod() {
+        $key = 'IncludeCODFulfillmentPreview';
+        $this->assertNull($this->object->setIncludeCod());
+        $o = $this->object->getOptions();
+        $this->assertArrayHasKey($key, $o);
+        $this->assertEquals('true', $o[$key]);
+        $this->assertNull($this->object->setIncludeCod(false));
+        $o2 = $this->object->getOptions();
+        $this->assertArrayHasKey($key, $o2);
+        $this->assertEquals('false', $o2[$key]);
+        $this->assertNull($this->object->setIncludeCod(1));
+        $o3 = $this->object->getOptions();
+        $this->assertArrayHasKey($key, $o3);
+        $this->assertEquals('true', $o3[$key]);
+        $this->assertNull($this->object->setIncludeCod(0));
+        $o4 = $this->object->getOptions();
+        $this->assertArrayHasKey($key, $o4);
+        $this->assertEquals('false', $o4[$key]);
+    }
+
+    public function testSetIncludeDeliveryWindows() {
+        $key = 'IncludeDeliveryWindows';
+        $this->assertNull($this->object->setIncludeDeliveryWindows());
+        $o = $this->object->getOptions();
+        $this->assertArrayHasKey($key, $o);
+        $this->assertEquals('true', $o[$key]);
+        $this->assertNull($this->object->setIncludeDeliveryWindows(false));
+        $o2 = $this->object->getOptions();
+        $this->assertArrayHasKey($key, $o2);
+        $this->assertEquals('false', $o2[$key]);
+        $this->assertNull($this->object->setIncludeDeliveryWindows(1));
+        $o3 = $this->object->getOptions();
+        $this->assertArrayHasKey($key, $o3);
+        $this->assertEquals('true', $o3[$key]);
+        $this->assertNull($this->object->setIncludeDeliveryWindows(0));
+        $o4 = $this->object->getOptions();
+        $this->assertArrayHasKey($key, $o4);
+        $this->assertEquals('false', $o4[$key]);
+    }
     
     public function testFetchPreview(){
         resetLog();
@@ -265,6 +305,13 @@ class AmazonFulfillmentPreviewTest extends PHPUnit_Framework_TestCase {
         $x1['EstimatedFees'][2]['Name'] = 'FBATransportationFee';
         $x1['OrderUnfulfillableReasons'][0] = 'Because.';
         $x1['IsFulfillable'] = 'true';
+        $x1['IsCODCapable'] = 'true';
+        $x1['MarketplaceId'] = 'ATVPDKIKX0DER';
+        $x1['ScheduledDeliveryInfo']['DeliveryTimeZone'] = 'Asia/Tokyo';
+        $x1['ScheduledDeliveryInfo']['DeliveryWindows'][0]['StartDateTime'] = '2014-01-04T23:00:00Z';
+        $x1['ScheduledDeliveryInfo']['DeliveryWindows'][0]['EndDateTime'] = '2014-01-05T03:00:00Z';
+        $x1['ScheduledDeliveryInfo']['DeliveryWindows'][1]['StartDateTime'] = '2014-01-14T03:00:00Z';
+        $x1['ScheduledDeliveryInfo']['DeliveryWindows'][1]['EndDateTime'] = '2014-01-15T05:00:00Z';
         $x2 = array();
         $x2['EstimatedShippingWeight'] = $x1['EstimatedShippingWeight'];
         $x2['ShippingSpeedCategory'] = 'Standard';
@@ -276,6 +323,8 @@ class AmazonFulfillmentPreviewTest extends PHPUnit_Framework_TestCase {
         $x2['UnfulfillablePreviewItems'][0]['Quantity'] = '1';
         $x2['UnfulfillablePreviewItems'][0]['ItemUnfulfillableReasons'] = 'Because.';
         $x2['IsFulfillable'] = 'true';
+        $x2['IsCODCapable'] = 'false';
+        $x2['MarketplaceId'] = 'ATVPDKIKX0DER';
         $x[0] = $x1;
         $x[1] = $x2;
         

@@ -106,7 +106,8 @@ abstract class AmazonProductsCore extends AmazonCore{
                     $this->productList[$this->index] = new AmazonProduct($this->storeName, $z, $this->mockMode, $this->mockFiles,$this->config);
                     $this->index++;
                 }
-            } else if ($x->getName() == 'GetProductCategoriesForSKUResult' || $x->getName() == 'GetProductCategoriesForASINResult'){
+            } else if (in_array($x->getName(), array('GetProductCategoriesForSKUResult', 'GetProductCategoriesForASINResult',
+                    'GetLowestPricedOffersForSKUResult', 'GetLowestPricedOffersForASINResult'))){
                 $this->productList[$this->index] = new AmazonProduct($this->storeName, $x, $this->mockMode, $this->mockFiles,$this->config);
                 $this->index++;
             } else {

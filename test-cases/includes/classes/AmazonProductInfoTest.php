@@ -169,6 +169,56 @@ class AmazonProductInfoTest extends PHPUnit_Framework_TestCase {
         
         $this->assertFalse($this->object->getProduct()); //not fetched yet for this object
     }
+
+    public function testFetchLowestPricedOffers(){
+        resetLog();
+        $this->object->setMock(true, 'fetchLowestPricedOffers.xml');
+        $this->assertFalse($this->object->fetchLowestPricedOffers()); //no IDs yet
+        $this->object->setSKUs('789');
+
+        $this->assertNull($this->object->fetchLowestPricedOffers());
+        $o = $this->object->getOptions();
+        $this->assertEquals('GetLowestPricedOffersForSKU', $o['Action']);
+
+        $check = parseLog();
+        $this->assertEquals('Single Mock File set: fetchLowestPricedOffers.xml', $check[1]);
+        $this->assertEquals('Product IDs must be set in order to look them up!', $check[2]);
+        $this->assertEquals('Fetched Mock File: mock/fetchLowestPricedOffers.xml', $check[3]);
+
+        return $this->object;
+    }
+
+    /**
+     * @depends testFetchLowestPricedOffers
+     */
+    public function testGetProductLowestPricedOffers($o){
+        $product = $o->getProduct(0);
+        $this->assertInternalType('object', $product);
+
+        $list = $o->getProduct(null);
+        $this->assertInternalType('array', $list);
+        $this->assertArrayHasKey(0, $list);
+        $this->assertEquals($product, $list[0]);
+
+        $default = $o->getProduct();
+        $this->assertEquals($list, $default);
+
+        $check = $product->getData();
+        $this->assertInternalType('array', $check);
+        $this->assertArrayHasKey('Identifiers', $check);
+        $this->assertArrayHasKey('Offers', $check);
+        $this->assertArrayHasKey('Summary', $check);
+        $this->assertInternalType('array', $check['Summary']);
+        $this->assertArrayHasKey('TotalOfferCount', $check['Summary']);
+        $this->assertArrayHasKey('NumberOfOffers', $check['Summary']);
+        $this->assertArrayHasKey('LowestPrices', $check['Summary']);
+        $this->assertArrayHasKey('BuyBoxPrices', $check['Summary']);
+        $this->assertArrayHasKey('ListPrice', $check['Summary']);
+        $this->assertArrayHasKey('SuggestedLowerPricePlusShipping', $check['Summary']);
+        $this->assertArrayHasKey('BuyBoxEligibleOffers', $check['Summary']);
+
+        $this->assertFalse($this->object->getProduct()); //not fetched yet for this object
+    }
     
     public function testFetchMyPrice(){
         resetLog();

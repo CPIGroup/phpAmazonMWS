@@ -54,7 +54,7 @@ class AmazonProductList extends AmazonProductsCore implements Iterator{
     /**
      * Sets the ID type. (Required)
      * 
-     * @param string $s <p>"ASIN", "SellerSKU", "UPC", "EAN", "ISBN", or "JAN"</p>
+     * @param string $s <p>"ASIN", "GCID", "SellerSKU", "UPC", "EAN", "ISBN", or "JAN"</p>
      * @return boolean <b>FALSE</b> if improper input
      */
     public function setIdType($s){

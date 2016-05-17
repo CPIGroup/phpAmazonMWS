@@ -54,15 +54,30 @@ abstract class AmazonProductsCore extends AmazonCore{
             $this->options['Version'] = $AMAZON_VERSION_PRODUCTS;
         }
         
-        
+        //set the store's marketplace as the default
         if(isset($store[$this->storeName]) && array_key_exists('marketplaceId', $store[$this->storeName])){
-            $this->options['MarketplaceId'] = $store[$this->storeName]['marketplaceId'];
+            $this->setMarketplace($store[$this->storeName]['marketplaceId']);
         } else {
             $this->log("Marketplace ID is missing",'Urgent');
         }
         
         if(isset($THROTTLE_LIMIT_PRODUCT)) {
             $this->throttleLimit = $THROTTLE_LIMIT_PRODUCT;
+        }
+    }
+
+    /**
+     * Sets the marketplace to search in. (Optional)
+     * Setting this option tells Amazon to only return products from the given marketplace.
+     * If this option is not set, the current store's marketplace will be used.
+     * @param string $m <p>Marketplace ID</p>
+     * @return boolean <b>FALSE</b> if improper input
+     */
+    public function setMarketplace($m){
+        if (is_string($m)){
+            $this->options['MarketplaceId'] = $m;
+        } else {
+            return false;
         }
     }
     

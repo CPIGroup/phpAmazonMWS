@@ -247,29 +247,13 @@ class AmazonFulfillmentOrderCreator extends AmazonOutboundCore{
     }
     
     /**
-     * Sets the fulfillment method. (Optional)
-     * 
-     * This method sets the Fulfillment Method to be sent in the next request.
-     * If this parameter is not set, Amazon will assume a <i>Consumer</i> method.
-     * Here is a quick description of the methods:
-     * <ul>
-     * <li><b>Consumer</b> - customer order</li>
-     * <li><b>Removal</b> - inventory will be returned to the given address</li>
-     * </ul>
-     * @param string $s <p>"Consumer" or "Removal"</p>
-     * @return boolean <b>FALSE</b> if improper input
+     * The "FulfillmentMethod" option is no longer used.
+     * @return boolean <b>FALSE</b>
+     * @deprecated since 1.3.0
      */
-    public function setFulfillmentMethod($s){
-        if (is_string($s)){
-            if ($s == 'Consumer' || $s == 'Removal'){
-                $this->options['FulfillmentMethod'] = $s;
-            } else {
-                $this->log("Tried to set fulfillment method to invalid value",'Warning');
-                return false;
-            }
-        } else {
-            return false;
-        }
+    public function setFulfillmentMethod(){
+        $this->log("The FulfillmentMethod option is no longer used for creating fulfillment orders.", 'Warning');
+        return FALSE;
     }
     
     /**

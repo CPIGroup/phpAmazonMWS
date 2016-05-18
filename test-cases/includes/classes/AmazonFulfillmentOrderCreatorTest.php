@@ -94,21 +94,6 @@ class AmazonFulfillmentOrderCreatorTest extends PHPUnit_Framework_TestCase {
         
     }
     
-    public function testSetFulfillmentMethod(){
-        $this->assertFalse($this->object->setFulfillmentMethod(null)); //can't be nothing
-        $this->assertFalse($this->object->setFulfillmentMethod(5)); //can't be an int
-        $this->assertFalse($this->object->setFulfillmentMethod('wrong')); //not a valid value
-        $this->assertNull($this->object->setFulfillmentMethod('Consumer'));
-        $this->assertNull($this->object->setFulfillmentMethod('Removal'));
-        $o = $this->object->getOptions();
-        $this->assertArrayHasKey('FulfillmentMethod',$o);
-        $this->assertEquals('Removal',$o['FulfillmentMethod']);
-        
-        $check = parseLog();
-        $this->assertEquals('Tried to set fulfillment method to invalid value',$check[1]);
-        
-    }
-    
     public function testSetAddress(){
         $this->assertFalse($this->object->setAddress(null)); //can't be nothing
         $this->assertFalse($this->object->setAddress('address')); //can't be a string

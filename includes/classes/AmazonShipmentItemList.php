@@ -224,8 +224,8 @@ class AmazonShipmentItemList extends AmazonInboundCore implements Iterator{
         if (!$xml){
             return false;
         }
-        $a = array();
         foreach($xml->ItemData->children() as $x){
+            $a = array();
 
             if (isset($x->ShipmentId)){
                 $a['ShipmentId'] = (string)$x->ShipmentId;
@@ -240,6 +240,17 @@ class AmazonShipmentItemList extends AmazonInboundCore implements Iterator{
             }
             if (isset($x->QuantityInCase)){
                 $a['QuantityInCase'] = (string)$x->QuantityInCase;
+            }
+            if (isset($x->PrepDetailsList)) {
+                foreach ($x->PrepDetailsList as $z) {
+                    $temp = array();
+                    $temp['PrepInstruction'] = (string)$z->PrepInstruction;
+                    $temp['PrepOwner'] = (string)$z->PrepOwner;
+                    $a['PrepDetailsList'][] = $temp;
+                }
+            }
+            if (isset($x->ReleaseDate)){
+                $a['ReleaseDate'] = (string)$x->ReleaseDate;
             }
             
             $this->itemList[$this->index] = $a;
@@ -350,6 +361,48 @@ class AmazonShipmentItemList extends AmazonInboundCore implements Iterator{
         }
         if (is_int($i)){
             return $this->itemList[$i]['QuantityInCase'];
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * Returns the preperation details for the specified entry.
+     *
+     * Each individual preperation detail entry is an array with the keys "PrepInstruction" and "PrepOwner".
+     * This method will return <b>FALSE</b> if the list has not yet been filled.
+     * @param int $i [optional] <p>List index to retrieve the value from. Defaults to 0.</p>
+     * @param int $j [optional] <p>Detail index to retrieve the value from. Defaults to NULL.</p>
+     * @return array|boolean associative array, array of associative arrays, or <b>FALSE</b> if Non-numeric index
+     */
+    public function getPrepDetails($i = 0, $j = null) {
+        if (!isset($this->itemList)){
+            return false;
+        }
+        if (is_int($i) && isset($this->itemList[$i]['PrepDetailsList'])){
+            if (is_numeric($j)) {
+                return $this->itemList[$i]['PrepDetailsList'][$j];
+            } else {
+                return $this->itemList[$i]['PrepDetailsList'];
+            }
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * Returns the release date for the specified entry.
+     *
+     * This method will return <b>FALSE</b> if the list has not yet been filled.
+     * @param int $i [optional] <p>List index to retrieve the value from. Defaults to 0.</p>
+     * @return string|boolean Date in YYYY-MM-DD format, or <b>FALSE</b> if Non-numeric index
+     */
+    public function getReleaseDate($i = 0){
+        if (!isset($this->itemList)){
+            return false;
+        }
+        if (is_int($i)){
+            return $this->itemList[$i]['ReleaseDate'];
         } else {
             return false;
         }

@@ -84,6 +84,24 @@ class AmazonShipmentPlannerTest extends PHPUnit_Framework_TestCase {
         $this->assertFalse(isset($o2['ShipFromAddress.DistrictOrCounty']));
         
     }
+
+    public function testSetCountry(){
+        $this->assertFalse($this->object->setCountry(null)); //can't be nothing
+        $this->assertFalse($this->object->setCountry(5)); //can't be an int
+        $this->assertNull($this->object->setCountry('US'));
+        $o = $this->object->getOptions();
+        $this->assertArrayHasKey('ShipToCountryCode',$o);
+        $this->assertEquals('US',$o['ShipToCountryCode']);
+    }
+
+    public function testSetCountrySubdivision(){
+        $this->assertFalse($this->object->setCountrySubdivision(null)); //can't be nothing
+        $this->assertFalse($this->object->setCountrySubdivision(5)); //can't be an int
+        $this->assertNull($this->object->setCountrySubdivision('IN-MH'));
+        $o = $this->object->getOptions();
+        $this->assertArrayHasKey('ShipToCountrySubdivisionCode',$o);
+        $this->assertEquals('IN-MH',$o['ShipToCountrySubdivisionCode']);
+    }
     
     public function testSetLabelPreference(){
         $this->assertFalse($this->object->setLabelPreference(null)); //can't be nothing
@@ -123,6 +141,10 @@ class AmazonShipmentPlannerTest extends PHPUnit_Framework_TestCase {
         $i[0]['Quantity'] = 'Quantity';
         $i[0]['QuantityInCase'] = 'QuantityInCase';
         $i[0]['Condition'] = 'Condition';
+        $i[0]['PrepDetailsList'][0]['PrepInstruction'] = 'BubbleWrapping';
+        $i[0]['PrepDetailsList'][0]['PrepOwner'] = 'AMAZON';
+        $i[0]['PrepDetailsList'][1]['PrepInstruction'] = 'Taping';
+        $i[0]['PrepDetailsList'][1]['PrepOwner'] = 'SELLER';
         $i[1]['SellerSKU'] = 'SellerSKU2';
         $i[1]['Quantity'] = 'Quantity2';
         
@@ -137,7 +159,15 @@ class AmazonShipmentPlannerTest extends PHPUnit_Framework_TestCase {
         $this->assertEquals('QuantityInCase',$o['InboundShipmentPlanRequestItems.member.1.QuantityInCase']);
         $this->assertArrayHasKey('InboundShipmentPlanRequestItems.member.1.Condition',$o);
         $this->assertEquals('Condition',$o['InboundShipmentPlanRequestItems.member.1.Condition']);
-        $this->assertArrayHasKey('InboundShipmentPlanRequestItems.member.1.SellerSKU',$o);
+        $this->assertArrayHasKey('InboundShipmentPlanRequestItems.member.1.PrepDetailsList.PrepDetails.1.PrepInstruction',$o);
+        $this->assertEquals('BubbleWrapping',$o['InboundShipmentPlanRequestItems.member.1.PrepDetailsList.PrepDetails.1.PrepInstruction']);
+        $this->assertArrayHasKey('InboundShipmentPlanRequestItems.member.1.PrepDetailsList.PrepDetails.1.PrepOwner',$o);
+        $this->assertEquals('AMAZON',$o['InboundShipmentPlanRequestItems.member.1.PrepDetailsList.PrepDetails.1.PrepOwner']);
+        $this->assertArrayHasKey('InboundShipmentPlanRequestItems.member.1.PrepDetailsList.PrepDetails.2.PrepInstruction',$o);
+        $this->assertEquals('Taping',$o['InboundShipmentPlanRequestItems.member.1.PrepDetailsList.PrepDetails.2.PrepInstruction']);
+        $this->assertArrayHasKey('InboundShipmentPlanRequestItems.member.1.PrepDetailsList.PrepDetails.2.PrepOwner',$o);
+        $this->assertEquals('SELLER',$o['InboundShipmentPlanRequestItems.member.1.PrepDetailsList.PrepDetails.2.PrepOwner']);
+        $this->assertArrayHasKey('InboundShipmentPlanRequestItems.member.2.SellerSKU',$o);
         $this->assertEquals('SellerSKU2',$o['InboundShipmentPlanRequestItems.member.2.SellerSKU']);
         $this->assertArrayHasKey('InboundShipmentPlanRequestItems.member.2.Quantity',$o);
         $this->assertEquals('Quantity2',$o['InboundShipmentPlanRequestItems.member.2.Quantity']);
@@ -154,6 +184,10 @@ class AmazonShipmentPlannerTest extends PHPUnit_Framework_TestCase {
         $this->assertArrayHasKey('InboundShipmentPlanRequestItems.member.1.Quantity',$o2);
         $this->assertEquals('NewQuantity',$o2['InboundShipmentPlanRequestItems.member.1.Quantity']);
         $this->assertArrayNotHasKey('InboundShipmentPlanRequestItems.member.1.QuantityInCase',$o2);
+        $this->assertArrayNotHasKey('InboundShipmentPlanRequestItems.member.1.PrepDetailsList.PrepDetails.1.PrepInstruction',$o2);
+        $this->assertArrayNotHasKey('InboundShipmentPlanRequestItems.member.1.PrepDetailsList.PrepDetails.1.PrepOwner',$o2);
+        $this->assertArrayNotHasKey('InboundShipmentPlanRequestItems.member.1.PrepDetailsList.PrepDetails.2.PrepInstruction',$o2);
+        $this->assertArrayNotHasKey('InboundShipmentPlanRequestItems.member.1.PrepDetailsList.PrepDetails.2.PrepOwner',$o2);
         $this->assertArrayNotHasKey('InboundShipmentPlanRequestItems.member.2.SellerSKU',$o2);
         $this->assertArrayNotHasKey('InboundShipmentPlanRequestItems.member.2.Quantity',$o2);
         

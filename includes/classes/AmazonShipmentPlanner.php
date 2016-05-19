@@ -49,7 +49,7 @@ class AmazonShipmentPlanner extends AmazonInboundCore implements Iterator{
     /**
      * Sets the address. (Required)
      * 
-     * This method sets the destination address to be sent in the next request.
+     * This method sets the shipper's address to be sent in the next request.
      * This parameter is required for planning a fulfillment order with Amazon.
      * The array provided should have the following fields:
      * <ul>
@@ -107,6 +107,32 @@ class AmazonShipmentPlanner extends AmazonInboundCore implements Iterator{
         unset($this->options['ShipFromAddress.CountryCode']);
         unset($this->options['ShipFromAddress.PostalCode']);
     }
+
+    /**
+     * Sets the destination country code. (Optional)
+     * @param string $c <p>Country code in ISO 3166-1 alpha-2 format</p>
+     * @return boolean <b>FALSE</b> if improper input
+     */
+    public function setCountry($c) {
+        if (is_string($c)){
+            $this->options['ShipToCountryCode'] = $c;
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * Sets the destination country subdivision code. (Optional)
+     * @param string $c <p>Country subdivision code in ISO 3166-2 format</p>
+     * @return boolean <b>FALSE</b> if improper input
+     */
+    public function setCountrySubdivision($c) {
+        if (is_string($c)){
+            $this->options['ShipToCountrySubdivisionCode'] = $c;
+        } else {
+            return false;
+        }
+    }
     
     /**
      * Sets the labeling preference. (Optional)
@@ -159,6 +185,16 @@ class AmazonShipmentPlanner extends AmazonInboundCore implements Iterator{
      * <li>Refurbished</li>
      * <li>Club</li>
      * </ul>
+     * <li><b>PrepDetailsList</b> (optional) - Array with keys "PrepInstruction" and "PrepOwner".
+     * Valid values for "PrepInstruction":</li>
+     * <ul>
+     * <li>Polybagging</li>
+     * <li>BubbleWrapping</li>
+     * <li>Taping</li>
+     * <li>BlackShrinkWrapping</li>
+     * <li>Labeling</li>
+     * <li>HangGarment</li>
+     * </ul>
      * </ul>
      * @param array $a <p>See above.</p>
      * @return boolean <b>FALSE</b> if improper input
@@ -174,11 +210,26 @@ class AmazonShipmentPlanner extends AmazonInboundCore implements Iterator{
             if (array_key_exists('SellerSKU', $x) && array_key_exists('Quantity', $x)){
                 $this->options['InboundShipmentPlanRequestItems.member.'.$i.'.SellerSKU'] = $x['SellerSKU'];
                 $this->options['InboundShipmentPlanRequestItems.member.'.$i.'.Quantity'] = $x['Quantity'];
+                if (array_key_exists('ASIN', $x)){
+                    $this->options['InboundShipmentPlanRequestItems.member.'.$i.'.ASIN'] = $x['ASIN'];
+                }
                 if (array_key_exists('QuantityInCase', $x)){
                     $this->options['InboundShipmentPlanRequestItems.member.'.$i.'.QuantityInCase'] = $x['QuantityInCase'];
                 }
                 if (array_key_exists('Condition', $x)){
                     $this->options['InboundShipmentPlanRequestItems.member.'.$i.'.Condition'] = $x['Condition'];
+                }
+                if (array_key_exists('PrepDetailsList', $x) && is_array($x['PrepDetailsList'])){
+                    $j = 1;
+                    foreach ($x['PrepDetailsList'] as $z) {
+                        if (!isset($z['PrepInstruction']) || !isset($z['PrepOwner'])) {
+                            $this->log("Tried to set invalid prep details for item",'Warning');
+                            continue;
+                        }
+                        $this->options['InboundShipmentPlanRequestItems.member.'.$i.'.PrepDetailsList.PrepDetails.'.$j.'.PrepInstruction'] = $z['PrepInstruction'];
+                        $this->options['InboundShipmentPlanRequestItems.member.'.$i.'.PrepDetailsList.PrepDetails.'.$j.'.PrepOwner'] = $z['PrepOwner'];
+                        $j++;
+                    }
                 }
                 $i++;
             } else {
@@ -267,6 +318,14 @@ class AmazonShipmentPlanner extends AmazonInboundCore implements Iterator{
                 $this->planList[$i]['Items'][$j]['SellerSKU'] = (string)$z->SellerSKU;
                 $this->planList[$i]['Items'][$j]['Quantity'] = (string)$z->Quantity;
                 $this->planList[$i]['Items'][$j]['FulfillmentNetworkSKU'] = (string)$z->FulfillmentNetworkSKU;
+                if (isset($z->PrepDetailsList)) {
+                    foreach ($z->PrepDetailsList as $zz) {
+                        $temp = array();
+                        $temp['PrepInstruction'] = (string)$zz->PrepInstruction;
+                        $temp['PrepOwner'] = (string)$zz->PrepOwner;
+                        $this->planList[$i]['Items'][$j]['PrepDetailsList'][] = $temp;
+                    }
+                }
                 $j++;
                 
             }

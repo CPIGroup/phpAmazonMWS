@@ -87,6 +87,7 @@ class AmazonFulfillmentOrderTest extends PHPUnit_Framework_TestCase {
         $xd = array();
         $xd['SellerFulfillmentOrderId'] = 'extern_id_1154539615776';
         $xd['DisplayableOrderId'] = 'test_displayable_id';
+        $xd['MarketplaceId'] = 'ATVPDKIKX0DER';
         $xd['DisplayableOrderDateTime'] = '2006-08-02T17:26:56Z';
         $xd['DisplayableOrderComment'] = 'Sample comment.';
         $xd['ShippingSpeedCategory'] = 'Standard';

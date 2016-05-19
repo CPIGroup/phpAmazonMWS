@@ -199,10 +199,15 @@ class AmazonFulfillmentOrderList extends AmazonOutboundCore implements Iterator{
         foreach($xml->children() as $x){
             $i = $this->index;
             $this->orderList[$i]['SellerFulfillmentOrderId'] = (string)$x->SellerFulfillmentOrderId;
+            $this->orderList[$i]['MarketplaceId'] = (string)$x->MarketplaceId;
             $this->orderList[$i]['DisplayableOrderId'] = (string)$x->DisplayableOrderId;
             $this->orderList[$i]['DisplayableOrderDateTime'] = (string)$x->DisplayableOrderDateTime;
             $this->orderList[$i]['DisplayableOrderComment'] = (string)$x->DisplayableOrderComment;
             $this->orderList[$i]['ShippingSpeedCategory'] = (string)$x->ShippingSpeedCategory;
+            if (isset($x->DeliveryWindow)) {
+                $this->orderList[$i]['DeliveryWindow']['StartDateTime'] = (string)$x->DeliveryWindow->StartDateTime;
+                $this->orderList[$i]['DeliveryWindow']['EndDateTime'] = (string)$x->DeliveryWindow->EndDateTime;
+            }
             if (isset($x->DestinationAddress)){
                 $this->orderList[$i]['DestinationAddress']['Name'] = (string)$x->DestinationAddress->Name;
                 $this->orderList[$i]['DestinationAddress']['Line1'] = (string)$x->DestinationAddress->Line1;
@@ -225,10 +230,14 @@ class AmazonFulfillmentOrderList extends AmazonOutboundCore implements Iterator{
                     $this->orderList[$i]['DestinationAddress']['PhoneNumber'] = (string)$x->DestinationAddress->PhoneNumber;
                 }
             }
+            if (isset($x->FulfillmentAction)){
+                $this->orderList[$i]['FulfillmentAction'] = (string)$x->FulfillmentAction;
+            }
             if (isset($x->FulfillmentPolicy)){
                 $this->orderList[$i]['FulfillmentPolicy'] = (string)$x->FulfillmentPolicy;
             }
             if (isset($x->FulfillmentMethod)){
+                //deprecated
                 $this->orderList[$i]['FulfillmentPolicy'] = (string)$x->FulfillmentMethod;
             }
             $this->orderList[$i]['ReceivedDateTime'] = (string)$x->ReceivedDateTime;
@@ -239,6 +248,21 @@ class AmazonFulfillmentOrderList extends AmazonOutboundCore implements Iterator{
                 foreach($x->NotificationEmailList->children() as $y){
                     $this->orderList[$i]['NotificationEmailList'][$j++] = (string)$y;
                 }
+            }
+            if (isset($x->CODSettings->IsCODRequired)){
+                $this->orderList[$i]['CODSettings']['IsCODRequired'] = (string)$x->CODSettings->IsCODRequired;
+            }
+            if (isset($x->CODSettings->CODCharge)){
+                $this->orderList[$i]['CODSettings']['CODCharge'] = (string)$x->CODSettings->CODCharge;
+            }
+            if (isset($x->CODSettings->CODChargeTax)){
+                $this->orderList[$i]['CODSettings']['CODChargeTax'] = (string)$x->CODSettings->CODChargeTax;
+            }
+            if (isset($x->CODSettings->ShippingCharge)){
+                $this->orderList[$i]['CODSettings']['ShippingCharge'] = (string)$x->CODSettings->ShippingCharge;
+            }
+            if (isset($x->CODSettings->ShippingChargeTax)){
+                $this->orderList[$i]['CODSettings']['ShippingChargeTax'] = (string)$x->CODSettings->ShippingChargeTax;
             }
             $this->index++;
         }
@@ -277,13 +301,15 @@ class AmazonFulfillmentOrderList extends AmazonOutboundCore implements Iterator{
      * <li><b>DisplayableOrderId</b> - your ID for the order</li>
      * <li><b>DisplayableOrderDateTime</b> - the time the order was created, in ISO 8601 date format</li>
      * <li><b>ShippingSpeedCategory</b> - shipping speed for the order</li>
+     * <li><b>DeliveryWindow</b> (optional) - array of ISO 8601 dates with the keys "StartDateTime" and "EndDateTime"</li>
      * <li><b>DestinationAddress</b> - address array, see <i>AmazonFulfillmentOrderCreator</i> for more details</li>
+     * <li><b>FulfillmentAction</b> (optional) - "Ship" or "Hold"</li>
      * <li><b>FulfillmentPolicy</b> (optional) - "FillOrKill", "FillAll", or "FillAllAvailable"</li>
-     * <li><b>FulfillmentMethod</b> (optional) - "Consumer" or "Removal"</li>
      * <li><b>ReceivedDateTime</b> - the time the order was received by the Amazon fulfillment center, in ISO 8601 date format</li>
      * <li><b>FulfillmentOrderStatus</b> - the status of the order</li>
      * <li><b>StatusUpdatedDateTime</b> - the time the status was last updated, in ISO 8601 date format</li>
      * <li><b>NotificationEmailList</b> (optional) - list of email addresses</li>
+     * <li><b>CODSettings</b> (optional) - array, see <i>AmazonFulfillmentOrderCreator</i> for more details</li>
      * </ul>
      * @param int $i [optional] <p>List index to retrieve the value from.
      * If none is given, the entire list will be returned. Defaults to NULL.</p>

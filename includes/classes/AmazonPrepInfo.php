@@ -197,13 +197,13 @@ class AmazonPrepInfo extends AmazonInboundCore implements Iterator {
                 foreach ($x->PrepInstructionList->children() as $z) {
                     $temp['PrepInstructionList'][] = (string)$z;
                 }
-                if (isset($x->AmazonPrepFeesDetails)) {
-                    foreach ($x->AmazonPrepFeesDetails->children() as $z) {
+                if (isset($x->AmazonPrepFeesDetailsList)) {
+                    foreach ($x->AmazonPrepFeesDetailsList->children() as $z) {
                         $fee = array();
                         $fee['PrepInstruction'] = (string)$z->PrepInstruction;
                         $fee['Amount']['Value'] = (string)$z->Amount->Value;
                         $fee['Amount']['CurrencyCode'] = (string)$z->Amount->CurrencyCode;
-                        $temp['AmazonPrepFeesDetails'][] = $fee;
+                        $temp['AmazonPrepFees'][] = $fee;
                     }
                 }
                 $this->prepList[] = $temp;
@@ -335,8 +335,8 @@ class AmazonPrepInfo extends AmazonInboundCore implements Iterator {
      * @see getPrepInstructions
      */
     public function getAmazonPrepFees($i = 0){
-        if (isset($this->prepList[$i]['AmazonPrepFeesDetails'])){
-            return $this->prepList[$i]['AmazonPrepFeesDetails'];
+        if (isset($this->prepList[$i]['AmazonPrepFees'])){
+            return $this->prepList[$i]['AmazonPrepFees'];
         } else {
             return false;
         }
@@ -353,7 +353,7 @@ class AmazonPrepInfo extends AmazonInboundCore implements Iterator {
      * <li><b>BarcodeInstruction</b></li>
      * <li><b>PrepGuidance</b></li>
      * <li><b>PrepInstructionList</b> (see <i>getPrepInstructions</i> for details)</li>
-     * <li><b>AmazonPrepFeesDetails</b> (see <i>getAmazonPrepFees</i> for details)</li>
+     * <li><b>AmazonPrepFees</b> (see <i>getAmazonPrepFees</i> for details)</li>
      * </ul>
      * @param int $i [optional] <p>List index of the instruction to return. Defaults to NULL.</p>
      * @return array|boolean multi-dimensional array, or <b>FALSE</b> if list not filled yet

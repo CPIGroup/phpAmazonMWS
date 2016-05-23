@@ -546,17 +546,22 @@ abstract class AmazonCore{
      * The string given is passed through <i>strtotime</i> before being used. The
      * value returned is actually two minutes early, to prevent it from tripping up
      * Amazon. If no time is given, the current time is used.
-     * @param string $time [optional] <p>The time to use. Since this value is
+     * @param string|int $time [optional] <p>The time to use. Since any string values are
      * passed through <i>strtotime</i> first, values such as "-1 hour" are fine.
+     * Unix timestamps are also allowed. Purely numeric values are treated as unix timestamps.
      * Defaults to the current time.</p>
      * @return string Unix timestamp of the time, minus 2 minutes.
+     * @throws InvalidArgumentException
      */
     protected function genTime($time=false){
         if (!$time){
             $time = time();
-        } else {
+        } else if (is_numeric($time)) {
+            $time = (int)$time;
+        } else if (is_string($time)) {
             $time = strtotime($time);
-            
+        } else {
+            throw new InvalidArgumentException('Invalid time input given');
         }
         return date('Y-m-d\TH:i:sO',$time-120);
             
@@ -647,6 +652,69 @@ abstract class AmazonCore{
             return $this->rawResponses;
         } else {
             return false;
+        }
+    }
+
+    /**
+     * Gives the response code from the last response.
+     * This data can also be found in the array given by getLastResponse.
+     * @return string|int standard REST response code (200, 404, etc.) or <b>NULL</b> if no response
+     * @see getLastResponse
+     */
+    public function getLastResponseCode() {
+        $last = $this->getLastResponse();
+        if (!empty($last['code'])) {
+            return $last['code'];
+        }
+    }
+
+    /**
+     * Gives the last response with an error code.
+     * This may or may not be the same as the last response if multiple requests were made.
+     * @return array associative array of HTTP response or <b>NULL</b> if no error response yet
+     * @see getLastResponse
+     */
+    public function getLastErrorResponse() {
+        if (!empty($this->rawResponses)) {
+            foreach (array_reverse($this->rawResponses) as $x) {
+                if (isset($x['error'])) {
+                    return $x;
+                }
+            }
+        }
+    }
+
+    /**
+     * Gives the Amazon error code from the last error response.
+     * The error code uses words rather than numbers. (Ex: "InvalidParameterValue")
+     * This data can also be found in the XML body given by getLastErrorResponse.
+     * @return string Amazon error code or <b>NULL</b> if not set yet or no error response yet
+     * @see getLastErrorResponse
+     */
+    public function getLastErrorCode() {
+        $last = $this->getLastErrorResponse();
+        if (!empty($last['body'])) {
+            $xml = simplexml_load_string($last['body']);
+            if (isset($xml->Error->Code)) {
+                return $xml->Error->Code;
+            }
+        }
+    }
+
+    /**
+     * Gives the error message from the last error response.
+     * Not all error responses will have error messages.
+     * This data can also be found in the XML body given by getLastErrorResponse.
+     * @return string Amazon error code or <b>NULL</b> if not set yet or no error response yet
+     * @see getLastErrorResponse
+     */
+    public function getLastErrorMessage() {
+        $last = $this->getLastErrorResponse();
+        if (!empty($last['body'])) {
+            $xml = simplexml_load_string($last['body']);
+            if (isset($xml->Error->Message)) {
+                return $xml->Error->Message;
+            }
         }
     }
     

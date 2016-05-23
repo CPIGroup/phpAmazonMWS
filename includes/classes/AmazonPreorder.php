@@ -81,7 +81,7 @@ class AmazonPreorder extends AmazonInboundCore {
      */
     public function setNeedByDate($d) {
         try{
-            $this->options['NeedByDate'] = $this->genTime($d);
+            $this->options['NeedByDate'] = strstr($this->genTime($d), 'T', true);
         } catch (Exception $e){
             unset($this->options['NeedByDate']);
             $this->log('Error: '.$e->getMessage(), 'Warning');

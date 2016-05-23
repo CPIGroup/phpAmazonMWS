@@ -31,6 +31,7 @@
  */
 class AmazonTransport extends AmazonInboundCore {
     protected $status;
+    protected $contents;
 
     /**
      * AmazonTransport gets or sends transport information about a shipment from Amazon.
@@ -549,6 +550,28 @@ class AmazonTransport extends AmazonInboundCore {
     }
 
     /**
+     * Removes all parameters specific to sending transport content info.The following parameters are removed:
+     * IsPartnered, ShipmentType, and everything in TransportDetails.
+     */
+    protected function resetSendParams() {
+        unset($this->options['IsPartnered']);
+        unset($this->options['ShipmentType']);
+        $this->resetTransportDetails();
+    }
+
+    /**
+     * Removes all parameters specific to fetching documents and labels.
+     * The following parameters are removed:
+     * PageType, NumberOfPackages, PackageLabelsToPrint, and NumberOfPallets.
+     */
+    protected function resetDocumentParams() {
+        unset($this->options['PageType']);
+        unset($this->options['NumberOfPackages']);
+        unset($this->options['PackageLabelsToPrint']);
+        unset($this->options['NumberOfPallets']);
+    }
+
+    /**
      * Sends transport content information for a shipment with Amazon.
      *
      * Submits a <i>PutTransportContent</i> request to Amazon. In order to do this,
@@ -589,18 +612,15 @@ class AmazonTransport extends AmazonInboundCore {
     /**
      * Sets up options for using <i>sendTransportContents</i>.
      *
-     * This changes key options for using <i>GetPreorderInfo</i>.
+     * This changes key options for using <i>sendTransportContents</i>.
      * Please note: because the operation does not use all of the parameters,
-     * some of the parameters will be removed. The following parameters are removed:
-     * PageType, NumberOfPackages, PackageLabelsToPrint, and NumberOfPallets.
+     * some of the parameters will be removed.
+     * @see resetDocumentParams
      */
     protected function prepareSend() {
         $this->throttleGroup = 'PutTransportContent';
         $this->options['Action'] = 'PutTransportContent';
-        unset($this->options['PageType']);
-        unset($this->options['NumberOfPackages']);
-        unset($this->options['PackageLabelsToPrint']);
-        unset($this->options['NumberOfPallets']);
+        $this->resetDocumentParams();
     }
 
     /**
@@ -683,6 +703,226 @@ class AmazonTransport extends AmazonInboundCore {
     }
 
     /**
+     * Gets transport content information for a shipment from Amazon.
+     *
+     * Submits a <i>EstimateTransportRequest</i> request to Amazon. In order to do this,
+     * a fulfillment shipment ID is required.
+     * Before this action can be used, information about the transport contents
+     * must be provided to Amazon using <i>sendTransportContents</i>.
+     * Amazon will send a status back as a response, which can be retrieved
+     * using <i>getStatus</i>.
+     * @return boolean <b>FALSE</b> if something goes wrong
+     */
+    public function fetchTransportContent() {
+        if (!array_key_exists('ShipmentId', $this->options)) {
+            $this->log('ShipmentId must be set in order to get transport contents!', 'Warning');
+            return false;
+        }
+
+        $this->prepareGetContent();
+
+        $url = $this->urlbase.$this->urlbranch;
+
+        $query = $this->genQuery();
+
+        $path = $this->options['Action'].'Result';
+        if ($this->mockMode){
+            $xml = $this->fetchMockFile();
+        } else {
+            $response = $this->sendRequest($url, array('Post'=>$query));
+
+            if (!$this->checkResponse($response)){
+                return false;
+            }
+
+            $xml = simplexml_load_string($response['body']);
+        }
+
+        $this->parseXml($xml->$path);
+    }
+
+    /**
+     * Sets up options for using <i>estimateTransport</i>.
+     *
+     * This changes key options for using <i>estimateTransport</i>.
+     * Please note: because the operation does not use all of the parameters,
+     * some of the parameters will be removed.
+     * @see resetSendParams
+     * @see resetDocumentParams
+     */
+    protected function prepareGetContent() {
+        $this->throttleGroup = 'GetTransportContent';
+        $this->options['Action'] = 'GetTransportContent';
+        $this->resetSendParams();
+        $this->resetDocumentParams();
+    }
+
+    /**
+     * Sends a request to Amazon to start estimating a shipping request.
+     *
+     * Submits a <i>EstimateTransportRequest</i> request to Amazon. In order to do this,
+     * a fulfillment shipment ID is required.
+     * Before this action can be used, information about the transport contents
+     * must be provided to Amazon using <i>sendTransportContents</i>.
+     * Amazon will send a status back as a response, which can be retrieved
+     * using <i>getStatus</i>.
+     * @return boolean <b>FALSE</b> if something goes wrong
+     */
+    public function estimateTransport() {
+        if (!array_key_exists('ShipmentId', $this->options)) {
+            $this->log('ShipmentId must be set in order to estimate the transport request!', 'Warning');
+            return false;
+        }
+
+        $this->prepareEstimate();
+
+        $url = $this->urlbase.$this->urlbranch;
+
+        $query = $this->genQuery();
+
+        $path = $this->options['Action'].'Result';
+        if ($this->mockMode){
+            $xml = $this->fetchMockFile();
+        } else {
+            $response = $this->sendRequest($url, array('Post'=>$query));
+
+            if (!$this->checkResponse($response)){
+                return false;
+            }
+
+            $xml = simplexml_load_string($response['body']);
+        }
+
+        $this->parseXml($xml->$path);
+    }
+
+    /**
+     * Sets up options for using <i>estimateTransport</i>.
+     *
+     * This changes key options for using <i>estimateTransport</i>.
+     * Please note: because the operation does not use all of the parameters,
+     * some of the parameters will be removed.
+     * @see resetSendParams
+     * @see resetDocumentParams
+     */
+    protected function prepareEstimate() {
+        $this->throttleGroup = 'EstimateTransportRequest';
+        $this->options['Action'] = 'EstimateTransportRequest';
+        $this->resetSendParams();
+        $this->resetDocumentParams();
+    }
+
+    /**
+     * Confirms an estimated transport request with Amazon.
+     *
+     * Submits a <i>ConfirmTransportRequest</i> request to Amazon. In order to do this,
+     * a fulfillment shipment ID is required.
+     * Before this action can be used, the transport info must be estimated by Amazon,
+     * which can be done by using <i>estimateTransport</i>.
+     * Amazon will send a status back as a response, which can be retrieved
+     * using <i>getStatus</i>.
+     * @return boolean <b>FALSE</b> if something goes wrong
+     */
+    public function confirmTransport() {
+        if (!array_key_exists('ShipmentId', $this->options)) {
+            $this->log('ShipmentId must be set in order to confirm the transport request!', 'Warning');
+            return false;
+        }
+
+        $this->prepareConfirm();
+
+        $url = $this->urlbase.$this->urlbranch;
+
+        $query = $this->genQuery();
+
+        $path = $this->options['Action'].'Result';
+        if ($this->mockMode){
+            $xml = $this->fetchMockFile();
+        } else {
+            $response = $this->sendRequest($url, array('Post'=>$query));
+
+            if (!$this->checkResponse($response)){
+                return false;
+            }
+
+            $xml = simplexml_load_string($response['body']);
+        }
+
+        $this->parseXml($xml->$path);
+    }
+
+    /**
+     * Sets up options for using <i>confirmTransport</i>.
+     *
+     * This changes key options for using <i>confirmTransport</i>.
+     * Please note: because the operation does not use all of the parameters,
+     * some of the parameters will be removed.
+     * @see resetSendParams
+     * @see resetDocumentParams
+     */
+    protected function prepareConfirm() {
+        $this->throttleGroup = 'ConfirmTransportRequest';
+        $this->options['Action'] = 'ConfirmTransportRequest';
+        $this->resetSendParams();
+        $this->resetDocumentParams();
+    }
+
+    /**
+     * Voids a previously-confirmed transport request with Amazon.
+     *
+     * Submits a <i>VoidTransportRequest</i> request to Amazon. In order to do this,
+     * a fulfillment shipment ID is required.
+     * Before this action can be used, the transport info must have been confirmed
+     * using <i>confirmTransport</i>.
+     * Amazon will send a status back as a response, which can be retrieved
+     * using <i>getStatus</i>.
+     * @return boolean <b>FALSE</b> if something goes wrong
+     */
+    public function voidTransport() {
+        if (!array_key_exists('ShipmentId', $this->options)) {
+            $this->log('ShipmentId must be set in order to void the transport request!', 'Warning');
+            return false;
+        }
+
+        $this->prepareVoid();
+
+        $url = $this->urlbase.$this->urlbranch;
+
+        $query = $this->genQuery();
+
+        $path = $this->options['Action'].'Result';
+        if ($this->mockMode){
+            $xml = $this->fetchMockFile();
+        } else {
+            $response = $this->sendRequest($url, array('Post'=>$query));
+
+            if (!$this->checkResponse($response)){
+                return false;
+            }
+
+            $xml = simplexml_load_string($response['body']);
+        }
+
+        $this->parseXml($xml->$path);
+    }
+
+    /**
+     * Sets up options for using <i>voidTransport</i>.
+     *
+     * This changes key options for using <i>voidTransport</i>.
+     * Please note: because the operation does not use all of the parameters,
+     * some of the parameters will be removed.
+     * @see resetSendParams
+     * @see resetDocumentParams
+     */
+    protected function prepareVoid() {
+        $this->throttleGroup = 'VoidTransportRequest';
+        $this->options['Action'] = 'VoidTransportRequest';
+        $this->resetSendParams();
+        $this->resetDocumentParams();
+    }
+
+    /**
      * Parses XML response into array.
      *
      * This is what reads the response XML and converts it into an array.
@@ -696,7 +936,106 @@ class AmazonTransport extends AmazonInboundCore {
 
         //response from send, confirm, estimate, void
         if (isset($xml->TransportResult->TransportStatus)) {
-            $this->status = $xml->TransportResult->TransportStatus;
+            $this->status = (string)$xml->TransportResult->TransportStatus;
+        }
+        //response from get
+        if (isset($xml->TransportContent)) {
+            $this->contents = array();
+            $this->status = (string)$xml->TransportContent->TransportResult->TransportStatus;
+            $this->contents['SellerId'] = (string)$xml->TransportHeader->SellerId;
+            $this->contents['ShipmentId'] = (string)$xml->TransportHeader->ShipmentId;
+            $this->contents['IsPartnered'] = (string)$xml->TransportHeader->IsPartnered;
+            $this->contents['ShipmentType'] = (string)$xml->TransportHeader->ShipmentType;
+
+            //one of four possible response structures for details
+            $this->contents['Details'] = array();
+            $d = array();
+            if (isset($xml->TransportContent->TransportDetails->PartneredSmallParcelData)) {
+                //Partnered + SP
+                $d = $xml->TransportContent->TransportDetails->PartneredSmallParcelData;
+            } else if (isset($xml->TransportContent->TransportDetails->NonPartneredSmallParcelData)) {
+                //Non-Partnered + SP
+                $d = $xml->TransportContent->TransportDetails->NonPartneredSmallParcelData;
+            } else if (isset($xml->TransportContent->TransportDetails->PartneredLtlData)) {
+                //Partnered + LTL
+                $d = $xml->TransportContent->TransportDetails->PartneredLtlData;
+                $this->contents['Details']['Contact']['Name'] = (string)$d->Contact->Name;
+                $this->contents['Details']['Contact']['Phone'] = (string)$d->Contact->Phone;
+                $this->contents['Details']['Contact']['Email'] = (string)$d->Contact->Email;
+                $this->contents['Details']['Contact']['Fax'] = (string)$d->Contact->Fax;
+                $this->contents['Details']['BoxCount'] = (string)$d->BoxCount;
+                if (isset($d->SellerFreightClass)) {
+                    $this->contents['Details']['SellerFreightClass'] = (string)$d->SellerFreightClass;
+                }
+                $this->contents['Details']['FreightReadyDate'] = (string)$d->FreightReadyDate;
+                foreach ($d->PalletList->children() as $x) {
+                    $temp = array();
+                    $temp['IsStacked'] = (string)$x->IsStacked;
+                    $temp['Dimensions']['Unit'] = (string)$x->Dimensions->Unit;
+                    $temp['Dimensions']['Length'] = (string)$x->Dimensions->Length;
+                    $temp['Dimensions']['Width'] = (string)$x->Dimensions->Width;
+                    $temp['Dimensions']['Height'] = (string)$x->Dimensions->Height;
+                    if (isset($x->Weight)) {
+                        $temp['Weight']['Value'] = (string)$x->Weight->Value;
+                        $temp['Weight']['Unit'] = (string)$x->Weight->Unit;
+                    }
+                    $this->contents['Details']['PalletList'][] = $temp;
+                }
+                $this->contents['Details']['TotalWeight']['Value'] = (string)$d->TotalWeight->Value;
+                $this->contents['Details']['TotalWeight']['Unit'] = (string)$d->TotalWeight->Unit;
+                if (isset($d->SellerDeclaredValue)) {
+                    $this->contents['Details']['SellerDeclaredValue']['Value'] = (string)$d->SellerDeclaredValue->Value;
+                    $this->contents['Details']['SellerDeclaredValue']['CurrencyCode'] = (string)$d->SellerDeclaredValue->CurrencyCode;
+                }
+                if (isset($d->AmazonCalculatedValue)) {
+                    $this->contents['Details']['AmazonCalculatedValue']['Value'] = (string)$d->AmazonCalculatedValue->Value;
+                    $this->contents['Details']['AmazonCalculatedValue']['CurrencyCode'] = (string)$d->AmazonCalculatedValue->CurrencyCode;
+                }
+                $this->contents['Details']['PreviewPickupDate'] = (string)$d->PreviewPickupDate;
+                $this->contents['Details']['PreviewDeliveryDate'] = (string)$d->PreviewDeliveryDate;
+                $this->contents['Details']['PreviewFreightClass'] = (string)$d->PreviewFreightClass;
+                $this->contents['Details']['AmazonReferenceId'] = (string)$d->AmazonReferenceId;
+                $this->contents['Details']['IsBillOfLadingAvailable'] = (string)$d->IsBillOfLadingAvailable;
+                $this->contents['Details']['CarrierName'] = (string)$d->CarrierName;
+            } else if (isset($xml->TransportContent->TransportDetails->NonPartneredLtlData)) {
+                //Non-Partnered + LTL
+                $d = $xml->TransportContent->TransportDetails->NonPartneredLtlData;
+                $this->contents['Details']['CarrierName'] = (string)$d->CarrierName;
+                $this->contents['Details']['ProNumber'] = (string)$d->ProNumber;
+            }
+            //shared by both SP structures
+            if (isset($d->PackageList)) {
+                foreach ($d->PackageList->children() as $x) {
+                    $temp = array();
+                    $temp['TrackingId'] = (string)$x->TrackingId;
+                    $temp['PackageStatus'] = (string)$x->PackageStatus;
+                    $temp['CarrierName'] = (string)$x->CarrierName;
+                    if (isset($x->Weight)) {
+                        $temp['Weight']['Value'] = (string)$x->Weight->Value;
+                        $temp['Weight']['Unit'] = (string)$x->Weight->Unit;
+                    }
+                    if (isset($x->Dimensions)) {
+                        $temp['Dimensions']['Unit'] = (string)$x->Dimensions->Unit;
+                        $temp['Dimensions']['Length'] = (string)$x->Dimensions->Length;
+                        $temp['Dimensions']['Width'] = (string)$x->Dimensions->Width;
+                        $temp['Dimensions']['Height'] = (string)$x->Dimensions->Height;
+                    }
+                    $this->contents['Details']['PackageList'][] = $temp;
+                }
+            }
+            //shared by both partnered structures
+            if (isset($d->PartneredEstimate)) {
+                $pe = array();
+                $pe['Amount']['Value'] = (string)$d->PartneredEstimate->Amount->Value;
+                $pe['Amount']['CurrencyCode'] = (string)$d->PartneredEstimate->Amount->CurrencyCode;
+                if (isset($d->PartneredEstimate->ConfirmDeadline)) {
+                    $pe['ConfirmDeadline'] = (string)$d->PartneredEstimate->ConfirmDeadline;
+                }
+                if (isset($d->PartneredEstimate->ConfirmDeadline)) {
+                    $pe['VoidDeadline'] = (string)$d->PartneredEstimate->VoidDeadline;
+                }
+                $this->contents['Details']['PartneredEstimate'] = $pe;
+            }
         }
     }
 
@@ -712,6 +1051,77 @@ class AmazonTransport extends AmazonInboundCore {
     public function getStatus(){
         if (isset($this->status)){
             return $this->status;
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * Returns information about transport contents.
+     *
+     * The returned array will have the following fields:
+     * <ul>
+     * <li><b>SellerId</b></li>
+     * <li><b>ShipmentId</b></li>
+     * <li><b>IsPartnered</b> - "true" or "false"</li>
+     * <li><b>ShipmentType</b> - "SP" or "LTL"</li>
+     * <li><b>Details</b> - array, see <i>getContentDetails</i> for details</li>
+     * </ul>
+     * This method will return <b>FALSE</b> if the status has not been set yet.
+     * @return array|boolean multi-dimensional array, or <b>FALSE</b> if date not set yet
+     * @see getContentDetails
+     */
+    public function getContentInfo(){
+        if (isset($this->contents)){
+            return $this->contents;
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * Returns details about transport contents.
+     *
+     * The contents of the array will vary depending on the shipment type and
+     * whether or not the shipment is with a partnered carrier.
+     * The returned array can have the following fields:
+     * <ul>
+     * <li><b>PackageList</b> (SP)</li>
+     * <li><b>PartneredEstimate</b> (if Partnered) - array</li>
+     * <ul>
+     * <li><b>Amount</b> - array with keys "Value" and "CurrencyCode"</li>
+     * <li><b>ConfirmDeadline</b> (optional) - date</li>
+     * <li><b>VoidDeadline</b> (optional) - date</li>
+     * </ul>
+     * <li><b>CarrierName</b> (LTL)</li>
+     * <li><b>ProNumber</b> (LTL + not Partnered)</li>
+     * <li><b>Contact</b> (LTL + Partnered) - array</li>
+     * <ul>
+     * <li><b>Name</b></li>
+     * <li><b>Phone</b></li>
+     * <li><b>Email</b></li>
+     * <li><b>Fax</b></li>
+     * </ul>
+     * <li><b>BoxCount</b> (LTL + Partnered)</li>
+     * <li><b>SellerFreightClass</b> (optional, LTL + Partnered)</li>
+     * <li><b>FreightReadyDate</b> (LTL + Partnered)</li>
+     * <li><b>PalletList</b> (LTL + Partnered) - array, see <i>getPalletList</i> for details</li>
+     * <li><b>TotalWeight</b> (LTL + Partnered) - array with keys "Value" and "Unit"</li>
+     * <li><b>SellerDeclaredValue</b> (optional, LTL + Partnered) - array with keys "Value" and "CurrencyCode"</li>
+     * <li><b>AmazonCalculatedValue</b> (optional, LTL + Partnered) - array with keys "Value" and "CurrencyCode"</li>
+     * <li><b>PreviewPickupDate</b> (LTL + Partnered)</li>
+     * <li><b>PreviewDeliveryDate</b> (LTL + Partnered)</li>
+     * <li><b>PreviewFreightClass</b> (LTL + Partnered)</li>
+     * <li><b>AmazonReferenceId</b> (LTL + Partnered)</li>
+     * <li><b>IsBillOfLadingAvailable</b> (LTL + Partnered)</li>
+     * </ul>
+     * This method will return <b>FALSE</b> if the status has not been set yet.
+     * @return array|boolean multi-dimensional array, or <b>FALSE</b> if date not set yet
+     * @see getPalletList
+     */
+    public function getContentDetails(){
+        if (isset($this->contents)){
+            return $this->contents;
         } else {
             return false;
         }

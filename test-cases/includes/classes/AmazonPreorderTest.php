@@ -17,7 +17,7 @@ class AmazonPreorderTest extends PHPUnit_Framework_TestCase {
     }
 
     public function testSetUp() {
-        $obj = new AmazonPreorder('testStore', '77', null, true, null, __DIR__.'/../../test-config.php');
+        $obj = new AmazonPreorder('testStore', '77', true, null, __DIR__.'/../../test-config.php');
 
         $o = $obj->getOptions();
         $this->assertArrayHasKey('ShipmentId',$o);

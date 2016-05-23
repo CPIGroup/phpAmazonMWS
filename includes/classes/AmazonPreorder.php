@@ -128,9 +128,9 @@ class AmazonPreorder extends AmazonInboundCore {
     }
 
     /**
-     * Sets up options for using <i>GetPreorderInfo</i>.
+     * Sets up options for using <i>fetchPreorderInfo</i>.
      *
-     * This changes key options for using <i>GetPreorderInfo</i>.
+     * This changes key options for using <i>fetchPreorderInfo</i>.
      * Please note: because the operation does not use all of the parameters,
      * some of the parameters will be removed. The following parameters are removed:
      * NeedByDate.
@@ -183,9 +183,9 @@ class AmazonPreorder extends AmazonInboundCore {
     }
 
     /**
-     * Sets up options for using <i>ConfirmPreorder</i>.
+     * Sets up options for using <i>confirmPreorder</i>.
      *
-     * This changes key options for using <i>ConfirmPreorder</i>.
+     * This changes key options for using <i>confirmPreorder</i>.
      */
     protected function prepareConfirm() {
         $this->throttleGroup = 'ConfirmPreorder';

@@ -26,9 +26,9 @@
 class AmazonInventoryList extends AmazonInventoryCore implements Iterator{
     protected $tokenFlag = false;
     protected $tokenUseFlag = false;
-    private $supplyList;
-    private $index = 0;
-    private $i = 0;
+    protected $supplyList;
+    protected $index = 0;
+    protected $i = 0;
     
     /**
      * AmazonInventoryList fetches a list of inventory supplies Amazon.
@@ -127,7 +127,7 @@ class AmazonInventoryList extends AmazonInventoryCore implements Iterator{
      * Since seller SKU is a required parameter, these options should not be removed
      * without replacing them, so this method is not public.
      */
-    private function resetSkus(){
+    protected function resetSkus(){
         foreach($this->options as $op=>$junk){
             if(preg_match("#SellerSkus.member.#",$op)){
                 unset($this->options[$op]);
@@ -208,7 +208,7 @@ class AmazonInventoryList extends AmazonInventoryCore implements Iterator{
      * operation for using tokens does not use any other parameters, all other
      * parameters will be removed.
      */
-    private function prepareToken(){
+    protected function prepareToken(){
         if ($this->tokenFlag && $this->tokenUseFlag){
             $this->options['Action'] = 'ListInventorySupplyByNextToken';
             unset($this->options['QueryStartDateTime']);

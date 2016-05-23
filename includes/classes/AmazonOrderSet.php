@@ -25,9 +25,9 @@
  * class instead.
  */
 class AmazonOrderSet extends AmazonOrderCore implements Iterator{
-    private $i = 0;
-    private $index = 0;
-    private $orderList;
+    protected $i = 0;
+    protected $index = 0;
+    protected $orderList;
     
     /**
      * AmazonOrderSet is a variation of <i>AmazonOrder</i> that pulls multiple specified orders.
@@ -98,7 +98,7 @@ class AmazonOrderSet extends AmazonOrderCore implements Iterator{
      * Since order ID is a required parameter, these options should not be removed
      * without replacing them, so this method is not public.
      */
-    private function resetOrderIds(){
+    protected function resetOrderIds(){
         foreach($this->options as $op=>$junk){
                 if(preg_match("#AmazonOrderId.Id.#",$op)){
                     unset($this->options[$op]);

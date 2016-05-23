@@ -25,9 +25,9 @@
  * the response from Amazon can be viewed with <i>getResponse</i>.
  */
 class AmazonFeed extends AmazonFeedsCore{
-    private $response;
-    private $feedContent;
-    private $feedMD5;
+    protected $response;
+    protected $feedContent;
+    protected $feedMD5;
     
     /**
      * AmazonFeed submits a Feed to Amazon.

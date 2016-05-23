@@ -29,10 +29,10 @@
 class AmazonFeedList extends AmazonFeedsCore implements Iterator{
     protected $tokenFlag = false;
     protected $tokenUseFlag = false;
-    private $feedList;
-    private $index = 0;
-    private $i = 0;
-    private $count;
+    protected $feedList;
+    protected $index = 0;
+    protected $i = 0;
+    protected $count;
     
     /**
      * AmazonFeedList fetches a list of Feeds from Amazon.

@@ -26,10 +26,10 @@
  * which will usually be 1.
  */
 class AmazonReportScheduleManager extends AmazonReportsCore implements Iterator{
-    private $scheduleList;
-    private $count;
-    private $i = 0;
-    private $index = 0;
+    protected $scheduleList;
+    protected $count;
+    protected $i = 0;
+    protected $index = 0;
     
     /**
      * AmazonReportsScheduleManager manages report schedules.

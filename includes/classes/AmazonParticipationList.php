@@ -26,10 +26,10 @@
 class AmazonParticipationList extends AmazonSellersCore{
     protected $tokenFlag = false;
     protected $tokenUseFlag = false;
-    private $participationList;
-    private $marketplaceList;
-    private $indexM = 0;
-    private $indexP = 0;
+    protected $participationList;
+    protected $marketplaceList;
+    protected $indexM = 0;
+    protected $indexP = 0;
     
     /**
      * Gets list of marketplaces run by the seller.
@@ -137,7 +137,7 @@ class AmazonParticipationList extends AmazonSellersCore{
      * operation for using tokens does not use any other parameters, all other
      * parameters will be removed.
      */
-    private function prepareToken(){
+    protected function prepareToken(){
         if ($this->tokenFlag && $this->tokenUseFlag){
             $this->options['Action'] = 'ListMarketplaceParticipationsByNextToken';
         } else {

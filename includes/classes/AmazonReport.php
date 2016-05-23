@@ -24,7 +24,7 @@
  * then be saved to a file.
  */
 class AmazonReport extends AmazonReportsCore{
-    private $rawreport;
+    protected $rawreport;
     
     /**
      * AmazonReport fetches a report from Amazon.

@@ -24,7 +24,7 @@
  * Order ID is required.
  */
 class AmazonOrder extends AmazonOrderCore{
-    private $data;
+    protected $data;
 
     /**
      * AmazonOrder object gets the details for a single object from Amazon.

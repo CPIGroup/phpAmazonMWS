@@ -78,7 +78,7 @@ class AmazonProductInfo extends AmazonProductsCore{
      * Since seller SKU is a required parameter, these options should not be removed
      * without replacing them, so this method is not public.
      */
-    private function resetSKUs(){
+    protected function resetSKUs(){
         foreach($this->options as $op=>$junk){
             if(preg_match("#SellerSKUList#",$op)){
                 unset($this->options[$op]);
@@ -121,7 +121,7 @@ class AmazonProductInfo extends AmazonProductsCore{
      * Since ASIN is a required parameter, these options should not be removed
      * without replacing them, so this method is not public.
      */
-    private function resetASINs(){
+    protected function resetASINs(){
         foreach($this->options as $op=>$junk){
             if(preg_match("#ASINList#",$op)){
                 unset($this->options[$op]);

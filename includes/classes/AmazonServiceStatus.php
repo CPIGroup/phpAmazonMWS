@@ -23,11 +23,11 @@
  * Please note that it has a 5 minute throttle time.
  */
 class AmazonServiceStatus extends AmazonCore{
-    private $lastTimestamp;
-    private $status;
-    private $messageId;
-    private $messageList;
-    private $ready = false;
+    protected $lastTimestamp;
+    protected $status;
+    protected $messageId;
+    protected $messageList;
+    protected $ready = false;
     
     /**
      * AmazonServiceStatus is a simple object that fetches the status of given Amazon service.

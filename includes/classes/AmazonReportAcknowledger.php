@@ -24,10 +24,10 @@
  * required. A list of the affected reports is returned.
  */
 class AmazonReportAcknowledger extends AmazonReportsCore implements Iterator{
-    private $count;
-    private $index = 0;
-    private $i = 0;
-    private $reportList;
+    protected $count;
+    protected $index = 0;
+    protected $i = 0;
+    protected $reportList;
     
     /**
      * AmazonReportAcknowledger sends a report acknowledgement request to Amazon.

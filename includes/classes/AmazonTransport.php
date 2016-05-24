@@ -19,15 +19,13 @@
 /**
  * Fetches transport info for a fulfillment shipment or updates it.
  *
- * This Amazon Inbound Core object retrieves transportation information and
- * related documents for an inbound fulfillment shipment. It can also update
- * transport information and confirm or cancel the transport request. Documents
- * that it can fetch are stored in PDF format. In order to retrieve or send
+ * This Amazon Inbound Core object retrieves transportation information for
+ * an inbound fulfillment shipment. It can also update transport information
+ * and confirm or cancel the transport request. In order to retrieve or send
  * any information, the ID of an inbound fulfillment shipment is needed.
- * In order to fetch labels, the paper type must be specified. In order to
- * update the transport information, additional details about the shipment
- * are required, such as shipment type. Use the AmazonShipment object to create
- * an inbound shipment and acquire a shipment ID.
+ * In order to update the transport information, additional details about the
+ * shipment are required, such as shipment type. Use the AmazonShipment object
+ * to create an inbound shipment and acquire a shipment ID.
  */
 class AmazonTransport extends AmazonInboundCore {
     protected $status;
@@ -550,18 +548,6 @@ class AmazonTransport extends AmazonInboundCore {
     }
 
     /**
-     * Removes all parameters specific to fetching documents and labels.
-     * The following parameters are removed:
-     * PageType, NumberOfPackages, PackageLabelsToPrint, and NumberOfPallets.
-     */
-    protected function resetDocumentParams() {
-        unset($this->options['PageType']);
-        unset($this->options['NumberOfPackages']);
-        unset($this->options['PackageLabelsToPrint']);
-        unset($this->options['NumberOfPallets']);
-    }
-
-    /**
      * Sends transport content information for a shipment with Amazon.
      *
      * Submits a <i>PutTransportContent</i> request to Amazon. In order to do this,
@@ -603,14 +589,10 @@ class AmazonTransport extends AmazonInboundCore {
      * Sets up options for using <i>sendTransportContents</i>.
      *
      * This changes key options for using <i>sendTransportContents</i>.
-     * Please note: because the operation does not use all of the parameters,
-     * some of the parameters will be removed.
-     * @see resetDocumentParams
      */
     protected function prepareSend() {
         $this->throttleGroup = 'PutTransportContent';
         $this->options['Action'] = 'PutTransportContent';
-        $this->resetDocumentParams();
     }
 
     /**
@@ -738,13 +720,11 @@ class AmazonTransport extends AmazonInboundCore {
      * Please note: because the operation does not use all of the parameters,
      * some of the parameters will be removed.
      * @see resetSendParams
-     * @see resetDocumentParams
      */
     protected function prepareGetContent() {
         $this->throttleGroup = 'GetTransportContent';
         $this->options['Action'] = 'GetTransportContent';
         $this->resetSendParams();
-        $this->resetDocumentParams();
     }
 
     /**
@@ -793,13 +773,11 @@ class AmazonTransport extends AmazonInboundCore {
      * Please note: because the operation does not use all of the parameters,
      * some of the parameters will be removed.
      * @see resetSendParams
-     * @see resetDocumentParams
      */
     protected function prepareEstimate() {
         $this->throttleGroup = 'EstimateTransportRequest';
         $this->options['Action'] = 'EstimateTransportRequest';
         $this->resetSendParams();
-        $this->resetDocumentParams();
     }
 
     /**
@@ -848,13 +826,11 @@ class AmazonTransport extends AmazonInboundCore {
      * Please note: because the operation does not use all of the parameters,
      * some of the parameters will be removed.
      * @see resetSendParams
-     * @see resetDocumentParams
      */
     protected function prepareConfirm() {
         $this->throttleGroup = 'ConfirmTransportRequest';
         $this->options['Action'] = 'ConfirmTransportRequest';
         $this->resetSendParams();
-        $this->resetDocumentParams();
     }
 
     /**
@@ -903,13 +879,11 @@ class AmazonTransport extends AmazonInboundCore {
      * Please note: because the operation does not use all of the parameters,
      * some of the parameters will be removed.
      * @see resetSendParams
-     * @see resetDocumentParams
      */
     protected function prepareVoid() {
         $this->throttleGroup = 'VoidTransportRequest';
         $this->options['Action'] = 'VoidTransportRequest';
         $this->resetSendParams();
-        $this->resetDocumentParams();
     }
 
     /**

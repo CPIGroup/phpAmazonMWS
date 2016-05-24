@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<GetPalletLabelsResponse xmlns="http://mws.amazonaws.com/FulfillmentInboundShipment/2010-10-01/">
+  <GetPalletLabelsResult>
+    <TransportDocument>
+      <PdfDocument>cGFsbGV0IHRlc3Q=</PdfDocument>
+      <Checksum>dGhpcyBpcyBhIGNoZWNrc3Vt</Checksum>
+    </TransportDocument>
+  </GetPalletLabelsResult>
+  <ResponseMetadata>
+    <RequestId>985a3fa9-3ce2-46fb-a1c7-321439269d2b</RequestId>
+  </ResponseMetadata>
+</GetPalletLabelsResponse>

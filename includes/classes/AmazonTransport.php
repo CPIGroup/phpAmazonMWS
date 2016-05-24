@@ -122,7 +122,6 @@ class AmazonTransport extends AmazonInboundCore {
         }
         $op = 'TransportDetails.';
         if ($this->options['ShipmentType'] == 'SP') {
-            //CarrierName, PackageList
             if ($this->options['IsPartnered'] == 'true') {
                 return $op . 'PartneredSmallParcelData';
             } else {
@@ -130,17 +129,8 @@ class AmazonTransport extends AmazonInboundCore {
             }
         } else if ($this->options['ShipmentType'] == 'LTL') {
             if ($this->options['IsPartnered'] == 'true') {
-                //Contact
-                //BoxCount
-                //SellerFreightClass
-                //FreightReadyDate
-                //PalletList
-                //TotalWeight
-                //SellerDeclaredValue
                 return $op . 'PartneredLtlData';
             } else {
-                //CarrierName
-                //ProNumber
                 return $op . 'NonPartneredLtlData';
             }
         }
@@ -709,8 +699,8 @@ class AmazonTransport extends AmazonInboundCore {
      * a fulfillment shipment ID is required.
      * Before this action can be used, information about the transport contents
      * must be provided to Amazon using <i>sendTransportContents</i>.
-     * Amazon will send a status back as a response, which can be retrieved
-     * using <i>getStatus</i>.
+     * Amazon will send data back as a response, which can be retrieved using <i>getContentInfo</i>.
+     * The status of the transport request can be retrieved using <i>getStatus</i>.
      * @return boolean <b>FALSE</b> if something goes wrong
      */
     public function fetchTransportContent() {
@@ -1086,12 +1076,12 @@ class AmazonTransport extends AmazonInboundCore {
      * whether or not the shipment is with a partnered carrier.
      * The returned array can have the following fields:
      * <ul>
-     * <li><b>PackageList</b> (SP)</li>
+     * <li><b>PackageList</b> (SP) - array, see <i>getPackageList</i> for details</li>
      * <li><b>PartneredEstimate</b> (if Partnered) - array</li>
      * <ul>
      * <li><b>Amount</b> - array with keys "Value" and "CurrencyCode"</li>
-     * <li><b>ConfirmDeadline</b> (optional) - date</li>
-     * <li><b>VoidDeadline</b> (optional) - date</li>
+     * <li><b>ConfirmDeadline</b> (optional) - ISO 8601 date format</li>
+     * <li><b>VoidDeadline</b> (optional) - ISO 8601 date format</li>
      * </ul>
      * <li><b>CarrierName</b> (LTL)</li>
      * <li><b>ProNumber</b> (LTL + not Partnered)</li>
@@ -1117,11 +1107,424 @@ class AmazonTransport extends AmazonInboundCore {
      * </ul>
      * This method will return <b>FALSE</b> if the status has not been set yet.
      * @return array|boolean multi-dimensional array, or <b>FALSE</b> if date not set yet
+     * @see getPackageList
      * @see getPalletList
      */
     public function getContentDetails(){
         if (isset($this->contents)){
             return $this->contents;
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * Returns the seller ID for the transport request.
+     *
+     * This method will return <b>FALSE</b> if the value has not been set yet.
+     * @return string|boolean single value, or <b>FALSE</b> if value not set yet
+     */
+    public function getSellerId() {
+        if (isset($this->contents['SellerId'])){
+            return $this->contents['SellerId'];
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * Returns the shipment ID for the transport request.
+     *
+     * This should be the same as the value that was sent when creating the transport request.
+     * This method will return <b>FALSE</b> if the value has not been set yet.
+     * @return string|boolean single value, or <b>FALSE</b> if value not set yet
+     */
+    public function getShipmentId() {
+        if (isset($this->contents['ShipmentId'])){
+            return $this->contents['ShipmentId'];
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * Returns whether or not the transport is with a partnered carrier.
+     *
+     * This should be the same as the value that was sent when creating the transport request.
+     * Note that this method will return the string "false" if Amazon indicates
+     * that the shipment's carrier is not partnered.
+     * This method will return boolean <b>FALSE</b> if the value has not been set yet.
+     * @return string|boolean "true" or "false", or <b>FALSE</b> if value not set yet
+     */
+    public function getIsPartnered() {
+        if (isset($this->contents['IsPartnered'])){
+            return $this->contents['IsPartnered'];
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * Returns the shipment type for the transport request.
+     *
+     * This should be the same as the value that was sent when creating the transport request.
+     * The possible values are "SP" and "LTL".
+     * This method will return <b>FALSE</b> if the value has not been set yet.
+     * @return string|boolean "SP" or "LTL", or <b>FALSE</b> if value not set yet
+     */
+    public function getShipmentType() {
+        if (isset($this->contents['ShipmentType'])){
+            return $this->contents['ShipmentType'];
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * Returns the list of package data for the transport request.
+     *
+     * This value will only be set if the shipment type is set to "SP" for Small Parcel.
+     * Most of the data should be the same as the data that was sent when creating the transport request.
+     * The returned array may have the following fields:
+     * <ul>
+     * <li><b>TrackingId</b></li>
+     * <li><b>PackageStatus</b> - "SHIPPED", "IN_TRANSIT", "DELIVERED", "CHECKED_IN", "RECEIVING", or "CLOSED"</li>
+     * <li><b>CarrierName</b> - see <i>setCarrier</i> for a list of possible carrier names</li>
+     * <li><b>Weight</b> (partnered only) - array</li>
+     * <ul>
+     * <li><b>Value</b> - positive integer</li>
+     * <li><b>Unit</b> - "pounds" or "kilograms"</li>
+     * </ul>
+     * <li><b>Dimensions</b> (partnered only) - array</li>
+     * <ul>
+     * <li><b>Length</b> - positive decimal number</li>
+     * <li><b>Width</b> - positive decimal number</li>
+     * <li><b>Height</b> - positive decimal number</li>
+     * <li><b>Unit</b> - "inches" or "centimeters"</li>
+     * </ul>
+     * </ul>
+     * This method will return <b>FALSE</b> if the value has not been set yet.
+     * @return array|boolean multi-dimensional array, or <b>FALSE</b> if value not set yet
+     * @see setCarrier
+     */
+    public function getPackageList() {
+        if (isset($this->contents['PackageList'])){
+            return $this->contents['PackageList'];
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * Returns the estimated cost data from the partnered carrier for the transport request.
+     *
+     * This data includes the carrier's estimated shipping charge, the deadline for when
+     * the transport request must be confirmed (if it has not already been confirmed), and
+     * the deadline for when the request can be voided.
+     * This value will only be set if the shipment is with an Amazon-partnered carrier.
+     * The returned array will have the following fields:
+     * <ul>
+     * <li><b>Amount</b> - array</li>
+     * <ul>
+     * <li><b>Value</b></li>
+     * <li><b>CurrencyCode</b> - ISO 4217 currency code</li>
+     * </ul>
+     * <li><b>ConfirmDeadline</b> (optional) - ISO 8601 date format</li>
+     * <li><b>VoidDeadline</b> (optional) - ISO 8601 date format</li>
+     * </ul>
+     * This method will return <b>FALSE</b> if the value has not been set yet.
+     * @return array|boolean multi-dimensional array, or <b>FALSE</b> if value not set yet
+     */
+    public function getPartneredEstimate() {
+        if (isset($this->contents['PackageList'])){
+            return $this->contents['PackageList'];
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * Returns the name of the carrier for the transport request.
+     *
+     * This value will only be set if the shipment type is set to "LTL" for Less Than Truckload/Full Truckload.
+     * This should be the same as the value that was sent when creating the transport request.
+     * See <i>setCarrier</i> for a list of possible values.
+     * This method will return <b>FALSE</b> if the value has not been set yet.
+     * @return string|boolean single value, or <b>FALSE</b> if value not set yet
+     * @see setCarrier
+     */
+    public function getCarrier() {
+        if (isset($this->contents['CarrierName'])){
+            return $this->contents['CarrierName'];
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * Returns the PRO number for the transport request.
+     *
+     * This value will only be set if the shipment is with a non-partnered carrier and
+     * the shipment type is set to "LTL" for Less Than Truckload/Full Truckload.
+     * This should be the same as the value that was sent when creating the transport request.
+     * This method will return <b>FALSE</b> if the value has not been set yet.
+     * @return string|boolean single value, or <b>FALSE</b> if value not set yet
+     */
+    public function getProNumber() {
+        if (isset($this->contents['ProNumber'])){
+            return $this->contents['ProNumber'];
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * Returns the contact information for the transport request.
+     *
+     * This data includes the carrier's estimated shipping charge, the deadline for when
+     * the transport request must be confirmed (if it has not already been confirmed), and
+     * the deadline for when the request can be voided.
+     * This value will only be set if the shipment is with an Amazon-partnered carrier and
+     * the shipment type is set to "LTL" for Less Than Truckload/Full Truckload.
+     * This should be the same as the value that was sent when creating the transport request.
+     * The returned array will have the following fields:
+     * <ul>
+     * <li><b>Name</b></li>
+     * <li><b>Phone</b></li>
+     * <li><b>Email</b></li>
+     * <li><b>Fax</b></li>
+     * </ul>
+     * This method will return <b>FALSE</b> if the value has not been set yet.
+     * @return array|boolean multi-dimensional array, or <b>FALSE</b> if value not set yet
+     */
+    public function getContact() {
+        if (isset($this->contents['Contact'])){
+            return $this->contents['Contact'];
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * Returns the number of boxes for the transport request.
+     *
+     * This value will only be set if the shipment is with an Amazon-partnered carrier and
+     * the shipment type is set to "LTL" for Less Than Truckload/Full Truckload.
+     * This should be the same as the value that was sent when creating the transport request.
+     * This method will return <b>FALSE</b> if the value has not been set yet.
+     * @return string|boolean single value, or <b>FALSE</b> if value not set yet
+     */
+    public function getBoxCount() {
+        if (isset($this->contents['BoxCount'])){
+            return $this->contents['BoxCount'];
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * Returns the freight class for the transport request.
+     *
+     * This value will only be set if the shipment is with an Amazon-partnered carrier and
+     * the shipment type is set to "LTL" for Less Than Truckload/Full Truckload.
+     * This should be the same as the value that was sent when creating the transport request.
+     * If the freight class was not sent before, this is Amazon's estimated freight class
+     * based on the description of the contents.
+     * See <i>setFreightClass</i> for a list of possible values.
+     * This method will return <b>FALSE</b> if the value has not been set yet.
+     * @return string|boolean single value, or <b>FALSE</b> if value not set yet
+     * @see setFreightClass
+     */
+    public function getFreightClass() {
+        if (isset($this->contents['PreviewFreightClass'])){
+            return $this->contents['PreviewFreightClass'];
+        } else if (isset($this->contents['SellerFreightClass'])){
+            return $this->contents['SellerFreightClass'];
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * Returns the date by which the shipment will be ready to be picked up.
+     *
+     * This value will only be set if the shipment is with an Amazon-partnered carrier and
+     * the shipment type is set to "LTL" for Less Than Truckload/Full Truckload.
+     * This should be the same as the value that was sent when creating the transport request.
+     * This method will return <b>FALSE</b> if the value has not been set yet.
+     * @return string|boolean date in YYYY-MM-DD format, or <b>FALSE</b> if value not set yet
+     */
+    public function getReadyDate() {
+        if (isset($this->contents['FreightReadyDate'])){
+            return $this->contents['FreightReadyDate'];
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * Returns the list of package data for the transport request.
+     *
+     * This value will only be set if the shipment is with an Amazon-partnered carrier and
+     * the shipment type is set to "LTL" for Less Than Truckload/Full Truckload.
+     * This should be the same as the data that was sent when creating the transport request.
+     * The returned array may have the following fields:
+     * <ul>
+     * <li><b>IsStacked</b> - "true" or "false"</li>
+     * <li><b>Weight</b> (optional) - array</li>
+     * <ul>
+     * <li><b>Value</b> - positive integer</li>
+     * <li><b>Unit</b> - "pounds" or "kilograms"</li>
+     * </ul>
+     * <li><b>Dimensions</b> - array</li>
+     * <ul>
+     * <li><b>Length</b> - positive decimal number</li>
+     * <li><b>Width</b> - positive decimal number</li>
+     * <li><b>Height</b> - positive decimal number</li>
+     * <li><b>Unit</b> - "inches" or "centimeters"</li>
+     * </ul>
+     * </ul>
+     * This method will return <b>FALSE</b> if the value has not been set yet.
+     * @return array|boolean multi-dimensional array, or <b>FALSE</b> if value not set yet
+     * @see setCarrier
+     */
+    public function getPalletList() {
+        if (isset($this->contents['PalletList'])){
+            return $this->contents['PalletList'];
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * Returns the total weight for the transport request.
+     *
+     * This value will only be set if the shipment is with an Amazon-partnered carrier and
+     * the shipment type is set to "LTL" for Less Than Truckload/Full Truckload.
+     * This should be the same as the data that was sent when creating the transport request.
+     * If an array is returned, it will have the keys <b>Value</b> and <b>Unit</b>.
+     * This method will return <b>FALSE</b> if the value has not been set yet.
+     * @param boolean $only [optional] <p>set to <b>TRUE</b> to get only the value</p>
+     * @return array|string|boolean array, single value, or <b>FALSE</b> if value not set yet
+     */
+    public function getTotalWeight($only = false){
+        if (isset($this->contents['TotalWeight'])){
+            if ($only){
+                return $this->contents['TotalWeight']['Value'];
+            } else {
+                return $this->contents['TotalWeight'];
+            }
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * Returns the seller's declared value for the transport request.
+     *
+     * This value will only be set if the shipment is with an Amazon-partnered carrier and
+     * the shipment type is set to "LTL" for Less Than Truckload/Full Truckload.
+     * This should be the same as the data that was sent when creating the transport request.
+     * If an array is returned, it will have the fields <b>Amount</b> and <b>CurrencyCode</b>.
+     * This method will return <b>FALSE</b> if the value has not been set yet.
+     * @param boolean $only [optional] <p>set to <b>TRUE</b> to get only the value</p>
+     * @return array|string|boolean array, single value, or <b>FALSE</b> if value not set yet
+     */
+    public function getDeclaredValue($only = false){
+        if (isset($this->contents['SellerDeclaredValue'])){
+            if ($only){
+                return $this->contents['SellerDeclaredValue']['Amount'];
+            } else {
+                return $this->contents['SellerDeclaredValue'];
+            }
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * Returns Amazon's calculated value for the transport request.
+     *
+     * This value will only be set if the shipment is with an Amazon-partnered carrier and
+     * the shipment type is set to "LTL" for Less Than Truckload/Full Truckload.
+     * If an array is returned, it will have the fields <b>Amount</b> and <b>CurrencyCode</b>.
+     * This method will return <b>FALSE</b> if the value has not been set yet.
+     * @param boolean $only [optional] <p>set to <b>TRUE</b> to get only the value</p>
+     * @return array|string|boolean array, single value, or <b>FALSE</b> if value not set yet
+     */
+    public function getCalculatedValue($only = false){
+        if (isset($this->contents['AmazonCalculatedValue'])){
+            if ($only){
+                return $this->contents['AmazonCalculatedValue']['Amount'];
+            } else {
+                return $this->contents['AmazonCalculatedValue'];
+            }
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * Returns the estimated pickup date for the transport request.
+     *
+     * This value will only be set if the shipment is with an Amazon-partnered carrier and
+     * the shipment type is set to "LTL" for Less Than Truckload/Full Truckload.
+     * This method will return <b>FALSE</b> if the value has not been set yet.
+     * @return string|boolean date in ISO 8601 format, or <b>FALSE</b> if value not set yet
+     */
+    public function getPickupDate() {
+        if (isset($this->contents['PreviewPickupDate'])){
+            return $this->contents['PreviewPickupDate'];
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * Returns the estimated date for when the shipment will be delivered to an Amazon fulfillment center.
+     *
+     * This value will only be set if the shipment is with an Amazon-partnered carrier and
+     * the shipment type is set to "LTL" for Less Than Truckload/Full Truckload.
+     * This method will return <b>FALSE</b> if the value has not been set yet.
+     * @return string|boolean date in ISO 8601 format, or <b>FALSE</b> if value not set yet
+     */
+    public function getDeliveryDate() {
+        if (isset($this->contents['PreviewDeliveryDate'])){
+            return $this->contents['PreviewDeliveryDate'];
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * Returns the Amazon-generated reference ID for the shipment.
+     *
+     * This value will only be set if the shipment is with an Amazon-partnered carrier and
+     * the shipment type is set to "LTL" for Less Than Truckload/Full Truckload.
+     * This method will return <b>FALSE</b> if the value has not been set yet.
+     * @return string|boolean single value, or <b>FALSE</b> if value not set yet
+     */
+    public function getReferenceId() {
+        if (isset($this->contents['AmazonReferenceId'])){
+            return $this->contents['AmazonReferenceId'];
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * Returns whether or not the bill of lading for the shipment is available.
+     *
+     * This value will only be set if the shipment is with an Amazon-partnered carrier and
+     * the shipment type is set to "LTL" for Less Than Truckload/Full Truckload.
+     * Note that this method will return the string "false" if Amazon indicates
+     * that the bill of lading is not available.
+     * This method will return boolean <b>FALSE</b> if the value has not been set yet.
+     * @return string|boolean "true" or "false", or <b>FALSE</b> if value not set yet
+     */
+    public function getIsBillOfLadingAvailable() {
+        if (isset($this->contents['IsBillOfLadingAvailable'])){
+            return $this->contents['IsBillOfLadingAvailable'];
         } else {
             return false;
         }

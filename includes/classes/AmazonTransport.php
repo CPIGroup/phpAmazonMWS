@@ -216,7 +216,7 @@ class AmazonTransport extends AmazonInboundCore {
         $this->resetPackages();
         $i = 1;
         foreach ($a as $x) {
-            $prefix = $op.'PackageList.member.'.$i;
+            $prefix = $op.'.PackageList.member.'.$i;
             if (is_array($x)) {
                 if (isset($x['Length']) && isset($x['Width']) && isset($x['Height'])) {
                     $this->options[$prefix.'.Dimensions.Length'] = $x['Length'];
@@ -319,10 +319,10 @@ class AmazonTransport extends AmazonInboundCore {
     public function setBoxCount($n){
         $op = $this->determineDetailOption();
         if (!$op) {
-            $this->log('Cannot set PRO number because of the shipment type and partnered parameters.', 'Warning');
+            $this->log('Cannot set box count because of the shipment type and partnered parameters.', 'Warning');
             return false;
         }
-        if (is_numeric($n) && $n){
+        if (is_numeric($n) && $n > 1){
             $this->options[$op.'.BoxCount'] = $n;
         } else {
             return false;
@@ -391,9 +391,9 @@ class AmazonTransport extends AmazonInboundCore {
             return false;
         }
         try{
-            $this->options[$op.'FreightReadyDate'] = strstr($this->genTime($d), 'T', true);
+            $this->options[$op.'.FreightReadyDate'] = strstr($this->genTime($d), 'T', true);
         } catch (Exception $e){
-            unset($this->options[$op.'FreightReadyDate']);
+            unset($this->options[$op.'.FreightReadyDate']);
             $this->log('Error: '.$e->getMessage(), 'Warning');
             return false;
         }
@@ -429,10 +429,10 @@ class AmazonTransport extends AmazonInboundCore {
             $this->log('Cannot set pallets because of the shipment type and partnered parameters.', 'Warning');
             return false;
         }
-        $this->resetPackages();
+        $this->resetPallets();
         $i = 1;
         foreach ($a as $x) {
-            $prefix = $op.'PalletList.member.'.$i;
+            $prefix = $op.'.PalletList.member.'.$i;
             if (is_array($x)) {
                 if (isset($x['Length']) && isset($x['Width']) && isset($x['Height'])) {
                     $this->options[$prefix.'.Dimensions.Length'] = $x['Length'];
@@ -453,8 +453,8 @@ class AmazonTransport extends AmazonInboundCore {
                 }
                 $i++;
             } else {
-                $this->resetPackages();
-                $this->log("Tried to set packages with invalid array",'Warning');
+                $this->resetPallets();
+                $this->log("Tried to set pallets with invalid array",'Warning');
                 return false;
             }
         }
@@ -481,18 +481,18 @@ class AmazonTransport extends AmazonInboundCore {
      * shipment type is set to "LTL" for Less Than Truckload/Full Truckload.
      * This parameter is removed by all other actions.
      * @param string $v <p>Decimal number</p>
-     * @param string $u <p>"oz" for ounces, or "g" for grams, defaults to grams</p>
+     * @param string $u <p>"pounds" or "kilograms", defaults to kilograms</p>
      * @return boolean <b>FALSE</b> if improper input
      */
-    public function setTotalWeight($v, $u = 'g') {
+    public function setTotalWeight($v, $u = 'kilograms') {
         $op = $this->determineDetailOption();
         if (!$op) {
             $this->log('Cannot set total weight because of the shipment type and partnered parameters.', 'Warning');
             return false;
         }
-        if (!empty($v) && !empty($u) && is_numeric($v) && ($u == 'oz' || $u == 'g')){
-            $this->options[$op.'TotalWeight.Value'] = $v;
-            $this->options[$op.'TotalWeight.Unit'] = $u;
+        if (!empty($v) && !empty($u) && is_numeric($v) && ($u == 'pounds' || $u == 'kilograms')){
+            $this->options[$op.'.TotalWeight.Value'] = $v;
+            $this->options[$op.'.TotalWeight.Unit'] = $u;
         } else {
             return false;
         }
@@ -512,12 +512,12 @@ class AmazonTransport extends AmazonInboundCore {
     public function setDeclaredValue($v, $c) {
         $op = $this->determineDetailOption();
         if (!$op) {
-            $this->log('Cannot set total weight because of the shipment type and partnered parameters.', 'Warning');
+            $this->log('Cannot set declared value because of the shipment type and partnered parameters.', 'Warning');
             return false;
         }
         if (!empty($v) && !empty($c) && is_numeric($v) && is_string($c) && !is_numeric($c)){
-            $this->options['SellerDeclaredValue.Amount'] = $v;
-            $this->options['SellerDeclaredValue.CurrencyCode'] = $c;
+            $this->options[$op.'.SellerDeclaredValue.Value'] = $v;
+            $this->options[$op.'.SellerDeclaredValue.CurrencyCode'] = $c;
         } else {
             return false;
         }
@@ -1399,7 +1399,7 @@ class AmazonTransport extends AmazonInboundCore {
      * This value will only be set if the shipment is with an Amazon-partnered carrier and
      * the shipment type is set to "LTL" for Less Than Truckload/Full Truckload.
      * This should be the same as the data that was sent when creating the transport request.
-     * If an array is returned, it will have the fields <b>Amount</b> and <b>CurrencyCode</b>.
+     * If an array is returned, it will have the fields <b>Value</b> and <b>CurrencyCode</b>.
      * This method will return <b>FALSE</b> if the value has not been set yet.
      * @param boolean $only [optional] <p>set to <b>TRUE</b> to get only the value</p>
      * @return array|string|boolean array, single value, or <b>FALSE</b> if value not set yet
@@ -1407,7 +1407,7 @@ class AmazonTransport extends AmazonInboundCore {
     public function getDeclaredValue($only = false){
         if (isset($this->contents['SellerDeclaredValue'])){
             if ($only){
-                return $this->contents['SellerDeclaredValue']['Amount'];
+                return $this->contents['SellerDeclaredValue']['Value'];
             } else {
                 return $this->contents['SellerDeclaredValue'];
             }
@@ -1421,7 +1421,7 @@ class AmazonTransport extends AmazonInboundCore {
      *
      * This value will only be set if the shipment is with an Amazon-partnered carrier and
      * the shipment type is set to "LTL" for Less Than Truckload/Full Truckload.
-     * If an array is returned, it will have the fields <b>Amount</b> and <b>CurrencyCode</b>.
+     * If an array is returned, it will have the fields <b>Value</b> and <b>CurrencyCode</b>.
      * This method will return <b>FALSE</b> if the value has not been set yet.
      * @param boolean $only [optional] <p>set to <b>TRUE</b> to get only the value</p>
      * @return array|string|boolean array, single value, or <b>FALSE</b> if value not set yet
@@ -1429,7 +1429,7 @@ class AmazonTransport extends AmazonInboundCore {
     public function getCalculatedValue($only = false){
         if (isset($this->contents['AmazonCalculatedValue'])){
             if ($only){
-                return $this->contents['AmazonCalculatedValue']['Amount'];
+                return $this->contents['AmazonCalculatedValue']['Value'];
             } else {
                 return $this->contents['AmazonCalculatedValue'];
             }

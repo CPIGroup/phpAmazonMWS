@@ -154,7 +154,7 @@ class AmazonParticipationList extends AmazonSellersCore{
      * Parses XML response into two arrays.
      * 
      * This is what reads the response XML and converts it into two arrays.
-     * @param SimpleXMLObject $xml <p>The XML response from Amazon.</p>
+     * @param SimpleXMLElement $xml <p>The XML response from Amazon.</p>
      * @return boolean <b>FALSE</b> if no XML data is found
      */
     protected function parseXML($xml){

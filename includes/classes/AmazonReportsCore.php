@@ -49,7 +49,7 @@ abstract class AmazonReportsCore extends AmazonCore{
     
     /**
      * Checks for a token and changes the proper options
-     * @param SimpleXMLObject $xml <p>response data</p>
+     * @param SimpleXMLElement $xml <p>response data</p>
      * @return boolean <b>FALSE</b> if no XML data
      */
     protected function checkToken($xml){

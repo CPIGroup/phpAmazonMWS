@@ -105,7 +105,7 @@ class AmazonPackageTracker extends AmazonOutboundCore{
      * Parses XML response into array.
      * 
      * This is what reads the response XML and converts it into an array.
-     * @param SimpleXMLObject $d <p>The XML response from Amazon.</p>
+     * @param SimpleXMLElement $d <p>The XML response from Amazon.</p>
      * @return boolean <b>FALSE</b> if no XML data is found
      */
     protected function parseXML($d) {

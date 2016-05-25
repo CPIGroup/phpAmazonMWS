@@ -295,7 +295,7 @@ class AmazonProduct extends AmazonProductsCore{
 
     /**
      * Takes in XML data for lowest-priced offers and parses it for the object to use
-     * @param SimpleXMLObject $xml <p>The XML data from Amazon.</p>
+     * @param SimpleXMLElement $xml <p>The XML data from Amazon.</p>
      * @return boolean <b>FALSE</b> if no valid XML data is found
      */
     protected function loadLowestPricedOfferXml($xml) {

@@ -332,9 +332,11 @@ class AmazonProductInfo extends AmazonProductsCore{
         if (array_key_exists('SellerSKUList.SellerSKU.1',$this->options)){
             $this->options['Action'] = 'GetLowestPricedOffersForSKU';
             $this->resetASINs();
+            $this->options['SellerSKU'] = $this->options['SellerSKUList.SellerSKU.1'];
         } else if (array_key_exists('ASINList.ASIN.1',$this->options)){
             $this->options['Action'] = 'GetLowestPricedOffersForASIN';
             $this->resetSKUs();
+            $this->options['ASIN'] = $this->options['ASINList.ASIN.1'];
         }
     }
     

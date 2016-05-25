@@ -557,6 +557,7 @@ class AmazonTransport extends AmazonInboundCore {
      * Amazon will send a status back as a response, which can be retrieved
      * using <i>getStatus</i>.
      * @return boolean <b>FALSE</b> if something goes wrong
+     * @see verifySendParams
      */
     public function sendTransportContents() {
         if (!$this->verifySendParams()) {
@@ -603,7 +604,7 @@ class AmazonTransport extends AmazonInboundCore {
         $m = ' must be set in order to send transport content!';
         //common requirements
         if (!array_key_exists('ShipmentId', $this->options)) {
-            $this->log('ShipmentId'.$m, 'Warning');
+            $this->log('Shipment ID'.$m, 'Warning');
             return false;
         }
         if (!array_key_exists('IsPartnered', $this->options)) {
@@ -611,7 +612,7 @@ class AmazonTransport extends AmazonInboundCore {
             return false;
         }
         if (!array_key_exists('ShipmentType', $this->options)) {
-            $this->log('ShipmentType'.$m, 'Warning');
+            $this->log('Shipment type'.$m, 'Warning');
             return false;
         }
         //requirements based on partnership and type
@@ -646,27 +647,27 @@ class AmazonTransport extends AmazonInboundCore {
             }
         }
         if (!$p && !$foundCarrier) {
-            $this->log('CarrierName'.$m, 'Warning');
+            $this->log('Carrier'.$m, 'Warning');
             return false;
         }
         if ($sp && !$foundPackages) {
-            $this->log('PackageList'.$m, 'Warning');
+            $this->log('Packages'.$m, 'Warning');
             return false;
         }
         if (!$p && $ltl && !$foundPro) {
-            $this->log('CarrierName'.$m, 'Warning');
+            $this->log('PRO number'.$m, 'Warning');
             return false;
         }
         if ($p && $ltl && !$foundContact) {
-            $this->log('Contact'.$m, 'Warning');
+            $this->log('Contact info'.$m, 'Warning');
             return false;
         }
         if ($p && $ltl && !$foundBoxCount) {
-            $this->log('BoxCount'.$m, 'Warning');
+            $this->log('Box count'.$m, 'Warning');
             return false;
         }
         if ($p && $ltl && !$foundReady) {
-            $this->log('FreightReadyDate'.$m, 'Warning');
+            $this->log('Ready date'.$m, 'Warning');
             return false;
         }
 
@@ -687,7 +688,7 @@ class AmazonTransport extends AmazonInboundCore {
      */
     public function fetchTransportContent() {
         if (!array_key_exists('ShipmentId', $this->options)) {
-            $this->log('ShipmentId must be set in order to get transport contents!', 'Warning');
+            $this->log('Shipment ID must be set in order to get transport contents!', 'Warning');
             return false;
         }
 
@@ -740,7 +741,7 @@ class AmazonTransport extends AmazonInboundCore {
      */
     public function estimateTransport() {
         if (!array_key_exists('ShipmentId', $this->options)) {
-            $this->log('ShipmentId must be set in order to estimate the transport request!', 'Warning');
+            $this->log('Shipment ID must be set in order to estimate the transport request!', 'Warning');
             return false;
         }
 
@@ -793,7 +794,7 @@ class AmazonTransport extends AmazonInboundCore {
      */
     public function confirmTransport() {
         if (!array_key_exists('ShipmentId', $this->options)) {
-            $this->log('ShipmentId must be set in order to confirm the transport request!', 'Warning');
+            $this->log('Shipment ID must be set in order to confirm the transport request!', 'Warning');
             return false;
         }
 
@@ -846,7 +847,7 @@ class AmazonTransport extends AmazonInboundCore {
      */
     public function voidTransport() {
         if (!array_key_exists('ShipmentId', $this->options)) {
-            $this->log('ShipmentId must be set in order to void the transport request!', 'Warning');
+            $this->log('Shipment ID must be set in order to void the transport request!', 'Warning');
             return false;
         }
 
@@ -906,10 +907,10 @@ class AmazonTransport extends AmazonInboundCore {
         if (isset($xml->TransportContent)) {
             $this->contents = array();
             $this->status = (string)$xml->TransportContent->TransportResult->TransportStatus;
-            $this->contents['SellerId'] = (string)$xml->TransportHeader->SellerId;
-            $this->contents['ShipmentId'] = (string)$xml->TransportHeader->ShipmentId;
-            $this->contents['IsPartnered'] = (string)$xml->TransportHeader->IsPartnered;
-            $this->contents['ShipmentType'] = (string)$xml->TransportHeader->ShipmentType;
+            $this->contents['SellerId'] = (string)$xml->TransportContent->TransportHeader->SellerId;
+            $this->contents['ShipmentId'] = (string)$xml->TransportContent->TransportHeader->ShipmentId;
+            $this->contents['IsPartnered'] = (string)$xml->TransportContent->TransportHeader->IsPartnered;
+            $this->contents['ShipmentType'] = (string)$xml->TransportContent->TransportHeader->ShipmentType;
 
             //one of four possible response structures for details
             $this->contents['Details'] = array();
@@ -1085,8 +1086,8 @@ class AmazonTransport extends AmazonInboundCore {
      * @see getPalletList
      */
     public function getContentDetails(){
-        if (isset($this->contents)){
-            return $this->contents;
+        if (isset($this->contents['Details'])){
+            return $this->contents['Details'];
         } else {
             return false;
         }
@@ -1182,8 +1183,8 @@ class AmazonTransport extends AmazonInboundCore {
      * @see setCarrier
      */
     public function getPackageList() {
-        if (isset($this->contents['PackageList'])){
-            return $this->contents['PackageList'];
+        if (isset($this->contents['Details']['PackageList'])){
+            return $this->contents['Details']['PackageList'];
         } else {
             return false;
         }
@@ -1210,8 +1211,8 @@ class AmazonTransport extends AmazonInboundCore {
      * @return array|boolean multi-dimensional array, or <b>FALSE</b> if value not set yet
      */
     public function getPartneredEstimate() {
-        if (isset($this->contents['PackageList'])){
-            return $this->contents['PackageList'];
+        if (isset($this->contents['Details']['PartneredEstimate'])){
+            return $this->contents['Details']['PartneredEstimate'];
         } else {
             return false;
         }
@@ -1228,8 +1229,8 @@ class AmazonTransport extends AmazonInboundCore {
      * @see setCarrier
      */
     public function getCarrier() {
-        if (isset($this->contents['CarrierName'])){
-            return $this->contents['CarrierName'];
+        if (isset($this->contents['Details']['CarrierName'])){
+            return $this->contents['Details']['CarrierName'];
         } else {
             return false;
         }
@@ -1245,8 +1246,8 @@ class AmazonTransport extends AmazonInboundCore {
      * @return string|boolean single value, or <b>FALSE</b> if value not set yet
      */
     public function getProNumber() {
-        if (isset($this->contents['ProNumber'])){
-            return $this->contents['ProNumber'];
+        if (isset($this->contents['Details']['ProNumber'])){
+            return $this->contents['Details']['ProNumber'];
         } else {
             return false;
         }
@@ -1272,8 +1273,8 @@ class AmazonTransport extends AmazonInboundCore {
      * @return array|boolean multi-dimensional array, or <b>FALSE</b> if value not set yet
      */
     public function getContact() {
-        if (isset($this->contents['Contact'])){
-            return $this->contents['Contact'];
+        if (isset($this->contents['Details']['Contact'])){
+            return $this->contents['Details']['Contact'];
         } else {
             return false;
         }
@@ -1289,8 +1290,8 @@ class AmazonTransport extends AmazonInboundCore {
      * @return string|boolean single value, or <b>FALSE</b> if value not set yet
      */
     public function getBoxCount() {
-        if (isset($this->contents['BoxCount'])){
-            return $this->contents['BoxCount'];
+        if (isset($this->contents['Details']['BoxCount'])){
+            return $this->contents['Details']['BoxCount'];
         } else {
             return false;
         }
@@ -1310,10 +1311,10 @@ class AmazonTransport extends AmazonInboundCore {
      * @see setFreightClass
      */
     public function getFreightClass() {
-        if (isset($this->contents['PreviewFreightClass'])){
-            return $this->contents['PreviewFreightClass'];
-        } else if (isset($this->contents['SellerFreightClass'])){
-            return $this->contents['SellerFreightClass'];
+        if (isset($this->contents['Details']['PreviewFreightClass'])){
+            return $this->contents['Details']['PreviewFreightClass'];
+        } else if (isset($this->contents['Details']['SellerFreightClass'])){
+            return $this->contents['Details']['SellerFreightClass'];
         } else {
             return false;
         }
@@ -1329,8 +1330,8 @@ class AmazonTransport extends AmazonInboundCore {
      * @return string|boolean date in YYYY-MM-DD format, or <b>FALSE</b> if value not set yet
      */
     public function getReadyDate() {
-        if (isset($this->contents['FreightReadyDate'])){
-            return $this->contents['FreightReadyDate'];
+        if (isset($this->contents['Details']['FreightReadyDate'])){
+            return $this->contents['Details']['FreightReadyDate'];
         } else {
             return false;
         }
@@ -1363,8 +1364,8 @@ class AmazonTransport extends AmazonInboundCore {
      * @see setCarrier
      */
     public function getPalletList() {
-        if (isset($this->contents['PalletList'])){
-            return $this->contents['PalletList'];
+        if (isset($this->contents['Details']['PalletList'])){
+            return $this->contents['Details']['PalletList'];
         } else {
             return false;
         }
@@ -1382,11 +1383,11 @@ class AmazonTransport extends AmazonInboundCore {
      * @return array|string|boolean array, single value, or <b>FALSE</b> if value not set yet
      */
     public function getTotalWeight($only = false){
-        if (isset($this->contents['TotalWeight'])){
+        if (isset($this->contents['Details']['TotalWeight'])){
             if ($only){
-                return $this->contents['TotalWeight']['Value'];
+                return $this->contents['Details']['TotalWeight']['Value'];
             } else {
-                return $this->contents['TotalWeight'];
+                return $this->contents['Details']['TotalWeight'];
             }
         } else {
             return false;
@@ -1405,11 +1406,11 @@ class AmazonTransport extends AmazonInboundCore {
      * @return array|string|boolean array, single value, or <b>FALSE</b> if value not set yet
      */
     public function getDeclaredValue($only = false){
-        if (isset($this->contents['SellerDeclaredValue'])){
+        if (isset($this->contents['Details']['SellerDeclaredValue'])){
             if ($only){
-                return $this->contents['SellerDeclaredValue']['Value'];
+                return $this->contents['Details']['SellerDeclaredValue']['Value'];
             } else {
-                return $this->contents['SellerDeclaredValue'];
+                return $this->contents['Details']['SellerDeclaredValue'];
             }
         } else {
             return false;
@@ -1427,11 +1428,11 @@ class AmazonTransport extends AmazonInboundCore {
      * @return array|string|boolean array, single value, or <b>FALSE</b> if value not set yet
      */
     public function getCalculatedValue($only = false){
-        if (isset($this->contents['AmazonCalculatedValue'])){
+        if (isset($this->contents['Details']['AmazonCalculatedValue'])){
             if ($only){
-                return $this->contents['AmazonCalculatedValue']['Value'];
+                return $this->contents['Details']['AmazonCalculatedValue']['Value'];
             } else {
-                return $this->contents['AmazonCalculatedValue'];
+                return $this->contents['Details']['AmazonCalculatedValue'];
             }
         } else {
             return false;
@@ -1447,8 +1448,8 @@ class AmazonTransport extends AmazonInboundCore {
      * @return string|boolean date in ISO 8601 format, or <b>FALSE</b> if value not set yet
      */
     public function getPickupDate() {
-        if (isset($this->contents['PreviewPickupDate'])){
-            return $this->contents['PreviewPickupDate'];
+        if (isset($this->contents['Details']['PreviewPickupDate'])){
+            return $this->contents['Details']['PreviewPickupDate'];
         } else {
             return false;
         }
@@ -1463,8 +1464,8 @@ class AmazonTransport extends AmazonInboundCore {
      * @return string|boolean date in ISO 8601 format, or <b>FALSE</b> if value not set yet
      */
     public function getDeliveryDate() {
-        if (isset($this->contents['PreviewDeliveryDate'])){
-            return $this->contents['PreviewDeliveryDate'];
+        if (isset($this->contents['Details']['PreviewDeliveryDate'])){
+            return $this->contents['Details']['PreviewDeliveryDate'];
         } else {
             return false;
         }
@@ -1479,8 +1480,8 @@ class AmazonTransport extends AmazonInboundCore {
      * @return string|boolean single value, or <b>FALSE</b> if value not set yet
      */
     public function getReferenceId() {
-        if (isset($this->contents['AmazonReferenceId'])){
-            return $this->contents['AmazonReferenceId'];
+        if (isset($this->contents['Details']['AmazonReferenceId'])){
+            return $this->contents['Details']['AmazonReferenceId'];
         } else {
             return false;
         }
@@ -1497,8 +1498,8 @@ class AmazonTransport extends AmazonInboundCore {
      * @return string|boolean "true" or "false", or <b>FALSE</b> if value not set yet
      */
     public function getIsBillOfLadingAvailable() {
-        if (isset($this->contents['IsBillOfLadingAvailable'])){
-            return $this->contents['IsBillOfLadingAvailable'];
+        if (isset($this->contents['Details']['IsBillOfLadingAvailable'])){
+            return $this->contents['Details']['IsBillOfLadingAvailable'];
         } else {
             return false;
         }

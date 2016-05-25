@@ -132,8 +132,8 @@ class AmazonFulfillmentOrder extends AmazonOutboundCore{
         $this->order['Details']['DisplayableOrderComment'] = (string)$d->DisplayableOrderComment;
         $this->order['Details']['ShippingSpeedCategory'] = (string)$d->ShippingSpeedCategory;
         if (isset($d->DeliveryWindow)) {
-            $this->orderList[$i]['DeliveryWindow']['StartDateTime'] = (string)$d->DeliveryWindow->StartDateTime;
-            $this->orderList[$i]['DeliveryWindow']['EndDateTime'] = (string)$d->DeliveryWindow->EndDateTime;
+            $this->order['Details']['DeliveryWindow']['StartDateTime'] = (string)$d->DeliveryWindow->StartDateTime;
+            $this->order['Details']['DeliveryWindow']['EndDateTime'] = (string)$d->DeliveryWindow->EndDateTime;
         }
         //Address
             $this->order['Details']['DestinationAddress']['Name'] = (string)$d->DestinationAddress->Name;
@@ -158,7 +158,7 @@ class AmazonFulfillmentOrder extends AmazonOutboundCore{
             }
         //End of Address
         if (isset($d->FulfillmentAction)){
-            $this->orderList[$i]['FulfillmentAction'] = (string)$x->FulfillmentAction;
+            $this->order['Details']['FulfillmentAction'] = (string)$d->FulfillmentAction;
         }
         if (isset($d->FulfillmentPolicy)){
             $this->order['Details']['FulfillmentPolicy'] = (string)$d->FulfillmentPolicy;
@@ -177,19 +177,19 @@ class AmazonFulfillmentOrder extends AmazonOutboundCore{
             }
         }
         if (isset($d->CODSettings->IsCODRequired)){
-            $this->orderList[$i]['CODSettings']['IsCODRequired'] = (string)$d->CODSettings->IsCODRequired;
+            $this->order['Details']['CODSettings']['IsCODRequired'] = (string)$d->CODSettings->IsCODRequired;
         }
         if (isset($d->CODSettings->CODCharge)){
-            $this->orderList[$i]['CODSettings']['CODCharge'] = (string)$d->CODSettings->CODCharge;
+            $this->order['Details']['CODSettings']['CODCharge'] = (string)$d->CODSettings->CODCharge;
         }
         if (isset($d->CODSettings->CODChargeTax)){
-            $this->orderList[$i]['CODSettings']['CODChargeTax'] = (string)$d->CODSettings->CODChargeTax;
+            $this->order['Details']['CODSettings']['CODChargeTax'] = (string)$d->CODSettings->CODChargeTax;
         }
         if (isset($d->CODSettings->ShippingCharge)){
-            $this->orderList[$i]['CODSettings']['ShippingCharge'] = (string)$d->CODSettings->ShippingCharge;
+            $this->order['Details']['CODSettings']['ShippingCharge'] = (string)$d->CODSettings->ShippingCharge;
         }
         if (isset($d->CODSettings->ShippingChargeTax)){
-            $this->orderList[$i]['CODSettings']['ShippingChargeTax'] = (string)$d->CODSettings->ShippingChargeTax;
+            $this->order['Details']['CODSettings']['ShippingChargeTax'] = (string)$d->CODSettings->ShippingChargeTax;
         }
         
         //Section 2: Order Items

@@ -54,7 +54,7 @@ class AmazonProduct extends AmazonProductsCore{
     
     /**
      * Takes in XML data and converts it to an array for the object to use.
-     * @param SimpleXMLObject $xml <p>XML Product data from Amazon</p>
+     * @param SimpleXMLElement $xml <p>XML Product data from Amazon</p>
      * @return boolean <b>FALSE</b> if no XML data is found
      */
     public function loadXML($xml){
@@ -261,7 +261,7 @@ class AmazonProduct extends AmazonProductsCore{
     
     /**
      * Takes in XML data for Categories and parses it for the object to use
-     * @param SimpleXMLObject $xml <p>The XML data from Amazon.</p>
+     * @param SimpleXMLElement $xml <p>The XML data from Amazon.</p>
      * @return boolean <b>FALSE</b> if no valid XML data is found
      */
     protected function loadCategories($xml){
@@ -282,7 +282,7 @@ class AmazonProduct extends AmazonProductsCore{
      * The returned array will have the fields <b>ProductCategoryId</b> and
      * <b>ProductCategoryName</b>, as well as maybe a <b>Parent</b> field with the same
      * structure as the array containing it.
-     * @param SimpleXMLObject $xml <p>The XML data from Amazon.</p>
+     * @param SimpleXMLElement $xml <p>The XML data from Amazon.</p>
      * @return array Recursive, multi-dimensional array
      */
     protected function genHierarchy($xml){

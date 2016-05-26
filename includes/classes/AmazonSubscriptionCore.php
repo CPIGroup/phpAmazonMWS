@@ -19,8 +19,11 @@
 
 /**
  * Core class for Amazon Subscriptions API.
+ *
+ * This is the core class for all objects in the Amazon Subscriptions section.
+ * It contains a method that all Amazon Subscriptions Core objects use.
  */
-class AmazonSubscriptionCore extends AmazonCore{
+abstract class AmazonSubscriptionCore extends AmazonCore{
 
     /**
      * AmazonSubscriptionCore constructor sets up key information used in all Amazon Subscriptions Core requests
@@ -39,10 +42,36 @@ class AmazonSubscriptionCore extends AmazonCore{
     public function __construct($s = null, $mock = false, $m = null, $config = null){
         parent::__construct($s, $mock, $m, $config);
         include($this->env);
+        if (file_exists($this->config)){
+            include($this->config);
+        } else {
+            throw new Exception('Config file does not exist!');
+        }
 
         if (isset($AMAZON_VERSION_SUBSCRIBE)){
             $this->urlbranch = 'Subscriptions/' . $AMAZON_VERSION_SUBSCRIBE;
             $this->options['Version'] = $AMAZON_VERSION_SUBSCRIBE;
+        }
+
+        if (isset($store[$this->storeName]['marketplaceId'])){
+            $this->setMarketplace($store[$this->storeName]['marketplaceId']);
+        } else {
+            $this->log("Marketplace ID is missing", 'Urgent');
+        }
+    }
+
+    /**
+     * Sets the marketplace associated with the subscription or destination. (Optional)
+     *
+     * The current store's configured marketplace is used by default.
+     * @param string $m <p>Marketplace ID</p>
+     * @return boolean <b>FALSE</b> if improper input
+     */
+    public function setMarketplace($m){
+        if (is_string($m)){
+            $this->options['MarketplaceId'] = $m;
+        } else {
+            return false;
         }
     }
 

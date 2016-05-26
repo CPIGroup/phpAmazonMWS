@@ -27,64 +27,21 @@
  */
 class AmazonSubscriptionDestinationList extends AmazonSubscriptionCore implements Iterator{
     protected $destinationList;
-    protected $index;
     protected $i = 0;
 
     /**
-     * AmazonSubscriptionDestinationList fetches a list of subscription destinations from Amazon.
-     *
-     * @param string $s [optional] <p>Name for the store you want to use.
-     * This parameter is optional if only one store is defined in the config file.</p>
-     * @param boolean $mock [optional] <p>This is a flag for enabling Mock Mode.
-     * This defaults to <b>FALSE</b>.</p>
-     * @param array|string $m [optional] <p>The files (or file) to use in Mock Mode.</p>
-     * @param string $config [optional] <p>An alternate config file to set. Used for testing.</p>
-     */
-    public function __construct($s = null, $mock = false, $m = null, $config = null){
-        parent::__construct($s, $mock, $m, $config);
-        include($this->env);
-        if (file_exists($this->config)){
-            include($this->config);
-        } else {
-            throw new Exception('Config file does not exist!');
-        }
-
-        if (isset($store[$this->storeName]) && array_key_exists('marketplaceId', $store[$this->storeName])){
-            $this->options['MarketplaceId'] = $store[$this->storeName]['marketplaceId'];
-        } else {
-            $this->log("Marketplace ID is missing", 'Urgent');
-        }
-    }
-
-    /**
-     * Set market place id
-     * @param string $s
-     * @return boolean
-     */
-    public function setMarketplace($s){
-        if (is_string($s) && $s){
-            $this->options['MarketplaceId'] = $s;
-            return true;
-        }
-        return false;
-    }
-
-    /**
-     * Retrieves the destinations list from Amazon.
+     * Fetches a list of registered subscription destinations from Amazon.
      *
      * Submits a <i>ListRegisteredDestinations</i> request to Amazon. Amazon will send
      * the data back as a response, which can be retrieved using <i>getDestinations</i>.
      * Other methods are available for fetching specific values from the order.
-     * @param boolean <p>When set to <b>FALSE</b>, the function will not recurse, defaults to <b>TRUE</b></p>
      * @return boolean <b>FALSE</b> if something goes wrong
      */
     public function fetchDestinations(){
         if (!array_key_exists('MarketplaceId', $this->options)){
-            $this->log("Marketplace ID must be set in subscriptions destination to fetch it!", 'Warning');
+            $this->log("Marketplace ID must be set in order to fetch subscription destinations!", 'Warning');
             return false;
         }
-        $this->destinationList = array();
-        $this->index = 0;
 
         $this->options['Action'] = 'ListRegisteredDestinations';
 
@@ -94,7 +51,6 @@ class AmazonSubscriptionDestinationList extends AmazonSubscriptionCore implement
 
         $path = $this->options['Action'] . 'Result';
         if ($this->mockMode){
-
             $xml = $this->fetchMockFile()->$path;
         } else {
             $response = $this->sendRequest($url, array('Post' => $query));
@@ -117,22 +73,23 @@ class AmazonSubscriptionDestinationList extends AmazonSubscriptionCore implement
      * @return boolean <b>FALSE</b> if no XML data is found
      */
     protected function parseXML($xml){
+        $this->destinationList = array();
         if (!$xml){
             return false;
         }
 
+        $i = 0;
         foreach ($xml->DestinationList->children() as $item) {
-            $n = $this->index;
-            $this->destinationList[$n]['DeliveryChannel'] = (string) $item->DeliveryChannel;
+            $this->destinationList[$i]['DeliveryChannel'] = (string)$item->DeliveryChannel;
 
             foreach ($item->AttributeList->children() as $member) {
-                $this->destinationList[$n]['AttributeList'][] = array(
-                    'Key' => (string) $member->Key,
-                    'Value' => (string) $member->Value
-                );
+                $temp = array();
+                $temp['Key'] = (string)$member->Key;
+                $temp['Value'] = (string)$member->Value;
+                $this->destinationList[$i]['AttributeList'][] = $temp;
             }
 
-            $this->index++;
+            $i++;
         }
     }
 
@@ -142,11 +99,11 @@ class AmazonSubscriptionDestinationList extends AmazonSubscriptionCore implement
      * This method will return <b>FALSE</b> if the list has not yet been filled.
      * The array for a single order item will have the following fields:
      * <ul>
-     * <li><b>DeliveryChannel</b> - The technology that you are using to receive notifications. (SQS)</li>
-     * <li><b>AttributeList</b> - Contains attributes related to the specified DeliveryChannel.</li>
+     * <li><b>DeliveryChannel</b> - the technology used to receive notifications</li>
+     * <li><b>AttributeList</b> - array of attributes based on the delivery channel</li>
      *   <ul>
-     *   <li><b>Key</b> - The name of the attribute. (sqsQueueUrl)</li>
-     *   <li><b>Value</b> - The URL for the Amazon SQS queue you are using to receive notifications.</li>
+     *   <li><b>Key</b> - name of the attribute</li>
+     *   <li><b>Value</b> - value of the attribute</li>
      *   </ul>
      * </ul>
      * @param int $i [optional] <p>List index to retrieve the value from.
@@ -166,12 +123,12 @@ class AmazonSubscriptionDestinationList extends AmazonSubscriptionCore implement
     }
 
     /**
-     * Returns specified delivery channel for the specified delivery.
+     * Returns delivery channel for the specified entry.
      *
-     * This method will return the entire list of delivery channel if <i>$j</i> is not set.
+     * Possible values for this field: "SQS".
+     * This method will return <b>FALSE</b> if the list has not yet been filled.
      * @param int $i [optional] <p>List index to retrieve the value from. Defaults to 0.</p>
-     * @param int $j [optional] <p>Second list index to retrieve the value from. Defaults to NULL.</p>
-     * @return array|string|boolean array, single value, or <b>FALSE</b> if incorrect index
+     * @return string|boolean single value, or <b>FALSE</b> if Non-numeric index
      */
     public function getDeliveryChannel($i = 0){
         if (isset($this->destinationList[$i]['DeliveryChannel'])){
@@ -182,14 +139,18 @@ class AmazonSubscriptionDestinationList extends AmazonSubscriptionCore implement
     }
 
     /**
-     * Returns specified attribute set for the specified delivery.
+     * Returns specified attribute set for the specified entry.
      *
-     * This method will return the entire list of attribute set if <i>$j</i> is not set.
+     * Each attribute array will have the following fields:
+     * <ul>
+     * <li><b>Key</b> - name of the attribute</li>
+     * <li><b>Value</b> - value of the attribute</li>
+     * </ul>
+     * This method will return <b>FALSE</b> if the list has not yet been filled.
      * @param int $i [optional] <p>List index to retrieve the value from. Defaults to 0.</p>
-     * @param int $j [optional] <p>Second list index to retrieve the value from. Defaults to NULL.</p>
-     * @return array|string|boolean array, single value, or <b>FALSE</b> if incorrect index
+     * @return array|boolean multi-dimensional array, or <b>FALSE</b> if Non-numeric index
      */
-    public function getAttributeList($i = 0, $j = null){
+    public function getAttributes($i = 0, $j = null){
         if (isset($this->destinationList[$i]['AttributeList'])){
             if (isset($this->destinationList[$i]['AttributeList'][$j])){
                 return $this->destinationList[$i]['AttributeList'];
@@ -203,7 +164,7 @@ class AmazonSubscriptionDestinationList extends AmazonSubscriptionCore implement
 
     /**
      * Iterator function
-     * @return type
+     * @return array
      */
     public function current(){
         return $this->destinationList[$this->i];
@@ -218,7 +179,7 @@ class AmazonSubscriptionDestinationList extends AmazonSubscriptionCore implement
 
     /**
      * Iterator function
-     * @return type
+     * @return int
      */
     public function key(){
         return $this->i;
@@ -233,7 +194,7 @@ class AmazonSubscriptionDestinationList extends AmazonSubscriptionCore implement
 
     /**
      * Iterator function
-     * @return type
+     * @return boolean
      */
     public function valid(){
         return isset($this->destinationList[$this->i]);

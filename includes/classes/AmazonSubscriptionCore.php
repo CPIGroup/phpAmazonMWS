@@ -20,12 +20,12 @@
 /**
  * Core class for Amazon Subscriptions API.
  */
-class AmazonSubscriptionsCore extends AmazonCore{
+class AmazonSubscriptionCore extends AmazonCore{
 
     /**
-     * AmazonSubscriptionsCore constructor sets up key information used in all Amazon Core requests
+     * AmazonSubscriptionCore constructor sets up key information used in all Amazon Subscriptions Core requests
      *
-     * This constructor is called when initializing all objects in the Amazon Core.
+     * This constructor is called when initializing all objects in the Amazon Subscriptions Core.
      * The parameters are passed by the child objects' constructors, which are
      * in turn passed to the AmazonCore constructor. See it for more information
      * on these parameters and common methods.

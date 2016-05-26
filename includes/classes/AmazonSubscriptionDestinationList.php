@@ -18,16 +18,20 @@
  */
 
 /**
- * Destination, such as an Amazon Simple Queue Service (Amazon SQS) queue
+ * Fetches list of registered subscription destinations from Amazon.
+ *
+ * This Amazon Subscriptions Core object retrieves a list of registered
+ * subscription destinations from Amazon for a particular marketplace.
+ * In order to do this, a marketplace ID is needed. The current store's
+ * configured marketplace is used by default.
  */
-class AmazonSubscriptionsDestinationList extends AmazonSubscriptionsCore implements Iterator{
-
-    private $destinationList;
-    private $index;
-    private $i = 0;
+class AmazonSubscriptionDestinationList extends AmazonSubscriptionCore implements Iterator{
+    protected $destinationList;
+    protected $index;
+    protected $i = 0;
 
     /**
-     * AmazonSubscriptionsDestinationList contain all of the destination list for subscription.
+     * AmazonSubscriptionDestinationList fetches a list of subscription destinations from Amazon.
      *
      * @param string $s [optional] <p>Name for the store you want to use.
      * This parameter is optional if only one store is defined in the config file.</p>

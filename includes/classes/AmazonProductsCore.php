@@ -104,6 +104,9 @@ abstract class AmazonProductsCore extends AmazonCore{
             if (isset($x->Products)){
                 foreach($x->Products->children() as $z){
                     $this->productList[$this->index] = new AmazonProduct($this->storeName, $z, $this->mockMode, $this->mockFiles,$this->config);
+                    if (isset($temp['@attributes'])) {
+                        $this->productList[$this->index]->data['Identifiers']['Request'] = $temp['@attributes'];
+                    }
                     $this->index++;
                 }
             } else if (in_array($x->getName(), array('GetProductCategoriesForSKUResult', 'GetProductCategoriesForASINResult',

@@ -196,7 +196,7 @@ class AmazonPreorder extends AmazonInboundCore {
      * Parses XML response into array.
      *
      * This is what reads the response XML and converts it into an array.
-     * @param SimpleXMLObject $xml <p>The XML response from Amazon.</p>
+     * @param SimpleXMLElement $xml <p>The XML response from Amazon.</p>
      * @return boolean <b>FALSE</b> if no XML data is found
      */
     protected function parseXml($xml) {
@@ -256,7 +256,7 @@ class AmazonPreorder extends AmazonInboundCore {
      * Note that this method will return the string "false" if Amazon indicates
      * that the shipment does not have preorderable items.
      * This method will return boolean <b>FALSE</b> if the date has not been set yet.
-     * @return string|boolean date in "true" or "false", or <b>FALSE</b> if date not set yet
+     * @return string|boolean "true" or "false", or <b>FALSE</b> if date not set yet
      */
     public function getHasPreorderableItems(){
         return $this->hasPreorderItems;
@@ -268,7 +268,7 @@ class AmazonPreorder extends AmazonInboundCore {
      * Note that this method will return the string "false" if Amazon indicates
      * that the shipment information has not yet been confirmed.
      * This method will return boolean <b>FALSE</b> if the date has not been set yet.
-     * @return string|boolean date in "true" or "false", or <b>FALSE</b> if date not set yet
+     * @return string|boolean "true" or "false", or <b>FALSE</b> if date not set yet
      */
     public function getIsConfirmed(){
         return $this->isConfirmed;

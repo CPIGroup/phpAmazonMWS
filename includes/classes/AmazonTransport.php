@@ -382,7 +382,7 @@ class AmazonTransport extends AmazonInboundCore {
      * shipment type is set to "LTL" for Less Than Truckload/Full Truckload.
      * This parameter is removed by all other actions.
      * @param string $d <p>A time string</p>
-     * @return boolean <b>FALSE</b> if improper input
+     * @return boolean <b>FALSE</b> if improper input or needed parameters are not set
      */
     public function setReadyDate($d) {
         $op = $this->determineDetailOption();
@@ -482,7 +482,7 @@ class AmazonTransport extends AmazonInboundCore {
      * This parameter is removed by all other actions.
      * @param string $v <p>Decimal number</p>
      * @param string $u <p>"pounds" or "kilograms", defaults to kilograms</p>
-     * @return boolean <b>FALSE</b> if improper input
+     * @return boolean <b>FALSE</b> if improper input or needed parameters are not set
      */
     public function setTotalWeight($v, $u = 'kilograms') {
         $op = $this->determineDetailOption();
@@ -507,7 +507,7 @@ class AmazonTransport extends AmazonInboundCore {
      * This parameter is removed by all other actions.
      * @param string $v <p>Money amount</p>
      * @param string $c <p>ISO 4217 currency code (ex: USD)</p>
-     * @return boolean <b>FALSE</b> if improper input
+     * @return boolean <b>FALSE</b> if improper input or needed parameters are not set
      */
     public function setDeclaredValue($v, $c) {
         $op = $this->determineDetailOption();
@@ -678,7 +678,7 @@ class AmazonTransport extends AmazonInboundCore {
     /**
      * Gets transport content information for a shipment from Amazon.
      *
-     * Submits a <i>EstimateTransportRequest</i> request to Amazon. In order to do this,
+     * Submits a <i>GetTransportContent</i> request to Amazon. In order to do this,
      * a fulfillment shipment ID is required.
      * Before this action can be used, information about the transport contents
      * must be provided to Amazon using <i>sendTransportContents</i>.
@@ -715,9 +715,9 @@ class AmazonTransport extends AmazonInboundCore {
     }
 
     /**
-     * Sets up options for using <i>estimateTransport</i>.
+     * Sets up options for using <i>fetchTransportContent</i>.
      *
-     * This changes key options for using <i>estimateTransport</i>.
+     * This changes key options for using <i>fetchTransportContent</i>.
      * Please note: because the operation does not use all of the parameters,
      * some of the parameters will be removed.
      * @see resetSendParams
@@ -891,7 +891,7 @@ class AmazonTransport extends AmazonInboundCore {
      * Parses XML response into array.
      *
      * This is what reads the response XML and converts it into an array.
-     * @param SimpleXMLObject $xml <p>The XML response from Amazon.</p>
+     * @param SimpleXMLElement $xml <p>The XML response from Amazon.</p>
      * @return boolean <b>FALSE</b> if no XML data is found
      */
     protected function parseXml($xml) {
@@ -1011,7 +1011,7 @@ class AmazonTransport extends AmazonInboundCore {
      * "WORKING","ERROR_ON_ESTIMATING","ESTIMATING","ESTIMATED","ERROR_ON_CONFIRMING",
      * "CONFIRMING","CONFIRMED","VOIDING","VOIDED", and "ERROR_IN_VOIDING".
      * This method will return <b>FALSE</b> if the status has not been set yet.
-     * @return string|boolean status value, or <b>FALSE</b> if date not set yet
+     * @return string|boolean status value, or <b>FALSE</b> if value not set yet
      */
     public function getStatus(){
         if (isset($this->status)){
@@ -1033,7 +1033,7 @@ class AmazonTransport extends AmazonInboundCore {
      * <li><b>Details</b> - array, see <i>getContentDetails</i> for details</li>
      * </ul>
      * This method will return <b>FALSE</b> if the status has not been set yet.
-     * @return array|boolean multi-dimensional array, or <b>FALSE</b> if date not set yet
+     * @return array|boolean multi-dimensional array, or <b>FALSE</b> if data not set yet
      * @see getContentDetails
      */
     public function getContentInfo(){
@@ -1081,7 +1081,7 @@ class AmazonTransport extends AmazonInboundCore {
      * <li><b>IsBillOfLadingAvailable</b> (LTL + Partnered)</li>
      * </ul>
      * This method will return <b>FALSE</b> if the status has not been set yet.
-     * @return array|boolean multi-dimensional array, or <b>FALSE</b> if date not set yet
+     * @return array|boolean multi-dimensional array, or <b>FALSE</b> if data not set yet
      * @see getPackageList
      * @see getPalletList
      */
@@ -1179,7 +1179,7 @@ class AmazonTransport extends AmazonInboundCore {
      * </ul>
      * </ul>
      * This method will return <b>FALSE</b> if the value has not been set yet.
-     * @return array|boolean multi-dimensional array, or <b>FALSE</b> if value not set yet
+     * @return array|boolean multi-dimensional array, or <b>FALSE</b> if data not set yet
      * @see setCarrier
      */
     public function getPackageList() {
@@ -1208,7 +1208,7 @@ class AmazonTransport extends AmazonInboundCore {
      * <li><b>VoidDeadline</b> (optional) - ISO 8601 date format</li>
      * </ul>
      * This method will return <b>FALSE</b> if the value has not been set yet.
-     * @return array|boolean multi-dimensional array, or <b>FALSE</b> if value not set yet
+     * @return array|boolean multi-dimensional array, or <b>FALSE</b> if data not set yet
      */
     public function getPartneredEstimate() {
         if (isset($this->contents['Details']['PartneredEstimate'])){
@@ -1360,7 +1360,7 @@ class AmazonTransport extends AmazonInboundCore {
      * </ul>
      * </ul>
      * This method will return <b>FALSE</b> if the value has not been set yet.
-     * @return array|boolean multi-dimensional array, or <b>FALSE</b> if value not set yet
+     * @return array|boolean multi-dimensional array, or <b>FALSE</b> if data not set yet
      * @see setCarrier
      */
     public function getPalletList() {

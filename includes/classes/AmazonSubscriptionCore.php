@@ -53,6 +53,13 @@ abstract class AmazonSubscriptionCore extends AmazonCore{
             $this->options['Version'] = $AMAZON_VERSION_SUBSCRIBE;
         }
 
+        if(isset($THROTTLE_LIMIT_SUBSCRIBE)) {
+            $this->throttleLimit = $THROTTLE_LIMIT_SUBSCRIBE;
+        }
+        if(isset($THROTTLE_TIME_SUBSCRIBE)) {
+            $this->throttleTime = $THROTTLE_TIME_SUBSCRIBE;
+        }
+
         if (isset($store[$this->storeName]['marketplaceId'])){
             $this->setMarketplace($store[$this->storeName]['marketplaceId']);
         } else {

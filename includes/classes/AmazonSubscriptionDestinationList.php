@@ -83,10 +83,7 @@ class AmazonSubscriptionDestinationList extends AmazonSubscriptionCore implement
             $this->destinationList[$i]['DeliveryChannel'] = (string)$item->DeliveryChannel;
 
             foreach ($item->AttributeList->children() as $member) {
-                $temp = array();
-                $temp['Key'] = (string)$member->Key;
-                $temp['Value'] = (string)$member->Value;
-                $this->destinationList[$i]['AttributeList'][] = $temp;
+                $this->destinationList[$i]['AttributeList'][(string)$member->Key] = (string)$member->Value;
             }
 
             $i++;
@@ -100,11 +97,7 @@ class AmazonSubscriptionDestinationList extends AmazonSubscriptionCore implement
      * The array for a single order item will have the following fields:
      * <ul>
      * <li><b>DeliveryChannel</b> - the technology used to receive notifications</li>
-     * <li><b>AttributeList</b> - array of attributes based on the delivery channel</li>
-     *   <ul>
-     *   <li><b>Key</b> - name of the attribute</li>
-     *   <li><b>Value</b> - value of the attribute</li>
-     *   </ul>
+     * <li><b>AttributeList</b> - array of key/value pairs</li>
      * </ul>
      * @param int $i [optional] <p>List index to retrieve the value from.
      * If none is given, the entire list will be returned. Defaults to NULL.</p>
@@ -141,14 +134,9 @@ class AmazonSubscriptionDestinationList extends AmazonSubscriptionCore implement
     /**
      * Returns specified attribute set for the specified entry.
      *
-     * Each attribute array will have the following fields:
-     * <ul>
-     * <li><b>Key</b> - name of the attribute</li>
-     * <li><b>Value</b> - value of the attribute</li>
-     * </ul>
      * This method will return <b>FALSE</b> if the list has not yet been filled.
      * @param int $i [optional] <p>List index to retrieve the value from. Defaults to 0.</p>
-     * @return array|boolean multi-dimensional array, or <b>FALSE</b> if Non-numeric index
+     * @return array|boolean associative array, or <b>FALSE</b> if Non-numeric index
      */
     public function getAttributes($i = 0, $j = null){
         if (isset($this->destinationList[$i]['AttributeList'])){

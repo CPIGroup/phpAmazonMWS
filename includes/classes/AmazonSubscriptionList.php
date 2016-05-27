@@ -21,7 +21,7 @@
  * Fetches list of subscriptions from Amazon.
  *
  * This Amazon Subscriptions Core object retrieves a list of registered
- * subscription destinations from Amazon for a particular marketplace.
+ * subscriptions from Amazon for a particular marketplace.
  * In order to do this, a marketplace ID is needed. The current store's
  * configured marketplace is used by default.
  */
@@ -69,7 +69,7 @@ class AmazonSubscriptionList extends AmazonSubscriptionCore implements Iterator{
      * Parses XML response into array.
      *
      * This is what reads the response XML and converts it into an array.
-     * @param SimpleXMLObject $xml <p>The XML response from Amazon.</p>
+     * @param SimpleXMLElement $xml <p>The XML response from Amazon.</p>
      * @return boolean <b>FALSE</b> if no XML data is found
      */
     protected function parseXML($xml){
@@ -96,7 +96,7 @@ class AmazonSubscriptionList extends AmazonSubscriptionCore implements Iterator{
      * This method will return <b>FALSE</b> if the list has not yet been filled.
      * @param int $i [optional] <p>List index to retrieve the value from.
      * If none is given, the entire list will be returned. Defaults to NULL.</p>
-     * @return AmazonSubscription|array|boolean Amazon object, array of objects, or <b>FALSE</b> if list not filled yet
+     * @return array|boolean multi-dimensional array, or <b>FALSE</b> if list not filled yet
      */
     public function getList($i = null){
         if (isset($this->list)){

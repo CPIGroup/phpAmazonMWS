@@ -1,0 +1,6 @@
+<UpdateSubscriptionResponse xmlns="http://mws.amazonservices.com/schema/Subscriptions/2013-07-01">
+  <UpdateSubscriptionResult/>
+  <ResponseMetadata>
+    <RequestId>3263ad38-d15b-4043-b48c-cbfa2EXAMPLE</RequestId>
+  </ResponseMetadata>
+</UpdateSubscriptionResponse>

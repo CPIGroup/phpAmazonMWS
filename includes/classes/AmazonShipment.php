@@ -198,6 +198,13 @@ class AmazonShipment extends AmazonInboundCore{
      * <li><b>SellerSKU</b> - max: 50 char</li>
      * <li><b>Quantity</b> - numeric</li>
      * <li><b>QuantityInCase</b> (optional) - numeric</li>
+     * <li><b>PrepDetailsList</b> (optional) - array</li>
+     * <ul>
+     * <li><b>PrepInstruction</b> - "Polybagging", "BubbleWrapping", "Taping",
+     * "BlackShrinkWrapping", "Labeling", or "HangGarment"</li>
+     * <li><b>PrepOwner</b> - "AMAZON" or "SELLER"</li>
+     * </ul>
+     * <li><b>ReleaseDate</b> (optional) - date string</li>
      * </ul>
      * @param array $a <p>See above.</p>
      * @return boolean <b>FALSE</b> if improper input
@@ -230,6 +237,9 @@ class AmazonShipment extends AmazonInboundCore{
                         $this->options['InboundShipmentItems.member.'.$i.'.PrepDetailsList.PrepDetails.'.$j.'.PrepOwner'] = $z['PrepOwner'];
                         $j++;
                     }
+                }
+                if (array_key_exists('ReleaseDate', $x)){
+                    $this->options['InboundShipmentItems.member.'.$i.'.ReleaseDate'] = $this->genTime($x['ReleaseDate']);
                 }
                 $i++;
             } else {

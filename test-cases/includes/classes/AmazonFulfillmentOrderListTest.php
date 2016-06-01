@@ -36,17 +36,6 @@ class AmazonFulfillmentOrderListTest extends PHPUnit_Framework_TestCase {
         $this->assertNotEquals('1969-12-31T18:58:00-0500',$o['QueryStartDateTime']);
     }
     
-    public function testSetMethodFilter(){
-        $this->assertFalse($this->object->setMethodFilter(null)); //can't be nothing
-        $this->assertFalse($this->object->setMethodFilter(5)); //can't be an int
-        $this->assertFalse($this->object->setMethodFilter('wrong')); //not a valid value
-        $this->assertNull($this->object->setMethodFilter('Consumer'));
-        $this->assertNull($this->object->setMethodFilter('Removal'));
-        $o = $this->object->getOptions();
-        $this->assertArrayHasKey('FulfillmentMethod',$o);
-        $this->assertEquals('Removal',$o['FulfillmentMethod']);
-    }
-    
     public function testSetUseToken(){
         $this->assertNull($this->object->setUseToken());
         $this->assertNull($this->object->setUseToken(true));

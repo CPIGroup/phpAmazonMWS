@@ -56,6 +56,7 @@
             <FulfillmentPolicy>FillOrKill</FulfillmentPolicy>
             <ReceivedDateTime>2006-08-02T17:26:56Z</ReceivedDateTime>
             <DisplayableOrderId>test_displayable_id</DisplayableOrderId>
+            <MarketplaceId>ATVPDKIKX0DER</MarketplaceId>
             <DisplayableOrderComment>Sample comment.</DisplayableOrderComment>
             <FulfillmentOrderStatus>PROCESSING</FulfillmentOrderStatus>
         </FulfillmentOrder>

@@ -329,6 +329,10 @@ class AmazonShipmentList extends AmazonInboundCore implements Iterator{
             }
 
             $a['AreCasesRequired'] = (string)$x->AreCasesRequired;
+
+            if (isset($x->ConfirmedNeedByDate)){
+                $a['ConfirmedNeedByDate'] = (string)$x->ConfirmedNeedByDate;
+            }
             
             $this->shipmentList[$this->index] = $a;
             $this->index++;
@@ -418,7 +422,7 @@ class AmazonShipmentList extends AmazonInboundCore implements Iterator{
      * <li><b>AddressLine2</b> (optional)</li>
      * <li><b>City</b></li>
      * <li><b>DistrictOrCounty</b> (optional)</li>
-     * <li><b>StateOrProvidenceCode</b> (optional)</li>
+     * <li><b>StateOrProvinceCode</b> (optional)</li>
      * <li><b>CountryCode</b></li>
      * <li><b>PostalCode</b></li>
      * </ul>
@@ -503,6 +507,24 @@ class AmazonShipmentList extends AmazonInboundCore implements Iterator{
         }
         if (is_int($i)){
             return $this->shipmentList[$i]['AreCasesRequired'];
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * Returns the maximum arrival date for the specified shipment.
+     *
+     * This method will return <b>FALSE</b> if the list has not yet been filled.
+     * @param int $i [optional] <p>List index to retrieve the value from. Defaults to 0.</p>
+     * @return string|boolean Date in YYYY-MM-DD format, or <b>FALSE</b> if Non-numeric index
+     */
+    public function getConfirmedNeedByDate($i = 0){
+        if (!isset($this->shipmentList)){
+            return false;
+        }
+        if (is_int($i)){
+            return $this->shipmentList[$i]['ConfirmedNeedByDate'];
         } else {
             return false;
         }

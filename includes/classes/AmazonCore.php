@@ -737,7 +737,7 @@ abstract class AmazonCore{
         if (!$xml){
             return false;
         }
-        if ($xml->NextToken){
+        if ($xml->NextToken && (string)$xml->HasNext != 'false' && (string)$xml->MoreResultsAvailable != 'false'){
             $this->tokenFlag = true;
             $this->options['NextToken'] = (string)$xml->NextToken;
         } else {

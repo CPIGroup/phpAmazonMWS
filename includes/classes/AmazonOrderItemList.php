@@ -24,6 +24,7 @@
  * required. This object can use tokens when retrieving the list.
  */
 class AmazonOrderItemList extends AmazonOrderCore implements Iterator{
+    protected $orderId;
     protected $itemList;
     protected $tokenFlag = false;
     protected $tokenUseFlag = false;
@@ -140,8 +141,10 @@ class AmazonOrderItemList extends AmazonOrderCore implements Iterator{
         if (is_null($xml->AmazonOrderId)){
             $this->log("You just got throttled.",'Warning');
             return false;
-        } else if (isset($this->options['AmazonOrderId']) && $this->options['AmazonOrderId'] && $this->options['AmazonOrderId'] != $xml->AmazonOrderId){
-            $this->log('You grabbed the wrong Order\'s items! - '.$this->options['AmazonOrderId'].' =/= '.$xml->AmazonOrderId,'Urgent');
+        }
+        $this->orderId = (string)$xml->AmazonOrderId;
+        if (!empty($this->options['AmazonOrderId']) && $this->options['AmazonOrderId'] != $this->orderId){
+            $this->log('You grabbed the wrong Order\'s items! - '.$this->options['AmazonOrderId'].' =/= '.$this->orderId,'Urgent');
         }
         
         $this->parseXML($xml->OrderItems);
@@ -296,6 +299,20 @@ class AmazonOrderItemList extends AmazonOrderCore implements Iterator{
             $this->index++;
         }
             
+    }
+
+    /**
+     * Returns the order ID for the items.
+     *
+     * This method will return <b>FALSE</b> if the list has not yet been filled.
+     * @return string|boolean single value, or <b>FALSE</b> if not set yet
+     */
+    public function getOrderId(){
+        if (isset($this->orderId)){
+            return $this->orderId;
+        } else {
+            return false;
+        }
     }
     
     /**

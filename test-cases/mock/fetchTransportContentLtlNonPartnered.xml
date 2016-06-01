@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+<GetTransportContentResponse xmlns="http://mws.amazonaws.com/FulfillmentInboundShipment/2010-10-01/">
+  <GetTransportContentResult>
+    <TransportContent>
+      <TransportDetails>
+        <NonPartneredLtlData>
+          <CarrierName>ABF FREIGHT SYSTEM INC</CarrierName>
+          <ProNumber>123456</ProNumber>
+        </NonPartneredLtlData>
+      </TransportDetails>
+      <TransportResult>
+        <TransportStatus>WORKING</TransportStatus>
+      </TransportResult>
+      <TransportHeader>
+        <ShipmentType>LTL</ShipmentType>
+        <ShipmentId>FBAQFGQZ</ShipmentId>
+        <SellerId>A170GGEKWF1J56</SellerId>
+        <IsPartnered>false</IsPartnered>
+      </TransportHeader>
+    </TransportContent>
+  </GetTransportContentResult>
+  <ResponseMetadata>
+    <RequestId>5e2ca38a-9f96-4ef7-ae82-3afb8dc224d4</RequestId>
+  </ResponseMetadata>
+</GetTransportContentResponse>

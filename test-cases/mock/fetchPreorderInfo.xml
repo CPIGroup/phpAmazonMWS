@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<GetPreorderInfoResponse xmlns="http://mws.amazonaws.com/FulfillmentInboundShipment/2010-10-01/">
+  <GetPreorderInfoResult>
+    <ShipmentContainsPreorderableItems>true</ShipmentContainsPreorderableItems>
+    <NeedByDate>2015-12-27</NeedByDate>
+    <ConfirmedFulfillableDate>2015-12-31</ConfirmedFulfillableDate>
+    <ShipmentConfirmedForPreorder>true</ShipmentConfirmedForPreorder>
+  </GetPreorderInfoResult>
+  <ResponseMetadata>
+    <RequestId>4a1a7029-462b-4a27-a04c-4cbe0fd107e3</RequestId>
+  </ResponseMetadata>
+</GetPreorderInfoResponse>

@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+<VoidTransportRequestResponse xmlns="http://mws.amazonaws.com/FulfillmentInboundShipment/2010-10-01/">
+  <VoidTransportRequestResult>
+    <TransportResult>
+      <TransportStatus>VOIDING</TransportStatus>
+    </TransportResult>
+  </VoidTransportRequestResult>
+  <ResponseMetadata>
+    <RequestId>c5818219-de93-4b3e-8f9b-b172fbacd010</RequestId>
+  </ResponseMetadata>
+</VoidTransportRequestResponse>

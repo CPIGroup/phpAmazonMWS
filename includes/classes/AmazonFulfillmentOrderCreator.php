@@ -74,7 +74,7 @@ class AmazonFulfillmentOrderCreator extends AmazonOutboundCore{
     }
 
     /**
-     * Sets the shipping action that the shipment should use. (Optional)
+     * Sets the fulfillment action that the shipment should use. (Optional)
      *
      * This method indicates whether the order should ship now or be put on hold.
      * If this option is not sent, Amazon will assume that the order will ship now.
@@ -83,9 +83,9 @@ class AmazonFulfillmentOrderCreator extends AmazonOutboundCore{
      */
     public function setFulfillmentAction($s){
         if ($s === 'Ship' || $s === 'Hold'){
-            $this->options['ShippingSpeedCategory'] = $s;
+            $this->options['FulfillmentAction'] = $s;
         } else {
-            $this->log("Tried to set shipping action to invalid value", 'Warning');
+            $this->log("Tried to set fulfillment action to invalid value", 'Warning');
             return false;
         }
     }
@@ -402,6 +402,8 @@ class AmazonFulfillmentOrderCreator extends AmazonOutboundCore{
      * <li><b>CurrencyCode</b> - ISO 4217 currency code</li>
      * <li><b>Value</b> - number</li>
      * </ul>
+     * <li><b>PerUnitPrice</b> (optional array) - same structure as PerUnitDeclaredValue</li>
+     * <li><b>PerUnitTax</b> (optional array) - same structure as PerUnitDeclaredValue</li>
      * </ul>
      * @param array $a <p>See above.</p>
      * @return boolean <b>FALSE</b> if improper input
@@ -585,18 +587,18 @@ class AmazonFulfillmentOrderCreator extends AmazonOutboundCore{
     }
 
     /**
-     * Sets up options for using <i>CreateFulfillmentOrder</i>.
+     * Sets up options for using <i>createOrder</i>.
      *
-     * This changes key options for using <i>CreateFulfillmentOrder</i>.
+     * This changes key options for using <i>createOrder</i>.
      */
     protected function prepareCreate() {
         $this->options['Action'] = 'CreateFulfillmentOrder';
     }
 
     /**
-     * Sets up options for using <i>UpdateFulfillmentOrder</i>.
+     * Sets up options for using <i>updateOrder</i>.
      *
-     * This changes key options for using <i>UpdateFulfillmentOrder</i>. Please note: because the
+     * This changes key options for using <i>updateOrder</i>. Please note: because the
      * operation for updating the order does not use all of the parameters, some of the
      * parameters will be removed. The following parameters are removed:
      * COD settings and delivery window.

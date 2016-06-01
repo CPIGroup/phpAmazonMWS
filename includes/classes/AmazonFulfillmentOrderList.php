@@ -71,26 +71,13 @@ class AmazonFulfillmentOrderList extends AmazonOutboundCore implements Iterator{
     }
     
     /**
-     * Sets the fulfillment method filter. (Optional)
-     * 
-     * This method sets the Fulfillment Method to be sent in the next request.
-     * If this parameter is set, Amazon will return fulfillment orders using the given method.
-     * If this parameter is not set, Amazon will only return fulfillment orders
-     * with a <i>Consumer</i> method.
-     * Here is a quick description of the methods:
-     * <ul>
-     * <li><b>Consumer</b> - customer order</li>
-     * <li><b>Removal</b> - inventory will be returned to the given address</li>
-     * </ul>
-     * @param string $s <p>"Consumer" or "Removal"</p>
-     * @return boolean <b>FALSE</b> if improper input
+     * The "FulfillmentMethod" option is no longer used.
+     * @return boolean <b>FALSE</b>
+     * @deprecated since 1.3.0
      */
     public function setMethodFilter($s){
-        if ($s == 'Consumer' || $s == 'Removal'){
-            $this->options['FulfillmentMethod'] = $s;
-        } else {
-            return false;
-        }
+        $this->log("The FulfillmentMethod option is no longer used for getting fulfillment orders.", 'Warning');
+        return FALSE;
     }
     
     /**
@@ -176,7 +163,6 @@ class AmazonFulfillmentOrderList extends AmazonOutboundCore implements Iterator{
         if ($this->tokenFlag && $this->tokenUseFlag){
             $this->options['Action'] = 'ListAllFulfillmentOrdersByNextToken';
             unset($this->options['QueryStartDateTime']);
-            unset($this->options['FulfillmentMethod']);
         } else {
             $this->options['Action'] = 'ListAllFulfillmentOrders';
             unset($this->options['NextToken']);

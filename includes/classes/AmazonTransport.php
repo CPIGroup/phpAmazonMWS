@@ -330,7 +330,7 @@ class AmazonTransport extends AmazonInboundCore {
     }
 
     /**
-     * Sets the box count for the shipment. (Optional for send*)
+     * Sets the freight class for the shipment. (Optional for send*)
      *
      * The partnered and shipment type parameters must be set <i>before</i> setting this parameter.
      * This parameter is optional when the carrier is partnered and the
@@ -400,7 +400,7 @@ class AmazonTransport extends AmazonInboundCore {
     }
 
     /**
-     * Sets the list of packages. (Optional for send*)
+     * Sets the list of pallets. (Optional for send*)
      *
      * The partnered and shipment type parameters must be set <i>before</i> setting this parameter.
      * This parameter is optional when the carrier is partnered and the
@@ -538,8 +538,10 @@ class AmazonTransport extends AmazonInboundCore {
     }
 
     /**
-     * Removes all parameters specific to sending transport content info.The following parameters are removed:
-     * IsPartnered, ShipmentType, and everything in TransportDetails.
+     * Removes all parameters specific to sending transport content info.
+     *  The following parameters are removed:
+     * IsPartnered, shipment type, and all transport details.
+     * @see resetTransportDetails
      */
     protected function resetSendParams() {
         unset($this->options['IsPartnered']);
@@ -551,9 +553,9 @@ class AmazonTransport extends AmazonInboundCore {
      * Sends transport content information for a shipment with Amazon.
      *
      * Submits a <i>PutTransportContent</i> request to Amazon. In order to do this,
-     * a fulfillment shipment ID, shipment type, partnered carrier flag, and
-     * various details are required. The exact details required depend on the partnered
-     * flag and shipment type parameters set.
+     * a fulfillment shipment ID, shipment type, IsPartnered, and
+     * various details are required. The exact details required depend on the
+     * IsPartnered and shipment type parameters set.
      * Amazon will send a status back as a response, which can be retrieved
      * using <i>getStatus</i>.
      * @return boolean <b>FALSE</b> if something goes wrong
@@ -1032,7 +1034,7 @@ class AmazonTransport extends AmazonInboundCore {
      * <li><b>ShipmentType</b> - "SP" or "LTL"</li>
      * <li><b>Details</b> - array, see <i>getContentDetails</i> for details</li>
      * </ul>
-     * This method will return <b>FALSE</b> if the status has not been set yet.
+     * This method will return <b>FALSE</b> if the data has not been set yet.
      * @return array|boolean multi-dimensional array, or <b>FALSE</b> if data not set yet
      * @see getContentDetails
      */
@@ -1080,7 +1082,7 @@ class AmazonTransport extends AmazonInboundCore {
      * <li><b>AmazonReferenceId</b> (LTL + Partnered)</li>
      * <li><b>IsBillOfLadingAvailable</b> (LTL + Partnered)</li>
      * </ul>
-     * This method will return <b>FALSE</b> if the status has not been set yet.
+     * This method will return <b>FALSE</b> if the data has not been set yet.
      * @return array|boolean multi-dimensional array, or <b>FALSE</b> if data not set yet
      * @see getPackageList
      * @see getPalletList
@@ -1338,7 +1340,7 @@ class AmazonTransport extends AmazonInboundCore {
     }
 
     /**
-     * Returns the list of package data for the transport request.
+     * Returns the list of pallet data for the transport request.
      *
      * This value will only be set if the shipment is with an Amazon-partnered carrier and
      * the shipment type is set to "LTL" for Less Than Truckload/Full Truckload.

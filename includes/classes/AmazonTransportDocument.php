@@ -351,7 +351,7 @@ class AmazonTransportDocument extends AmazonInboundCore {
      * Returns the checksum the transport document.
      *
      * This method will return <b>FALSE</b> if the file has not been fetched yet.
-     * @param boolean $raw [optional] <p>Set to TRUE to get the raw, base64-encoded file contents.</p>
+     * @param boolean $raw [optional] <p>Set to TRUE to get the raw, base64-encoded checksum.</p>
      * @return string|boolean checksum, or <b>FALSE</b> if file not fetched yet
      */
     public function getChecksum($raw = FALSE) {

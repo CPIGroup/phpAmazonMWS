@@ -18,19 +18,18 @@
  */
 
 /**
- * Fetches list of subscriptions from Amazon.
+ * Pulls a list of subscriptions from Amazon.
  *
- * This Amazon Subscriptions Core object retrieves a list of registered
- * subscriptions from Amazon for a particular marketplace.
- * In order to do this, a marketplace ID is needed. The current store's
- * configured marketplace is used by default.
+ * This Amazon Subscriptions Core object retrieves a list of subscriptions from Amazon
+ * for a particular marketplace. In order to do this, a marketplace ID is needed.
+ * The current store's configured marketplace is used by default.
  */
 class AmazonSubscriptionList extends AmazonSubscriptionCore implements Iterator{
     protected $list;
     protected $i = 0;
 
     /**
-     * Fetches a list of registered subscription destinations from Amazon.
+     * Fetches a list of subscriptions from Amazon.
      *
      * Submits a <i>ListSubscriptions</i> request to Amazon. Amazon will send
      * the data back as a response, which can be retrieved using <i>getList</i>.
@@ -164,15 +163,18 @@ class AmazonSubscriptionList extends AmazonSubscriptionCore implements Iterator{
     /**
      * Returns the attribute list for the retrieved subscription's destination.
      *
-     * See <i>setAttributes</i> for list of possible keys.
      * This method will return <b>FALSE</b> if the data has not been set yet.
      * @param int $i [optional] <p>List index to retrieve the value from. Defaults to 0.</p>
+     * @param string $j [optional] <p>Second list index to retrieve the value from. Defaults to NULL.</p>
      * @return array|boolean associative array, or <b>FALSE</b> if not set yet or invalid index
-     * @see setAttributes
      */
-    public function getAttributes($i = 0){
+    public function getAttributes($i = 0, $j = null){
         if (isset($this->list[$i]['Destination']['AttributeList'])){
-            return $this->list[$i]['Destination']['AttributeList'];
+            if (isset($this->list[$i]['Destination']['AttributeList'][$j])) {
+                return $this->list[$i]['Destination']['AttributeList'][$j];
+            } else {
+                return $this->list[$i]['Destination']['AttributeList'];
+            }
         } else {
             return false;
         }

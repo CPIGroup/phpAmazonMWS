@@ -18,12 +18,16 @@
  */
 
 /**
- * Fetches list of registered subscription destinations from Amazon.
+ * Creates a subscription on Amazon or updates it, or registers subscription destinations.
  *
- * This Amazon Subscriptions Core object retrieves a list of registered
- * subscription destinations from Amazon for a particular marketplace.
- * In order to do this, a marketplace ID is needed. The current store's
- * configured marketplace is used by default.
+ * This Amazon Subscriptions Core object creates or updates subscriptions and
+ * subscription destinations on Amazon for a particular marketplace.
+ * In order to do any of these actions, a marketplace ID is needed in addition to
+ * a destination's delivery channel and list of attributes.
+ * The current store's configured marketplace is used by default.
+ * In order to fetch or delete a subscription, a notification type is also needed.
+ * In order to create a subscription, an indicator of whether or not the subscription
+ * is enabled is required in addition to a notification type.
  */
 class AmazonSubscription extends AmazonSubscriptionCore {
     protected $data;
@@ -48,7 +52,6 @@ class AmazonSubscription extends AmazonSubscriptionCore {
     /**
      * Sets the destination attributes. (Required)
      *
-     * This method sets the items to be sent in the next request.
      * This parameter is required for performing any actions with subscription destinations.
      * The array provided should be an array of key/value pairs.
      * Possible attribute keys: "sqsQueueUrl".
@@ -252,9 +255,9 @@ class AmazonSubscription extends AmazonSubscriptionCore {
     }
 
     /**
-     * Sets up options for using <i>registerDestination</i>.
+     * Sets up options for using <i>deregisterDestination</i>.
      *
-     * This changes key options for using <i>registerDestination</i>.
+     * This changes key options for using <i>deregisterDestination</i>.
      * Please note: because this operation does not use all of the parameters,
      * some of the parameters will be removed. The following parameters are removed:
      * notification type and enabled status.
@@ -311,9 +314,9 @@ class AmazonSubscription extends AmazonSubscriptionCore {
     }
 
     /**
-     * Sets up options for using <i>registerDestination</i>.
+     * Sets up options for using <i>testDestination</i>.
      *
-     * This changes key options for using <i>registerDestination</i>.
+     * This changes key options for using <i>testDestination</i>.
      * Please note: because this operation does not use all of the parameters,
      * some of the parameters will be removed. The following parameters are removed:
      * notification type and enabled status.
@@ -454,7 +457,7 @@ class AmazonSubscription extends AmazonSubscriptionCore {
     /**
      * Updates a subscription on Amazon.
      *
-     * Submits a <i>UpdateSubscription</i> request to Amazon. Amazon will send
+     * Submits an <i>UpdateSubscription</i> request to Amazon. Amazon will send
      * back an empty response. The following parameters are required:
      * marketplace ID, delivery channel, attributes, notification type, and enabled status.
      * @return boolean <b>FALSE</b> if something goes wrong
@@ -600,7 +603,7 @@ class AmazonSubscription extends AmazonSubscriptionCore {
     }
 
     /**
-     * Returns the full response.
+     * Returns the full array of subscription information.
      *
      * This method will return <b>FALSE</b> if the response data has not yet been filled.
      * The returned array will have the following fields:
@@ -642,7 +645,7 @@ class AmazonSubscription extends AmazonSubscriptionCore {
     }
 
     /**
-     * Returns the notification type for the retrieved subscription.
+     * Returns whether the retrieved subscription is enabled or not.
      *
      * Note that this method will return the string "false" if Amazon indicates
      * that the subscription is not enabled.

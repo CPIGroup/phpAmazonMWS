@@ -18,7 +18,7 @@
  */
 
 /**
- * Fetches list of active recommendations from Amazon.
+ * Pulls a list of active recommendations from Amazon.
  *
  * This Amazon Recommendations Core object retrieves a list of active
  * recommendations from Amazon for a particular marketplace.
@@ -66,7 +66,7 @@ class AmazonRecommendationList extends AmazonRecommendationCore implements Itera
      * If this parameter is set, Amazon will only return recommendations from
      * the specified category. If this parameter is not sent, Amazon will return
      * recommendations from all categories.
-     * Possible category values:"Inventory", "Selection", "Pricing", "Fulfillment",
+     * Possible category values: "Inventory", "Selection", "Pricing", "Fulfillment",
      * "ListingQuality", "GlobalSelling", and "Advertising".
      * @param string $s <p>Category name</p>
      * @return boolean <b>FALSE</b> if improper input
@@ -178,9 +178,9 @@ class AmazonRecommendationList extends AmazonRecommendationCore implements Itera
     }
 
     /**
-     * Sets up options for using <i>deleteSubscription</i>.
+     * Sets up options for using <i>fetchLastUpdateTimes</i>.
      *
-     * This changes key options for using <i>deleteSubscription</i>.
+     * This changes key options for using <i>fetchLastUpdateTimes</i>.
      * Please note: because this operation does not use all of the parameters,
      * the following parameters are removed:
      * category, filters, and token.
@@ -368,7 +368,7 @@ class AmazonRecommendationList extends AmazonRecommendationCore implements Itera
     }
 
     /**
-     * Returns the specified subscription, or all of them.
+     * Returns a list of all update times.
      *
      * The returned array will have keys from any of the categories listed in <i>setCategory</i>.
      * This method will return <b>FALSE</b> if the list has not yet been filled.

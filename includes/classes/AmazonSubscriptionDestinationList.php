@@ -18,7 +18,7 @@
  */
 
 /**
- * Fetches list of registered subscription destinations from Amazon.
+ * Pulls a list of registered subscription destinations from Amazon.
  *
  * This Amazon Subscriptions Core object retrieves a list of registered
  * subscription destinations from Amazon for a particular marketplace.
@@ -116,7 +116,7 @@ class AmazonSubscriptionDestinationList extends AmazonSubscriptionCore implement
     }
 
     /**
-     * Returns delivery channel for the specified entry.
+     * Returns the delivery channel for the specified entry.
      *
      * Possible values for this field: "SQS".
      * This method will return <b>FALSE</b> if the list has not yet been filled.
@@ -132,16 +132,17 @@ class AmazonSubscriptionDestinationList extends AmazonSubscriptionCore implement
     }
 
     /**
-     * Returns specified attribute set for the specified entry.
+     * Returns the specified attribute set for the specified entry.
      *
      * This method will return <b>FALSE</b> if the list has not yet been filled.
      * @param int $i [optional] <p>List index to retrieve the value from. Defaults to 0.</p>
+     * @param string $j [optional] <p>Second list index to retrieve the value from. Defaults to NULL.</p>
      * @return array|boolean associative array, or <b>FALSE</b> if Non-numeric index
      */
     public function getAttributes($i = 0, $j = null){
         if (isset($this->destinationList[$i]['AttributeList'])){
             if (isset($this->destinationList[$i]['AttributeList'][$j])){
-                return $this->destinationList[$i]['AttributeList'];
+                return $this->destinationList[$i]['AttributeList'][$j];
             } else {
                 return $this->destinationList[$i]['AttributeList'];
             }

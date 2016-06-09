@@ -26,7 +26,7 @@
 abstract class AmazonRecommendationCore extends AmazonCore{
 
     /**
-     * AmazonSubscriptionCore constructor sets up key information used in all Amazon Recommendations Core requests
+     * AmazonRecommendationCore constructor sets up key information used in all Amazon Recommendations Core requests
      *
      * This constructor is called when initializing all objects in the Amazon Recommendations Core.
      * The parameters are passed by the child objects' constructors, which are
@@ -68,7 +68,7 @@ abstract class AmazonRecommendationCore extends AmazonCore{
     }
 
     /**
-     * Sets the marketplace associated with the subscription or destination. (Optional)
+     * Sets the marketplace associated with the recommendations. (Optional)
      *
      * The current store's configured marketplace is used by default.
      * @param string $m <p>Marketplace ID</p>

@@ -1,0 +1,52 @@
+<?xml version="1.0"?>
+<ListRecommendationsByNextTokenResponse xmlns="https://mws.amazonservices.com/Recommendations/2013-04-01">
+  <ListRecommendationsByNextTokenResult>
+    <SelectionRecommendations>
+      <member>
+        <RecommendationReason>PopularOutOfStock</RecommendationReason>
+        <SalesRank>186020</SalesRank>
+        <ItemName>Factory-Reconditioned</ItemName>
+        <ProductCategory>Home Improvement</ProductCategory>
+        <LastUpdated>2013-03-05T00:00:00Z</LastUpdated>
+        <NumberOfCustomerReviews>0</NumberOfCustomerReviews>
+        <ItemIdentifier>
+            <Asin>B008YFV5P2</Asin>
+            <Sku>EZ</Sku>
+            <Upc>885911242721</Upc>
+        </ItemIdentifier>
+        <BrandName>DEWALT</BrandName>
+        <AverageCustomerReview>0.0</AverageCustomerReview>
+        <BuyboxPrice>
+            <Amount>245.5</Amount>
+            <CurrencyCode>USD</CurrencyCode>
+        </BuyboxPrice>
+        <RecommendationId>123-token2a</RecommendationId>
+        <NumberOfOffers>2</NumberOfOffers>
+      </member>
+      <member>
+        <RecommendationReason>PopularOutOfStock</RecommendationReason>
+        <SalesRank>56439</SalesRank>
+        <ItemName>DEWALT Ratcheting Screwdriv</ItemName>
+        <ProductCategory>Home Improvement</ProductCategory>
+        <LastUpdated>2013-03-05T00:00:00Z</LastUpdated>
+        <NumberOfCustomerReviews>0</NumberOfCustomerReviews>
+        <ItemIdentifier>
+            <Asin>B006TVOX98</Asin>
+            <Sku>ER</Sku>
+            <Upc>076174692334</Upc>
+        </ItemIdentifier>
+        <BrandName>DEWALT</BrandName>
+        <AverageCustomerReview>0.0</AverageCustomerReview>
+        <BuyboxPrice>
+            <Amount>15.99</Amount>
+            <CurrencyCode>USD</CurrencyCode>
+        </BuyboxPrice>
+        <RecommendationId>123-token2b</RecommendationId>
+        <NumberOfOffers>2</NumberOfOffers>
+      </member>
+    </SelectionRecommendations>
+  </ListRecommendationsByNextTokenResult>
+  <ResponseMetadata>
+    <RequestId>b106b175-85ca-11e2-8826-c31d9EXAMPLE</RequestId>
+  </ResponseMetadata>
+</ListRecommendationsByNextTokenResponse>

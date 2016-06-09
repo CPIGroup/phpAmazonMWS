@@ -1,0 +1,35 @@
+<?xml version="1.0"?>
+<ListRecommendationsResponse xmlns="https://mws.amazonservices.com/Recommendations/2013-04-01">
+  <ListRecommendationsResult>
+    <NextToken>token!</NextToken>
+    <ListingQualityRecommendations>
+      <member>
+        <RecommendationReason>Description is important.</RecommendationReason>
+        <ItemName>Nike II</ItemName>
+        <DefectAttribute>product_description</DefectAttribute>
+        <QualitySet>DEFECT</QualitySet>
+        <RecommendationId>123-token1a</RecommendationId>
+        <DefectGroup>Missing Description and Bullets</DefectGroup>
+        <ItemIdentifier>
+          <Asin>BT00I3X7F0</Asin>
+          <Sku>ldr-core</Sku>
+        </ItemIdentifier>
+      </member>
+      <member>
+        <RecommendationReason>Brand name is important.</RecommendationReason>
+        <ItemName>Nike II</ItemName>
+        <DefectAttribute>brand</DefectAttribute>
+        <QualitySet>DEFECT</QualitySet>
+        <RecommendationId>123-token1b</RecommendationId>
+        <DefectGroup>Missing Brand Name</DefectGroup>
+        <ItemIdentifier>
+          <Asin>BT00I3X7F0</Asin>
+          <Sku>ldr-core</Sku>
+        </ItemIdentifier>
+      </member>
+    </ListingQualityRecommendations>
+  </ListRecommendationsResult>
+  <ResponseMetadata>
+    <RequestId>d0305dfc-b83e-11e2-8aeb-c93b3EXAMPLE</RequestId>
+  </ResponseMetadata>
+</ListRecommendationsResponse>

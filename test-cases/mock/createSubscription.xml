@@ -1,0 +1,6 @@
+<CreateSubscriptionResponse xmlns="http://mws.amazonservices.com/schema/Subscriptions/2013-07-01">
+  <CreateSubscriptionResult/>
+  <ResponseMetadata>
+    <RequestId>c9bb2e77-2425-4e1a-9c85-36d00EXAMPLE</RequestId>
+  </ResponseMetadata>
+</CreateSubscriptionResponse>

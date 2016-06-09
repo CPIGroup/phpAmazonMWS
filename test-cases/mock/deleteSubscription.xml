@@ -1,0 +1,6 @@
+<DeleteSubscriptionResponse xmlns="http://mws.amazonservices.com/schema/Subscriptions/2013-07-01">
+  <DeleteSubscriptionResult/>
+  <ResponseMetadata>
+    <RequestId>2d7db8a1-8974-4541-9c9b-f882dEXAMPLE</RequestId>
+  </ResponseMetadata>
+</DeleteSubscriptionResponse>

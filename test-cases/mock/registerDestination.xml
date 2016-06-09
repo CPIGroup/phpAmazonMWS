@@ -1,0 +1,6 @@
+<RegisterDestinationResponse xmlns="http://mws.amazonservices.com/schema/Subscriptions/2013-07-01">
+  <RegisterDestinationResult/>
+  <ResponseMetadata>
+    <RequestId>b120e610-9cf0-48d7-b615-ca869EXAMPLE</RequestId>
+  </ResponseMetadata>
+</RegisterDestinationResponse>

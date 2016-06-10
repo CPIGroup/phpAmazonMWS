@@ -81,7 +81,7 @@ class AmazonInventoryList extends AmazonInventoryCore implements Iterator{
      * were updated after the given time.
      * If this parameters is set, seller SKUs cannot be set.
      * The parameter is passed through <i>strtotime</i>, so values such as "-1 hour" are fine.
-     * @param string $s <p>Time string.</p>
+     * @param string $t <p>Time string.</p>
      * @return boolean <b>FALSE</b> if improper input
      */
     public function setStartTime($t = null){
@@ -101,7 +101,7 @@ class AmazonInventoryList extends AmazonInventoryCore implements Iterator{
      * This method sets the list of seller SKUs to be sent in the next request.
      * Setting this parameter tells Amazon to only return inventory supplies that match
      * the IDs in the list. If this parameter is set, Start Time cannot be set.
-     * @param array|string $s <p>A list of Seller SKUs, or a single ID string.</p>
+     * @param array|string $a <p>A list of Seller SKUs, or a single ID string.</p>
      * @return boolean <b>FALSE</b> if improper input
      */
     public function setSellerSkus($a){

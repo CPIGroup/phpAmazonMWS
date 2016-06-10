@@ -242,7 +242,7 @@ class AmazonShipmentItemList extends AmazonInboundCore implements Iterator{
                 $a['QuantityInCase'] = (string)$x->QuantityInCase;
             }
             if (isset($x->PrepDetailsList)) {
-                foreach ($x->PrepDetailsList as $z) {
+                foreach ($x->PrepDetailsList->children() as $z) {
                     $temp = array();
                     $temp['PrepInstruction'] = (string)$z->PrepInstruction;
                     $temp['PrepOwner'] = (string)$z->PrepOwner;

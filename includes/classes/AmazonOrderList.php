@@ -370,11 +370,11 @@ class AmazonOrderList extends AmazonOrderCore implements Iterator{
     public function setTfmShipmentStatusFilter($list){
         if (is_string($list)){
             //if single string, set as filter
-            $this->resetOrderStatusFilter();
+            $this->resetTfmShipmentStatusFilter();
             $this->options['TFMShipmentStatus.Status.1'] = $list;
         } else if (is_array($list)){
             //if array of strings, set all filters
-            $this->resetOrderStatusFilter();
+            $this->resetTfmShipmentStatusFilter();
             $i = 1;
             foreach($list as $x){
                 $this->options['TFMShipmentStatus.Status.'.$i] = $x;

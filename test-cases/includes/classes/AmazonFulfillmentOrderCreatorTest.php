@@ -26,6 +26,16 @@ class AmazonFulfillmentOrderCreatorTest extends PHPUnit_Framework_TestCase {
     protected function tearDown() {
         
     }
+
+    public function testSetMarketplace() {
+        $this->assertNull($this->object->setMarketplace('ATVPDKIKX0DER2'));
+        $o = $this->object->getOptions();
+        $this->assertArrayHasKey('MarketplaceId', $o);
+        $this->assertEquals('ATVPDKIKX0DER2', $o['MarketplaceId']);
+        $this->assertFalse($this->object->setMarketplace(77)); //won't work for numbers
+        $this->assertFalse($this->object->setMarketplace(array())); //won't work for this
+        $this->assertFalse($this->object->setMarketplace(null)); //won't work for other things
+    }
     
     public function testSetFulfillmentOrderId(){
         $this->assertFalse($this->object->setFulfillmentOrderId(null)); //can't be nothing
@@ -43,6 +53,20 @@ class AmazonFulfillmentOrderCreatorTest extends PHPUnit_Framework_TestCase {
         $o = $this->object->getOptions();
         $this->assertArrayHasKey('DisplayableOrderId',$o);
         $this->assertEquals('ABC123',$o['DisplayableOrderId']);
+    }
+
+    public function testSetFulfillmentAction() {
+        $this->assertFalse($this->object->setFulfillmentAction(null)); //can't be nothing
+        $this->assertFalse($this->object->setFulfillmentAction(5)); //can't be an int
+        $this->assertFalse($this->object->setFulfillmentAction('wrong')); //not a valid value
+        $this->assertNull($this->object->setFulfillmentAction('Ship'));
+        $this->assertNull($this->object->setFulfillmentAction('Hold'));
+        $o = $this->object->getOptions();
+        $this->assertArrayHasKey('FulfillmentAction', $o);
+        $this->assertEquals('Hold', $o['FulfillmentAction']);
+
+        $check = parseLog();
+        $this->assertEquals('Tried to set fulfillment action to invalid value', $check[1]);
     }
     
     public function testSetDate(){
@@ -186,7 +210,96 @@ class AmazonFulfillmentOrderCreatorTest extends PHPUnit_Framework_TestCase {
         $o3 = $this->object->getOptions();
         $this->assertArrayNotHasKey('NotificationEmailList.member.1',$o3);
     }
+
+    public function testSetCodSettings() {
+        $this->assertFalse($this->object->setCodSettings(null)); //can't be nothing
+
+        $this->assertNull($this->object->setCodSettings('USD', TRUE, '5', '6', '7', '8'));
+
+        $o = $this->object->getOptions();
+        $this->assertArrayHasKey('CODSettings.IsCODRequired', $o);
+        $this->assertEquals('true', $o['CODSettings.IsCODRequired']);
+        $this->assertArrayHasKey('CODSettings.CODCharge.Value', $o);
+        $this->assertEquals('5', $o['CODSettings.CODCharge.Value']);
+        $this->assertArrayHasKey('CODSettings.CODCharge.CurrencyCode', $o);
+        $this->assertEquals('USD', $o['CODSettings.CODCharge.CurrencyCode']);
+        $this->assertArrayHasKey('CODSettings.CODChargeTax.Value', $o);
+        $this->assertEquals('6', $o['CODSettings.CODChargeTax.Value']);
+        $this->assertArrayHasKey('CODSettings.CODChargeTax.CurrencyCode', $o);
+        $this->assertEquals('USD', $o['CODSettings.CODChargeTax.CurrencyCode']);
+        $this->assertArrayHasKey('CODSettings.ShippingCharge.Value', $o);
+        $this->assertEquals('7', $o['CODSettings.ShippingCharge.Value']);
+        $this->assertArrayHasKey('CODSettings.ShippingCharge.CurrencyCode', $o);
+        $this->assertEquals('USD', $o['CODSettings.ShippingCharge.CurrencyCode']);
+        $this->assertArrayHasKey('CODSettings.ShippingChargeTax.Value', $o);
+        $this->assertEquals('8', $o['CODSettings.ShippingChargeTax.Value']);
+        $this->assertArrayHasKey('CODSettings.ShippingChargeTax.CurrencyCode', $o);
+        $this->assertEquals('USD', $o['CODSettings.ShippingChargeTax.CurrencyCode']);
+
+        //using again does not cause reset
+        $this->assertNull($this->object->setCodSettings('EUR', NULL, NULL, '5.60', '99', NULL));
+        $o2 = $this->object->getOptions();
+        $this->assertArrayHasKey('CODSettings.CODChargeTax.Value', $o2);
+        $this->assertEquals('5.60', $o2['CODSettings.CODChargeTax.Value']);
+        $this->assertArrayHasKey('CODSettings.CODChargeTax.CurrencyCode', $o2);
+        $this->assertEquals('EUR', $o2['CODSettings.CODChargeTax.CurrencyCode']);
+        $this->assertArrayHasKey('CODSettings.ShippingCharge.Value', $o2);
+        $this->assertEquals('99', $o2['CODSettings.ShippingCharge.Value']);
+        $this->assertArrayHasKey('CODSettings.ShippingCharge.CurrencyCode', $o2);
+        $this->assertEquals('EUR', $o2['CODSettings.ShippingCharge.CurrencyCode']);
+        //these are the same as before
+        $this->assertArrayHasKey('CODSettings.CODCharge.Value', $o2);
+        $this->assertEquals('5', $o2['CODSettings.CODCharge.Value']);
+        $this->assertArrayHasKey('CODSettings.CODCharge.CurrencyCode', $o2);
+        $this->assertEquals('USD', $o2['CODSettings.CODCharge.CurrencyCode']);
+        $this->assertArrayHasKey('CODSettings.ShippingChargeTax.Value', $o2);
+        $this->assertEquals('8', $o2['CODSettings.ShippingChargeTax.Value']);
+        $this->assertArrayHasKey('CODSettings.ShippingChargeTax.CurrencyCode', $o2);
+        $this->assertEquals('USD', $o2['CODSettings.ShippingChargeTax.CurrencyCode']);
+
+        $this->object->resetCodSettings();
+        $o3 = $this->object->getOptions();
+        $this->assertArrayNotHasKey('CODSettings.IsCODRequired', $o3);
+        $this->assertArrayNotHasKey('CODSettings.CODCharge.Value', $o3);
+        $this->assertArrayNotHasKey('CODSettings.CODCharge.CurrencyCode', $o3);
+        $this->assertArrayNotHasKey('CODSettings.CODChargeTax.Value', $o3);
+        $this->assertArrayNotHasKey('CODSettings.CODChargeTax.CurrencyCode', $o3);
+        $this->assertArrayNotHasKey('CODSettings.ShippingCharge.Value', $o3);
+        $this->assertArrayNotHasKey('CODSettings.ShippingCharge.CurrencyCode', $o3);
+        $this->assertArrayNotHasKey('CODSettings.ShippingChargeTax.Value', $o3);
+        $this->assertArrayNotHasKey('CODSettings.ShippingChargeTax.CurrencyCode', $o3);
+    }
     
+    /**
+    * @return array
+    */
+    public function timeProvider() {
+        return array(
+            array(null, null, false), //nothing given, so no change
+            array('', '', false), //strings, but empty
+            array('-1 min', null, false), //one set
+            array(null, '-1 min', false), //other set
+            array('-1 min', '-1 min', true), //both set
+        );
+    }
+
+    /**
+     * @dataProvider timeProvider
+     */
+    public function testSetDeliveryWindow($a, $b, $c) {
+        $this->object->setDeliveryWindow($a, $b);
+        $o = $this->object->getOptions();
+        if ($c) {
+            $this->assertArrayHasKey('DeliveryWindow.StartDateTime', $o);
+            $this->assertStringMatchesFormat('%d-%d-%dT%d:%d:%d%i', $o['DeliveryWindow.StartDateTime']);
+            $this->assertArrayHasKey('DeliveryWindow.EndDateTime', $o);
+            $this->assertStringMatchesFormat('%d-%d-%dT%d:%d:%d%i', $o['DeliveryWindow.EndDateTime']);
+        } else {
+            $this->assertArrayNotHasKey('DeliveryWindow.StartDateTime', $o);
+            $this->assertArrayNotHasKey('DeliveryWindow.EndDateTime', $o);
+        }
+    }
+
     public function testSetItems(){
         $this->assertFalse($this->object->setItems(null)); //can't be nothing
         $this->assertFalse($this->object->setItems('item')); //can't be a string
@@ -223,6 +336,10 @@ class AmazonFulfillmentOrderCreatorTest extends PHPUnit_Framework_TestCase {
         $i[0]['OrderItemDisposition'] = 'OrderItemDisposition';
         $i[0]['PerUnitDeclaredValue']['CurrencyCode'] = 'USD';
         $i[0]['PerUnitDeclaredValue']['Value'] = '9.99';
+        $i[0]['PerUnitPrice']['CurrencyCode'] = 'USD';
+        $i[0]['PerUnitPrice']['Value'] = '20.01';
+        $i[0]['PerUnitTax']['CurrencyCode'] = 'USD';
+        $i[0]['PerUnitTax']['Value'] = '3.50';
         $i[1]['SellerSKU'] = 'SellerSKU2';
         $i[1]['SellerFulfillmentOrderItemId'] = 'SellerFulfillmentOrderItemId2';
         $i[1]['Quantity'] = 'Quantity2';
@@ -248,6 +365,14 @@ class AmazonFulfillmentOrderCreatorTest extends PHPUnit_Framework_TestCase {
         $this->assertEquals('USD',$o['Items.member.1.PerUnitDeclaredValue.CurrencyCode']);
         $this->assertArrayHasKey('Items.member.1.PerUnitDeclaredValue.Value',$o);
         $this->assertEquals('9.99',$o['Items.member.1.PerUnitDeclaredValue.Value']);
+        $this->assertArrayHasKey('Items.member.1.PerUnitPrice.CurrencyCode',$o);
+        $this->assertEquals('USD',$o['Items.member.1.PerUnitPrice.CurrencyCode']);
+        $this->assertArrayHasKey('Items.member.1.PerUnitPrice.Value',$o);
+        $this->assertEquals('20.01',$o['Items.member.1.PerUnitPrice.Value']);
+        $this->assertArrayHasKey('Items.member.1.PerUnitTax.CurrencyCode',$o);
+        $this->assertEquals('USD',$o['Items.member.1.PerUnitTax.CurrencyCode']);
+        $this->assertArrayHasKey('Items.member.1.PerUnitTax.Value',$o);
+        $this->assertEquals('3.50',$o['Items.member.1.PerUnitTax.Value']);
         $this->assertArrayHasKey('Items.member.2.SellerSKU',$o);
         $this->assertEquals('SellerSKU2',$o['Items.member.2.SellerSKU']);
         $this->assertArrayHasKey('Items.member.2.SellerFulfillmentOrderItemId',$o);
@@ -333,6 +458,61 @@ class AmazonFulfillmentOrderCreatorTest extends PHPUnit_Framework_TestCase {
         $this->assertEquals('Bad Response! 503 Service Unavailable: Service Unavailable - Service Unavailable',$check[10]);
         $this->assertEquals('Returning Mock Response: 200',$check[11]);
         $this->assertEquals('Successfully created Fulfillment Order 123ABC / ABC123',$check[12]);
+    }
+
+    public function testUpdateOrder() {
+        resetLog();
+        $this->object->setMock(true, array(503, 200));
+
+        $this->assertFalse($this->object->updateOrder()); //no Seller Fulfillment Order ID set yet
+
+        $this->object->setFulfillmentOrderId('123ABC');
+        $this->assertFalse($this->object->updateOrder()); //no Displayable Order ID set yet
+
+        $this->object->setDisplayableOrderId('ABC123');
+        $this->assertFalse($this->object->updateOrder()); //no Date set yet
+
+        $this->object->setDate('-1 min');
+        $this->assertFalse($this->object->updateOrder()); //no Displayable Order Comment set yet
+
+        $this->object->setComment('A comment.');
+        $this->assertFalse($this->object->updateOrder()); //no Shipping Speed Category set yet
+
+        $this->object->setShippingSpeed('Standard');
+        $this->assertFalse($this->object->updateOrder()); //no Destination Address set yet
+
+        $a = array();
+        $a['Name'] = 'Name';
+        $a['Line1'] = 'Line1';
+        $a['City'] = 'City';
+        $a['StateOrProvinceCode'] = 'StateOrProvinceCode';
+        $a['CountryCode'] = 'CountryCode';
+        $a['PostalCode'] = 'PostalCode';
+        $this->object->setAddress($a);
+        $this->assertFalse($this->object->updateOrder()); //no Items set yet
+
+        $i = array();
+        $i[0]['SellerSKU'] = 'NewSellerSKU';
+        $i[0]['SellerFulfillmentOrderItemId'] = 'NewSellerFulfillmentOrderItemId';
+        $i[0]['Quantity'] = 'NewQuantity';
+        $this->object->setItems($i);
+
+        $this->object->updateOrder(); //attempt 1: oops, bad response
+        $this->object->updateOrder(); //attempt 2: success
+
+        $check = parseLog();
+        $this->assertEquals('Mock files array set.', $check[1]);
+        $this->assertEquals('Seller Fulfillment OrderID must be set in order to update an order', $check[2]);
+        $this->assertEquals('Displayable Order ID must be set in order to update an order', $check[3]);
+        $this->assertEquals('Date must be set in order to update an order', $check[4]);
+        $this->assertEquals('Comment must be set in order to update an order', $check[5]);
+        $this->assertEquals('Shipping Speed must be set in order to update an order', $check[6]);
+        $this->assertEquals('Address must be set in order to update an order', $check[7]);
+        $this->assertEquals('Items must be set in order to update an order', $check[8]);
+        $this->assertEquals('Returning Mock Response: 503', $check[9]);
+        $this->assertEquals('Bad Response! 503 Service Unavailable: Service Unavailable - Service Unavailable', $check[10]);
+        $this->assertEquals('Returning Mock Response: 200', $check[11]);
+        $this->assertEquals('Successfully updated Fulfillment Order 123ABC / ABC123', $check[12]);
     }
     
 }

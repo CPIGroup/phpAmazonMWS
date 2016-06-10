@@ -54,6 +54,18 @@
                 <BuyerName>Amazon User</BuyerName>
                 <BuyerEmail>5vlh04mgfmjh9h5@marketplace.amazon.com</BuyerEmail>
                 <ShipmentServiceLevelCategory>Standard</ShipmentServiceLevelCategory>
+                <CbaDisplayableShippingLabel>Best</CbaDisplayableShippingLabel>
+                <ShippedByAmazonTFM>false</ShippedByAmazonTFM>
+                <TFMShipmentStatus>PendingPickUp</TFMShipmentStatus>
+                <OrderType>StandardOrder</OrderType>
+                <EarliestShipDate>2010-10-06T12:43:16.000Z</EarliestShipDate>
+                <LatestShipDate>2010-10-07T12:43:16.000Z</LatestShipDate>
+                <EarliestDeliveryDate>2010-10-08T12:43:16.000Z</EarliestDeliveryDate>
+                <LatestDeliveryDate>2010-10-09T12:43:16.000Z</LatestDeliveryDate>
+                <IsBusinessOrder>false</IsBusinessOrder>
+                <PurchaseOrderNumber>po123</PurchaseOrderNumber>
+                <IsPrime>false</IsPrime>
+                <IsPremiumOrder>true</IsPremiumOrder>
                 <OrderTotal>
                     <CurrencyCode>USD</CurrencyCode>
                     <Amount>25.75</Amount>

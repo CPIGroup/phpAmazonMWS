@@ -9,6 +9,17 @@
                 <QuantityInCase>0</QuantityInCase>
                 <QuantityReceived>0</QuantityReceived>
                 <FulfillmentNetworkSKU>B000FADVPQ</FulfillmentNetworkSKU>
+                <PrepDetailsList>
+                    <PrepDetails>
+                        <PrepInstruction>BubbleWrapping</PrepInstruction>
+                        <PrepOwner>AMAZON</PrepOwner>
+                    </PrepDetails>
+                    <PrepDetails>
+                        <PrepInstruction>Taping</PrepInstruction>
+                        <PrepOwner>SELLER</PrepOwner>
+                    </PrepDetails>
+                </PrepDetailsList>
+                <ReleaseDate>2012-12-21</ReleaseDate>
             </member>
             <member>
                 <ShipmentId>SSF85DGIZZ3OF1</ShipmentId>

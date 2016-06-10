@@ -277,6 +277,18 @@ class AmazonReportListTest extends PHPUnit_Framework_TestCase {
         $this->assertFalse($o->getIsAcknowledged('wrong')); //not number
         $this->assertFalse($this->object->getIsAcknowledged()); //not fetched yet for this object
     }
+
+    /**
+     * @depends testFetchReportList
+     * @param AmazonReportList $o
+     */
+    public function testGetAcknowledgedDate($o) {
+        $this->assertEquals('2009-02-11T09:22:33+00:00', $o->getAcknowledgedDate(0));
+        $this->assertEquals($o->getAcknowledgedDate(0), $o->getAcknowledgedDate());
+
+        $this->assertFalse($o->getAcknowledgedDate('wrong')); //not number
+        $this->assertFalse($this->object->getAcknowledgedDate()); //not fetched yet for this object
+    }
     
     /**
      * @depends testFetchReportList
@@ -289,6 +301,7 @@ class AmazonReportListTest extends PHPUnit_Framework_TestCase {
         $x1['ReportRequestId'] = '2278662938';
         $x1['AvailableDate'] = '2009-02-10T09:22:33+00:00';
         $x1['Acknowledged'] = 'false';
+        $x1['AcknowledgedDate'] = '2009-02-11T09:22:33+00:00';
         $x[0] = $x1;
         
         $this->assertEquals($x,$o->getList());

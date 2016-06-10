@@ -91,6 +91,8 @@ class AmazonFulfillmentOrderTest extends PHPUnit_Framework_TestCase {
         $xd['DisplayableOrderDateTime'] = '2006-08-02T17:26:56Z';
         $xd['DisplayableOrderComment'] = 'Sample comment.';
         $xd['ShippingSpeedCategory'] = 'Standard';
+        $xd['DeliveryWindow']['StartDateTime'] = '2008-03-11T08:07:53Z';
+        $xd['DeliveryWindow']['EndDateTime'] = '2008-03-12T08:07:53Z';
         $xd['DestinationAddress']['Name'] = 'Greg Miller';
         $xd['DestinationAddress']['Line1'] = '123 Some St.';
         $xd['DestinationAddress']['Line2'] = 'Apt. 321';
@@ -102,11 +104,21 @@ class AmazonFulfillmentOrderTest extends PHPUnit_Framework_TestCase {
         $xd['DestinationAddress']['PostalCode'] = '98101';
         $xd['DestinationAddress']['PhoneNumber'] = '206-555-1928';
         $xd['FulfillmentPolicy'] = 'FillOrKill';
+        $xd['FulfillmentAction'] = 'Ship';
         $xd['FulfillmentMethod'] = 'Consumer';
         $xd['ReceivedDateTime'] = '2006-08-02T17:26:56Z';
         $xd['FulfillmentOrderStatus'] = 'PROCESSING';
         $xd['StatusUpdatedDateTime'] = '2006-09-28T23:48:48Z';
         $xd['NotificationEmailList'][0] = 'o8c2EXAMPLsfr7o@marketplace.amazon.com';
+        $xd['CODSettings']['IsCODRequired'] = 'false';
+        $xd['CODSettings']['CODCharge']['Value'] = '5.00';
+        $xd['CODSettings']['CODCharge']['CurrencyCode'] = 'USD';
+        $xd['CODSettings']['CODChargeTax']['Value'] = '1.00';
+        $xd['CODSettings']['CODChargeTax']['CurrencyCode'] = 'USD';
+        $xd['CODSettings']['ShippingCharge']['Value'] = '2.50';
+        $xd['CODSettings']['ShippingCharge']['CurrencyCode'] = 'USD';
+        $xd['CODSettings']['ShippingChargeTax']['Value'] = '0.50';
+        $xd['CODSettings']['ShippingChargeTax']['CurrencyCode'] = 'USD';
         
         $x['Details'] = $xd;
         
@@ -134,6 +146,10 @@ class AmazonFulfillmentOrderTest extends PHPUnit_Framework_TestCase {
         $xi[1]['EstimatedArrivalDateTime'] = '2008-03-09T08:07:53Z';
         $xi[0]['PerUnitDeclaredValue']['CurrencyCode'] = 'USD';
         $xi[0]['PerUnitDeclaredValue']['Value'] = '999.99';
+        $xi[0]['PerUnitPrice']['CurrencyCode'] = 'USD';
+        $xi[0]['PerUnitPrice']['Value'] = '30.99';
+        $xi[0]['PerUnitTax']['CurrencyCode'] = 'USD';
+        $xi[0]['PerUnitTax']['Value'] = '5.99';
         
         $x['Items'] = $xi;
         

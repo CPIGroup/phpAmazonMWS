@@ -79,6 +79,16 @@ class AmazonReportTest extends PHPUnit_Framework_TestCase {
         $this->assertFileEquals($path2, $path);
         $this->assertFalse($this->object->saveReport('here')); //not fetched yet for this object
     }
+
+    /**
+     * @depends testFetchReport
+     * @param AmazonReport $o
+     */
+    public function testGetRawReport($o) {
+        $this->assertEquals('This is a report.', $o->getRawReport());
+
+        $this->assertFalse($this->object->getRawReport()); //not fetched yet for this object
+    }
     
 }
 

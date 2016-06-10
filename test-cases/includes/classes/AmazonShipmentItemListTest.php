@@ -222,6 +222,39 @@ class AmazonShipmentItemListTest extends PHPUnit_Framework_TestCase {
         $this->assertFalse($o->getQuantityInCase(1.5)); //no decimals
         $this->assertFalse($this->object->getQuantityInCase()); //not fetched yet for this object
     }
+
+    /**
+     * @depends testFetchItems
+     * @param $o AmazonShipmentItemList
+     */
+    public function testGetPrepDetails($o) {
+        $x = array();
+        $x[0]['PrepInstruction'] = 'BubbleWrapping';
+        $x[0]['PrepOwner'] = 'AMAZON';
+        $x[1]['PrepInstruction'] = 'Taping';
+        $x[1]['PrepOwner'] = 'SELLER';
+        $this->assertEquals($x, $o->getPrepDetails(0));
+        $this->assertEquals($o->getPrepDetails(0), $o->getPrepDetails());
+        $this->assertFalse($o->getPrepDetails(1));
+
+        $this->assertEquals($x[0], $o->getPrepDetails(0, 0));
+        $this->assertEquals($x[1], $o->getPrepDetails(0, 1));
+
+        $this->assertFalse($o->getPrepDetails('wrong')); //not number
+        $this->assertFalse($this->object->getPrepDetails()); //not fetched yet for this object
+    }
+
+    /**
+     * @depends testFetchItems
+     * @param $o AmazonShipmentItemList
+     */
+    public function testGetReleaseDate($o) {
+        $this->assertEquals('2012-12-21', $o->getReleaseDate(0));
+
+        $this->assertFalse($o->getReleaseDate('wrong')); //not number
+        $this->assertFalse($o->getReleaseDate(1.5)); //no decimals
+        $this->assertFalse($this->object->getReleaseDate()); //not fetched yet for this object
+    }
     
     /**
      * @depends testFetchItems
@@ -249,6 +282,11 @@ class AmazonShipmentItemListTest extends PHPUnit_Framework_TestCase {
         $x1['QuantityInCase'] = '0';
         $x1['QuantityReceived'] = '0';
         $x1['FulfillmentNetworkSKU'] = 'B000FADVPQ';
+        $x1['PrepDetailsList'][0]['PrepInstruction'] = 'BubbleWrapping';
+        $x1['PrepDetailsList'][0]['PrepOwner'] = 'AMAZON';
+        $x1['PrepDetailsList'][1]['PrepInstruction'] = 'Taping';
+        $x1['PrepDetailsList'][1]['PrepOwner'] = 'SELLER';
+        $x1['ReleaseDate'] = '2012-12-21';
         $x[0] = $x1;
         $x2 = array();
         $x2['ShipmentId'] = 'SSF85DGIZZ3OF1';

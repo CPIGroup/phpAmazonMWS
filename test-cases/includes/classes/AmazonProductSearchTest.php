@@ -34,6 +34,16 @@ class AmazonProductSearchTest extends PHPUnit_Framework_TestCase {
         $this->assertArrayHasKey('Query',$o);
         $this->assertEquals('platinum', $o['Query']);
     }
+
+    public function testSetMarketplace() {
+        $this->assertNull($this->object->setMarketplace('ATVPDKIKX0DER2'));
+        $o = $this->object->getOptions();
+        $this->assertArrayHasKey('MarketplaceId', $o);
+        $this->assertEquals('ATVPDKIKX0DER2', $o['MarketplaceId']);
+        $this->assertFalse($this->object->setMarketplace(77)); //won't work for numbers
+        $this->assertFalse($this->object->setMarketplace(array())); //won't work for this
+        $this->assertFalse($this->object->setMarketplace(null)); //won't work for other things
+    }
     
     public function testSetQuery(){
         $this->assertFalse($this->object->setQuery(null)); //can't be nothing

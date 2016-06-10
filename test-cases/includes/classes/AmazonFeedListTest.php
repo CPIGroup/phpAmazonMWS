@@ -168,6 +168,8 @@ class AmazonFeedListTest extends PHPUnit_Framework_TestCase {
         $this->assertEquals('_MOCK_FEED_',$r[0]['FeedType']);
         $this->assertEquals('2012-12-12T12:12:12+00:00',$r[0]['SubmittedDate']);
         $this->assertEquals('_SUBMITTED_',$r[0]['FeedProcessingStatus']);
+        $this->assertEquals('2012-12-15T12:12:12+00:00',$r[0]['StartedProcessingDate']);
+        $this->assertEquals('2012-12-16T12:12:12+00:00',$r[0]['CompletedProcessingDate']);
         
         $this->assertFalse($this->object->hasToken());
         
@@ -175,6 +177,7 @@ class AmazonFeedListTest extends PHPUnit_Framework_TestCase {
     }
     
     /**
+     * @param AmazonFeedList $o
      * @depends testFetchFeedSubmissions
      */
     public function testGetFeedInfo($o){
@@ -188,6 +191,8 @@ class AmazonFeedListTest extends PHPUnit_Framework_TestCase {
         $this->assertArrayHasKey('FeedType',$info);
         $this->assertArrayHasKey('SubmittedDate',$info);
         $this->assertArrayHasKey('FeedProcessingStatus',$info);
+        $this->assertArrayHasKey('StartedProcessingDate',$info);
+        $this->assertArrayHasKey('CompletedProcessingDate',$info);
         
         $id = $o->getFeedId();
         $type = $o->getFeedType();
@@ -199,17 +204,23 @@ class AmazonFeedListTest extends PHPUnit_Framework_TestCase {
         $this->assertEquals($info['FeedType'],$type);
         $this->assertEquals($info['SubmittedDate'],$date);
         $this->assertEquals($info['FeedProcessingStatus'],$status);
+        $this->assertEquals($info['StartedProcessingDate'], $o->getDateStarted());
+        $this->assertEquals($info['CompletedProcessingDate'],$o->getDateCompleted());
         
         $this->assertFalse($o->getFeedInfo(null));
         $this->assertFalse($o->getFeedId(null));
         $this->assertFalse($o->getFeedType(null));
         $this->assertFalse($o->getDateSubmitted(null));
         $this->assertFalse($o->getFeedStatus(null));
+        $this->assertFalse($o->getDateStarted(null));
+        $this->assertFalse($o->getDateCompleted(null));
         $this->assertFalse($o->getFeedInfo('string'));
         $this->assertFalse($o->getFeedId('string'));
         $this->assertFalse($o->getFeedType('string'));
         $this->assertFalse($o->getDateSubmitted('string'));
         $this->assertFalse($o->getFeedStatus('string'));
+        $this->assertFalse($o->getDateStarted('string'));
+        $this->assertFalse($o->getDateCompleted('string'));
         
         $this->assertFalse($this->object->getFeedList()); //not fetched yet for this object
     }

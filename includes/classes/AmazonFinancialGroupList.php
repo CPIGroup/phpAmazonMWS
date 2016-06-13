@@ -183,20 +183,30 @@ class AmazonFinancialGroupList extends AmazonFinanceCore implements Iterator {
             $temp = array();
             $temp['FinancialEventGroupId'] = (string)$x->FinancialEventGroupId;
             $temp['ProcessingStatus'] = (string)$x->ProcessingStatus;
-            $temp['FundTransferStatus'] = (string)$x->FundTransferStatus;
+            if (isset($x->FundTransferStatus)) {
+                $temp['FundTransferStatus'] = (string)$x->FundTransferStatus;
+            }
             $temp['OriginalTotal']['Amount'] = (string)$x->OriginalTotal->CurrencyAmount;
             $temp['OriginalTotal']['CurrencyCode'] = (string)$x->OriginalTotal->CurrencyCode;
-            $temp['ConvertedTotal']['Amount'] = (string)$x->ConvertedTotal->CurrencyAmount;
-            $temp['ConvertedTotal']['CurrencyCode'] = (string)$x->ConvertedTotal->CurrencyCode;
+            if (isset($x->ConvertedTotal)) {
+                $temp['ConvertedTotal']['Amount'] = (string)$x->ConvertedTotal->CurrencyAmount;
+                $temp['ConvertedTotal']['CurrencyCode'] = (string)$x->ConvertedTotal->CurrencyCode;
+            }
             if (isset($x->FundTransferDate)) {
                 $temp['FundTransferDate'] = (string)$x->FundTransferDate;
             }
-            $temp['TraceId'] = (string)$x->TraceId;
-            $temp['AccountTail'] = (string)$x->AccountTail;
+            if (isset($x->TraceId)) {
+                $temp['TraceId'] = (string)$x->TraceId;
+            }
+            if (isset($x->AccountTail)) {
+                $temp['AccountTail'] = (string)$x->AccountTail;
+            }
             $temp['BeginningBalance']['Amount'] = (string)$x->BeginningBalance->CurrencyAmount;
             $temp['BeginningBalance']['CurrencyCode'] = (string)$x->BeginningBalance->CurrencyCode;
             $temp['FinancialEventGroupStart'] = (string)$x->FinancialEventGroupStart;
-            $temp['FinancialEventGroupEnd'] = (string)$x->FinancialEventGroupEnd;
+            if (isset($x->FinancialEventGroupEnd)) {
+                $temp['FinancialEventGroupEnd'] = (string)$x->FinancialEventGroupEnd;
+            }
             $this->list[$this->index] = $temp;
             $this->index++;
         }
@@ -228,6 +238,189 @@ class AmazonFinancialGroupList extends AmazonFinanceCore implements Iterator {
     public function getGroups(){
         if (isset($this->list)){
             return $this->list;
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * Returns the ID for the specified entry.
+     *
+     * This method will return <b>FALSE</b> if the list has not yet been filled.
+     * @param int $i [optional] <p>List index to retrieve the value from. Defaults to 0.</p>
+     * @return string|boolean single value, or <b>FALSE</b> if Non-numeric index
+     */
+    public function getGroupId($i = 0) {
+        if (isset($this->list[$i]['FinancialEventGroupId'])) {
+            return $this->list[$i]['FinancialEventGroupId'];
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * Returns the processing status for the specified entry.
+     *
+     * This method will return <b>FALSE</b> if the list has not yet been filled.
+     * @param int $i [optional] <p>List index to retrieve the value from. Defaults to 0.</p>
+     * @return string|boolean "Open" or "Closed", or <b>FALSE</b> if Non-numeric index
+     */
+    public function getProcessingStatus($i = 0) {
+        if (isset($this->list[$i]['ProcessingStatus'])) {
+            return $this->list[$i]['ProcessingStatus'];
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * Returns the transfer status for the specified entry.
+     *
+     * This method will return <b>FALSE</b> if the list has not yet been filled.
+     * @param int $i [optional] <p>List index to retrieve the value from. Defaults to 0.</p>
+     * @return string|boolean single value, or <b>FALSE</b> if Non-numeric index
+     */
+    public function getTransferStatus($i = 0) {
+        if (isset($this->list[$i]['FundTransferStatus'])) {
+            return $this->list[$i]['FundTransferStatus'];
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * Returns the original total for the specified entry.
+     *
+     * This method will return <b>FALSE</b> if the list has not yet been filled.
+     * If an array is returned, it will have the fields <b>Amount</b> and <b>CurrencyCode</b>.
+     * @param int $i [optional] <p>List index to retrieve the value from. Defaults to 0.</p>
+     * @param boolean $only [optional] <p>set to <b>TRUE</b> to get only the amount</p>
+     * @return array|string|boolean array, single value, or <b>FALSE</b> if Non-numeric index
+     */
+    public function getOriginalTotal($i = 0, $only = false) {
+        if (isset($this->list[$i]['OriginalTotal'])) {
+            if ($only) {
+                return $this->list[$i]['OriginalTotal']['Amount'];
+            } else {
+                return $this->list[$i]['OriginalTotal'];
+            }
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * Returns the converted total for the specified entry.
+     *
+     * This method will return <b>FALSE</b> if the list has not yet been filled.
+     * If an array is returned, it will have the fields <b>Amount</b> and <b>CurrencyCode</b>.
+     * @param int $i [optional] <p>List index to retrieve the value from. Defaults to 0.</p>
+     * @param boolean $only [optional] <p>set to <b>TRUE</b> to get only the amount</p>
+     * @return array|string|boolean array, single value, or <b>FALSE</b> if Non-numeric index
+     */
+    public function getConvertedTotal($i = 0, $only = false) {
+        if (isset($this->list[$i]['ConvertedTotal'])) {
+            if ($only) {
+                return $this->list[$i]['ConvertedTotal']['Amount'];
+            } else {
+                return $this->list[$i]['ConvertedTotal'];
+            }
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * Returns the transfer date for the specified entry.
+     *
+     * This method will return <b>FALSE</b> if the list has not yet been filled.
+     * @param int $i [optional] <p>List index to retrieve the value from. Defaults to 0.</p>
+     * @return string|boolean date in ISO 8601 format, or <b>FALSE</b> if Non-numeric index
+     */
+    public function getTransferDate($i = 0) {
+        if (isset($this->list[$i]['FundTransferDate'])) {
+            return $this->list[$i]['FundTransferDate'];
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * Returns the trace ID for the specified entry.
+     *
+     * This method will return <b>FALSE</b> if the list has not yet been filled.
+     * @param int $i [optional] <p>List index to retrieve the value from. Defaults to 0.</p>
+     * @return string|boolean single value, or <b>FALSE</b> if Non-numeric index
+     */
+    public function getTraceId($i = 0) {
+        if (isset($this->list[$i]['TraceId'])) {
+            return $this->list[$i]['TraceId'];
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * Returns the account tail for the specified entry.
+     *
+     * This method will return <b>FALSE</b> if the list has not yet been filled.
+     * @param int $i [optional] <p>List index to retrieve the value from. Defaults to 0.</p>
+     * @return string|boolean single value, or <b>FALSE</b> if Non-numeric index
+     */
+    public function getAccountTail($i = 0) {
+        if (isset($this->list[$i]['AccountTail'])) {
+            return $this->list[$i]['AccountTail'];
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * Returns the balance at the beginning of the settlement period for the specified entry.
+     *
+     * This method will return <b>FALSE</b> if the list has not yet been filled.
+     * If an array is returned, it will have the fields <b>Amount</b> and <b>CurrencyCode</b>.
+     * @param int $i [optional] <p>List index to retrieve the value from. Defaults to 0.</p>
+     * @param boolean $only [optional] <p>set to <b>TRUE</b> to get only the amount</p>
+     * @return array|string|boolean array, single value, or <b>FALSE</b> if Non-numeric index
+     */
+    public function getBeginningBalance($i = 0, $only = false) {
+        if (isset($this->list[$i]['BeginningBalance'])) {
+            if ($only) {
+                return $this->list[$i]['BeginningBalance']['Amount'];
+            } else {
+                return $this->list[$i]['BeginningBalance'];
+            }
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * Returns the start date for the specified entry.
+     *
+     * This method will return <b>FALSE</b> if the list has not yet been filled.
+     * @param int $i [optional] <p>List index to retrieve the value from. Defaults to 0.</p>
+     * @return string|boolean date in ISO 8601 format, or <b>FALSE</b> if Non-numeric index
+     */
+    public function getStartDate($i = 0) {
+        if (isset($this->list[$i]['FinancialEventGroupStart'])) {
+            return $this->list[$i]['FinancialEventGroupStart'];
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * Returns the end date for the specified entry.
+     *
+     * This method will return <b>FALSE</b> if the list has not yet been filled.
+     * @param int $i [optional] <p>List index to retrieve the value from. Defaults to 0.</p>
+     * @return string|boolean date in ISO 8601 format, or <b>FALSE</b> if Non-numeric index
+     */
+    public function getEndDate($i = 0) {
+        if (isset($this->list[$i]['FinancialEventGroupEnd'])) {
+            return $this->list[$i]['FinancialEventGroupEnd'];
         } else {
             return false;
         }

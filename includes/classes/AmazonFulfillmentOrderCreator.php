@@ -539,31 +539,7 @@ class AmazonFulfillmentOrderCreator extends AmazonOutboundCore{
      */
     public function updateOrder(){
         if (!array_key_exists('SellerFulfillmentOrderId',$this->options)){
-            $this->log("Seller Fulfillment OrderID must be set in order to create an order",'Warning');
-            return false;
-        }
-        if (!array_key_exists('DisplayableOrderId',$this->options)){
-            $this->log("Displayable Order ID must be set in order to create an order",'Warning');
-            return false;
-        }
-        if (!array_key_exists('DisplayableOrderDateTime',$this->options)){
-            $this->log("Date must be set in order to create an order",'Warning');
-            return false;
-        }
-        if (!array_key_exists('DisplayableOrderComment',$this->options)){
-            $this->log("Comment must be set in order to create an order",'Warning');
-            return false;
-        }
-        if (!array_key_exists('ShippingSpeedCategory',$this->options)){
-            $this->log("Shipping Speed must be set in order to create an order",'Warning');
-            return false;
-        }
-        if (!array_key_exists('DestinationAddress.Name',$this->options)){
-            $this->log("Address must be set in order to create an order",'Warning');
-            return false;
-        }
-        if (!array_key_exists('Items.member.1.SellerSKU',$this->options)){
-            $this->log("Items must be set in order to create an order",'Warning');
+            $this->log("Seller Fulfillment OrderID must be set in order to update an order",'Warning');
             return false;
         }
 
@@ -581,7 +557,7 @@ class AmazonFulfillmentOrderCreator extends AmazonOutboundCore{
         if (!$this->checkResponse($response)){
             return false;
         } else {
-            $this->log("Successfully created Fulfillment Order ".$this->options['SellerFulfillmentOrderId']." / ".$this->options['DisplayableOrderId']);
+            $this->log("Successfully updated Fulfillment Order ".$this->options['SellerFulfillmentOrderId']);
             return true;
         }
     }

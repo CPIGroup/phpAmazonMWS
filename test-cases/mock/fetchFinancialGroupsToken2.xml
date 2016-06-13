@@ -1,0 +1,33 @@
+<?xml version="1.0"?>
+<ListFinancialEventGroupsByNextTokenResponse xmlns="https://mws.amazonservices.com/Finances/2015-05-01">
+    <ListFinancialEventGroupsByNextTokenResult>
+        <FinancialEventGroupList>
+            <FinancialEventGroup>
+                <FinancialEventGroupId>22Y99995IGNhcm5hbANOTHEREXAMPLE</FinancialEventGroupId>
+                <ProcessingStatus>Closed2</ProcessingStatus>
+                <FundTransferStatus>Successful2</FundTransferStatus>
+                <OriginalTotal>
+                    <CurrencyCode>USD</CurrencyCode>
+                    <CurrencyAmount>42.00</CurrencyAmount>
+                </OriginalTotal>
+                <ConvertedTotal>
+                    <CurrencyCode>USD</CurrencyCode>
+                    <CurrencyAmount>42.00</CurrencyAmount>
+                </ConvertedTotal>
+                <FundTransferDate>2014-05-09T01:30:00.000-06:00</FundTransferDate>
+                <TraceId>128311029381HSADJEXAMPLE</TraceId>
+                <AccountTail>1212</AccountTail>
+                <BeginningBalance>
+                    <CurrencyCode>USD</CurrencyCode>
+                    <CurrencyAmount>20.00</CurrencyAmount>
+                </BeginningBalance>
+                <FinancialEventGroupStart>2014-05-01T01:30:00.000-06:00</FinancialEventGroupStart>
+                <FinancialEventGroupEnd>2014-05-09T01:30:00.000-06:00</FinancialEventGroupEnd>
+            </FinancialEventGroup>
+        </FinancialEventGroupList>
+    </ListFinancialEventGroupsByNextTokenResult>
+    <ResponseMetadata>
+        <RequestId>1105b931-6f1c-4480-8e97-f3b46EXAMPLE</RequestId>
+    </ResponseMetadata>
+</ListFinancialEventGroupsByNextTokenResponse>
+

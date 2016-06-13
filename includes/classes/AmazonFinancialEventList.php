@@ -71,11 +71,11 @@ class AmazonFinancialEventList extends AmazonFinanceCore {
     }
 
     /**
-     * Sets the order ID filter. (Optional)
+     * Sets the order ID filter. (Required*)
      *
      * If this parameter is set, Amazon will only return Financial Events that
-     * relate to the given order. If this parameter is not set, Amazon will
-     * return all Financial Events that meet the other filters.
+     * relate to the given order. This parameter is required if none of the
+     * other filter options are set.
      * If this parameter is set, the group ID and time range options will be removed.
      * @param string $s <p>Amazon Order ID in 3-7-7 format</p>
      * @return boolean <b>FALSE</b> if improper input
@@ -90,11 +90,11 @@ class AmazonFinancialEventList extends AmazonFinanceCore {
     }
 
     /**
-     * Sets the financial event group ID filter. (Optional)
+     * Sets the financial event group ID filter. (Required*)
      *
      * If this parameter is set, Amazon will only return Financial Events that
-     * belong to the given financial event group. If this parameter is not set,
-     * Amazon will return all Financial Events that meet the other filters.
+     * belong to the given financial event group. This parameter is required if
+     * none of the other filter options are set.
      * If this parameter is set, the order ID and time range options will be removed.
      * @param string $s <p>Financial Event Group ID</p>
      * @return boolean <b>FALSE</b> if improper input
@@ -109,12 +109,12 @@ class AmazonFinancialEventList extends AmazonFinanceCore {
     }
 
     /**
-     * Sets the time frame options. (Optional)
+     * Sets the time frame options. (Required*)
      *
      * This method sets the start and end times for the next request. If this
      * parameter is set, Amazon will only return Financial Events posted
-     * between the two times given. If these parameters are not set, Amazon will
-     * return all Financial Events that meet the other filters.
+     * between the two times given. This parameter is required if none of the
+     * other filter options are set.
      * The parameters are passed through <i>strtotime</i>, so values such as "-1 hour" are fine.
      * If this parameter is set, the order ID and group ID options will be removed.
      * @param string $s <p>A time string for the earliest time.</p>
@@ -232,28 +232,28 @@ class AmazonFinancialEventList extends AmazonFinanceCore {
         if (!$xml) {
             return false;
         }
-        if (isset($xml->ShipmentEvents)) {
-            foreach($xml->ShipmentEvents->children() as $x) {
+        if (isset($xml->ShipmentEventList)) {
+            foreach($xml->ShipmentEventList->children() as $x) {
                 $this->list['Shipment'][] = $this->parseShipmentEvent($x);
             }
         }
-        if (isset($xml->RefundEvents)) {
-            foreach($xml->RefundEvents->children() as $x) {
+        if (isset($xml->RefundEventList)) {
+            foreach($xml->RefundEventList->children() as $x) {
                 $this->list['Refund'][] = $this->parseShipmentEvent($x);
             }
         }
-        if (isset($xml->GuaranteeClaimEvents)) {
-            foreach($xml->GuaranteeClaimEvents->children() as $x) {
+        if (isset($xml->GuaranteeClaimEventList)) {
+            foreach($xml->GuaranteeClaimEventList->children() as $x) {
                 $this->list['GuaranteeClaim'][] = $this->parseShipmentEvent($x);
             }
         }
-        if (isset($xml->ChargebackEvents)) {
-            foreach($xml->ChargebackEvents->children() as $x) {
+        if (isset($xml->ChargebackEventList)) {
+            foreach($xml->ChargebackEventList->children() as $x) {
                 $this->list['Chargeback'][] = $this->parseShipmentEvent($x);
             }
         }
-        if (isset($xml->PayWithAmazonEvents)) {
-            foreach($xml->PayWithAmazonEvents->children() as $x) {
+        if (isset($xml->PayWithAmazonEventList)) {
+            foreach($xml->PayWithAmazonEventList->children() as $x) {
                 $temp = array();
                 $temp['SellerOrderId'] = (string)$x->SellerOrderId;
                 $temp['TransactionPostedDate'] = (string)$x->TransactionPostedDate;
@@ -261,7 +261,7 @@ class AmazonFinancialEventList extends AmazonFinanceCore {
                 $temp['SalesChannel'] = (string)$x->SalesChannel;
                 $temp['Charge'] = $this->parseCharge($x->Charge);
                 if (isset($x->FeeList)) {
-                    foreach($xml->FeeList->children() as $z) {
+                    foreach($x->FeeList->children() as $z) {
                         $temp['FeeList'][] = $this->parseFee($z);
                     }
                 }
@@ -272,8 +272,8 @@ class AmazonFinancialEventList extends AmazonFinanceCore {
                 $this->list['PayWithAmazon'][] = $temp;
             }
         }
-        if (isset($xml->ServiceProviderCreditEvents)) {
-            foreach($xml->ServiceProviderCreditEvents->children() as $x) {
+        if (isset($xml->ServiceProviderCreditEventList)) {
+            foreach($xml->ServiceProviderCreditEventList->children() as $x) {
                 $temp = array();
                 $temp['ProviderTransactionType'] = (string)$x->ProviderTransactionType;
                 $temp['SellerOrderId'] = (string)$x->SellerOrderId;
@@ -286,8 +286,8 @@ class AmazonFinancialEventList extends AmazonFinanceCore {
                 $this->list['ServiceProviderCredit'][] = $temp;
             }
         }
-        if (isset($xml->RetrochargeEvents)) {
-            foreach($xml->RetrochargeEvents->children() as $x) {
+        if (isset($xml->RetrochargeEventList)) {
+            foreach($xml->RetrochargeEventList->children() as $x) {
                 $temp = array();
                 $temp['RetrochargeEventType'] = (string)$x->RetrochargeEventType;
                 $temp['AmazonOrderId'] = (string)$x->AmazonOrderId;
@@ -300,20 +300,20 @@ class AmazonFinancialEventList extends AmazonFinanceCore {
                 $this->list['Retrocharge'][] = $temp;
             }
         }
-        if (isset($xml->RentalTransactionEvents)) {
-            foreach($xml->RentalTransactionEvents->children() as $x) {
+        if (isset($xml->RentalTransactionEventList)) {
+            foreach($xml->RentalTransactionEventList->children() as $x) {
                 $temp = array();
                 $temp['AmazonOrderId'] = (string)$x->AmazonOrderId;
                 $temp['RentalEventType'] = (string)$x->RentalEventType;
                 $temp['ExtensionLength'] = (string)$x->ExtensionLength;
                 $temp['PostedDate'] = (string)$x->PostedDate;
                 if (isset($x->RentalChargeList)) {
-                    foreach($xml->RentalChargeList->children() as $z) {
+                    foreach($x->RentalChargeList->children() as $z) {
                         $temp['RentalChargeList'][] = $this->parseCharge($z);
                     }
                 }
                 if (isset($x->RentalFeeList)) {
-                    foreach($xml->RentalFeeList->children() as $z) {
+                    foreach($x->RentalFeeList->children() as $z) {
                         $temp['RentalFeeList'][] = $this->parseFee($z);
                     }
                 }
@@ -329,25 +329,29 @@ class AmazonFinancialEventList extends AmazonFinanceCore {
                 $this->list['RentalTransaction'][] = $temp;
             }
         }
-        if (isset($xml->PerformanceBondRefundEvents)) {
-            foreach($xml->PerformanceBondRefundEvents->children() as $x) {
+        if (isset($xml->PerformanceBondRefundEventList)) {
+            foreach($xml->PerformanceBondRefundEventList->children() as $x) {
                 $temp = array();
                 $temp['MarketplaceCountryCode'] = (string)$x->MarketplaceCountryCode;
                 $temp['Amount'] = (string)$x->Amount->CurrencyAmount;
                 $temp['CurrencyCode'] = (string)$x->Amount->CurrencyCode;
-                foreach($xml->ProductGroupList->children() as $z) {
-                    $temp['ProductGroupList'][] = (string)$z;
+                if (isset($x->ProductGroupList)) {
+                    foreach($x->ProductGroupList->children() as $z) {
+                        $temp['ProductGroupList'][] = (string)$z;
+                    }
                 }
                 $this->list['PerformanceBondRefund'][] = $temp;
             }
         }
-        if (isset($xml->ServiceFeeEvents)) {
-            foreach($xml->ServiceFeeEvents->children() as $x) {
+        if (isset($xml->ServiceFeeEventList)) {
+            foreach($xml->ServiceFeeEventList->children() as $x) {
                 $temp = array();
                 $temp['AmazonOrderId'] = (string)$x->AmazonOrderId;
                 $temp['FeeReason'] = (string)$x->FeeReason;
-                foreach($xml->FeeList->children() as $z) {
-                    $temp['FeeList'][] = $this->parseFee($z);
+                if (isset($x->FeeList)) {
+                    foreach($x->FeeList->children() as $z) {
+                        $temp['FeeList'][] = $this->parseFee($z);
+                    }
                 }
                 $temp['SellerSKU'] = (string)$x->SellerSKU;
                 $temp['FnSKU'] = (string)$x->FnSKU;
@@ -356,37 +360,41 @@ class AmazonFinancialEventList extends AmazonFinanceCore {
                 $this->list['ServiceFee'][] = $temp;
             }
         }
-        if (isset($xml->DebtRecoveryEvents)) {
-            foreach($xml->DebtRecoveryEvents->children() as $x) {
+        if (isset($xml->DebtRecoveryEventList)) {
+            foreach($xml->DebtRecoveryEventList->children() as $x) {
                 $temp = array();
                 $temp['DebtRecoveryType'] = (string)$x->DebtRecoveryType;
                 $temp['RecoveryAmount']['Amount'] = (string)$x->RecoveryAmount->CurrencyAmount;
                 $temp['RecoveryAmount']['CurrencyCode'] = (string)$x->RecoveryAmount->CurrencyCode;
                 $temp['OverPaymentCredit']['Amount'] = (string)$x->OverPaymentCredit->CurrencyAmount;
                 $temp['OverPaymentCredit']['CurrencyCode'] = (string)$x->OverPaymentCredit->CurrencyCode;
-                foreach($xml->DebtRecoveryItemList->children() as $z) {
-                    $ztemp = array();
-                    $ztemp['RecoveryAmount']['Amount'] = (string)$z->RecoveryAmount->CurrencyAmount;
-                    $ztemp['RecoveryAmount']['CurrencyCode'] = (string)$z->RecoveryAmount->CurrencyCode;
-                    $ztemp['OriginalAmount']['Amount'] = (string)$z->OriginalAmount->CurrencyAmount;
-                    $ztemp['OriginalAmount']['CurrencyCode'] = (string)$z->OriginalAmount->CurrencyCode;
-                    $ztemp['GroupBeginDate'] = (string)$z->GroupBeginDate;
-                    $ztemp['GroupEndDate'] = (string)$z->GroupEndDate;
-                    $temp['DebtRecoveryItemList'][] = $ztemp;
+                if (isset($x->DebtRecoveryItemList)) {
+                    foreach($x->DebtRecoveryItemList->children() as $z) {
+                        $ztemp = array();
+                        $ztemp['RecoveryAmount']['Amount'] = (string)$z->RecoveryAmount->CurrencyAmount;
+                        $ztemp['RecoveryAmount']['CurrencyCode'] = (string)$z->RecoveryAmount->CurrencyCode;
+                        $ztemp['OriginalAmount']['Amount'] = (string)$z->OriginalAmount->CurrencyAmount;
+                        $ztemp['OriginalAmount']['CurrencyCode'] = (string)$z->OriginalAmount->CurrencyCode;
+                        $ztemp['GroupBeginDate'] = (string)$z->GroupBeginDate;
+                        $ztemp['GroupEndDate'] = (string)$z->GroupEndDate;
+                        $temp['DebtRecoveryItemList'][] = $ztemp;
+                    }
                 }
-                foreach($xml->ChargeInstrumentList->children() as $z) {
-                    $ztemp = array();
-                    $ztemp['Description'] = (string)$z->Description;
-                    $ztemp['Tail'] = (string)$z->Tail;
-                    $ztemp['Amount'] = (string)$z->Amount->CurrencyAmount;
-                    $ztemp['CurrencyCode'] = (string)$z->Amount->CurrencyCode;
-                    $temp['ChargeInstrumentList'][] = $ztemp;
+                if (isset($x->ChargeInstrumentList)) {
+                    foreach($x->ChargeInstrumentList->children() as $z) {
+                        $ztemp = array();
+                        $ztemp['Description'] = (string)$z->Description;
+                        $ztemp['Tail'] = (string)$z->Tail;
+                        $ztemp['Amount'] = (string)$z->Amount->CurrencyAmount;
+                        $ztemp['CurrencyCode'] = (string)$z->Amount->CurrencyCode;
+                        $temp['ChargeInstrumentList'][] = $ztemp;
+                    }
                 }
                 $this->list['DebtRecovery'][] = $temp;
             }
         }
-        if (isset($xml->LoanServicingEvents)) {
-            foreach($xml->LoanServicingEvents->children() as $x) {
+        if (isset($xml->LoanServicingEventList)) {
+            foreach($xml->LoanServicingEventList->children() as $x) {
                 $temp = array();
                 $temp['Amount'] = (string)$x->LoanAmount->CurrencyAmount;
                 $temp['CurrencyCode'] = (string)$x->LoanAmount->CurrencyCode;
@@ -394,24 +402,26 @@ class AmazonFinancialEventList extends AmazonFinanceCore {
                 $this->list['LoanServicing'][] = $temp;
             }
         }
-        if (isset($xml->AdjustmentEvents)) {
-            foreach($xml->AdjustmentEvents->children() as $x) {
+        if (isset($xml->AdjustmentEventList)) {
+            foreach($xml->AdjustmentEventList->children() as $x) {
                 $temp = array();
                 $temp['AdjustmentType'] = (string)$x->AdjustmentType;
                 $temp['Amount'] = (string)$x->AdjustmentAmount->CurrencyAmount;
                 $temp['CurrencyCode'] = (string)$x->AdjustmentAmount->CurrencyCode;
-                foreach($xml->AdjustmentItemList->children() as $z) {
-                    $ztemp = array();
-                    $ztemp['Quantity'] = (string)$z->Quantity;
-                    $ztemp['PerUnitAmount']['Amount'] = (string)$z->PerUnitAmount->CurrencyAmount;
-                    $ztemp['PerUnitAmount']['CurrencyCode'] = (string)$z->PerUnitAmount->CurrencyCode;
-                    $ztemp['TotalAmount']['Amount'] = (string)$z->TotalAmount->CurrencyAmount;
-                    $ztemp['TotalAmount']['CurrencyCode'] = (string)$z->TotalAmount->CurrencyCode;
-                    $ztemp['SellerSKU'] = (string)$z->SellerSKU;
-                    $ztemp['FnSKU'] = (string)$z->FnSKU;
-                    $ztemp['ProductDescription'] = (string)$z->ProductDescription;
-                    $ztemp['ASIN'] = (string)$z->ASIN;
-                    $temp['AdjustmentItemList'][] = $ztemp;
+                if (isset($x->AdjustmentItemList)) {
+                    foreach($x->AdjustmentItemList->children() as $z) {
+                        $ztemp = array();
+                        $ztemp['Quantity'] = (string)$z->Quantity;
+                        $ztemp['PerUnitAmount']['Amount'] = (string)$z->PerUnitAmount->CurrencyAmount;
+                        $ztemp['PerUnitAmount']['CurrencyCode'] = (string)$z->PerUnitAmount->CurrencyCode;
+                        $ztemp['TotalAmount']['Amount'] = (string)$z->TotalAmount->CurrencyAmount;
+                        $ztemp['TotalAmount']['CurrencyCode'] = (string)$z->TotalAmount->CurrencyCode;
+                        $ztemp['SellerSKU'] = (string)$z->SellerSKU;
+                        $ztemp['FnSKU'] = (string)$z->FnSKU;
+                        $ztemp['ProductDescription'] = (string)$z->ProductDescription;
+                        $ztemp['ASIN'] = (string)$z->ASIN;
+                        $temp['AdjustmentItemList'][] = $ztemp;
+                    }
                 }
                 $this->list['Adjustment'][] = $temp;
             }
@@ -461,7 +471,7 @@ class AmazonFinancialEventList extends AmazonFinanceCore {
                 $r['DirectPaymentList'][] = $temp;
             }
         }
-        $r['PostedDate'] = (string)$xml->MarketplaceName;
+        $r['PostedDate'] = (string)$xml->PostedDate;
         $itemLists = array(
             'ShipmentItemList',
             'ShipmentItemAdjustmentList',
@@ -491,14 +501,14 @@ class AmazonFinancialEventList extends AmazonFinanceCore {
                     foreach ($itemChargeLists as $zkey) {
                         if (isset($x->$zkey)) {
                             foreach($x->$zkey->children() as $z) {
-                                $r[$zkey][] = $this->parseFee($z);
+                                $temp[$zkey][] = $this->parseCharge($z);
                             }
                         }
                     }
                     foreach ($itemFeeLists as $zkey) {
                         if (isset($x->$zkey)) {
                             foreach($x->$zkey->children() as $z) {
-                                $r[$zkey][] = $this->parseCharge($z);
+                                $temp[$zkey][] = $this->parseFee($z);
                             }
                         }
                     }
@@ -510,7 +520,7 @@ class AmazonFinancialEventList extends AmazonFinanceCore {
                                 $ztemp['PromotionId'] = (string)$z->PromotionId;
                                 $ztemp['Amount'] = (string)$z->PromotionAmount->CurrencyAmount;
                                 $ztemp['CurrencyCode'] = (string)$z->PromotionAmount->CurrencyCode;
-                                $r[$zkey][] = $ztemp;
+                                $temp[$zkey][] = $ztemp;
                             }
                         }
                     }
@@ -538,8 +548,8 @@ class AmazonFinancialEventList extends AmazonFinanceCore {
     protected function parseCharge($xml) {
         $r = array();
         $r['ChargeType'] = (string)$xml->ChargeType;
-        $r['Amount'] = (string)$xml->ChargeType->CurrencyAmount;
-        $r['CurrencyCode'] = (string)$xml->ChargeType->CurrencyCode;
+        $r['Amount'] = (string)$xml->ChargeAmount->CurrencyAmount;
+        $r['CurrencyCode'] = (string)$xml->ChargeAmount->CurrencyCode;
         return $r;
     }
 

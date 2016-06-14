@@ -447,7 +447,7 @@ class AmazonFulfillmentOrderCreatorTest extends PHPUnit_Framework_TestCase {
         
         $check = parseLog();
         $this->assertEquals('Mock files array set.',$check[1]);
-        $this->assertEquals('Seller Fulfillment OrderID must be set in order to create an order',$check[2]);
+        $this->assertEquals('Seller Fulfillment Order ID must be set in order to create an order',$check[2]);
         $this->assertEquals('Displayable Order ID must be set in order to create an order',$check[3]);
         $this->assertEquals('Date must be set in order to create an order',$check[4]);
         $this->assertEquals('Comment must be set in order to create an order',$check[5]);
@@ -465,54 +465,17 @@ class AmazonFulfillmentOrderCreatorTest extends PHPUnit_Framework_TestCase {
         $this->object->setMock(true, array(503, 200));
 
         $this->assertFalse($this->object->updateOrder()); //no Seller Fulfillment Order ID set yet
-
         $this->object->setFulfillmentOrderId('123ABC');
-        $this->assertFalse($this->object->updateOrder()); //no Displayable Order ID set yet
-
-        $this->object->setDisplayableOrderId('ABC123');
-        $this->assertFalse($this->object->updateOrder()); //no Date set yet
-
-        $this->object->setDate('-1 min');
-        $this->assertFalse($this->object->updateOrder()); //no Displayable Order Comment set yet
-
-        $this->object->setComment('A comment.');
-        $this->assertFalse($this->object->updateOrder()); //no Shipping Speed Category set yet
-
-        $this->object->setShippingSpeed('Standard');
-        $this->assertFalse($this->object->updateOrder()); //no Destination Address set yet
-
-        $a = array();
-        $a['Name'] = 'Name';
-        $a['Line1'] = 'Line1';
-        $a['City'] = 'City';
-        $a['StateOrProvinceCode'] = 'StateOrProvinceCode';
-        $a['CountryCode'] = 'CountryCode';
-        $a['PostalCode'] = 'PostalCode';
-        $this->object->setAddress($a);
-        $this->assertFalse($this->object->updateOrder()); //no Items set yet
-
-        $i = array();
-        $i[0]['SellerSKU'] = 'NewSellerSKU';
-        $i[0]['SellerFulfillmentOrderItemId'] = 'NewSellerFulfillmentOrderItemId';
-        $i[0]['Quantity'] = 'NewQuantity';
-        $this->object->setItems($i);
-
-        $this->object->updateOrder(); //attempt 1: oops, bad response
-        $this->object->updateOrder(); //attempt 2: success
+        $this->assertFalse($this->object->updateOrder()); //attempt 1: oops, bad response
+        $this->assertTrue($this->object->updateOrder()); //attempt 2: success
 
         $check = parseLog();
         $this->assertEquals('Mock files array set.', $check[1]);
-        $this->assertEquals('Seller Fulfillment OrderID must be set in order to update an order', $check[2]);
-        $this->assertEquals('Displayable Order ID must be set in order to update an order', $check[3]);
-        $this->assertEquals('Date must be set in order to update an order', $check[4]);
-        $this->assertEquals('Comment must be set in order to update an order', $check[5]);
-        $this->assertEquals('Shipping Speed must be set in order to update an order', $check[6]);
-        $this->assertEquals('Address must be set in order to update an order', $check[7]);
-        $this->assertEquals('Items must be set in order to update an order', $check[8]);
-        $this->assertEquals('Returning Mock Response: 503', $check[9]);
-        $this->assertEquals('Bad Response! 503 Service Unavailable: Service Unavailable - Service Unavailable', $check[10]);
-        $this->assertEquals('Returning Mock Response: 200', $check[11]);
-        $this->assertEquals('Successfully updated Fulfillment Order 123ABC / ABC123', $check[12]);
+        $this->assertEquals('Seller Fulfillment Order ID must be set in order to update an order', $check[2]);
+        $this->assertEquals('Returning Mock Response: 503', $check[3]);
+        $this->assertEquals('Bad Response! 503 Service Unavailable: Service Unavailable - Service Unavailable', $check[4]);
+        $this->assertEquals('Returning Mock Response: 200', $check[5]);
+        $this->assertEquals('Successfully updated Fulfillment Order 123ABC', $check[6]);
     }
     
 }

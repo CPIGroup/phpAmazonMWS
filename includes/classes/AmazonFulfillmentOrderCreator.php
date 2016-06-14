@@ -484,7 +484,7 @@ class AmazonFulfillmentOrderCreator extends AmazonOutboundCore{
      */
     public function createOrder(){
         if (!array_key_exists('SellerFulfillmentOrderId',$this->options)){
-            $this->log("Seller Fulfillment OrderID must be set in order to create an order",'Warning');
+            $this->log("Seller Fulfillment Order ID must be set in order to create an order",'Warning');
             return false;
         }
         if (!array_key_exists('DisplayableOrderId',$this->options)){
@@ -535,39 +535,13 @@ class AmazonFulfillmentOrderCreator extends AmazonOutboundCore{
      * Updates a Fulfillment Order with Amazon.
      *
      * Submits an <i>UpdateFulfillmentOrder</i> request to Amazon. In order to do this,
-     * a number of parameters are required. Amazon will send back an HTTP response,
-     * so there is no data to retrieve afterwards. The following parameters are required:
-     * fulfillment order ID, displayed order ID, displayed timestamp, comment,
-     * shipping speed, address, and items.
+     * a fulfillment order ID is required. Amazon will send back an HTTP response,
+     * so there is no data to retrieve afterwards.
      * @return boolean <b>TRUE</b> if the order creation was successful, <b>FALSE</b> if something goes wrong
      */
     public function updateOrder(){
         if (!array_key_exists('SellerFulfillmentOrderId',$this->options)){
-            $this->log("Seller Fulfillment OrderID must be set in order to update an order",'Warning');
-            return false;
-        }
-        if (!array_key_exists('DisplayableOrderId',$this->options)){
-            $this->log("Displayable Order ID must be set in order to update an order",'Warning');
-            return false;
-        }
-        if (!array_key_exists('DisplayableOrderDateTime',$this->options)){
-            $this->log("Date must be set in order to update an order",'Warning');
-            return false;
-        }
-        if (!array_key_exists('DisplayableOrderComment',$this->options)){
-            $this->log("Comment must be set in order to update an order",'Warning');
-            return false;
-        }
-        if (!array_key_exists('ShippingSpeedCategory',$this->options)){
-            $this->log("Shipping Speed must be set in order to update an order",'Warning');
-            return false;
-        }
-        if (!array_key_exists('DestinationAddress.Name',$this->options)){
-            $this->log("Address must be set in order to update an order",'Warning');
-            return false;
-        }
-        if (!array_key_exists('Items.member.1.SellerSKU',$this->options)){
-            $this->log("Items must be set in order to update an order",'Warning');
+            $this->log("Seller Fulfillment Order ID must be set in order to update an order",'Warning');
             return false;
         }
 
@@ -585,7 +559,7 @@ class AmazonFulfillmentOrderCreator extends AmazonOutboundCore{
         if (!$this->checkResponse($response)){
             return false;
         } else {
-            $this->log("Successfully updated Fulfillment Order ".$this->options['SellerFulfillmentOrderId']." / ".$this->options['DisplayableOrderId']);
+            $this->log("Successfully updated Fulfillment Order ".$this->options['SellerFulfillmentOrderId']);
             return true;
         }
     }

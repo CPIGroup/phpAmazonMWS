@@ -480,9 +480,7 @@ abstract class AmazonCore{
             
             if(is_array($this->config)){
             	// This is a bit of a hack, but we don't really care for now.
-            	if(isset($this->config['logFunction'])){ $logFunction = $this->config['logFunction'];
-            	echo "log function set to $logFunction\n";
-            	}
+            	if(isset($this->config['logFunction'])) $logFunction = $this->config['logFunction'];
             	if(isset($this->config['muteLog'])) $muteLog = $this->config['muteLog'];
             	
             } else if (file_exists($this->config)){
@@ -490,8 +488,7 @@ abstract class AmazonCore{
             } else {
                 throw new Exception("Config file does not exist!");
             }
-            if (isset($logfunction) && $logfunction != '' ){
-            echo "call_user_func($logfunction,$msg,$loglevel)\n";
+            if (isset($logFunction) && $logFunction != '' ){
                 switch ($level){
                    case('Info'): $loglevel = LOG_INFO; break; 
                    case('Throttle'): $loglevel = LOG_INFO; break; 
@@ -499,7 +496,7 @@ abstract class AmazonCore{
                    case('Urgent'): $loglevel = LOG_ERR; break; 
                    default: $loglevel = LOG_INFO;
                 }
-                call_user_func($logfunction,$msg,$loglevel);
+                call_user_func($logFunction,$msg,$loglevel);
             }
             
             if (isset($muteLog) && $muteLog == true){

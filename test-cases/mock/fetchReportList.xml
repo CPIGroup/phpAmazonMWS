@@ -9,6 +9,7 @@
             <ReportRequestId>2278662938</ReportRequestId>
             <AvailableDate>2009-02-10T09:22:33+00:00</AvailableDate>
             <Acknowledged>false</Acknowledged>
+            <AcknowledgedDate>2009-02-11T09:22:33+00:00</AcknowledgedDate>
         </ReportInfo>
     </GetReportListResult>
     <ResponseMetadata>

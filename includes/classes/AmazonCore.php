@@ -734,10 +734,7 @@ abstract class AmazonCore{
      * @return boolean <b>FALSE</b> if no XML data
      */
     protected function checkToken($xml){
-        if (!$xml){
-            return false;
-        }
-        if ($xml->NextToken && (string)$xml->HasNext != 'false' && (string)$xml->MoreResultsAvailable != 'false'){
+        if ($xml && $xml->NextToken && (string)$xml->HasNext != 'false' && (string)$xml->MoreResultsAvailable != 'false'){
             $this->tokenFlag = true;
             $this->options['NextToken'] = (string)$xml->NextToken;
         } else {

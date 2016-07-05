@@ -17,6 +17,7 @@
                 <ShipmentName>FBA (11/8/10 5:34 PM)</ShipmentName>
                 <DestinationFulfillmentCenterId>PHX3</DestinationFulfillmentCenterId>
                 <LabelPrepType>AMAZON_LABEL</LabelPrepType>
+                <ConfirmedNeedByDate>2012-12-21</ConfirmedNeedByDate>
             </member>
             <member>
                 <ShipFromAddress>

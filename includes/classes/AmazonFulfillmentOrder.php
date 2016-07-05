@@ -180,16 +180,20 @@ class AmazonFulfillmentOrder extends AmazonOutboundCore{
             $this->order['Details']['CODSettings']['IsCODRequired'] = (string)$d->CODSettings->IsCODRequired;
         }
         if (isset($d->CODSettings->CODCharge)){
-            $this->order['Details']['CODSettings']['CODCharge'] = (string)$d->CODSettings->CODCharge;
+            $this->order['Details']['CODSettings']['CODCharge']['CurrencyCode'] = (string)$d->CODSettings->CODCharge->CurrencyCode;
+            $this->order['Details']['CODSettings']['CODCharge']['Value'] = (string)$d->CODSettings->CODCharge->Value;
         }
         if (isset($d->CODSettings->CODChargeTax)){
-            $this->order['Details']['CODSettings']['CODChargeTax'] = (string)$d->CODSettings->CODChargeTax;
+            $this->order['Details']['CODSettings']['CODChargeTax']['CurrencyCode'] = (string)$d->CODSettings->CODChargeTax->CurrencyCode;
+            $this->order['Details']['CODSettings']['CODChargeTax']['Value'] = (string)$d->CODSettings->CODChargeTax->Value;
         }
         if (isset($d->CODSettings->ShippingCharge)){
-            $this->order['Details']['CODSettings']['ShippingCharge'] = (string)$d->CODSettings->ShippingCharge;
+            $this->order['Details']['CODSettings']['ShippingCharge']['CurrencyCode'] = (string)$d->CODSettings->ShippingCharge->CurrencyCode;
+            $this->order['Details']['CODSettings']['ShippingCharge']['Value'] = (string)$d->CODSettings->ShippingCharge->Value;
         }
         if (isset($d->CODSettings->ShippingChargeTax)){
-            $this->order['Details']['CODSettings']['ShippingChargeTax'] = (string)$d->CODSettings->ShippingChargeTax;
+            $this->order['Details']['CODSettings']['ShippingChargeTax']['CurrencyCode'] = (string)$d->CODSettings->ShippingChargeTax->CurrencyCode;
+            $this->order['Details']['CODSettings']['ShippingChargeTax']['Value'] = (string)$d->CODSettings->ShippingChargeTax->Value;
         }
         
         //Section 2: Order Items

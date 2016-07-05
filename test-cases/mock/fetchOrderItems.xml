@@ -10,6 +10,17 @@
                 <Title>Example item name</Title>
                 <QuantityOrdered>1</QuantityOrdered>
                 <QuantityShipped>1</QuantityShipped>
+                <BuyerCustomizedInfo>
+                    <CustomizedURL>http://www.amazon.com</CustomizedURL>
+                </BuyerCustomizedInfo>
+                <PointsGranted>
+                    <PointsNumber>5</PointsNumber>
+                    <PointsMonetaryValue>
+                        <CurrencyCode>USD</CurrencyCode>
+                        <Amount>2.50</Amount>
+                    </PointsMonetaryValue>
+                </PointsGranted>
+                <PriceDesignation>BusinessPrice</PriceDesignation>
                 <ItemPrice>
                     <CurrencyCode>USD</CurrencyCode>
                     <Amount>25.99</Amount>

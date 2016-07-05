@@ -224,7 +224,7 @@ class AmazonFulfillmentOrderList extends AmazonOutboundCore implements Iterator{
             }
             if (isset($x->FulfillmentMethod)){
                 //deprecated
-                $this->orderList[$i]['FulfillmentPolicy'] = (string)$x->FulfillmentMethod;
+                $this->orderList[$i]['FulfillmentMethod'] = (string)$x->FulfillmentMethod;
             }
             $this->orderList[$i]['ReceivedDateTime'] = (string)$x->ReceivedDateTime;
             $this->orderList[$i]['FulfillmentOrderStatus'] = (string)$x->FulfillmentOrderStatus;
@@ -239,16 +239,20 @@ class AmazonFulfillmentOrderList extends AmazonOutboundCore implements Iterator{
                 $this->orderList[$i]['CODSettings']['IsCODRequired'] = (string)$x->CODSettings->IsCODRequired;
             }
             if (isset($x->CODSettings->CODCharge)){
-                $this->orderList[$i]['CODSettings']['CODCharge'] = (string)$x->CODSettings->CODCharge;
+                $this->orderList[$i]['CODSettings']['CODCharge']['CurrencyCode'] = (string)$x->CODSettings->CODCharge->CurrencyCode;
+                $this->orderList[$i]['CODSettings']['CODCharge']['Value'] = (string)$x->CODSettings->CODCharge->Value;
             }
             if (isset($x->CODSettings->CODChargeTax)){
-                $this->orderList[$i]['CODSettings']['CODChargeTax'] = (string)$x->CODSettings->CODChargeTax;
+                $this->orderList[$i]['CODSettings']['CODChargeTax']['CurrencyCode'] = (string)$x->CODSettings->CODChargeTax->CurrencyCode;
+                $this->orderList[$i]['CODSettings']['CODChargeTax']['Value'] = (string)$x->CODSettings->CODChargeTax->Value;
             }
             if (isset($x->CODSettings->ShippingCharge)){
-                $this->orderList[$i]['CODSettings']['ShippingCharge'] = (string)$x->CODSettings->ShippingCharge;
+                $this->orderList[$i]['CODSettings']['ShippingCharge']['CurrencyCode'] = (string)$x->CODSettings->ShippingCharge->CurrencyCode;
+                $this->orderList[$i]['CODSettings']['ShippingCharge']['Value'] = (string)$x->CODSettings->ShippingCharge->Value;
             }
             if (isset($x->CODSettings->ShippingChargeTax)){
-                $this->orderList[$i]['CODSettings']['ShippingChargeTax'] = (string)$x->CODSettings->ShippingChargeTax;
+                $this->orderList[$i]['CODSettings']['ShippingChargeTax']['CurrencyCode'] = (string)$x->CODSettings->ShippingChargeTax->CurrencyCode;
+                $this->orderList[$i]['CODSettings']['ShippingChargeTax']['Value'] = (string)$x->CODSettings->ShippingChargeTax->Value;
             }
             $this->index++;
         }

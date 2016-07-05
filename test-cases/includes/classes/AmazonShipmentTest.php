@@ -26,6 +26,15 @@ class AmazonShipmentTest extends PHPUnit_Framework_TestCase {
     protected function tearDown() {
         
     }
+
+    public function testSetShipmentName() {
+        $this->assertFalse($this->object->setShipmentName(null)); //can't be nothing
+        $this->assertFalse($this->object->setShipmentName(5)); //can't be an int
+        $this->assertNull($this->object->setShipmentName('My Shipment'));
+        $o = $this->object->getOptions();
+        $this->assertArrayHasKey('InboundShipmentHeader.ShipmentName', $o);
+        $this->assertEquals('My Shipment', $o['InboundShipmentHeader.ShipmentName']);
+    }
     
     public function testSetAddress(){
         $this->assertFalse($this->object->setAddress(null)); //can't be nothing
@@ -85,6 +94,27 @@ class AmazonShipmentTest extends PHPUnit_Framework_TestCase {
         $this->assertNull($o2['InboundShipmentHeader.ShipFromAddress.AddressLine2']);
         $this->assertNull($o2['InboundShipmentHeader.ShipFromAddress.DistrictOrCounty']);
         
+    }
+
+    public function testSetDestination() {
+        $this->assertFalse($this->object->setDestination(null)); //can't be nothing
+        $this->assertFalse($this->object->setDestination(5)); //can't be an int
+        $this->assertNull($this->object->setDestination('Amazon123'));
+        $o = $this->object->getOptions();
+        $this->assertArrayHasKey('InboundShipmentHeader.DestinationFulfillmentCenterId', $o);
+        $this->assertEquals('Amazon123', $o['InboundShipmentHeader.DestinationFulfillmentCenterId']);
+    }
+
+    public function testSetLabelPrepPreference() {
+        $this->assertFalse($this->object->setLabelPrepPreference(null)); //can't be nothing
+        $this->assertFalse($this->object->setLabelPrepPreference(5)); //can't be an int
+        $this->assertFalse($this->object->setLabelPrepPreference('wrong')); //not a valid value
+        $this->assertNull($this->object->setLabelPrepPreference('SELLER_LABEL'));
+        $this->assertNull($this->object->setLabelPrepPreference('AMAZON_LABEL_ONLY'));
+        $this->assertNull($this->object->setLabelPrepPreference('AMAZON_LABEL_PREFERRED'));
+        $o = $this->object->getOptions();
+        $this->assertArrayHasKey('InboundShipmentHeader.LabelPrepPreference', $o);
+        $this->assertEquals('AMAZON_LABEL_PREFERRED', $o['InboundShipmentHeader.LabelPrepPreference']);
     }
     
     public function testSetItems(){

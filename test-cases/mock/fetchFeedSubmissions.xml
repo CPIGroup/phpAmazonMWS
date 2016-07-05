@@ -9,6 +9,8 @@
             <FeedProcessingStatus>_SUBMITTED_</FeedProcessingStatus>
             <Acknowledged>false</Acknowledged>
             <AcknowledgedDate></AcknowledgedDate>
+            <StartedProcessingDate>2012-12-15T12:12:12+00:00</StartedProcessingDate>
+            <CompletedProcessingDate>2012-12-16T12:12:12+00:00</CompletedProcessingDate>
         </FeedSubmissionInfo>
     </GetFeedSubmissionListResult>
     <ResponseMetadata>

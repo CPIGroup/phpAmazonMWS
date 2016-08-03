@@ -23,11 +23,11 @@
  * Please note that it has a 5 minute throttle time.
  */
 class AmazonServiceStatus extends AmazonCore{
-    private $lastTimestamp;
-    private $status;
-    private $messageId;
-    private $messageList;
-    private $ready = false;
+    protected $lastTimestamp;
+    protected $status;
+    protected $messageId;
+    protected $messageList;
+    protected $ready = false;
     
     /**
      * AmazonServiceStatus is a simple object that fetches the status of given Amazon service.
@@ -187,7 +187,7 @@ class AmazonServiceStatus extends AmazonCore{
      * Parses XML response into array.
      * 
      * This is what reads the response XML and converts it into an array.
-     * @param SimpleXMLObject $xml <p>The XML response from Amazon.</p>
+     * @param SimpleXMLElement $xml <p>The XML response from Amazon.</p>
      * @return boolean <b>FALSE</b> if no XML data is found
      */
     protected function parseXML($xml){

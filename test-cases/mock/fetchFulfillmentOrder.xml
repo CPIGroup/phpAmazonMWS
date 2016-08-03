@@ -17,6 +17,14 @@
                     <CurrencyCode>USD</CurrencyCode>
                     <Value>999.99</Value>
                 </PerUnitDeclaredValue>
+                <PerUnitPrice>
+                    <CurrencyCode>USD</CurrencyCode>
+                    <Value>30.99</Value>
+                </PerUnitPrice>
+                <PerUnitTax>
+                    <CurrencyCode>USD</CurrencyCode>
+                    <Value>5.99</Value>
+                </PerUnitTax>
             </member>
             <member>
                 <SellerSKU>ssof_dev_drt_keep_this_afn_always</SellerSKU>
@@ -34,6 +42,10 @@
         </FulfillmentOrderItem>
         <FulfillmentOrder>
             <ShippingSpeedCategory>Standard</ShippingSpeedCategory>
+            <DeliveryWindow>
+                <StartDateTime>2008-03-11T08:07:53Z</StartDateTime>
+                <EndDateTime>2008-03-12T08:07:53Z</EndDateTime>
+            </DeliveryWindow>
             <NotificationEmailList>
                 <member>o8c2EXAMPLsfr7o@marketplace.amazon.com</member>
             </NotificationEmailList>
@@ -54,10 +66,31 @@
             <FulfillmentMethod>Consumer</FulfillmentMethod>
             <DisplayableOrderDateTime>2006-08-02T17:26:56Z</DisplayableOrderDateTime>
             <FulfillmentPolicy>FillOrKill</FulfillmentPolicy>
+            <FulfillmentAction>Ship</FulfillmentAction>
             <ReceivedDateTime>2006-08-02T17:26:56Z</ReceivedDateTime>
             <DisplayableOrderId>test_displayable_id</DisplayableOrderId>
+            <MarketplaceId>ATVPDKIKX0DER</MarketplaceId>
             <DisplayableOrderComment>Sample comment.</DisplayableOrderComment>
             <FulfillmentOrderStatus>PROCESSING</FulfillmentOrderStatus>
+            <CODSettings>
+                <IsCODRequired>false</IsCODRequired>
+                <CODCharge>
+                    <Value>5.00</Value>
+                    <CurrencyCode>USD</CurrencyCode>
+                </CODCharge>
+                <CODChargeTax>
+                    <Value>1.00</Value>
+                    <CurrencyCode>USD</CurrencyCode>
+                </CODChargeTax>
+                <ShippingCharge>
+                    <Value>2.50</Value>
+                    <CurrencyCode>USD</CurrencyCode>
+                </ShippingCharge>
+                <ShippingChargeTax>
+                    <Value>0.50</Value>
+                    <CurrencyCode>USD</CurrencyCode>
+                </ShippingChargeTax>
+            </CODSettings>
         </FulfillmentOrder>
         <FulfillmentShipment>
             <member>

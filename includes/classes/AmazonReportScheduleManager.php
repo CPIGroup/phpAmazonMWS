@@ -26,10 +26,10 @@
  * which will usually be 1.
  */
 class AmazonReportScheduleManager extends AmazonReportsCore implements Iterator{
-    private $scheduleList;
-    private $count;
-    private $i = 0;
-    private $index = 0;
+    protected $scheduleList;
+    protected $count;
+    protected $i = 0;
+    protected $index = 0;
     
     /**
      * AmazonReportsScheduleManager manages report schedules.
@@ -187,7 +187,7 @@ class AmazonReportScheduleManager extends AmazonReportsCore implements Iterator{
      * Parses XML response into array.
      * 
      * This is what reads the response XML and converts it into an array.
-     * @param SimpleXMLObject $xml <p>The XML response from Amazon.</p>
+     * @param SimpleXMLElement $xml <p>The XML response from Amazon.</p>
      * @return boolean <b>FALSE</b> if no XML data is found
      */
     protected function parseXML($xml){

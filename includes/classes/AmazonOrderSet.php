@@ -25,9 +25,9 @@
  * class instead.
  */
 class AmazonOrderSet extends AmazonOrderCore implements Iterator{
-    private $i = 0;
-    private $index = 0;
-    private $orderList;
+    protected $i = 0;
+    protected $index = 0;
+    protected $orderList;
     
     /**
      * AmazonOrderSet is a variation of <i>AmazonOrder</i> that pulls multiple specified orders.
@@ -70,7 +70,7 @@ class AmazonOrderSet extends AmazonOrderCore implements Iterator{
      * This method sets the list of Order IDs to be sent in the next request.
      * If you wish to retrieve information for only one order, please use the 
      * <i>AmazonOrder</i> class instead.
-     * @param array|string $s <p>A list of Feed Submission IDs, or a single ID string.</p>
+     * @param array|string $o <p>A list of Amazon Order IDs, or a single ID string.</p>
      * @return boolean <b>FALSE</b> if improper input
      */
     public function setOrderIds($o){
@@ -98,7 +98,7 @@ class AmazonOrderSet extends AmazonOrderCore implements Iterator{
      * Since order ID is a required parameter, these options should not be removed
      * without replacing them, so this method is not public.
      */
-    private function resetOrderIds(){
+    protected function resetOrderIds(){
         foreach($this->options as $op=>$junk){
                 if(preg_match("#AmazonOrderId.Id.#",$op)){
                     unset($this->options[$op]);
@@ -145,7 +145,7 @@ class AmazonOrderSet extends AmazonOrderCore implements Iterator{
      * Parses XML response into array.
      * 
      * This is what reads the response XML and converts it into an array.
-     * @param SimpleXMLObject $xml <p>The XML response from Amazon.</p>
+     * @param SimpleXMLElement $xml <p>The XML response from Amazon.</p>
      * @return boolean <b>FALSE</b> if no XML data is found
      */
     protected function parseXML($xml){

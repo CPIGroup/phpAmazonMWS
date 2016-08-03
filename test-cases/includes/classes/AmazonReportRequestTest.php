@@ -92,8 +92,8 @@ class AmazonReportRequestTest extends PHPUnit_Framework_TestCase {
         $this->assertNull($this->object->setShowSalesChannel('false'));
         $this->assertNull($this->object->setShowSalesChannel('true'));
         $o = $this->object->getOptions();
-        $this->assertArrayHasKey('ReportOptions=ShowSalesChannel',$o);
-        $this->assertEquals('true',$o['ReportOptions=ShowSalesChannel']);
+        $this->assertArrayHasKey('ReportOptions',$o);
+        $this->assertEquals('ShowSalesChannel=true',$o['ReportOptions']);
     }
     
     public function testSetMarketplaces(){

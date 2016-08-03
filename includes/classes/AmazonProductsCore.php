@@ -54,9 +54,9 @@ abstract class AmazonProductsCore extends AmazonCore{
             $this->options['Version'] = $AMAZON_VERSION_PRODUCTS;
         }
         
-        
+        //set the store's marketplace as the default
         if(isset($store[$this->storeName]) && array_key_exists('marketplaceId', $store[$this->storeName])){
-            $this->options['MarketplaceId'] = $store[$this->storeName]['marketplaceId'];
+            $this->setMarketplace($store[$this->storeName]['marketplaceId']);
         } else {
             $this->log("Marketplace ID is missing",'Urgent');
         }
@@ -65,12 +65,27 @@ abstract class AmazonProductsCore extends AmazonCore{
             $this->throttleLimit = $THROTTLE_LIMIT_PRODUCT;
         }
     }
+
+    /**
+     * Sets the marketplace to search in. (Optional)
+     * Setting this option tells Amazon to only return products from the given marketplace.
+     * If this option is not set, the current store's marketplace will be used.
+     * @param string $m <p>Marketplace ID</p>
+     * @return boolean <b>FALSE</b> if improper input
+     */
+    public function setMarketplace($m){
+        if (is_string($m)){
+            $this->options['MarketplaceId'] = $m;
+        } else {
+            return false;
+        }
+    }
     
     /**
      * Parses XML response into array.
      * 
      * This is what reads the response XML and converts it into an array.
-     * @param SimpleXMLObject $xml <p>The XML response from Amazon.</p>
+     * @param SimpleXMLElement $xml <p>The XML response from Amazon.</p>
      * @return boolean <b>FALSE</b> if no XML data is found
      */
     protected function parseXML($xml){
@@ -89,9 +104,13 @@ abstract class AmazonProductsCore extends AmazonCore{
             if (isset($x->Products)){
                 foreach($x->Products->children() as $z){
                     $this->productList[$this->index] = new AmazonProduct($this->storeName, $z, $this->mockMode, $this->mockFiles,$this->config);
+                    if (isset($temp['@attributes'])) {
+                        $this->productList[$this->index]->data['Identifiers']['Request'] = $temp['@attributes'];
+                    }
                     $this->index++;
                 }
-            } else if ($x->getName() == 'GetProductCategoriesForSKUResult' || $x->getName() == 'GetProductCategoriesForASINResult'){
+            } else if (in_array($x->getName(), array('GetProductCategoriesForSKUResult', 'GetProductCategoriesForASINResult',
+                    'GetLowestPricedOffersForSKUResult', 'GetLowestPricedOffersForASINResult'))){
                 $this->productList[$this->index] = new AmazonProduct($this->storeName, $x, $this->mockMode, $this->mockFiles,$this->config);
                 $this->index++;
             } else {

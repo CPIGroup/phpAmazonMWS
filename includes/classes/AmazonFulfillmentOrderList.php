@@ -25,11 +25,11 @@
  * This object can use tokens when retrieving the list.
  */
 class AmazonFulfillmentOrderList extends AmazonOutboundCore implements Iterator{
-    private $orderList;
+    protected $orderList;
     protected $tokenFlag = false;
     protected $tokenUseFlag = false;
-    private $i = 0;
-    private $index = 0;
+    protected $i = 0;
+    protected $index = 0;
     
     /**
      * AmazonFulfillmentOrderList retrieves a list of fulfillment orders from Amazon.
@@ -71,26 +71,13 @@ class AmazonFulfillmentOrderList extends AmazonOutboundCore implements Iterator{
     }
     
     /**
-     * Sets the fulfillment method filter. (Optional)
-     * 
-     * This method sets the Fulfillment Method to be sent in the next request.
-     * If this parameter is set, Amazon will return fulfillment orders using the given method.
-     * If this parameter is not set, Amazon will only return fulfillment orders
-     * with a <i>Consumer</i> method.
-     * Here is a quick description of the methods:
-     * <ul>
-     * <li><b>Consumer</b> - customer order</li>
-     * <li><b>Removal</b> - inventory will be returned to the given address</li>
-     * </ul>
-     * @param string $s <p>"Consumer" or "Removal"</p>
-     * @return boolean <b>FALSE</b> if improper input
+     * The "FulfillmentMethod" option is no longer used.
+     * @return boolean <b>FALSE</b>
+     * @deprecated since 1.3.0
      */
     public function setMethodFilter($s){
-        if ($s == 'Consumer' || $s == 'Removal'){
-            $this->options['FulfillmentMethod'] = $s;
-        } else {
-            return false;
-        }
+        $this->log("The FulfillmentMethod option is no longer used for getting fulfillment orders.", 'Warning');
+        return FALSE;
     }
     
     /**
@@ -176,7 +163,6 @@ class AmazonFulfillmentOrderList extends AmazonOutboundCore implements Iterator{
         if ($this->tokenFlag && $this->tokenUseFlag){
             $this->options['Action'] = 'ListAllFulfillmentOrdersByNextToken';
             unset($this->options['QueryStartDateTime']);
-            unset($this->options['FulfillmentMethod']);
         } else {
             $this->options['Action'] = 'ListAllFulfillmentOrders';
             unset($this->options['NextToken']);
@@ -189,7 +175,7 @@ class AmazonFulfillmentOrderList extends AmazonOutboundCore implements Iterator{
      * Parses XML response into array.
      * 
      * This is what reads the response XML and converts it into an array.
-     * @param SimpleXMLObject $xml <p>The XML response from Amazon.</p>
+     * @param SimpleXMLElement $xml <p>The XML response from Amazon.</p>
      * @return boolean <b>FALSE</b> if no XML data is found
      */
     protected function parseXML($xml){
@@ -199,10 +185,15 @@ class AmazonFulfillmentOrderList extends AmazonOutboundCore implements Iterator{
         foreach($xml->children() as $x){
             $i = $this->index;
             $this->orderList[$i]['SellerFulfillmentOrderId'] = (string)$x->SellerFulfillmentOrderId;
+            $this->orderList[$i]['MarketplaceId'] = (string)$x->MarketplaceId;
             $this->orderList[$i]['DisplayableOrderId'] = (string)$x->DisplayableOrderId;
             $this->orderList[$i]['DisplayableOrderDateTime'] = (string)$x->DisplayableOrderDateTime;
             $this->orderList[$i]['DisplayableOrderComment'] = (string)$x->DisplayableOrderComment;
             $this->orderList[$i]['ShippingSpeedCategory'] = (string)$x->ShippingSpeedCategory;
+            if (isset($x->DeliveryWindow)) {
+                $this->orderList[$i]['DeliveryWindow']['StartDateTime'] = (string)$x->DeliveryWindow->StartDateTime;
+                $this->orderList[$i]['DeliveryWindow']['EndDateTime'] = (string)$x->DeliveryWindow->EndDateTime;
+            }
             if (isset($x->DestinationAddress)){
                 $this->orderList[$i]['DestinationAddress']['Name'] = (string)$x->DestinationAddress->Name;
                 $this->orderList[$i]['DestinationAddress']['Line1'] = (string)$x->DestinationAddress->Line1;
@@ -225,11 +216,15 @@ class AmazonFulfillmentOrderList extends AmazonOutboundCore implements Iterator{
                     $this->orderList[$i]['DestinationAddress']['PhoneNumber'] = (string)$x->DestinationAddress->PhoneNumber;
                 }
             }
+            if (isset($x->FulfillmentAction)){
+                $this->orderList[$i]['FulfillmentAction'] = (string)$x->FulfillmentAction;
+            }
             if (isset($x->FulfillmentPolicy)){
                 $this->orderList[$i]['FulfillmentPolicy'] = (string)$x->FulfillmentPolicy;
             }
             if (isset($x->FulfillmentMethod)){
-                $this->orderList[$i]['FulfillmentPolicy'] = (string)$x->FulfillmentMethod;
+                //deprecated
+                $this->orderList[$i]['FulfillmentMethod'] = (string)$x->FulfillmentMethod;
             }
             $this->orderList[$i]['ReceivedDateTime'] = (string)$x->ReceivedDateTime;
             $this->orderList[$i]['FulfillmentOrderStatus'] = (string)$x->FulfillmentOrderStatus;
@@ -239,6 +234,25 @@ class AmazonFulfillmentOrderList extends AmazonOutboundCore implements Iterator{
                 foreach($x->NotificationEmailList->children() as $y){
                     $this->orderList[$i]['NotificationEmailList'][$j++] = (string)$y;
                 }
+            }
+            if (isset($x->CODSettings->IsCODRequired)){
+                $this->orderList[$i]['CODSettings']['IsCODRequired'] = (string)$x->CODSettings->IsCODRequired;
+            }
+            if (isset($x->CODSettings->CODCharge)){
+                $this->orderList[$i]['CODSettings']['CODCharge']['CurrencyCode'] = (string)$x->CODSettings->CODCharge->CurrencyCode;
+                $this->orderList[$i]['CODSettings']['CODCharge']['Value'] = (string)$x->CODSettings->CODCharge->Value;
+            }
+            if (isset($x->CODSettings->CODChargeTax)){
+                $this->orderList[$i]['CODSettings']['CODChargeTax']['CurrencyCode'] = (string)$x->CODSettings->CODChargeTax->CurrencyCode;
+                $this->orderList[$i]['CODSettings']['CODChargeTax']['Value'] = (string)$x->CODSettings->CODChargeTax->Value;
+            }
+            if (isset($x->CODSettings->ShippingCharge)){
+                $this->orderList[$i]['CODSettings']['ShippingCharge']['CurrencyCode'] = (string)$x->CODSettings->ShippingCharge->CurrencyCode;
+                $this->orderList[$i]['CODSettings']['ShippingCharge']['Value'] = (string)$x->CODSettings->ShippingCharge->Value;
+            }
+            if (isset($x->CODSettings->ShippingChargeTax)){
+                $this->orderList[$i]['CODSettings']['ShippingChargeTax']['CurrencyCode'] = (string)$x->CODSettings->ShippingChargeTax->CurrencyCode;
+                $this->orderList[$i]['CODSettings']['ShippingChargeTax']['Value'] = (string)$x->CODSettings->ShippingChargeTax->Value;
             }
             $this->index++;
         }
@@ -277,13 +291,15 @@ class AmazonFulfillmentOrderList extends AmazonOutboundCore implements Iterator{
      * <li><b>DisplayableOrderId</b> - your ID for the order</li>
      * <li><b>DisplayableOrderDateTime</b> - the time the order was created, in ISO 8601 date format</li>
      * <li><b>ShippingSpeedCategory</b> - shipping speed for the order</li>
+     * <li><b>DeliveryWindow</b> (optional) - array of ISO 8601 dates with the keys "StartDateTime" and "EndDateTime"</li>
      * <li><b>DestinationAddress</b> - address array, see <i>AmazonFulfillmentOrderCreator</i> for more details</li>
+     * <li><b>FulfillmentAction</b> (optional) - "Ship" or "Hold"</li>
      * <li><b>FulfillmentPolicy</b> (optional) - "FillOrKill", "FillAll", or "FillAllAvailable"</li>
-     * <li><b>FulfillmentMethod</b> (optional) - "Consumer" or "Removal"</li>
      * <li><b>ReceivedDateTime</b> - the time the order was received by the Amazon fulfillment center, in ISO 8601 date format</li>
      * <li><b>FulfillmentOrderStatus</b> - the status of the order</li>
      * <li><b>StatusUpdatedDateTime</b> - the time the status was last updated, in ISO 8601 date format</li>
      * <li><b>NotificationEmailList</b> (optional) - list of email addresses</li>
+     * <li><b>CODSettings</b> (optional) - array, see <i>AmazonFulfillmentOrderCreator</i> for more details</li>
      * </ul>
      * @param int $i [optional] <p>List index to retrieve the value from.
      * If none is given, the entire list will be returned. Defaults to NULL.</p>

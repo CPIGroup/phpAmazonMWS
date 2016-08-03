@@ -54,7 +54,7 @@ class AmazonProduct extends AmazonProductsCore{
     
     /**
      * Takes in XML data and converts it to an array for the object to use.
-     * @param SimpleXMLObject $xml <p>XML Product data from Amazon</p>
+     * @param SimpleXMLElement $xml <p>XML Product data from Amazon</p>
      * @return boolean <b>FALSE</b> if no XML data is found
      */
     public function loadXML($xml){
@@ -68,6 +68,11 @@ class AmazonProduct extends AmazonProductsCore{
         if ($xml->getName() == 'GetProductCategoriesForSKUResult' || $xml->getName() == 'GetProductCategoriesForASINResult'){
             $this->loadCategories($xml);
             return;
+        }
+
+        //Lowest Price uses different format
+        if ($xml->getName() == 'GetLowestPricedOffersForSKUResult' || $xml->getName() == 'GetLowestPricedOffersForASINResult'){
+            return $this->loadLowestPricedOfferXml($xml);
         }
         
         if ($xml->getName() != 'Product'){
@@ -134,23 +139,33 @@ class AmazonProduct extends AmazonProductsCore{
         //Relationships
         if ($xml->Relationships){
             foreach($xml->Relationships->children() as $x){
+                $temp = array();
                 foreach($x->children() as $y){
                     foreach($y->children() as $z){
                         foreach($z->children() as $zzz){
-                            $this->data['Relationships'][$x->getName()][$y->getName()][$z->getName()][$zzz->getName()] = (string)$zzz;
+                            $temp[$y->getName()][$z->getName()][$zzz->getName()] = (string)$zzz;
                         }
                     }
                 }
+                foreach($x->children('ns2',true) as $y){
+                    $temp[$y->getName()] = (string)$y;
+                }
+                $this->data['Relationships'][$x->getName()][] = $temp;
             }
             //child relations use namespace but parent does not
             foreach($xml->Relationships->children('ns2',true) as $x){
+                $temp = array();
                 foreach($x->children() as $y){
                     foreach($y->children() as $z){
                         foreach($z->children() as $zzz){
-                            $this->data['Relationships'][$x->getName()][$y->getName()][$z->getName()][$zzz->getName()] = (string)$zzz;
+                            $temp[$y->getName()][$z->getName()][$zzz->getName()] = (string)$zzz;
                         }
                     }
                 }
+                foreach($x->children('ns2',true) as $y){
+                    $temp[$y->getName()] = (string)$y;
+                }
+                $this->data['Relationships'][$x->getName()][] = $temp;
             }
         }
         
@@ -199,9 +214,11 @@ class AmazonProduct extends AmazonProductsCore{
         //SalesRankings
         if ($xml->SalesRankings){
             foreach($xml->SalesRankings->children() as $x){
+                $temp = array();
                 foreach($x->children() as $y){
-                    $this->data['SalesRankings'][$x->getName()][$y->getName()] = (string)$y;
+                    $temp[$y->getName()] = (string)$y;
                 }
+                $this->data['SalesRankings'][$x->getName()][] = $temp;
             }
         }
         
@@ -261,7 +278,7 @@ class AmazonProduct extends AmazonProductsCore{
     
     /**
      * Takes in XML data for Categories and parses it for the object to use
-     * @param SimpleXMLObject $xml <p>The XML data from Amazon.</p>
+     * @param SimpleXMLElement $xml <p>The XML data from Amazon.</p>
      * @return boolean <b>FALSE</b> if no valid XML data is found
      */
     protected function loadCategories($xml){
@@ -275,6 +292,135 @@ class AmazonProduct extends AmazonProductsCore{
             $cnum++;
         }
     }
+
+    /**
+     * Takes in XML data for lowest-priced offers and parses it for the object to use
+     * @param SimpleXMLElement $xml <p>The XML data from Amazon.</p>
+     * @return boolean <b>FALSE</b> if no valid XML data is found
+     */
+    protected function loadLowestPricedOfferXml($xml) {
+        if (!$xml->Summary){
+            return false;
+        }
+
+        //Identifier
+        foreach($xml->Identifier->children() as $x){
+            $this->data['Identifiers']['Identifier'][$x->getName()] = (string)$x;
+        }
+
+        //Summary
+        $this->data['Summary']['TotalOfferCount'] = (string)$xml->Summary->TotalOfferCount;
+        //Offer counts
+        if ($xml->Summary->NumberOfOffers) {
+            foreach($xml->Summary->NumberOfOffers->children() as $x){
+                $att = (array)$x->attributes();
+                $tchannel = 'UnknownChannel';
+                if (isset($att['@attributes']['fulfillmentChannel'])) {
+                    $tchannel = $att['@attributes']['fulfillmentChannel'];
+                }
+                $tcondition = 'UnknownCondition';
+                if (isset($att['@attributes']['condition'])) {
+                    $tcondition = $att['@attributes']['condition'];
+                }
+                $this->data['Summary']['NumberOfOffers'][$tchannel][$tcondition] = (string)$x;
+            }
+        }
+        //Lowest prices
+        if ($xml->Summary->LowestPrices) {
+            foreach($xml->Summary->LowestPrices->children() as $x){
+                $temp = array();
+                foreach($x->children() as $y) {
+                    foreach($y->children() as $z) {
+                        $temp[$y->getName()][$z->getName()] = (string)$z;
+                    }
+                }
+                $att = (array)$x->attributes();
+                $tchannel = 'UnknownChannel';
+                if (isset($att['@attributes']['fulfillmentChannel'])) {
+                    $tchannel = $att['@attributes']['fulfillmentChannel'];
+                }
+                $tcondition = 'UnknownCondition';
+                if (isset($att['@attributes']['condition'])) {
+                    $tcondition = $att['@attributes']['condition'];
+                }
+                $this->data['Summary']['LowestPrices'][$tchannel][$tcondition] = $temp;
+            }
+        }
+        //BuyBox prices
+        if ($xml->Summary->BuyBoxPrices) {
+            foreach($xml->Summary->BuyBoxPrices->children() as $x){
+                $temp = array();
+                foreach($x->children() as $y) {
+                    foreach($y->children() as $z) {
+                        $temp[$y->getName()][$z->getName()] = (string)$z;
+                    }
+                }
+                $att = (array)$x->attributes();
+                $tcondition = 'UnknownCondition';
+                if (isset($att['@attributes']['condition'])) {
+                    $tcondition = $att['@attributes']['condition'];
+                }
+                $this->data['Summary']['BuyBoxPrices'][$tcondition] = $temp;
+            }
+        }
+        //List price
+        if ($xml->Summary->ListPrice) {
+            foreach($xml->Summary->ListPrice->children() as $x) {
+                $this->data['Summary']['ListPrice'][$x->getName()] = (string)$x;
+            }
+        }
+        //Lower price with shipping
+        if ($xml->Summary->SuggestedLowerPricePlusShipping) {
+            foreach($xml->Summary->SuggestedLowerPricePlusShipping->children() as $x) {
+                $this->data['Summary']['SuggestedLowerPricePlusShipping'][$x->getName()] = (string)$x;
+            }
+        }
+        //BuyBox offers
+        if ($xml->Summary->BuyBoxEligibleOffers) {
+            foreach($xml->Summary->BuyBoxEligibleOffers->children() as $x) {
+                $att = (array)$x->attributes();
+                $tchannel = 'UnknownChannel';
+                if (isset($att['@attributes']['fulfillmentChannel'])) {
+                    $tchannel = $att['@attributes']['fulfillmentChannel'];
+                }
+                $tcondition = 'UnknownCondition';
+                if (isset($att['@attributes']['condition'])) {
+                    $tcondition = $att['@attributes']['condition'];
+                }
+                $this->data['Summary']['BuyBoxEligibleOffers'][$tchannel][$tcondition] = (string)$x;
+            }
+        }
+        //Offers
+        foreach($xml->Offers->children() as $x){
+            $temp = array();
+            //Offer
+            foreach($x->children() as $y){
+                if ($y->children()->count() > 0){
+                    foreach($y->children() as $z){
+                        if ($z->children()->count() > 0){
+                            foreach($z->children() as $zzz){
+                                $temp[$y->getName()][$z->getName()][$zzz->getName()] = (string)$zzz;
+                            }
+                        } else {
+                            $temp[$y->getName()][$z->getName()] = (string)$z;
+                        }
+
+                    }
+                } else {
+                    if ($y->getName() == 'ShippingTime') {
+                        $att = (array)$y->attributes();
+                        $temp['ShippingTime'] = array();
+                        foreach ($att['@attributes'] as $zkey => $z) {
+                            $temp['ShippingTime'][$zkey] = $z;
+                        }
+                    } else {
+                        $temp[$y->getName()] = (string)$y;
+                    }
+                }
+            }
+            $this->data['Offers'][] = $temp;
+        }
+    }
     
     /**
      * Recursively builds the hierarchy array.
@@ -282,7 +428,7 @@ class AmazonProduct extends AmazonProductsCore{
      * The returned array will have the fields <b>ProductCategoryId</b> and
      * <b>ProductCategoryName</b>, as well as maybe a <b>Parent</b> field with the same
      * structure as the array containing it.
-     * @param SimpleXMLObject $xml <p>The XML data from Amazon.</p>
+     * @param SimpleXMLElement $xml <p>The XML data from Amazon.</p>
      * @return array Recursive, multi-dimensional array
      */
     protected function genHierarchy($xml){

@@ -24,7 +24,7 @@
  * then be saved to a file.
  */
 class AmazonReport extends AmazonReportsCore{
-    private $rawreport;
+    protected $rawreport;
     
     /**
      * AmazonReport fetches a report from Amazon.
@@ -107,10 +107,25 @@ class AmazonReport extends AmazonReportsCore{
         }
         
     }
+
+    /**
+     * Gets the raw report data.
+     * This method will return <b>FALSE</b> if the data has not yet been retrieved.
+     * Please note that this data is often very large.
+     * @param string $path <p>filename to save the file in</p>
+     * @return string|boolean raw data string, or <b>FALSE</b> if data has not been retrieved yet
+     */
+    public function getRawReport() {
+        if (!isset($this->rawreport)){
+            return false;
+        }
+        return $this->rawreport;
+    }
     
     /**
      * Saves the raw report data to a path you specify
      * @param string $path <p>filename to save the file in</p>
+     * @return boolean <b>FALSE</b> if something goes wrong
      */
     public function saveReport($path){
         if (!isset($this->rawreport)){
@@ -121,6 +136,7 @@ class AmazonReport extends AmazonReportsCore{
             $this->log("Successfully saved report #".$this->options['ReportId']." at $path");
         } catch (Exception $e){
             $this->log("Unable to save report #".$this->options['ReportId']." at $path: $e",'Urgent');
+            return false;
         }
     }
     

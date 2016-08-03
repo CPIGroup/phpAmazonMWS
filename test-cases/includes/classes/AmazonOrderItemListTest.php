@@ -28,7 +28,7 @@ class AmazonOrderItemListTest extends PHPUnit_Framework_TestCase {
     }
     
     public function testSetUp(){
-        $obj = new AmazonOrderItemList('testStore', '77');
+        $obj = new AmazonOrderItemList('testStore', '77', true, null, __DIR__.'/../../test-config.php');
         
         $o = $obj->getOptions();
         $this->assertArrayHasKey('AmazonOrderId',$o);
@@ -82,6 +82,16 @@ class AmazonOrderItemListTest extends PHPUnit_Framework_TestCase {
         $this->assertEquals('You just got throttled.',$check[3]);
         $this->assertEquals('You grabbed the wrong Order\'s items! - 77 =/= 058-1233752-8214740',$check[5]);
     }
+
+    /**
+     * @depends testFetchItems
+     * @param AmazonOrderItemList $o
+     */
+    public function testOrderId($o) {
+        $this->assertEquals('058-1233752-8214740', $o->getOrderId());
+
+        $this->assertFalse($this->object->getOrderId()); //not fetched yet for this object
+    }
     
     /**
      * @depends testFetchItems
@@ -98,6 +108,11 @@ class AmazonOrderItemListTest extends PHPUnit_Framework_TestCase {
         $x1['Title'] = 'Example item name';
         $x1['QuantityOrdered'] = '1';
         $x1['QuantityShipped'] = '1';
+        $x1['BuyerCustomizedInfo'] = 'http://www.amazon.com';
+        $x1['PointsGranted']['PointsNumber'] = '5';
+        $x1['PointsGranted']['Amount'] = '2.50';
+        $x1['PointsGranted']['CurrencyCode'] = 'USD';
+        $x1['PriceDesignation'] = 'BusinessPrice';
         $x1['GiftMessageText'] = 'For you!';
         $x1['GiftWrapLevel'] = 'Classic';
         $x1['ItemPrice']['Amount'] = '25.99';
@@ -199,6 +214,46 @@ class AmazonOrderItemListTest extends PHPUnit_Framework_TestCase {
         
         $this->assertFalse($o->getQuantityShipped('wrong')); //not number
         $this->assertFalse($this->object->getQuantityShipped()); //not fetched yet for this object
+    }
+
+    /**
+     * @depends testFetchItems
+     * @param AmazonOrderItemList $o
+     */
+    public function testGetCustomizedInfo($o) {
+        $this->assertEquals('http://www.amazon.com', $o->getCustomizedInfo(0));
+        $this->assertEquals($o->getCustomizedInfo(0), $o->getCustomizedInfo());
+
+        $this->assertFalse($o->getCustomizedInfo('wrong')); //not number
+        $this->assertFalse($this->object->getCustomizedInfo()); //not fetched yet for this object
+    }
+
+    /**
+     * @depends testFetchItems
+     * @param AmazonOrderItemList $o
+     */
+    public function testGetPointsGranted($o) {
+        $x = array();
+        $x['PointsNumber'] = '5';
+        $x['Amount'] = '2.50';
+        $x['CurrencyCode'] = 'USD';
+        $this->assertEquals($x, $o->getPointsGranted(0));
+        $this->assertEquals($o->getPointsGranted(0), $o->getPointsGranted());
+
+        $this->assertFalse($o->getPointsGranted('wrong')); //not number
+        $this->assertFalse($this->object->getPointsGranted()); //not fetched yet for this object
+    }
+
+    /**
+     * @depends testFetchItems
+     * @param AmazonOrderItemList $o
+     */
+    public function testGetPriceDesignation($o) {
+        $this->assertEquals('BusinessPrice', $o->getPriceDesignation(0));
+        $this->assertEquals($o->getPriceDesignation(0), $o->getPriceDesignation());
+
+        $this->assertFalse($o->getPriceDesignation('wrong')); //not number
+        $this->assertFalse($this->object->getPriceDesignation()); //not fetched yet for this object
     }
     
     /**

@@ -24,7 +24,7 @@
  * and product ID(s) must be given.
  */
 class AmazonProductList extends AmazonProductsCore implements Iterator{
-    private $i = 0;
+    protected $i = 0;
     
     /**
      * AmazonProductList fetches a list of products from Amazon.
@@ -54,7 +54,7 @@ class AmazonProductList extends AmazonProductsCore implements Iterator{
     /**
      * Sets the ID type. (Required)
      * 
-     * @param string $s <p>"ASIN", "SellerSKU", "UPC", "EAN", "ISBN", or "JAN"</p>
+     * @param string $s <p>"ASIN", "GCID", "SellerSKU", "UPC", "EAN", "ISBN", or "JAN"</p>
      * @return boolean <b>FALSE</b> if improper input
      */
     public function setIdType($s){
@@ -94,7 +94,7 @@ class AmazonProductList extends AmazonProductsCore implements Iterator{
      * Since product ID is a required parameter, these options should not be removed
      * without replacing them, so this method is not public.
      */
-    private function resetProductIds(){
+    protected function resetProductIds(){
         foreach($this->options as $op=>$junk){
             if(preg_match("#IdList#",$op)){
                 unset($this->options[$op]);

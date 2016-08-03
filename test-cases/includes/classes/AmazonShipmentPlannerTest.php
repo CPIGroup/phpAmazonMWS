@@ -71,7 +71,7 @@ class AmazonShipmentPlannerTest extends PHPUnit_Framework_TestCase {
         $a2['Name'] = 'Name2';
         $a2['AddressLine1'] = 'AddressLine1-2';
         $a2['City'] = 'City2';
-        $a2['StateOrProvidenceCode'] = 'StateOrProvidenceCode2';
+        $a2['StateOrProvinceCode'] = 'StateOrProvinceCode2';
         $a2['CountryCode'] = 'CountryCode2';
         $a2['PostalCode'] = 'PostalCode2';
         
@@ -83,6 +83,24 @@ class AmazonShipmentPlannerTest extends PHPUnit_Framework_TestCase {
         $this->assertFalse(isset($o2['ShipFromAddress.AddressLine2']));
         $this->assertFalse(isset($o2['ShipFromAddress.DistrictOrCounty']));
         
+    }
+
+    public function testSetCountry(){
+        $this->assertFalse($this->object->setCountry(null)); //can't be nothing
+        $this->assertFalse($this->object->setCountry(5)); //can't be an int
+        $this->assertNull($this->object->setCountry('US'));
+        $o = $this->object->getOptions();
+        $this->assertArrayHasKey('ShipToCountryCode',$o);
+        $this->assertEquals('US',$o['ShipToCountryCode']);
+    }
+
+    public function testSetCountrySubdivision(){
+        $this->assertFalse($this->object->setCountrySubdivision(null)); //can't be nothing
+        $this->assertFalse($this->object->setCountrySubdivision(5)); //can't be an int
+        $this->assertNull($this->object->setCountrySubdivision('IN-MH'));
+        $o = $this->object->getOptions();
+        $this->assertArrayHasKey('ShipToCountrySubdivisionCode',$o);
+        $this->assertEquals('IN-MH',$o['ShipToCountrySubdivisionCode']);
     }
     
     public function testSetLabelPreference(){
@@ -123,6 +141,10 @@ class AmazonShipmentPlannerTest extends PHPUnit_Framework_TestCase {
         $i[0]['Quantity'] = 'Quantity';
         $i[0]['QuantityInCase'] = 'QuantityInCase';
         $i[0]['Condition'] = 'Condition';
+        $i[0]['PrepDetailsList'][0]['PrepInstruction'] = 'BubbleWrapping';
+        $i[0]['PrepDetailsList'][0]['PrepOwner'] = 'AMAZON';
+        $i[0]['PrepDetailsList'][1]['PrepInstruction'] = 'Taping';
+        $i[0]['PrepDetailsList'][1]['PrepOwner'] = 'SELLER';
         $i[1]['SellerSKU'] = 'SellerSKU2';
         $i[1]['Quantity'] = 'Quantity2';
         
@@ -137,7 +159,15 @@ class AmazonShipmentPlannerTest extends PHPUnit_Framework_TestCase {
         $this->assertEquals('QuantityInCase',$o['InboundShipmentPlanRequestItems.member.1.QuantityInCase']);
         $this->assertArrayHasKey('InboundShipmentPlanRequestItems.member.1.Condition',$o);
         $this->assertEquals('Condition',$o['InboundShipmentPlanRequestItems.member.1.Condition']);
-        $this->assertArrayHasKey('InboundShipmentPlanRequestItems.member.1.SellerSKU',$o);
+        $this->assertArrayHasKey('InboundShipmentPlanRequestItems.member.1.PrepDetailsList.PrepDetails.1.PrepInstruction',$o);
+        $this->assertEquals('BubbleWrapping',$o['InboundShipmentPlanRequestItems.member.1.PrepDetailsList.PrepDetails.1.PrepInstruction']);
+        $this->assertArrayHasKey('InboundShipmentPlanRequestItems.member.1.PrepDetailsList.PrepDetails.1.PrepOwner',$o);
+        $this->assertEquals('AMAZON',$o['InboundShipmentPlanRequestItems.member.1.PrepDetailsList.PrepDetails.1.PrepOwner']);
+        $this->assertArrayHasKey('InboundShipmentPlanRequestItems.member.1.PrepDetailsList.PrepDetails.2.PrepInstruction',$o);
+        $this->assertEquals('Taping',$o['InboundShipmentPlanRequestItems.member.1.PrepDetailsList.PrepDetails.2.PrepInstruction']);
+        $this->assertArrayHasKey('InboundShipmentPlanRequestItems.member.1.PrepDetailsList.PrepDetails.2.PrepOwner',$o);
+        $this->assertEquals('SELLER',$o['InboundShipmentPlanRequestItems.member.1.PrepDetailsList.PrepDetails.2.PrepOwner']);
+        $this->assertArrayHasKey('InboundShipmentPlanRequestItems.member.2.SellerSKU',$o);
         $this->assertEquals('SellerSKU2',$o['InboundShipmentPlanRequestItems.member.2.SellerSKU']);
         $this->assertArrayHasKey('InboundShipmentPlanRequestItems.member.2.Quantity',$o);
         $this->assertEquals('Quantity2',$o['InboundShipmentPlanRequestItems.member.2.Quantity']);
@@ -154,6 +184,10 @@ class AmazonShipmentPlannerTest extends PHPUnit_Framework_TestCase {
         $this->assertArrayHasKey('InboundShipmentPlanRequestItems.member.1.Quantity',$o2);
         $this->assertEquals('NewQuantity',$o2['InboundShipmentPlanRequestItems.member.1.Quantity']);
         $this->assertArrayNotHasKey('InboundShipmentPlanRequestItems.member.1.QuantityInCase',$o2);
+        $this->assertArrayNotHasKey('InboundShipmentPlanRequestItems.member.1.PrepDetailsList.PrepDetails.1.PrepInstruction',$o2);
+        $this->assertArrayNotHasKey('InboundShipmentPlanRequestItems.member.1.PrepDetailsList.PrepDetails.1.PrepOwner',$o2);
+        $this->assertArrayNotHasKey('InboundShipmentPlanRequestItems.member.1.PrepDetailsList.PrepDetails.2.PrepInstruction',$o2);
+        $this->assertArrayNotHasKey('InboundShipmentPlanRequestItems.member.1.PrepDetailsList.PrepDetails.2.PrepOwner',$o2);
         $this->assertArrayNotHasKey('InboundShipmentPlanRequestItems.member.2.SellerSKU',$o2);
         $this->assertArrayNotHasKey('InboundShipmentPlanRequestItems.member.2.Quantity',$o2);
         
@@ -163,15 +197,6 @@ class AmazonShipmentPlannerTest extends PHPUnit_Framework_TestCase {
         $this->assertArrayNotHasKey('InboundShipmentPlanRequestItems.member.1.SellerSKU',$o3);
         $this->assertArrayNotHasKey('InboundShipmentPlanRequestItems.member.1.Quantity',$o3);
     }
-    
-//    public function testSetShipmentId(){
-//        $this->assertFalse($this->object->setShipmentId(null)); //can't be nothing
-//        $this->assertFalse($this->object->setShipmentId(5)); //can't be an int
-//        $this->assertNull($this->object->setShipmentId('777'));
-//        $o = $this->object->getOptions();
-//        $this->assertArrayHasKey('ShipmentId',$o);
-//        $this->assertEquals('777',$o['ShipmentId']);
-//    }
     
     public function testFetchPlan(){
         resetLog();
@@ -183,7 +208,7 @@ class AmazonShipmentPlannerTest extends PHPUnit_Framework_TestCase {
         $a['Name'] = 'Name';
         $a['AddressLine1'] = 'AddressLine1';
         $a['City'] = 'City';
-        $a['StateOrProvidenceCode'] = 'StateOrProvidenceCode';
+        $a['StateOrProvinceCode'] = 'StateOrProvinceCode';
         $a['CountryCode'] = 'CountryCode';
         $a['PostalCode'] = 'PostalCode';
         
@@ -208,56 +233,6 @@ class AmazonShipmentPlannerTest extends PHPUnit_Framework_TestCase {
         return $this->object;
     }
     
-//    /**
-//     * @depends testFetchPlan
-//     */
-//    public function testGetData($o){
-//        $get = $o->getData();
-//        $this->assertInternalType('array',$get);
-//        
-//        $x = array();
-//        $x['AmazonOrderId'] = '058-1233752-8214740';
-//        $x['SellerOrderId'] = '123ABC';
-//        $x['PurchaseDate'] = '2010-10-05T00:06:07.000Z';
-//        $x['LastUpdateDate'] = '2010-10-05T12:43:16.000Z';
-//        $x['OrderStatus'] = 'Unshipped';
-//        $x['FulfillmentChannel'] = 'MFN';
-//        $x['SalesChannel'] = 'Checkout by Amazon';
-//        $x['OrderChannel'] = 'OrderChannel';
-//        $x['ShipServiceLevel'] = 'Std DE Dom';
-//        $a = array();
-//            $a['Name'] = 'John Smith';
-//            $a['AddressLine1'] = '2700 First Avenue';
-//            $a['AddressLine2'] = 'Apartment 1';
-//            $a['AddressLine3'] = 'Suite 16';
-//            $a['City'] = 'Seattle';
-//            $a['County'] = 'County';
-//            $a['District'] = 'District';
-//            $a['StateOrRegion'] = 'WA';
-//            $a['PostalCode'] = '98102';
-//            $a['CountryCode'] = 'US';
-//            $a['Phone'] = '123';
-//        $x['ShippingAddress'] = $a;
-//        $x['OrderTotal']['Amount'] = '4.78';
-//        $x['OrderTotal']['CurrencyCode'] = 'USD';
-//        $x['NumberOfItemsShipped'] = '1';
-//        $x['NumberOfItemsUnshipped'] = '1';
-//        $x['PaymentExecutionDetail'][0]['Amount'] = '101.01';
-//        $x['PaymentExecutionDetail'][0]['CurrencyCode'] = 'USD';
-//        $x['PaymentExecutionDetail'][0]['SubPaymentMethod'] = 'COD';
-//        $x['PaymentExecutionDetail'][1]['Amount'] = '10.00';
-//        $x['PaymentExecutionDetail'][1]['CurrencyCode'] = 'USD';
-//        $x['PaymentExecutionDetail'][1]['SubPaymentMethod'] = 'GC';
-//        $x['PaymentMethod'] = 'COD';
-//        $x['MarketplaceId'] = 'ATVPDKIKX0DER';
-//        $x['BuyerName'] = 'Amazon User';
-//        $x['BuyerEmail'] = '5vlh04mgfmjh9h5@marketplace.amazon.com';
-//        $x['ShipServiceLevelCategory'] = 'Standard';
-//        
-//        $this->assertEquals($x,$get);
-//        
-//        $this->assertFalse($this->object->getData()); //not fetched yet for this object
-//    }
     
     /**
      * @depends testFetchPlan

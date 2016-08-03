@@ -27,9 +27,9 @@
 class AmazonReportList extends AmazonReportsCore implements Iterator{
     protected $tokenFlag = false;
     protected $tokenUseFlag = false;
-    private $index = 0;
-    private $i = 0;
-    private $reportList;
+    protected $index = 0;
+    protected $i = 0;
+    protected $reportList;
     
     /**
      * AmazonReportList gets a list of reports from Amazon.
@@ -238,7 +238,7 @@ class AmazonReportList extends AmazonReportsCore implements Iterator{
      * the list back as a response, which can be retrieved using <i>getList</i>.
      * Other methods are available for fetching specific values from the list.
      * This operation can potentially involve tokens.
-     * @param boolean <p>When set to <b>FALSE</b>, the function will not recurse, defaults to <b>TRUE</b></p>
+     * @param boolean $r [optional] <p>When set to <b>FALSE</b>, the function will not recurse, defaults to <b>TRUE</b></p>
      * @return boolean <b>FALSE</b> if something goes wrong
      */
     public function fetchReportList($r = true){
@@ -319,7 +319,7 @@ class AmazonReportList extends AmazonReportsCore implements Iterator{
      * Parses XML response into array.
      * 
      * This is what reads the response XML and converts it into an array.
-     * @param SimpleXMLObject $xml <p>The XML response from Amazon.</p>
+     * @param SimpleXMLElement $xml <p>The XML response from Amazon.</p>
      * @return boolean <b>FALSE</b> if no XML data is found
      */
     protected function parseXML($xml){
@@ -337,6 +337,9 @@ class AmazonReportList extends AmazonReportsCore implements Iterator{
             $this->reportList[$i]['ReportRequestId'] = (string)$x->ReportRequestId;
             $this->reportList[$i]['AvailableDate'] = (string)$x->AvailableDate;
             $this->reportList[$i]['Acknowledged'] = (string)$x->Acknowledged;
+            if (isset($x->AcknowledgedDate)) {
+                $this->reportList[$i]['AcknowledgedDate'] = (string)$x->AcknowledgedDate;
+            }
             
             $this->index++;
         }
@@ -481,6 +484,24 @@ class AmazonReportList extends AmazonReportsCore implements Iterator{
         }
         if (is_int($i)){
             return $this->reportList[$i]['Acknowledged'];
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * Returns the date the specified report was first acknowledged.
+     *
+     * This method will return <b>FALSE</b> if the list has not yet been filled.
+     * @param int $i [optional] <p>List index to retrieve the value from. Defaults to 0.</p>
+     * @return string|boolean single value, or <b>FALSE</b> if Non-numeric index or if the date is not set
+     */
+    public function getAcknowledgedDate($i = 0){
+        if (!isset($this->reportList)){
+            return false;
+        }
+        if (is_int($i) && isset($this->reportList[$i]['AcknowledgedDate'])){
+            return $this->reportList[$i]['AcknowledgedDate'];
         } else {
             return false;
         }

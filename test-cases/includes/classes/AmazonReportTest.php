@@ -28,7 +28,7 @@ class AmazonReportTest extends PHPUnit_Framework_TestCase {
     }
     
     public function testSetUp(){
-        $obj = new AmazonReport('testStore', '77');
+        $obj = new AmazonReport('testStore', '77', true, null, __DIR__.'/../../test-config.php');
         
         $o = $obj->getOptions();
         $this->assertArrayHasKey('ReportId',$o);
@@ -78,6 +78,16 @@ class AmazonReportTest extends PHPUnit_Framework_TestCase {
         $this->assertEquals("Successfully saved report #777 at $path",$check[1]);
         $this->assertFileEquals($path2, $path);
         $this->assertFalse($this->object->saveReport('here')); //not fetched yet for this object
+    }
+
+    /**
+     * @depends testFetchReport
+     * @param AmazonReport $o
+     */
+    public function testGetRawReport($o) {
+        $this->assertEquals('This is a report.', $o->getRawReport());
+
+        $this->assertFalse($this->object->getRawReport()); //not fetched yet for this object
     }
     
 }

@@ -24,10 +24,10 @@
  * required. A list of the affected reports is returned.
  */
 class AmazonReportAcknowledger extends AmazonReportsCore implements Iterator{
-    private $count;
-    private $index = 0;
-    private $i = 0;
-    private $reportList;
+    protected $count;
+    protected $index = 0;
+    protected $i = 0;
+    protected $reportList;
     
     /**
      * AmazonReportAcknowledger sends a report acknowledgement request to Amazon.
@@ -162,7 +162,7 @@ class AmazonReportAcknowledger extends AmazonReportsCore implements Iterator{
      * Parses XML response into array.
      * 
      * This is what reads the response XML and converts it into an array.
-     * @param SimpleXMLObject $xml <p>The XML response from Amazon.</p>
+     * @param SimpleXMLElement $xml <p>The XML response from Amazon.</p>
      * @return boolean <b>FALSE</b> if no XML data is found
      */
     protected function parseXML($xml){

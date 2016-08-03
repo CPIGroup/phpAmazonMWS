@@ -26,9 +26,9 @@
 class AmazonInventoryList extends AmazonInventoryCore implements Iterator{
     protected $tokenFlag = false;
     protected $tokenUseFlag = false;
-    private $supplyList;
-    private $index = 0;
-    private $i = 0;
+    protected $supplyList;
+    protected $index = 0;
+    protected $i = 0;
     
     /**
      * AmazonInventoryList fetches a list of inventory supplies Amazon.
@@ -81,7 +81,7 @@ class AmazonInventoryList extends AmazonInventoryCore implements Iterator{
      * were updated after the given time.
      * If this parameters is set, seller SKUs cannot be set.
      * The parameter is passed through <i>strtotime</i>, so values such as "-1 hour" are fine.
-     * @param string $s <p>Time string.</p>
+     * @param string $t <p>Time string.</p>
      * @return boolean <b>FALSE</b> if improper input
      */
     public function setStartTime($t = null){
@@ -101,7 +101,7 @@ class AmazonInventoryList extends AmazonInventoryCore implements Iterator{
      * This method sets the list of seller SKUs to be sent in the next request.
      * Setting this parameter tells Amazon to only return inventory supplies that match
      * the IDs in the list. If this parameter is set, Start Time cannot be set.
-     * @param array|string $s <p>A list of Seller SKUs, or a single ID string.</p>
+     * @param array|string $a <p>A list of Seller SKUs, or a single ID string.</p>
      * @return boolean <b>FALSE</b> if improper input
      */
     public function setSellerSkus($a){
@@ -127,7 +127,7 @@ class AmazonInventoryList extends AmazonInventoryCore implements Iterator{
      * Since seller SKU is a required parameter, these options should not be removed
      * without replacing them, so this method is not public.
      */
-    private function resetSkus(){
+    protected function resetSkus(){
         foreach($this->options as $op=>$junk){
             if(preg_match("#SellerSkus.member.#",$op)){
                 unset($this->options[$op]);
@@ -159,7 +159,7 @@ class AmazonInventoryList extends AmazonInventoryCore implements Iterator{
      * the list back as a response, which can be retrieved using <i>getSupply</i>.
      * Other methods are available for fetching specific values from the list.
      * This operation can potentially involve tokens.
-     * @param boolean <p>When set to <b>FALSE</b>, the function will not recurse, defaults to <b>TRUE</b></p>
+     * @param boolean $r [optional] <p>When set to <b>FALSE</b>, the function will not recurse, defaults to <b>TRUE</b></p>
      * @return boolean <b>FALSE</b> if something goes wrong
      */
     public function fetchInventoryList($r = true){
@@ -208,7 +208,7 @@ class AmazonInventoryList extends AmazonInventoryCore implements Iterator{
      * operation for using tokens does not use any other parameters, all other
      * parameters will be removed.
      */
-    private function prepareToken(){
+    protected function prepareToken(){
         if ($this->tokenFlag && $this->tokenUseFlag){
             $this->options['Action'] = 'ListInventorySupplyByNextToken';
             unset($this->options['QueryStartDateTime']);
@@ -226,7 +226,7 @@ class AmazonInventoryList extends AmazonInventoryCore implements Iterator{
      * Parses XML response into array.
      * 
      * This is what reads the response XML and converts it into an array.
-     * @param SimpleXMLObject $xml <p>The XML response from Amazon.</p>
+     * @param SimpleXMLElement $xml <p>The XML response from Amazon.</p>
      * @return boolean <b>FALSE</b> if no XML data is found
      */
     protected function parseXML($xml){

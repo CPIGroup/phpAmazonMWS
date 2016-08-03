@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+<PutTransportContentResponse xmlns="http://mws.amazonaws.com/FulfillmentInboundShipment/2010-10-01/">
+  <PutTransportContentResult>
+    <TransportResult>
+      <TransportStatus>WORKING</TransportStatus>
+    </TransportResult>
+  </PutTransportContentResult>
+  <ResponseMetadata>
+    <RequestId>616f4f53-973e-4bb3-8dd3-0b46978a45c5</RequestId>
+  </ResponseMetadata>
+</PutTransportContentResponse>

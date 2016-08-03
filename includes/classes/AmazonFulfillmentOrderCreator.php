@@ -27,22 +27,16 @@
 class AmazonFulfillmentOrderCreator extends AmazonOutboundCore{
     
     /**
-     * AmazonFulfillmentOrderCreator creates a fulfillment order. You need a fulfillment order ID.
-     * 
-     * The parameters are passed to the parent constructor, which are
-     * in turn passed to the AmazonCore constructor. See it for more information
-     * on these parameters and common methods.
-     * @param string $s [optional] <p>Name for the store you want to use.
-     * This parameter is optional if only one store is defined in the config file.</p>
-     * @param boolean $mock [optional] <p>This is a flag for enabling Mock Mode.
-     * This defaults to <b>FALSE</b>.</p>
-     * @param array|string $m [optional] <p>The files (or file) to use in Mock Mode.</p>
-     * @param string $config [optional] <p>An alternate config file to set. Used for testing.</p>
+     * Sets the marketplace associated with the fulfillment order. (Optional)
+     * @param string $m <p>Marketplace ID</p>
+     * @return boolean <b>FALSE</b> if improper input
      */
-    public function __construct($s = null, $mock = false, $m = null, $config = null) {
-        parent::__construct($s, $mock, $m, $config);
-        
-        $this->options['Action'] = 'CreateFulfillmentOrder';
+    public function setMarketplace($m){
+        if (is_string($m)){
+            $this->options['MarketplaceId'] = $m;
+        } else {
+            return false;
+        }
     }
     
     /**
@@ -75,6 +69,23 @@ class AmazonFulfillmentOrderCreator extends AmazonOutboundCore{
         if (is_string($s)){
             $this->options['DisplayableOrderId'] = $s;
         } else {
+            return false;
+        }
+    }
+
+    /**
+     * Sets the fulfillment action that the shipment should use. (Optional)
+     *
+     * This method indicates whether the order should ship now or be put on hold.
+     * If this option is not sent, Amazon will assume that the order will ship now.
+     * @param string $s <p>"Ship" or "Hold"</p>
+     * @return boolean <b>FALSE</b> if improper input
+     */
+    public function setFulfillmentAction($s){
+        if ($s === 'Ship' || $s === 'Hold'){
+            $this->options['FulfillmentAction'] = $s;
+        } else {
+            $this->log("Tried to set fulfillment action to invalid value", 'Warning');
             return false;
         }
     }
@@ -147,7 +158,7 @@ class AmazonFulfillmentOrderCreator extends AmazonOutboundCore{
      * <li><b>Line3</b> (optional) - max: 60 char</li>
      * <li><b>DistrictOrCounty</b> (optional) - max: 150 char</li>
      * <li><b>City</b> - max: 50 char</li>
-     * <li><b>StateOrProvidenceCode</b> - max: 150 char</li>
+     * <li><b>StateOrProvinceCode</b> - max: 150 char</li>
      * <li><b>CountryCode</b> - 2 digits</li>
      * <li><b>PostalCode</b> - max: 20 char</li>
      * <li><b>PhoneNumber</b> - max: 20 char</li>
@@ -179,7 +190,7 @@ class AmazonFulfillmentOrderCreator extends AmazonOutboundCore{
             $this->options['DestinationAddress.DistrictOrCounty'] = null;
         }
         $this->options['DestinationAddress.City'] = $a['City'];
-        $this->options['DestinationAddress.StateOrProvidenceCode'] = $a['StateOrProvidenceCode'];
+        $this->options['DestinationAddress.StateOrProvinceCode'] = $a['StateOrProvinceCode'];
         $this->options['DestinationAddress.CountryCode'] = $a['CountryCode'];
         $this->options['DestinationAddress.PostalCode'] = $a['PostalCode'];
         if (array_key_exists('PhoneNumber', $a)){
@@ -202,7 +213,7 @@ class AmazonFulfillmentOrderCreator extends AmazonOutboundCore{
         unset($this->options['DestinationAddress.Line3']);
         unset($this->options['DestinationAddress.DistrictOrCounty']);
         unset($this->options['DestinationAddress.City']);
-        unset($this->options['DestinationAddress.StateOrProvidenceCode']);
+        unset($this->options['DestinationAddress.StateOrProvinceCode']);
         unset($this->options['DestinationAddress.CountryCode']);
         unset($this->options['DestinationAddress.PostalCode']);
         unset($this->options['DestinationAddress.PhoneNumber']);
@@ -236,29 +247,13 @@ class AmazonFulfillmentOrderCreator extends AmazonOutboundCore{
     }
     
     /**
-     * Sets the fulfillment method. (Optional)
-     * 
-     * This method sets the Fulfillment Method to be sent in the next request.
-     * If this parameter is not set, Amazon will assume a <i>Consumer</i> method.
-     * Here is a quick description of the methods:
-     * <ul>
-     * <li><b>Consumer</b> - customer order</li>
-     * <li><b>Removal</b> - inventory will be returned to the given address</li>
-     * </ul>
-     * @param string $s <p>"Consumer" or "Removal"</p>
-     * @return boolean <b>FALSE</b> if improper input
+     * The "FulfillmentMethod" option is no longer used.
+     * @return boolean <b>FALSE</b>
+     * @deprecated since 1.3.0
      */
-    public function setFulfillmentMethod($s){
-        if (is_string($s)){
-            if ($s == 'Consumer' || $s == 'Removal'){
-                $this->options['FulfillmentMethod'] = $s;
-            } else {
-                $this->log("Tried to set fulfillment method to invalid value",'Warning');
-                return false;
-            }
-        } else {
-            return false;
-        }
+    public function setFulfillmentMethod(){
+        $this->log("The FulfillmentMethod option is no longer used for creating fulfillment orders.", 'Warning');
+        return FALSE;
     }
     
     /**
@@ -299,6 +294,98 @@ class AmazonFulfillmentOrderCreator extends AmazonOutboundCore{
             }
         }
     }
+
+    /**
+     * Sets the COD settings. (Optional)
+     *
+     * This method sets various settings related to COD (Cash on Delivery) orders.
+     * Any setting that is passed as <p>NULL</p> will not be set.
+     * Amazon will assume a value of 0 for any of the currency options not set.
+     * @param string $cu <p>ISO 4217 currency code</p>
+     * @param boolean $r [optional] <p>Whether or not COD is required for the order.</p>
+     * @param float $c [optional] <p>COD charge to collect</p>
+     * @param float $ct [optional] <p>tax on the COD charge to collect</p>
+     * @param float $s [optional] <p>shipping charge to collect</p>
+     * @param float $st [optional] <p>tax on the shipping charge to collect</p>
+     * @return boolean <b>FALSE</b> if improper input
+     */
+    public function setCodSettings($cu, $r = null, $c = null, $ct = null, $s = null, $st = null) {
+        if (empty($cu)) {
+            return false;
+        }
+        if (isset($r)) {
+            if (filter_var($r, FILTER_VALIDATE_BOOLEAN)) {
+                $r = 'true';
+            } else {
+                $r = 'false';
+            }
+            $this->options['CODSettings.IsCODRequired'] = $r;
+        }
+        //COD charge
+        if (isset($c) && is_numeric($c)) {
+            $this->options['CODSettings.CODCharge.Value'] = $c;
+            $this->options['CODSettings.CODCharge.CurrencyCode'] = $cu;
+        }
+        //COD charge tax
+        if (isset($ct) && is_numeric($ct)) {
+            $this->options['CODSettings.CODChargeTax.Value'] = $ct;
+            $this->options['CODSettings.CODChargeTax.CurrencyCode'] = $cu;
+        }
+        //shipping charge
+        if (isset($s) && is_numeric($s)) {
+            $this->options['CODSettings.ShippingCharge.Value'] = $s;
+            $this->options['CODSettings.ShippingCharge.CurrencyCode'] = $cu;
+        }
+        //shipping charge tax
+        if (isset($st) && is_numeric($st)) {
+            $this->options['CODSettings.ShippingChargeTax.Value'] = $st;
+            $this->options['CODSettings.ShippingChargeTax.CurrencyCode'] = $cu;
+        }
+    }
+
+    /**
+     * Removes COD settings options.
+     *
+     * Use this in case you change your mind and want to remove the COD settings you previously set.
+     */
+    public function resetCodSettings(){
+        foreach($this->options as $op=>$junk){
+            if(preg_match("#CODSettings#",$op)){
+                unset($this->options[$op]);
+            }
+        }
+    }
+
+    /**
+     * Sets the delivery window for the order. (Optional)
+     *
+     * This method sets the delivery window's start and end times for the next request.
+     * This option is required if the shipping speed is set to "ScheduledDelivery".
+     * The parameters are passed through <i>strtotime</i>, so values such as "-1 hour" are fine.
+     * @param string $s <p>A time string for the earliest time.</p>
+     * @param string $e <p>A time string for the latest time.</p>
+     * @return boolean <b>FALSE</b> if improper input
+     * @see genTime
+     */
+    public function setDeliveryWindow($s, $e){
+        if (empty($s) || empty($e)) {
+            return false;
+        }
+        $times = $this->genTime($s);
+        $this->options['DeliveryWindow.StartDateTime'] = $times;
+        $timee = $this->genTime($e);
+        $this->options['DeliveryWindow.EndDateTime'] = $timee;
+    }
+
+    /**
+     * Removes delivery window options.
+     *
+     * Use this in case you change your mind and want to remove the delivery window option you previously set.
+     */
+    public function resetDeliveryWindow(){
+        unset($this->options['DeliveryWindow.StartDateTime']);
+        unset($this->options['DeliveryWindow.EndDateTime']);
+    }
     
     /**
      * Sets the items. (Required)
@@ -319,6 +406,8 @@ class AmazonFulfillmentOrderCreator extends AmazonOutboundCore{
      * <li><b>CurrencyCode</b> - ISO 4217 currency code</li>
      * <li><b>Value</b> - number</li>
      * </ul>
+     * <li><b>PerUnitPrice</b> (optional array) - same structure as PerUnitDeclaredValue</li>
+     * <li><b>PerUnitTax</b> (optional array) - same structure as PerUnitDeclaredValue</li>
      * </ul>
      * @param array $a <p>See above.</p>
      * @return boolean <b>FALSE</b> if improper input
@@ -351,6 +440,14 @@ class AmazonFulfillmentOrderCreator extends AmazonOutboundCore{
                     $this->options['Items.member.'.$i.'.PerUnitDeclaredValue.CurrencyCode'] = $x['PerUnitDeclaredValue']['CurrencyCode'];
                     $this->options['Items.member.'.$i.'.PerUnitDeclaredValue.Value'] = $x['PerUnitDeclaredValue']['Value'];
                 }
+                if (array_key_exists('PerUnitPrice', $x)){
+                    $this->options['Items.member.'.$i.'.PerUnitPrice.CurrencyCode'] = $x['PerUnitPrice']['CurrencyCode'];
+                    $this->options['Items.member.'.$i.'.PerUnitPrice.Value'] = $x['PerUnitPrice']['Value'];
+                }
+                if (array_key_exists('PerUnitTax', $x)){
+                    $this->options['Items.member.'.$i.'.PerUnitTax.CurrencyCode'] = $x['PerUnitTax']['CurrencyCode'];
+                    $this->options['Items.member.'.$i.'.PerUnitTax.Value'] = $x['PerUnitTax']['Value'];
+                }
                 
                 $i++;
             } else {
@@ -382,12 +479,12 @@ class AmazonFulfillmentOrderCreator extends AmazonOutboundCore{
      * a number of parameters are required. Amazon will send back an HTTP response,
      * so there is no data to retrieve afterwards. The following parameters are required:
      * fulfillment order ID, displayed order ID, displayed timestamp, comment,
-     * shipping speed, address, items.
+     * shipping speed, address, and items.
      * @return boolean <b>TRUE</b> if the order creation was successful, <b>FALSE</b> if something goes wrong
      */
     public function createOrder(){
         if (!array_key_exists('SellerFulfillmentOrderId',$this->options)){
-            $this->log("Seller Fulfillment OrderID must be set in order to create an order",'Warning');
+            $this->log("Seller Fulfillment Order ID must be set in order to create an order",'Warning');
             return false;
         }
         if (!array_key_exists('DisplayableOrderId',$this->options)){
@@ -414,6 +511,8 @@ class AmazonFulfillmentOrderCreator extends AmazonOutboundCore{
             $this->log("Items must be set in order to create an order",'Warning');
             return false;
         }
+
+        $this->prepareCreate();
         
         $url = $this->urlbase.$this->urlbranch;
         
@@ -430,6 +529,62 @@ class AmazonFulfillmentOrderCreator extends AmazonOutboundCore{
             $this->log("Successfully created Fulfillment Order ".$this->options['SellerFulfillmentOrderId']." / ".$this->options['DisplayableOrderId']);
             return true;
         }
+    }
+
+    /**
+     * Updates a Fulfillment Order with Amazon.
+     *
+     * Submits an <i>UpdateFulfillmentOrder</i> request to Amazon. In order to do this,
+     * a fulfillment order ID is required. Amazon will send back an HTTP response,
+     * so there is no data to retrieve afterwards.
+     * @return boolean <b>TRUE</b> if the order creation was successful, <b>FALSE</b> if something goes wrong
+     */
+    public function updateOrder(){
+        if (!array_key_exists('SellerFulfillmentOrderId',$this->options)){
+            $this->log("Seller Fulfillment Order ID must be set in order to update an order",'Warning');
+            return false;
+        }
+
+        $this->prepareUpdate();
+
+        $url = $this->urlbase.$this->urlbranch;
+
+        $query = $this->genQuery();
+
+        if ($this->mockMode){
+            $response = $this->fetchMockResponse();
+        } else {
+            $response = $this->sendRequest($url, array('Post'=>$query));
+        }
+        if (!$this->checkResponse($response)){
+            return false;
+        } else {
+            $this->log("Successfully updated Fulfillment Order ".$this->options['SellerFulfillmentOrderId']);
+            return true;
+        }
+    }
+
+    /**
+     * Sets up options for using <i>createOrder</i>.
+     *
+     * This changes key options for using <i>createOrder</i>.
+     */
+    protected function prepareCreate() {
+        $this->options['Action'] = 'CreateFulfillmentOrder';
+    }
+
+    /**
+     * Sets up options for using <i>updateOrder</i>.
+     *
+     * This changes key options for using <i>updateOrder</i>. Please note: because the
+     * operation for updating the order does not use all of the parameters, some of the
+     * parameters will be removed. The following parameters are removed:
+     * COD settings and delivery window.
+     */
+    protected function prepareUpdate() {
+        $this->options['Action'] = 'UpdateFulfillmentOrder';
+        $this->resetCodSettings();
+        $this->resetDeliveryWindow();
     }
     
 }

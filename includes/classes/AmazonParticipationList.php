@@ -26,10 +26,10 @@
 class AmazonParticipationList extends AmazonSellersCore{
     protected $tokenFlag = false;
     protected $tokenUseFlag = false;
-    private $participationList;
-    private $marketplaceList;
-    private $indexM = 0;
-    private $indexP = 0;
+    protected $participationList;
+    protected $marketplaceList;
+    protected $indexM = 0;
+    protected $indexP = 0;
     
     /**
      * Gets list of marketplaces run by the seller.
@@ -91,7 +91,7 @@ class AmazonParticipationList extends AmazonSellersCore{
      * and  <i>getParticipationList</i>.
      * Other methods are available for fetching specific values from the list.
      * This operation can potentially involve tokens.
-     * @param boolean <p>When set to <b>FALSE</b>, the function will not recurse, defaults to <b>TRUE</b></p>
+     * @param boolean $r [optional] <p>When set to <b>FALSE</b>, the function will not recurse, defaults to <b>TRUE</b></p>
      * @return boolean <b>FALSE</b> if something goes wrong
      */
     public function fetchParticipationList($r = true){
@@ -137,7 +137,7 @@ class AmazonParticipationList extends AmazonSellersCore{
      * operation for using tokens does not use any other parameters, all other
      * parameters will be removed.
      */
-    private function prepareToken(){
+    protected function prepareToken(){
         if ($this->tokenFlag && $this->tokenUseFlag){
             $this->options['Action'] = 'ListMarketplaceParticipationsByNextToken';
         } else {
@@ -154,7 +154,7 @@ class AmazonParticipationList extends AmazonSellersCore{
      * Parses XML response into two arrays.
      * 
      * This is what reads the response XML and converts it into two arrays.
-     * @param SimpleXMLObject $xml <p>The XML response from Amazon.</p>
+     * @param SimpleXMLElement $xml <p>The XML response from Amazon.</p>
      * @return boolean <b>FALSE</b> if no XML data is found
      */
     protected function parseXML($xml){

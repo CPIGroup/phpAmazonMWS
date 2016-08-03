@@ -24,7 +24,7 @@
  * Order ID is required.
  */
 class AmazonOrder extends AmazonOrderCore{
-    private $data;
+    protected $data;
 
     /**
      * AmazonOrder object gets the details for a single object from Amazon.
@@ -143,7 +143,7 @@ class AmazonOrder extends AmazonOrderCore{
      * Parses XML response into array.
      * 
      * This is what reads the response XML and converts it into an array.
-     * @param SimpleXMLObject $xml <p>The XML response from Amazon.</p>
+     * @param SimpleXMLElement $xml <p>The XML response from Amazon.</p>
      * @return boolean <b>FALSE</b> if no XML data is found
      */
     protected function parseXML($xml){
@@ -216,8 +216,8 @@ class AmazonOrder extends AmazonOrderCore{
         if (isset($xml->BuyerEmail)){
             $d['BuyerEmail'] = (string)$xml->BuyerEmail;
         }
-        if (isset($xml->ShipServiceLevelCategory)){
-            $d['ShipServiceLevelCategory'] = (string)$xml->ShipServiceLevelCategory;
+        if (isset($xml->ShipmentServiceLevelCategory)){
+            $d['ShipmentServiceLevelCategory'] = (string)$xml->ShipmentServiceLevelCategory;
         }
         if (isset($xml->CbaDisplayableShippingLabel)){
             $d['CbaDisplayableShippingLabel'] = (string)$xml->CbaDisplayableShippingLabel;
@@ -242,6 +242,18 @@ class AmazonOrder extends AmazonOrderCore{
         }
         if (isset($xml->LatestDeliveryDate)){
             $d['LatestDeliveryDate'] = (string)$xml->LatestDeliveryDate;
+        }
+        if (isset($xml->IsBusinessOrder)){
+            $d['IsBusinessOrder'] = (string)$xml->IsBusinessOrder;
+        }
+        if (isset($xml->PurchaseOrderNumber)){
+            $d['PurchaseOrderNumber'] = (string)$xml->PurchaseOrderNumber;
+        }
+        if (isset($xml->IsPrime)){
+            $d['IsPrime'] = (string)$xml->IsPrime;
+        }
+        if (isset($xml->IsPremiumOrder)){
+            $d['IsPremiumOrder'] = (string)$xml->IsPremiumOrder;
         }
         
         $this->data = $d;
@@ -271,7 +283,8 @@ class AmazonOrder extends AmazonOrderCore{
      * <li><b>PaymentMethod</b> (optional) - "COD", "CVS", or "Other"</li>
      * <li><b>BuyerName</b> (optional) - name of the buyer</li>
      * <li><b>BuyerEmail</b> (optional) - Amazon-generated email for the buyer</li>
-     * <li><b>ShipServiceLevelCategory</b> (optional) - "Expedited", "NextDay", "SecondDay", or "Standard"</li>
+     * <li><b>ShipmentServiceLevelCategory</b> (optional) - "Expedited", "FreeEconomy", "NextDay",
+     * "SameDay", "SecondDay", "Scheduled", or "Standard"</li>
      * </ul>
      * @return array|boolean array of data, or <b>FALSE</b> if data not filled yet
      */
@@ -590,18 +603,30 @@ class AmazonOrder extends AmazonOrderCore{
      * Valid values for the service level category are...
      * <ul>
      * <li>Expedited</li>
+     * <li>FreeEconomy</li>
      * <li>NextDay</li>
+     * <li>SameDay</li>
      * <li>SecondDay</li>
+     * <li>Scheduled</li>
      * <li>Standard</li>
      * </ul>
      * @return string|boolean single value, or <b>FALSE</b> if category not set yet
      */
-    public function getShipServiceLevelCategory(){
-        if (isset($this->data['ShipServiceLevelCategory'])){
-            return $this->data['ShipServiceLevelCategory'];
+    public function getShipmentServiceLevelCategory(){
+        if (isset($this->data['ShipmentServiceLevelCategory'])){
+            return $this->data['ShipmentServiceLevelCategory'];
         } else {
             return false;
         }
+    }
+
+    /**
+     * Use getShipmentServiceLevelCategory instead.
+     * @deprecated since version 1.3.0
+     * @return string|boolean single value, or <b>FALSE</b> if category not set yet
+     */
+    public function getShipServiceLevelCategory(){
+        return $this->getShipmentServiceLevelCategory();
     }
     
     /**
@@ -621,7 +646,7 @@ class AmazonOrder extends AmazonOrderCore{
     /**
      * Returns an indication of whether or not the Order was shipped with the Amazon TFM service.
      * 
-     * This method will return <b>FALSE</b> if the status has not been set yet.
+     * This method will return <b>FALSE</b> if the Amazon TFM flag has not been set yet.
      * @return string|boolean single value, or <b>FALSE</b> if value not set yet
      */
     public function getShippedByAmazonTfm(){
@@ -752,6 +777,62 @@ class AmazonOrder extends AmazonOrderCore{
             
             $ratio = $this->data['NumberOfItemsShipped'] / $total;
             return $ratio;
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * Returns an indication of whether or not the Order is a business number.
+     *
+     * This method will return <b>FALSE</b> if the business order flag has not been set yet.
+     * @return string|boolean single value, or <b>FALSE</b> if value not set yet
+     */
+    public function getIsBusinessOrder(){
+        if (isset($this->data['IsBusinessOrder'])){
+            return $this->data['IsBusinessOrder'];
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * Returns the purchase order number associated with the order.
+     *
+     * This method will return <b>FALSE</b> if the purchase order number has not been set yet.
+     * @return string|boolean single value, or <b>FALSE</b> if value not set yet
+     */
+    public function getPurchaseOrderNumber(){
+        if (isset($this->data['PurchaseOrderNumber'])){
+            return $this->data['PurchaseOrderNumber'];
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * Returns an indication of whether or not the Order uses the Amazon Prime service.
+     *
+     * This method will return <b>FALSE</b> if the Prime flag has not been set yet.
+     * @return string|boolean "true" or "false", or <b>FALSE</b> if value not set yet
+     */
+    public function getIsPrime(){
+        if (isset($this->data['IsPrime'])){
+            return $this->data['IsPrime'];
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * Returns an indication of whether or not the Order is a premium order.
+     *
+     * This method will return <b>FALSE</b> if the premium order flag has not been set yet.
+     * @return string|boolean single value, or <b>FALSE</b> if value not set yet
+     */
+    public function getIsPremiumOrder(){
+        if (isset($this->data['IsPremiumOrder'])){
+            return $this->data['IsPremiumOrder'];
         } else {
             return false;
         }

@@ -72,8 +72,9 @@ class AmazonShipmentListTest extends PHPUnit_Framework_TestCase {
     public function timeProvider() {
         return array(
             array(null, null), //nothing given, so no change
-            array(true, true), //not strings or numbers
+            array(time(), time(), 1), //numbers
             array('', ''), //strings, but empty
+            array(0, 0), //numbers, but empty
             array('-1 min', null), //one set
             array(null, '-1 min'), //other set
             array('-1 min', '-1 min'), //both set
@@ -256,6 +257,19 @@ class AmazonShipmentListTest extends PHPUnit_Framework_TestCase {
         $this->assertFalse($o->getIfCasesRequired(1.5)); //no decimals
         $this->assertFalse($this->object->getIfCasesRequired()); //not fetched yet for this object
     }
+
+    /**
+     * @depends testFetchShipments
+     * @param AmazonShipmentList $o
+     */
+    public function testGetConfirmedNeedByDate($o) {
+        $this->assertEquals('2012-12-21', $o->getConfirmedNeedByDate(0));
+        $this->assertEquals($o->getConfirmedNeedByDate(0), $o->getConfirmedNeedByDate());
+
+        $this->assertFalse($o->getConfirmedNeedByDate('wrong')); //not number
+        $this->assertFalse($o->getConfirmedNeedByDate(1.5)); //no decimals
+        $this->assertFalse($this->object->getConfirmedNeedByDate()); //not fetched yet for this object
+    }
     
     /**
      * @depends testFetchShipments
@@ -293,6 +307,7 @@ class AmazonShipmentListTest extends PHPUnit_Framework_TestCase {
         $x1['LabelPrepType'] = 'AMAZON_LABEL';
         $x1['ShipmentStatus'] = 'CLOSED';
         $x1['AreCasesRequired'] = 'false';
+        $x1['ConfirmedNeedByDate'] = '2012-12-21';
         $x[0] = $x1;
         $x2 = array();
         $x2['ShipmentId'] = 'FBA4X8YLS';
@@ -326,6 +341,11 @@ class AmazonShipmentListTest extends PHPUnit_Framework_TestCase {
         $x1['QuantityInCase'] = '0';
         $x1['QuantityReceived'] = '0';
         $x1['FulfillmentNetworkSKU'] = 'B000FADVPQ';
+        $x1['PrepDetailsList'][0]['PrepInstruction'] = 'BubbleWrapping';
+        $x1['PrepDetailsList'][0]['PrepOwner'] = 'AMAZON';
+        $x1['PrepDetailsList'][1]['PrepInstruction'] = 'Taping';
+        $x1['PrepDetailsList'][1]['PrepOwner'] = 'SELLER';
+        $x1['ReleaseDate'] = '2012-12-21';
         $x[0] = $x1;
         $x2 = array();
         $x2['ShipmentId'] = 'SSF85DGIZZ3OF1';

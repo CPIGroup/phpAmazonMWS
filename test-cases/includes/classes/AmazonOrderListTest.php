@@ -54,7 +54,7 @@ class AmazonOrderListTest extends PHPUnit_Framework_TestCase {
         $this->assertFalse($this->object->setLimits('Created',array(5)));
         $check = parseLog();
         $this->assertEquals('First parameter should be either "Created" or "Modified".',$check[1]);
-        $this->assertEquals('Error: strtotime() expects parameter 1 to be string, array given',$check[2]);
+        $this->assertEquals('Error: Invalid time input given',$check[2]);
     }
     
     public function testSetOrderStatusFilter(){
@@ -82,6 +82,35 @@ class AmazonOrderListTest extends PHPUnit_Framework_TestCase {
         $this->object->resetOrderStatusFilter();
         $o3 = $this->object->getOptions();
         $this->assertArrayNotHasKey('OrderStatus.Status.1',$o3);
+    }
+
+    public function testSetMarketplaceFilter() {
+        $this->assertFalse($this->object->setMarketplaceFilter(null)); //can't be nothing
+        $this->assertFalse($this->object->setMarketplaceFilter(5)); //can't be an int
+
+        $list = array('One', 'Two', 'Three');
+        $this->assertNull($this->object->setMarketplaceFilter($list));
+
+        $o = $this->object->getOptions();
+        $this->assertArrayHasKey('MarketplaceId.Id.1', $o);
+        $this->assertEquals('One', $o['MarketplaceId.Id.1']);
+        $this->assertArrayHasKey('MarketplaceId.Id.2', $o);
+        $this->assertEquals('Two', $o['MarketplaceId.Id.2']);
+        $this->assertArrayHasKey('MarketplaceId.Id.3', $o);
+        $this->assertEquals('Three', $o['MarketplaceId.Id.3']);
+
+        $this->assertNull($this->object->setMarketplaceFilter('Four')); //will cause reset
+        $o2 = $this->object->getOptions();
+        $this->assertArrayHasKey('MarketplaceId.Id.1', $o2);
+        $this->assertEquals('Four', $o2['MarketplaceId.Id.1']);
+        $this->assertArrayNotHasKey('MarketplaceId.Id.2', $o2);
+        $this->assertArrayNotHasKey('MarketplaceId.Id.3', $o2);
+
+        //changes back to store default
+        $this->object->resetMarketplaceFilter();
+        $o3 = $this->object->getOptions();
+        $this->assertArrayHasKey('MarketplaceId.Id.1', $o3);
+        $this->assertEquals('ATVPDKIKX0DER', $o3['MarketplaceId.Id.1']);
     }
     
     public function testSetFulfillmentChannelFilter(){
@@ -200,6 +229,33 @@ class AmazonOrderListTest extends PHPUnit_Framework_TestCase {
         $this->assertArrayHasKey('MaxResultsPerPage',$o);
         $this->assertEquals(77,$o['MaxResultsPerPage']);
         
+    }
+
+    public function testSetTfmShipmentStatusFilter() {
+        $this->assertFalse($this->object->setTfmShipmentStatusFilter(null)); //can't be nothing
+        $this->assertFalse($this->object->setTfmShipmentStatusFilter(5)); //can't be an int
+
+        $list = array('One', 'Two', 'Three');
+        $this->assertNull($this->object->setTfmShipmentStatusFilter($list));
+
+        $o = $this->object->getOptions();
+        $this->assertArrayHasKey('TFMShipmentStatus.Status.1', $o);
+        $this->assertEquals('One', $o['TFMShipmentStatus.Status.1']);
+        $this->assertArrayHasKey('TFMShipmentStatus.Status.2', $o);
+        $this->assertEquals('Two', $o['TFMShipmentStatus.Status.2']);
+        $this->assertArrayHasKey('TFMShipmentStatus.Status.3', $o);
+        $this->assertEquals('Three', $o['TFMShipmentStatus.Status.3']);
+
+        $this->assertNull($this->object->setTfmShipmentStatusFilter('Four')); //will cause reset
+        $o2 = $this->object->getOptions();
+        $this->assertArrayHasKey('TFMShipmentStatus.Status.1', $o2);
+        $this->assertEquals('Four', $o2['TFMShipmentStatus.Status.1']);
+        $this->assertArrayNotHasKey('TFMShipmentStatus.Status.2', $o2);
+        $this->assertArrayNotHasKey('TFMShipmentStatus.Status.3', $o2);
+
+        $this->object->resetTfmShipmentStatusFilter();
+        $o3 = $this->object->getOptions();
+        $this->assertArrayNotHasKey('TFMShipmentStatus.Status.1', $o3);
     }
     
     public function testFetchOrders(){

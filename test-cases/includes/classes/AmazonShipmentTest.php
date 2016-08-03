@@ -26,6 +26,15 @@ class AmazonShipmentTest extends PHPUnit_Framework_TestCase {
     protected function tearDown() {
         
     }
+
+    public function testSetShipmentName() {
+        $this->assertFalse($this->object->setShipmentName(null)); //can't be nothing
+        $this->assertFalse($this->object->setShipmentName(5)); //can't be an int
+        $this->assertNull($this->object->setShipmentName('My Shipment'));
+        $o = $this->object->getOptions();
+        $this->assertArrayHasKey('InboundShipmentHeader.ShipmentName', $o);
+        $this->assertEquals('My Shipment', $o['InboundShipmentHeader.ShipmentName']);
+    }
     
     public function testSetAddress(){
         $this->assertFalse($this->object->setAddress(null)); //can't be nothing
@@ -85,6 +94,27 @@ class AmazonShipmentTest extends PHPUnit_Framework_TestCase {
         $this->assertNull($o2['InboundShipmentHeader.ShipFromAddress.AddressLine2']);
         $this->assertNull($o2['InboundShipmentHeader.ShipFromAddress.DistrictOrCounty']);
         
+    }
+
+    public function testSetDestination() {
+        $this->assertFalse($this->object->setDestination(null)); //can't be nothing
+        $this->assertFalse($this->object->setDestination(5)); //can't be an int
+        $this->assertNull($this->object->setDestination('Amazon123'));
+        $o = $this->object->getOptions();
+        $this->assertArrayHasKey('InboundShipmentHeader.DestinationFulfillmentCenterId', $o);
+        $this->assertEquals('Amazon123', $o['InboundShipmentHeader.DestinationFulfillmentCenterId']);
+    }
+
+    public function testSetLabelPrepPreference() {
+        $this->assertFalse($this->object->setLabelPrepPreference(null)); //can't be nothing
+        $this->assertFalse($this->object->setLabelPrepPreference(5)); //can't be an int
+        $this->assertFalse($this->object->setLabelPrepPreference('wrong')); //not a valid value
+        $this->assertNull($this->object->setLabelPrepPreference('SELLER_LABEL'));
+        $this->assertNull($this->object->setLabelPrepPreference('AMAZON_LABEL_ONLY'));
+        $this->assertNull($this->object->setLabelPrepPreference('AMAZON_LABEL_PREFERRED'));
+        $o = $this->object->getOptions();
+        $this->assertArrayHasKey('InboundShipmentHeader.LabelPrepPreference', $o);
+        $this->assertEquals('AMAZON_LABEL_PREFERRED', $o['InboundShipmentHeader.LabelPrepPreference']);
     }
     
     public function testSetItems(){
@@ -185,34 +215,30 @@ class AmazonShipmentTest extends PHPUnit_Framework_TestCase {
         $this->assertNull($this->object->usePlan($plan));
         
         $o = $this->object->getOptions();
-        $this->assertEquals('FBA63J76R',$o['InboundShipmentHeader.ShipmentId']);
+        $this->assertEquals('FBA63J76R',$o['ShipmentId']);
         $this->assertEquals('PHX6',$o['InboundShipmentHeader.DestinationFulfillmentCenterId']);
-        $this->assertEquals('NO_LABEL',$o['InboundShipmentHeader.LabelPrepType']);
-        $this->assertEquals('Amazon.com',$o['InboundShipmentHeader.ShipFromAddress.Name']);
-        $this->assertEquals('4750 West Mohave St',$o['InboundShipmentHeader.ShipFromAddress.AddressLine1']);
-        $this->assertEquals(null,$o['InboundShipmentHeader.ShipFromAddress.AddressLine2']);
-        $this->assertEquals('Phoenix',$o['InboundShipmentHeader.ShipFromAddress.City']);
-        $this->assertEquals(null,$o['InboundShipmentHeader.ShipFromAddress.DistrictOrCounty']);
-        $this->assertEquals('AZ',$o['InboundShipmentHeader.ShipFromAddress.StateOrProvinceCode']);
-        $this->assertEquals('US',$o['InboundShipmentHeader.ShipFromAddress.CountryCode']);
-        $this->assertEquals('85043',$o['InboundShipmentHeader.ShipFromAddress.PostalCode']);
+        $this->assertEquals('SELLER_LABEL',$o['InboundShipmentHeader.LabelPrepPreference']);
         $this->assertEquals('Football2415',$o['InboundShipmentItems.member.1.SellerSKU']);
         $this->assertEquals('3',$o['InboundShipmentItems.member.1.QuantityShipped']);
         $this->assertEquals('TeeballBall3251',$o['InboundShipmentItems.member.2.SellerSKU']);
         $this->assertEquals('5',$o['InboundShipmentItems.member.2.QuantityShipped']);
+        $this->assertArrayNotHasKey('InboundShipmentHeader.ShipFromAddress.Name', $o);
         
         resetLog();
         $this->assertFalse($this->object->usePlan(null));
         $check = parseLog();
         $this->assertEquals('usePlan requires an array',$check[0]);
         
-        return $this->object;
+        return $plan;
     }
     
     /**
      * @depends testUsePlan
+     * @param array $plan <p>Plan from an AmazonShipmentPlanner object</p>
      */
-    public function testCreateShipment($o){
+    public function testCreateShipment($plan) {
+        $o = clone $this->object;
+        $o->usePlan($plan);
         resetLog();
         $this->object = new AmazonShipment('testStore',true, null, __DIR__.'/../../test-config.php');
         $this->assertFalse($this->object->createShipment()); //no ID set
@@ -228,9 +254,14 @@ class AmazonShipmentTest extends PHPUnit_Framework_TestCase {
         $a['CountryCode'] = 'CountryCode';
         $a['PostalCode'] = 'PostalCode';
         $this->object->setAddress($a);
+        $this->object->setShipmentName('test');
         $this->assertFalse($this->object->createShipment()); //no items yet
         
         $o->setMock(true,'createShipment.xml');
+        $this->assertFalse($o->createShipment()); //no name yet
+        $o->setShipmentName('test');
+        $this->assertFalse($o->createShipment()); //no address yet
+        $o->setAddress($a);
         $this->assertTrue($o->createShipment()); //this one is good
         
         $op = $o->getOptions();
@@ -241,8 +272,10 @@ class AmazonShipmentTest extends PHPUnit_Framework_TestCase {
         $this->assertEquals('Header must be set in order to make a shipment',$check[2]);
         $this->assertEquals('Items must be set in order to make a shipment',$check[3]);
         $this->assertEquals('Single Mock File set: createShipment.xml',$check[5]);
-        $this->assertEquals('Fetched Mock File: mock/createShipment.xml',$check[6]);
-        $this->assertEquals('Successfully created Shipment #FBA63JX44',$check[7]);
+        $this->assertEquals('Header must be set in order to make a shipment',$check[6]);
+        $this->assertEquals('Address must be set in order to make a shipment',$check[7]);
+        $this->assertEquals('Fetched Mock File: mock/createShipment.xml',$check[8]);
+        $this->assertEquals('Successfully created Shipment #FBA63JX44',$check[9]);
         
         return $o;
     }
@@ -259,8 +292,11 @@ class AmazonShipmentTest extends PHPUnit_Framework_TestCase {
     
     /**
      * @depends testUsePlan
+     * @param array $plan <p>Plan from an AmazonShipmentPlanner object</p>
      */
-    public function testUpdateShipment($o){
+    public function testUpdateShipment($plan) {
+        $o = clone $this->object;
+        $o->usePlan($plan);
         resetLog();
         $this->object = new AmazonShipment('testStore', true, null, __DIR__.'/../../test-config.php');
         $this->assertFalse($this->object->updateShipment()); //no ID set
@@ -276,9 +312,14 @@ class AmazonShipmentTest extends PHPUnit_Framework_TestCase {
         $a['CountryCode'] = 'CountryCode';
         $a['PostalCode'] = 'PostalCode';
         $this->object->setAddress($a);
+        $this->object->setShipmentName('test');
         $this->assertFalse($this->object->updateShipment()); //no items yet
         
         $o->setMock(true,'updateShipment.xml');
+        $this->assertFalse($o->updateShipment()); //no name yet
+        $o->setShipmentName('test');
+        $this->assertFalse($o->updateShipment()); //no address yet
+        $o->setAddress($a);
         $this->assertTrue($o->updateShipment()); //this one is good
         
         $op = $o->getOptions();
@@ -289,8 +330,10 @@ class AmazonShipmentTest extends PHPUnit_Framework_TestCase {
         $this->assertEquals('Header must be set in order to update a shipment',$check[2]);
         $this->assertEquals('Items must be set in order to update a shipment',$check[3]);
         $this->assertEquals('Single Mock File set: updateShipment.xml',$check[5]);
-        $this->assertEquals('Fetched Mock File: mock/updateShipment.xml',$check[6]);
-        $this->assertEquals('Successfully updated Shipment #FBA63J76R',$check[7]);
+        $this->assertEquals('Header must be set in order to update a shipment',$check[6]);
+        $this->assertEquals('Address must be set in order to update a shipment',$check[7]);
+        $this->assertEquals('Fetched Mock File: mock/updateShipment.xml',$check[8]);
+        $this->assertEquals('Successfully updated Shipment #FBA63J76R',$check[9]);
     }
     
 }

@@ -46,23 +46,5 @@ abstract class AmazonReportsCore extends AmazonCore{
             $this->options['Version'] = $AMAZON_VERSION_REPORTS;
         }
     }
-    
-    /**
-     * Checks for a token and changes the proper options
-     * @param SimpleXMLObject $xml <p>response data</p>
-     * @return boolean <b>FALSE</b> if no XML data
-     */
-    protected function checkToken($xml){
-        if (!$xml){
-            return false;
-        }
-        if ((string)$xml->HasNext == 'true'){
-            $this->tokenFlag = true;
-            $this->options['NextToken'] = (string)$xml->NextToken;
-        } else {
-            unset($this->options['NextToken']);
-            $this->tokenFlag = false;
-        }
-    }
 }
 ?>

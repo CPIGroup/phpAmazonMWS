@@ -1,0 +1,6 @@
+<SendTestNotificationToDestinationResponse xmlns="http://mws.amazonservices.com/schema/Subscriptions/2013-07-01">
+  <SendTestNotificationToDestinationResult/>
+  <ResponseMetadata>
+    <RequestId>f662dae6-bde0-4e75-a53b-741abEXAMPLE</RequestId>
+  </ResponseMetadata>
+</SendTestNotificationToDestinationResponse>

@@ -1,0 +1,20 @@
+<GetSubscriptionResponse xmlns="http://mws.amazonservices.com/schema/Subscriptions/2013-07-01">
+  <GetSubscriptionResult>
+    <Subscription>
+      <NotificationType>AnyOfferChanged</NotificationType>
+      <IsEnabled>true</IsEnabled>
+      <Destination>
+        <DeliveryChannel>SQS</DeliveryChannel>
+        <AttributeList>
+          <member>
+            <Value>https://sqs.us-east-1.amazonaws.com/51471EXAMPLE/mws_notifications</Value>
+            <Key>sqsQueueUrl</Key>
+          </member>
+        </AttributeList>
+      </Destination>
+    </Subscription>
+  </GetSubscriptionResult>
+  <ResponseMetadata>
+    <RequestId>4012b1ae-3f31-4627-83c3-1757aEXAMPLE</RequestId>
+  </ResponseMetadata>
+</GetSubscriptionResponse>

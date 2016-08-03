@@ -28,10 +28,10 @@
 class AmazonReportScheduleList extends AmazonReportsCore implements Iterator{
     protected $tokenFlag = false;
     protected $tokenUseFlag = false;
-    private $index = 0;
-    private $i = 0;
-    private $scheduleList;
-    private $count;
+    protected $index = 0;
+    protected $i = 0;
+    protected $scheduleList;
+    protected $count;
     
     /**
      * AmazonReportScheduleList sets a list of report schedules from Amazon.
@@ -128,7 +128,7 @@ class AmazonReportScheduleList extends AmazonReportsCore implements Iterator{
      * the list back as a response, which can be retrieved using <i>getList</i>.
      * Other methods are available for fetching specific values from the list.
      * This operation can potentially involve tokens.
-     * @param boolean <p>When set to <b>FALSE</b>, the function will not recurse, defaults to <b>TRUE</b></p>
+     * @param boolean $r [optional] <p>When set to <b>FALSE</b>, the function will not recurse, defaults to <b>TRUE</b></p>
      * @return boolean <b>FALSE</b> if something goes wrong
      */
     public function fetchReportList($r = true){
@@ -205,7 +205,7 @@ class AmazonReportScheduleList extends AmazonReportsCore implements Iterator{
      * Parses XML response into array.
      * 
      * This is what reads the response XML and converts it into an array.
-     * @param SimpleXMLObject $xml <p>The XML response from Amazon.</p>
+     * @param SimpleXMLElement $xml <p>The XML response from Amazon.</p>
      * @return boolean <b>FALSE</b> if no XML data is found
      */
     protected function parseXML($xml){

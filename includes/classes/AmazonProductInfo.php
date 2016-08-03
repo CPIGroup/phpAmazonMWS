@@ -78,7 +78,7 @@ class AmazonProductInfo extends AmazonProductsCore{
      * Since seller SKU is a required parameter, these options should not be removed
      * without replacing them, so this method is not public.
      */
-    private function resetSKUs(){
+    protected function resetSKUs(){
         foreach($this->options as $op=>$junk){
             if(preg_match("#SellerSKUList#",$op)){
                 unset($this->options[$op]);
@@ -121,7 +121,7 @@ class AmazonProductInfo extends AmazonProductsCore{
      * Since ASIN is a required parameter, these options should not be removed
      * without replacing them, so this method is not public.
      */
-    private function resetASINs(){
+    protected function resetASINs(){
         foreach($this->options as $op=>$junk){
             if(preg_match("#ASINList#",$op)){
                 unset($this->options[$op]);
@@ -280,6 +280,63 @@ class AmazonProductInfo extends AmazonProductsCore{
         } else if (array_key_exists('ASINList.ASIN.1',$this->options)){
             $this->options['Action'] = 'GetLowestOfferListingsForASIN';
             $this->resetSKUs();
+        }
+    }
+
+    /**
+     * Fetches a list of lowest offers on products from Amazon.
+     *
+     * Submits a <i>GetLowestPricedOffersForSKU</i>
+     * or <i>GetLowestPricedOffersForASIN</i> request to Amazon. Amazon will send
+     * the list back as a response, which can be retrieved using <i>getProduct</i>.
+     * @return boolean <b>FALSE</b> if something goes wrong
+     */
+    public function fetchLowestPricedOffers(){
+        if (!array_key_exists('SellerSKUList.SellerSKU.1',$this->options) && !array_key_exists('ASINList.ASIN.1',$this->options)){
+            $this->log("Product IDs must be set in order to look them up!",'Warning');
+            return false;
+        }
+
+        $this->prepareLowestPriced();
+
+        $url = $this->urlbase.$this->urlbranch;
+
+        $query = $this->genQuery();
+
+        if ($this->mockMode){
+           $xml = $this->fetchMockFile();
+        } else {
+            $response = $this->sendRequest($url, array('Post'=>$query));
+
+            if (!$this->checkResponse($response)){
+                return false;
+            }
+
+            $xml = simplexml_load_string($response['body']);
+        }
+
+        $this->parseXML($xml);
+    }
+
+    /**
+     * Sets up options for using <i>fetchLowestPricedOffers</i>.
+     *
+     * This changes key options for using <i>fetchLowestPricedOffers</i>.
+     */
+    protected function prepareLowestPriced(){
+        include($this->env);
+        if(isset($THROTTLE_TIME_PRODUCTPRICE)) {
+            $this->throttleTime = $THROTTLE_TIME_PRODUCTPRICE;
+        }
+        $this->throttleGroup = 'GetLowestPricedOfferListings';
+        if (array_key_exists('SellerSKUList.SellerSKU.1',$this->options)){
+            $this->options['Action'] = 'GetLowestPricedOffersForSKU';
+            $this->resetASINs();
+            $this->options['SellerSKU'] = $this->options['SellerSKUList.SellerSKU.1'];
+        } else if (array_key_exists('ASINList.ASIN.1',$this->options)){
+            $this->options['Action'] = 'GetLowestPricedOffersForASIN';
+            $this->resetSKUs();
+            $this->options['ASIN'] = $this->options['ASINList.ASIN.1'];
         }
     }
     

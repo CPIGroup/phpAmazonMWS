@@ -28,14 +28,14 @@ class AmazonOrderTest extends PHPUnit_Framework_TestCase {
     }
     
     public function testSetUp(){
-        $obj = new AmazonOrder('testStore', '77');
+        $obj = new AmazonOrder('testStore', '77', null, true, null, __DIR__.'/../../test-config.php');
         
         $o = $obj->getOptions();
         $this->assertArrayHasKey('AmazonOrderId.Id.1',$o);
         $this->assertEquals('77', $o['AmazonOrderId.Id.1']);
         
         $data = simplexml_load_file(__DIR__.'/../../mock/fetchOrder.xml');
-        $obj2 = new AmazonOrder('testStore', null, $data->GetOrderResult->Orders->Order);
+        $obj2 = new AmazonOrder('testStore', null, $data->GetOrderResult->Orders->Order, true, null, __DIR__.'/../../test-config.php');
         
         $get = $obj2->getAmazonOrderId();
         $this->assertEquals('058-1233752-8214740', $get);
@@ -126,7 +126,19 @@ class AmazonOrderTest extends PHPUnit_Framework_TestCase {
         $x['MarketplaceId'] = 'ATVPDKIKX0DER';
         $x['BuyerName'] = 'Amazon User';
         $x['BuyerEmail'] = '5vlh04mgfmjh9h5@marketplace.amazon.com';
-        $x['ShipServiceLevelCategory'] = 'Standard';
+        $x['ShipmentServiceLevelCategory'] = 'Standard';
+        $x['CbaDisplayableShippingLabel'] = 'Best';
+        $x['ShippedByAmazonTFM'] = 'false';
+        $x['TFMShipmentStatus'] = 'PendingPickUp';
+        $x['OrderType'] = 'StandardOrder';
+        $x['EarliestShipDate'] = '2010-10-06T12:43:16.000Z';
+        $x['LatestShipDate'] = '2010-10-07T12:43:16.000Z';
+        $x['EarliestDeliveryDate'] = '2010-10-08T12:43:16.000Z';
+        $x['LatestDeliveryDate'] = '2010-10-09T12:43:16.000Z';
+        $x['IsBusinessOrder'] = 'false';
+        $x['PurchaseOrderNumber'] = 'po123';
+        $x['IsPrime'] = 'false';
+        $x['IsPremiumOrder'] = 'true';
         
         $this->assertEquals($x,$get);
         
@@ -348,11 +360,91 @@ class AmazonOrderTest extends PHPUnit_Framework_TestCase {
     /**
      * @depends testFetchOrder
      */
-    public function testGetShipServiceLevelCategory($o){
-        $get = $o->getShipServiceLevelCategory();
+    public function testGetShipmentServiceLevelCategory($o){
+        $get = $o->getShipmentServiceLevelCategory();
         $this->assertEquals('Standard',$get);
         
-        $this->assertFalse($this->object->getShipServiceLevelCategory()); //not fetched yet for this object
+        $this->assertFalse($this->object->getShipmentServiceLevelCategory()); //not fetched yet for this object
+    }
+
+    /**
+     * @depends testFetchOrder
+     * @param AmazonOrder $o
+     */
+    public function testGetCbaDisplayableShippingLabel($o) {
+        $this->assertEquals('Best', $o->getCbaDisplayableShippingLabel());
+
+        $this->assertFalse($this->object->getCbaDisplayableShippingLabel()); //not fetched yet for this object
+    }
+
+    /**
+     * @depends testFetchOrder
+     * @param AmazonOrder $o
+     */
+    public function testGetShippedByAmazonTfm($o) {
+        $this->assertEquals('false', $o->getShippedByAmazonTfm());
+
+        $this->assertFalse($this->object->getShippedByAmazonTfm()); //not fetched yet for this object
+    }
+
+    /**
+     * @depends testFetchOrder
+     * @param AmazonOrder $o
+     */
+    public function testGetTfmShipmentStatus($o) {
+        $this->assertEquals('PendingPickUp', $o->getTfmShipmentStatus());
+
+        $this->assertFalse($this->object->getTfmShipmentStatus()); //not fetched yet for this object
+    }
+
+    /**
+     * @depends testFetchOrder
+     * @param AmazonOrder $o
+     */
+    public function testGetOrderType($o) {
+        $this->assertEquals('StandardOrder', $o->getOrderType());
+
+        $this->assertFalse($this->object->getOrderType()); //not fetched yet for this object
+    }
+
+    /**
+     * @depends testFetchOrder
+     * @param AmazonOrder $o
+     */
+    public function testGetEarliestShipDate($o) {
+        $this->assertEquals('2010-10-06T12:43:16.000Z', $o->getEarliestShipDate());
+
+        $this->assertFalse($this->object->getEarliestShipDate()); //not fetched yet for this object
+    }
+
+    /**
+     * @depends testFetchOrder
+     * @param AmazonOrder $o
+     */
+    public function testgetLatestShipDate($o) {
+        $this->assertEquals('2010-10-07T12:43:16.000Z', $o->getLatestShipDate());
+
+        $this->assertFalse($this->object->getLatestShipDate()); //not fetched yet for this object
+    }
+
+    /**
+     * @depends testFetchOrder
+     * @param AmazonOrder $o
+     */
+    public function testGetEarliestDeliveryDate($o) {
+        $this->assertEquals('2010-10-08T12:43:16.000Z', $o->getEarliestDeliveryDate());
+
+        $this->assertFalse($this->object->getEarliestDeliveryDate()); //not fetched yet for this object
+    }
+
+    /**
+     * @depends testFetchOrder
+     * @param AmazonOrder $o
+     */
+    public function testGetLatestDeliveryDate($o) {
+        $this->assertEquals('2010-10-09T12:43:16.000Z', $o->getLatestDeliveryDate());
+
+        $this->assertFalse($this->object->getLatestDeliveryDate()); //not fetched yet for this object
     }
     
     /**
@@ -363,6 +455,46 @@ class AmazonOrderTest extends PHPUnit_Framework_TestCase {
         $this->assertEquals(0.5,$get);
         
         $this->assertFalse($this->object->getPercentShipped()); //not fetched yet for this object
+    }
+
+    /**
+     * @depends testFetchOrder
+     * @param AmazonOrder $o
+     */
+    public function testGetIsBusinessOrder($o) {
+        $this->assertEquals('false', $o->getIsBusinessOrder());
+
+        $this->assertFalse($this->object->getIsBusinessOrder()); //not fetched yet for this object
+    }
+
+    /**
+     * @depends testFetchOrder
+     * @param AmazonOrder $o
+     */
+    public function testGetPurchaseOrderNumber($o) {
+        $this->assertEquals('po123', $o->getPurchaseOrderNumber());
+
+        $this->assertFalse($this->object->getPurchaseOrderNumber()); //not fetched yet for this object
+    }
+
+    /**
+     * @depends testFetchOrder
+     * @param AmazonOrder $o
+     */
+    public function testGetIsPrime($o) {
+        $this->assertEquals('false', $o->getIsPrime());
+
+        $this->assertFalse($this->object->getIsPrime()); //not fetched yet for this object
+    }
+
+    /**
+     * @depends testFetchOrder
+     * @param AmazonOrder $o
+     */
+    public function testGetIsPremiumOrder($o) {
+        $this->assertEquals('true', $o->getIsPremiumOrder());
+
+        $this->assertFalse($this->object->getIsPremiumOrder()); //not fetched yet for this object
     }
     
     /**
@@ -381,6 +513,11 @@ class AmazonOrderTest extends PHPUnit_Framework_TestCase {
         $x1['Title'] = 'Example item name';
         $x1['QuantityOrdered'] = '1';
         $x1['QuantityShipped'] = '1';
+        $x1['BuyerCustomizedInfo'] = 'http://www.amazon.com';
+        $x1['PointsGranted']['PointsNumber'] = '5';
+        $x1['PointsGranted']['Amount'] = '2.50';
+        $x1['PointsGranted']['CurrencyCode'] = 'USD';
+        $x1['PriceDesignation'] = 'BusinessPrice';
         $x1['GiftMessageText'] = 'For you!';
         $x1['GiftWrapLevel'] = 'Classic';
         $x1['ItemPrice']['Amount'] = '25.99';

@@ -1,0 +1,93 @@
+<?xml version="1.0"?>
+<GetShipmentResponse xmlns="https://mws.amazonservices.com/MerchantFulfillment/2015-06-01">
+  <GetShipmentResult>
+    <Shipment>
+      <Insurance>
+        <CurrencyCode>USD</CurrencyCode>
+        <Amount>10.00</Amount>
+      </Insurance>
+      <ShipToAddress>
+        <City>Seattle</City>
+        <Phone/>
+        <CountryCode>US</CountryCode>
+        <PostalCode>98121-2778</PostalCode>
+        <Name>Jane Smith</Name>
+        <AddressLine1>321 Main St</AddressLine1>
+        <StateOrProvinceCode>WA</StateOrProvinceCode>
+        <Email/>
+      </ShipToAddress>
+      <AmazonOrderId>903-1713775-3598252</AmazonOrderId>
+      <Weight>
+        <Value>10</Value>
+        <Unit>oz</Unit>
+      </Weight>
+      <Label>
+        <FileContents>
+          <Checksum>DmsWbJpdMPALN3jV4wHOrg==</Checksum>
+          <Contents>H4sIAAAAAAAAAwvJyCxWAKJEhZLU4hIAMp96wA4AAAA=</Contents>
+          <FileType>application/pdf</FileType>
+        </FileContents>
+        <Dimensions>
+          <Width>8.50000</Width>
+          <Length>11.00000</Length>
+          <Unit>inches</Unit>
+        </Dimensions>
+      </Label>
+      <ShippingService>
+        <CarrierName>FEDEX</CarrierName>
+        <ShippingServiceOptions>
+          <CarrierWillPickUp>false</CarrierWillPickUp>
+          <DeclaredValue>
+            <CurrencyCode>USD</CurrencyCode>
+            <Amount>10.00</Amount>
+          </DeclaredValue>
+          <DeliveryExperience>DELIVERY_CONFIRMATION
+          </DeliveryExperience>
+        </ShippingServiceOptions>
+        <ShippingServiceId>FEDEX_PTP_PRIORITY_OVERNIGHT
+        </ShippingServiceId>
+        <Rate>
+          <CurrencyCode>USD</CurrencyCode>
+          <Amount>27.81</Amount>
+        </Rate>
+        <LatestEstimatedDeliveryDate>2015-09-24T10:30:00Z
+        </LatestEstimatedDeliveryDate>
+        <EarliestEstimatedDeliveryDate>2015-09-24T10:30:00Z
+        </EarliestEstimatedDeliveryDate>
+        <ShippingServiceOfferId>HDDUKqtQVFetpBZAqx5c1yaCZ9vuFfND0kudyw3lLWCa
+3mN2+zUOsRCAZS2oYt0ey6fXKdOAucmYVXR9LAkU9O9eys9V3FJCgvQ+vAqm4bSAzHVH04vD8oLy
+oUPKqxa8Otbek97Z85LFUSsfcUf8frNRMEfNLP8t5RyLXa4ZOjc=</ShippingServiceOfferId>
+        <ShipDate>2015-09-23T20:10:56.829Z</ShipDate>
+        <ShippingServiceName>FedEx Priority Overnight®</ShippingServiceName>
+      </ShippingService>
+      <PackageDimensions>
+        <Width>5</Width>
+        <Length>5</Length>
+        <Unit>inches</Unit>
+        <Height>5</Height>
+      </PackageDimensions>
+      <CreatedDate>2015-09-23T20:11:12.908Z</CreatedDate>
+      <ShipFromAddress>
+        <City>Seattle</City>
+        <Phone>2061234567</Phone>
+        <CountryCode>US</CountryCode>
+        <PostalCode>98121</PostalCode>
+        <Name>John Doe</Name>
+        <AddressLine1>1234 Westlake Ave</AddressLine1>
+        <StateOrProvinceCode>WA</StateOrProvinceCode>
+      </ShipFromAddress>
+      <ShipmentId>6f77095e-9f75-47eb-aaab-a42d5428fa1a</ShipmentId>
+      <ItemList>
+        <Item>
+          <OrderItemId>40525960574974</OrderItemId>
+          <Quantity>1</Quantity>
+        </Item>
+      </ItemList>
+      <Status>Purchased</Status>
+      <TrackingId>794657111237</TrackingId>
+    </Shipment>
+  </GetShipmentResult>
+  <ResponseMetadata>
+    <RequestId>adb18f0d-2076-48d4-99ef-fb4b9f892a4e</RequestId>
+  </ResponseMetadata>
+</GetShipmentResponse>

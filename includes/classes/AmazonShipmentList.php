@@ -26,9 +26,9 @@
 class AmazonShipmentList extends AmazonInboundCore implements Iterator{
     protected $tokenFlag = false;
     protected $tokenUseFlag = false;
-    private $shipmentList;
-    private $index = 0;
-    private $i = 0;
+    protected $shipmentList;
+    protected $index = 0;
+    protected $i = 0;
     
     /**
      * AmazonShipmentList fetches a list of shipments from Amazon.
@@ -117,7 +117,7 @@ class AmazonShipmentList extends AmazonInboundCore implements Iterator{
      * Since status is a required parameter, these options should not be removed
      * without replacing them, so this method is not public.
      */
-    private function resetStatusFilter(){
+    protected function resetStatusFilter(){
         foreach($this->options as $op=>$junk){
             if(preg_match("#ShipmentStatusList#",$op)){
                 unset($this->options[$op]);
@@ -157,7 +157,7 @@ class AmazonShipmentList extends AmazonInboundCore implements Iterator{
      * Since shipment ID is a required parameter, these options should not be removed
      * without replacing them, so this method is not public.
      */
-    private function resetIdFilter(){
+    protected function resetIdFilter(){
         foreach($this->options as $op=>$junk){
             if(preg_match("#ShipmentIdList#",$op)){
                 unset($this->options[$op]);
@@ -283,7 +283,7 @@ class AmazonShipmentList extends AmazonInboundCore implements Iterator{
      * Parses XML response into array.
      * 
      * This is what reads the response XML and converts it into an array.
-     * @param SimpleXMLObject $xml <p>The XML response from Amazon.</p>
+     * @param SimpleXMLElement $xml <p>The XML response from Amazon.</p>
      * @return boolean <b>FALSE</b> if no XML data is found
      */
     protected function parseXML($xml){
@@ -329,6 +329,10 @@ class AmazonShipmentList extends AmazonInboundCore implements Iterator{
             }
 
             $a['AreCasesRequired'] = (string)$x->AreCasesRequired;
+
+            if (isset($x->ConfirmedNeedByDate)){
+                $a['ConfirmedNeedByDate'] = (string)$x->ConfirmedNeedByDate;
+            }
             
             $this->shipmentList[$this->index] = $a;
             $this->index++;
@@ -418,7 +422,7 @@ class AmazonShipmentList extends AmazonInboundCore implements Iterator{
      * <li><b>AddressLine2</b> (optional)</li>
      * <li><b>City</b></li>
      * <li><b>DistrictOrCounty</b> (optional)</li>
-     * <li><b>StateOrProvidenceCode</b> (optional)</li>
+     * <li><b>StateOrProvinceCode</b> (optional)</li>
      * <li><b>CountryCode</b></li>
      * <li><b>PostalCode</b></li>
      * </ul>
@@ -503,6 +507,24 @@ class AmazonShipmentList extends AmazonInboundCore implements Iterator{
         }
         if (is_int($i)){
             return $this->shipmentList[$i]['AreCasesRequired'];
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * Returns the maximum arrival date for the specified shipment.
+     *
+     * This method will return <b>FALSE</b> if the list has not yet been filled.
+     * @param int $i [optional] <p>List index to retrieve the value from. Defaults to 0.</p>
+     * @return string|boolean Date in YYYY-MM-DD format, or <b>FALSE</b> if Non-numeric index
+     */
+    public function getConfirmedNeedByDate($i = 0){
+        if (!isset($this->shipmentList)){
+            return false;
+        }
+        if (is_int($i)){
+            return $this->shipmentList[$i]['ConfirmedNeedByDate'];
         } else {
             return false;
         }

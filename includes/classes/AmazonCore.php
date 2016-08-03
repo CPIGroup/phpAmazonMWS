@@ -190,10 +190,10 @@ abstract class AmazonCore{
      * including the name and path of the file involved. For retrieving response
      * codes, see <i>fetchMockResponse</i>.
      * @param boolean $load [optional] <p>Set this to <b>FALSE</b> to prevent the
-     * method from loading the file's contents into a SimpleXMLObject. This is
+     * method from loading the file's contents into a SimpleXMLElement. This is
      * for when the contents of the file are not in XML format, or if you simply
      * want to retrieve the raw string of the file.</p>
-     * @return SimpleXMLObject|string|boolean <p>A SimpleXMLObject holding the
+     * @return SimpleXMLElement|string|boolean <p>A SimpleXMLElement holding the
      * contents of the file, or a string of said contents if <i>$load</i> is set to
      * <b>FALSE</b>. The return will be <b>FALSE</b> if the file cannot be
      * fetched for any reason.</p>
@@ -362,7 +362,7 @@ abstract class AmazonCore{
             $this->config = $path;
             $this->setLogPath($logpath);
             if (isset($AMAZON_SERVICE_URL)) {
-                $this->urlbase = $AMAZON_SERVICE_URL;
+                $this->urlbase = rtrim($AMAZON_SERVICE_URL, '/') . '/';
             }
         } else {
             throw new Exception("Config file does not exist or cannot be read! ($path)");
@@ -430,6 +430,9 @@ abstract class AmazonCore{
             }
             if (!empty($store[$s]['serviceUrl'])) {
                 $this->urlbase = $store[$s]['serviceUrl'];
+            }
+            if (!empty($store[$s]['MWSAuthToken'])) {
+                $this->options['MWSAuthToken'] = $store[$s]['MWSAuthToken'];
             }
             
         } else {
@@ -543,17 +546,22 @@ abstract class AmazonCore{
      * The string given is passed through <i>strtotime</i> before being used. The
      * value returned is actually two minutes early, to prevent it from tripping up
      * Amazon. If no time is given, the current time is used.
-     * @param string $time [optional] <p>The time to use. Since this value is
+     * @param string|int $time [optional] <p>The time to use. Since any string values are
      * passed through <i>strtotime</i> first, values such as "-1 hour" are fine.
+     * Unix timestamps are also allowed. Purely numeric values are treated as unix timestamps.
      * Defaults to the current time.</p>
      * @return string Unix timestamp of the time, minus 2 minutes.
+     * @throws InvalidArgumentException
      */
     protected function genTime($time=false){
         if (!$time){
             $time = time();
-        } else {
+        } else if (is_numeric($time)) {
+            $time = (int)$time;
+        } else if (is_string($time)) {
             $time = strtotime($time);
-            
+        } else {
+            throw new InvalidArgumentException('Invalid time input given');
         }
         return date('Y-m-d\TH:i:sO',$time-120);
             
@@ -646,6 +654,69 @@ abstract class AmazonCore{
             return false;
         }
     }
+
+    /**
+     * Gives the response code from the last response.
+     * This data can also be found in the array given by getLastResponse.
+     * @return string|int standard REST response code (200, 404, etc.) or <b>NULL</b> if no response
+     * @see getLastResponse
+     */
+    public function getLastResponseCode() {
+        $last = $this->getLastResponse();
+        if (!empty($last['code'])) {
+            return $last['code'];
+        }
+    }
+
+    /**
+     * Gives the last response with an error code.
+     * This may or may not be the same as the last response if multiple requests were made.
+     * @return array associative array of HTTP response or <b>NULL</b> if no error response yet
+     * @see getLastResponse
+     */
+    public function getLastErrorResponse() {
+        if (!empty($this->rawResponses)) {
+            foreach (array_reverse($this->rawResponses) as $x) {
+                if (isset($x['error'])) {
+                    return $x;
+                }
+            }
+        }
+    }
+
+    /**
+     * Gives the Amazon error code from the last error response.
+     * The error code uses words rather than numbers. (Ex: "InvalidParameterValue")
+     * This data can also be found in the XML body given by getLastErrorResponse.
+     * @return string Amazon error code or <b>NULL</b> if not set yet or no error response yet
+     * @see getLastErrorResponse
+     */
+    public function getLastErrorCode() {
+        $last = $this->getLastErrorResponse();
+        if (!empty($last['body'])) {
+            $xml = simplexml_load_string($last['body']);
+            if (isset($xml->Error->Code)) {
+                return $xml->Error->Code;
+            }
+        }
+    }
+
+    /**
+     * Gives the error message from the last error response.
+     * Not all error responses will have error messages.
+     * This data can also be found in the XML body given by getLastErrorResponse.
+     * @return string Amazon error code or <b>NULL</b> if not set yet or no error response yet
+     * @see getLastErrorResponse
+     */
+    public function getLastErrorMessage() {
+        $last = $this->getLastErrorResponse();
+        if (!empty($last['body'])) {
+            $xml = simplexml_load_string($last['body']);
+            if (isset($xml->Error->Message)) {
+                return $xml->Error->Message;
+            }
+        }
+    }
     
     /**
      * Sleeps for the throttle time and records to the log.
@@ -659,14 +730,11 @@ abstract class AmazonCore{
     
     /**
      * Checks for a token and changes the proper options
-     * @param SimpleXMLObject $xml <p>response data</p>
+     * @param SimpleXMLElement $xml <p>response data</p>
      * @return boolean <b>FALSE</b> if no XML data
      */
     protected function checkToken($xml){
-        if (!$xml){
-            return false;
-        }
-        if ($xml->NextToken){
+        if ($xml && $xml->NextToken && (string)$xml->HasNext != 'false' && (string)$xml->MoreResultsAvailable != 'false'){
             $this->tokenFlag = true;
             $this->options['NextToken'] = (string)$xml->NextToken;
         } else {
@@ -768,7 +836,8 @@ abstract class AmazonCore{
      */
     protected function _urlencode($value) {
         return rawurlencode($value);
-		return str_replace('%7E', '~', rawurlencode($value));
+        //Amazon suggests doing this, but it seems to break things rather than fix them:
+        //return str_replace('%7E', '~', rawurlencode($value));
     }
     
     /**

@@ -2,7 +2,7 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
-## 1.3.0 - *TBD*
+## 1.3.0 - 2016-08-03
 ### Added
 - Travis support
 - PHPUnit XML configuration file

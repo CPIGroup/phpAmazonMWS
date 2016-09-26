@@ -378,6 +378,10 @@ abstract class AmazonCore{
      * @throws Exception If the file cannot be found or read.
      */
     public function setLogPath($path){
+        if (!file_exists($path)){
+            touch($path);
+        }
+
         if (file_exists($path) && is_readable($path)){
             $this->logpath = $path;
         } else {

@@ -462,7 +462,7 @@ class AmazonMerchantShipmentCreator extends AmazonMerchantCore {
     public function fetchServices() {
         $services = new AmazonMerchantServiceList($this->storeName, $this->mockMode, $this->mockFiles, $this->config);
         $services->mockIndex = $this->mockIndex;
-        $services->setLogPath($this->logpath);
+        $services->setLogPath($this->config->getLogFile());
         $services->setDetailsByCreator($this);
         $services->fetchServices();
         return $services;
@@ -547,7 +547,7 @@ class AmazonMerchantShipmentCreator extends AmazonMerchantCore {
         }
 
         $this->shipment = new AmazonMerchantShipment($this->storeName, NULL, $xml, $this->mockMode, $this->mockFiles, $this->config);
-        $this->shipment->setLogPath($this->logpath);
+        $this->shipment->setLogPath($this->config->getLogFile());
         $this->shipment->mockIndex = $this->mockIndex;
     }
 

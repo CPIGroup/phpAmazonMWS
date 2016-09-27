@@ -39,4 +39,3 @@ function parseLog($s = null){
    }
    return $return;
 }
-?>

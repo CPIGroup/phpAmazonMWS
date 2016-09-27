@@ -2,7 +2,9 @@
 To install, simply add the library to your project. Composer is the default installation tool for this library.
 If you do not use Composer for your project, you can still auto-load classes by  including the file **includes/classes.php** in the page or function.
 
-Before you use any commands,  you need to create an **amazon-config.php** file with your account credentials. Start by copying the template provided (*amazon-config.default.php*) and renaming the file.
+Before you use any commands,  you need to either create an **amazon-config.php** file or define an array with your account credentials. 
+For the file approach start by copying the template provided (*amazon-config.default.php*) and renaming the file, for the array based approach
+see the supplied example (code_config_examples.php)
 
 If you are operating outside of the United States, be sure to change the Amazon Service URL to the one matching your region.
 

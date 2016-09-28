@@ -24,7 +24,11 @@ class AmazonCoreTest extends PHPUnit_Framework_TestCase {
      * This method is called after a test is executed.
      */
     protected function tearDown() {
-        
+        $fileName = 'no-file.log';
+
+        if (file_exists($fileName)){
+            @unlink($fileName);
+        }
     }
 
     /**
@@ -41,7 +45,7 @@ class AmazonCoreTest extends PHPUnit_Framework_TestCase {
             array('no',null, null),
         );
     }
-    
+
     /**
      * @covers AmazonCore::setMock
      * @dataProvider mockProvider
@@ -69,11 +73,22 @@ class AmazonCoreTest extends PHPUnit_Framework_TestCase {
 
     /**
      * @covers AmazonCore::setLogPath
-     * @expectedException Exception
-     * @expectedExceptionMessage Log file does not exist or cannot be read! (no)
      */
     public function testSetLogPath() {
-        $this->object->setLogPath('no');
+        $fileName = 'no-file.log';
+
+        $this->object->setLogPath($fileName);
+
+        $this->assertFileExists($fileName);
+    }
+
+    /**
+     * @covers AmazonCore::setLogPath
+     * @expectedException Exception
+     * @expectedExceptionMessage Log file does not exist or cannot be read! ()
+     */
+    public function testSetLogPathThrowsException() {
+        $this->object->setLogPath(false);
     }
 
     /**
@@ -92,7 +107,7 @@ class AmazonCoreTest extends PHPUnit_Framework_TestCase {
         $this->assertEquals('Access Key ID is missing!',$bad[1]);
         $this->assertEquals('Secret Key is missing!',$bad[2]);
     }
-    
+
     public function testGetOptions(){
         $o = $this->object->getOptions();
         $this->assertInternalType('array',$o);
@@ -103,7 +118,7 @@ class AmazonCoreTest extends PHPUnit_Framework_TestCase {
         $this->assertArrayHasKey('SignatureMethod',$o);
         $this->assertArrayHasKey('Version',$o);
     }
-    
+
 }
 
 require_once('helperFunctions.php');

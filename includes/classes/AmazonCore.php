@@ -476,7 +476,7 @@ abstract class AmazonCore{
         if ($msg != false) {
             $backtrace = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS);
             $logCallback = $this->config->getLogCallback();
-            if (empty($this->config->getLogCallback()) === false){
+            if (empty($logCallback) === false){
                 switch ($level){
                    case('Info'): $loglevel = LOG_INFO; break; 
                    case('Throttle'): $loglevel = LOG_INFO; break; 

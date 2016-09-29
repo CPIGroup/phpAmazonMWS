@@ -486,8 +486,9 @@ abstract class AmazonCore{
                 }
                 call_user_func($logCallback,$msg,$loglevel);
             }
-            
-            if ($this->config->isLoggingDisabled()){
+
+            $fnPath = $this->config->getLogFile();
+            if (($this->config->isLoggingDisabled()) OR (empty($fnPath))){
                 return null;
             }
             

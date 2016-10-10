@@ -1,4 +1,4 @@
-phpAmazonMWS
+Amazon MWS
 ============
 
 [![Build Status](https://travis-ci.org/CPIGroup/phpAmazonMWS.svg?branch=stable)](https://travis-ci.org/CPIGroup/phpAmazonMWS)

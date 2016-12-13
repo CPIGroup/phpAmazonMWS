@@ -195,6 +195,7 @@ class AmazonOrderItemList extends AmazonOrderCore implements Iterator{
         foreach($xml->children() as $item){
             $n = $this->index;
             
+            $this->itemList[$n]['AmazonOrderId'] = $this->options['AmazonOrderId'];
             $this->itemList[$n]['ASIN'] = (string)$item->ASIN;
             $this->itemList[$n]['SellerSKU'] = (string)$item->SellerSKU;
             $this->itemList[$n]['OrderItemId'] = (string)$item->OrderItemId;

@@ -147,7 +147,7 @@ class AmazonOrderItemList extends AmazonOrderCore implements Iterator{
             $this->log('You grabbed the wrong Order\'s items! - '.$this->options['AmazonOrderId'].' =/= '.$this->orderId,'Urgent');
         }
         
-        $this->parseXML($xml->OrderItems);
+        $this->parseXML($xml);
         
         $this->checkToken($xml);
         
@@ -192,9 +192,10 @@ class AmazonOrderItemList extends AmazonOrderCore implements Iterator{
             return false;
         }
         
-        foreach($xml->children() as $item){
+        foreach($xml->OrderItems->children() as $item){
             $n = $this->index;
             
+            $this->itemList[$n]['AmazonOrderId'] = $xml->AmazonOrderId;
             $this->itemList[$n]['ASIN'] = (string)$item->ASIN;
             $this->itemList[$n]['SellerSKU'] = (string)$item->SellerSKU;
             $this->itemList[$n]['OrderItemId'] = (string)$item->OrderItemId;

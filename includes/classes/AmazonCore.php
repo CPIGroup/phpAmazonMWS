@@ -130,7 +130,11 @@ abstract class AmazonCore{
             $config = __DIR__.'/../../amazon-config.php';
         }
         $this->setConfig($config);
-        $this->setStore($s);
+	    
+	if($s != null){
+            $this->setStore($s);
+	}
+	    
         $this->setMock($mock,$m);
         
         $this->env=__DIR__.'/../../environment.php';

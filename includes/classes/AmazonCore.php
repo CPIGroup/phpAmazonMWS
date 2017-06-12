@@ -106,7 +106,8 @@ abstract class AmazonCore{
     protected $logpath;
     protected $env;
     protected $rawResponses = array();
-    
+    protected $useSSL;
+
     /**
      * AmazonCore constructor sets up key information used in all Amazon requests.
      * 
@@ -136,6 +137,7 @@ abstract class AmazonCore{
         $this->env=__DIR__.'/../../environment.php';
         $this->options['SignatureVersion'] = 2;
         $this->options['SignatureMethod'] = 'HmacSHA256';
+        $this->useSSL = true;
     }
     
     /**
@@ -745,7 +747,12 @@ abstract class AmazonCore{
             $this->tokenFlag = false;
         }
     }
-    
+
+    public function setUseSSL($enable)
+    {
+        $this->useSSL = $enable;
+    }
+
     //Functions from Athena:
        /**
         * Get url or send POST data
@@ -767,7 +774,11 @@ abstract class AmazonCore{
         curl_setopt($ch,CURLOPT_FORBID_REUSE, 1);
         curl_setopt($ch,CURLOPT_FRESH_CONNECT, 1);
         curl_setopt($ch,CURLOPT_HEADER, 1);
-        curl_setopt($ch,CURLOPT_URL,$url);
+        curl_setopt($ch, CURLOPT_URL, $url);
+        if ($this->useSSL === false) {
+            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+            curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
+        }
         if (!empty($param)){
             if (!empty($param['Header'])){
                 curl_setopt($ch,CURLOPT_HTTPHEADER, $param['Header']);

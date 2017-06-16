@@ -145,6 +145,15 @@ class AmazonMerchantShipment extends AmazonMerchantCore {
             $this->data['Label']['FileContents']['Contents'] = (string)$d->Label->FileContents->Contents;
             $this->data['Label']['FileContents']['FileType'] = (string)$d->Label->FileContents->FileType;
             $this->data['Label']['FileContents']['Checksum'] = (string)$d->Label->FileContents->Checksum;
+            if (isset($d->Label->CustomTextForLabel)) {
+                $this->data['Label']['CustomTextForLabel'] = (string)$d->Label->CustomTextForLabel;
+            }
+            if (isset($d->Label->LabelFormat)) {
+                $this->data['Label']['LabelFormat'] = (string)$d->Label->LabelFormat;
+            }
+            if (isset($d->Label->StandardIdForLabel)) {
+                $this->data['Label']['StandardIdForLabel'] = (string)$d->Label->StandardIdForLabel;
+            }
         }
 
         $this->data['ItemList'] = array();
@@ -548,6 +557,9 @@ class AmazonMerchantShipment extends AmazonMerchantCore {
      * <li><b>Checksum</b></li>
      * </ul>
      * </li>
+     * <li><b>CustomTextForLabel</b></li>
+     * <li><b>LabelFormat</b></li>
+     * <li><b>StandardIdForLabel</b></li>
      * </ul>
      * @param boolean $raw [optional] <p>Set to TRUE to get the raw, double-encoded file contents.</p>
      * @return array|boolean multi-dimensional array, or <b>FALSE</b> if label not set yet

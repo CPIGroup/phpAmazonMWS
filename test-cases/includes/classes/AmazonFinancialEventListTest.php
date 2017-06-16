@@ -173,6 +173,8 @@ class AmazonFinancialEventListTest extends PHPUnit_Framework_TestCase {
         $this->assertEquals($o->getLoanServicingEvents(), $list['LoanServicing']);
         $this->assertArrayHasKey('Adjustment', $list);
         $this->assertEquals($o->getAdjustmentEvents(), $list['Adjustment']);
+        $this->assertArrayHasKey('SAFET', $list);
+        $this->assertEquals($o->getSafetEvents(), $list['SAFET']);
         //not fetched yet for this object
         $this->assertFalse($this->object->getEvents());
     }
@@ -788,6 +790,40 @@ class AmazonFinancialEventListTest extends PHPUnit_Framework_TestCase {
         $this->assertEquals($x, $list);
         //not fetched yet for this object
         $this->assertFalse($this->object->getAdjustmentEvents());
+    }
+
+    /**
+     * @param AmazonFinancialEventList $o
+     * @depends testFetchEventList
+     */
+    public function testGetSafetEvents($o) {
+        $x = array();
+        $x[0]['Amount'] = '4.99';
+        $x[0]['CurrencyCode'] = 'INR';
+        $x[0]['PostedDate'] = '2017-01-11T13:17:15.000Z';
+        $x[0]['SAFETClaimId'] = '77165-06605-4776427';
+        $x[0]['SAFETReimbursementItemList'][0]['ItemChargeList'][0]['ChargeType'] = 'SAFE-T Reimbursement';
+        $x[0]['SAFETReimbursementItemList'][0]['ItemChargeList'][0]['Amount'] = '25.99';
+        $x[0]['SAFETReimbursementItemList'][0]['ItemChargeList'][0]['CurrencyCode'] = 'USD';
+        $x[0]['SAFETReimbursementItemList'][0]['ItemChargeList'][1]['ChargeType'] = 'Test';
+        $x[0]['SAFETReimbursementItemList'][0]['ItemChargeList'][1]['Amount'] = '1.99';
+        $x[0]['SAFETReimbursementItemList'][0]['ItemChargeList'][1]['CurrencyCode'] = 'USD';
+        $x[1]['Amount'] = '12.99';
+        $x[1]['CurrencyCode'] = 'INR';
+        $x[1]['PostedDate'] = '2017-02-11T14:15:16.000Z';
+        $x[1]['SAFETClaimId'] = '12345-98760-8675309';
+        $x[1]['SAFETReimbursementItemList'][0]['ItemChargeList'][0]['ChargeType'] = 'SAFE-T Reimbursement';
+        $x[1]['SAFETReimbursementItemList'][0]['ItemChargeList'][0]['Amount'] = '29.99';
+        $x[1]['SAFETReimbursementItemList'][0]['ItemChargeList'][0]['CurrencyCode'] = 'USD';
+        $x[1]['SAFETReimbursementItemList'][1]['ItemChargeList'][0]['ChargeType'] = 'Double Test';
+        $x[1]['SAFETReimbursementItemList'][1]['ItemChargeList'][0]['Amount'] = '22.22';
+        $x[1]['SAFETReimbursementItemList'][1]['ItemChargeList'][0]['CurrencyCode'] = 'USD';
+
+        $list = $o->getSafetEvents();
+        $this->assertInternalType('array', $list);
+        $this->assertEquals($x, $list);
+        //not fetched yet for this object
+        $this->assertFalse($this->object->getSafetEvents());
     }
 
 }

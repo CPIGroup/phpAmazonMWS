@@ -178,6 +178,60 @@ class AmazonFulfillmentOrderTest extends PHPUnit_Framework_TestCase {
         $xs[1]['FulfillmentShipmentPackage'][0]['EstimatedArrivalDateTime'] = '2012-12-12T12:12:12Z';
         
         $x['Shipments'] = $xs;
+
+        $xr = array();
+        $xr[0]['SellerReturnItemId'] = '16a6a142EXAMPLE';
+        $xr[1]['SellerReturnItemId'] = '16a6a142EXAMPLE2';
+        $xr[0]['SellerFulfillmentOrderItemId'] = 'order-item-1';
+        $xr[1]['SellerFulfillmentOrderItemId'] = 'order-item-2';
+        $xr[0]['AmazonShipmentId'] = 'DLHg36GDN';
+        $xr[1]['AmazonShipmentId'] = 'DKMKLXJmN';
+        $xr[0]['SellerReturnReasonCode'] = 'REASON-CODE';
+        $xr[1]['SellerReturnReasonCode'] = 'REASON-CODE-2';
+        $xr[0]['ReturnComment'] = 'Did not like color';
+        $xr[1]['ReturnComment'] = 'Did not like shape';
+        $xr[0]['AmazonReturnReasonCode'] = 'OTHER-REASON-CODE';
+        $xr[1]['AmazonReturnReasonCode'] = 'OTHER-REASON-CODE-2';
+        $xr[0]['Status'] = 'Processed';
+        $xr[1]['Status'] = 'Processed2';
+        $xr[0]['StatusChangedDate'] = '2016-09-02T02:40:36Z';
+        $xr[1]['StatusChangedDate'] = '2016-09-08T02:40:36Z';
+        $xr[0]['ReturnAuthorizationId'] = 'amzn-rma-id';
+        $xr[1]['ReturnAuthorizationId'] = 'amzn-rma-id-2';
+        $xr[0]['ReturnReceivedCondition'] = 'Sellable';
+        $xr[1]['ReturnReceivedCondition'] = 'Sellable2';
+        $xr[0]['FulfillmentCenterId'] = 'FC123';
+        $xr[1]['FulfillmentCenterId'] = 'FC321';
+
+        $x['ReturnItems'] = $xr;
+
+        $xa = array();
+        $xa[0]['ReturnAuthorizationId'] = 'amzn-rma-id';
+        $xa[1]['ReturnAuthorizationId'] = 'amzn-rma-id-2';
+        $xa[0]['FulfillmentCenterId'] = 'FC123';
+        $xa[1]['FulfillmentCenterId'] = 'FC321';
+        $xa[0]['ReturnToAddress']['Name'] = 'Amazon FC';
+        $xa[1]['ReturnToAddress']['Name'] = 'Amazon FC2';
+        $xa[0]['ReturnToAddress']['Line1'] = '123 Main Street';
+        $xa[1]['ReturnToAddress']['Line1'] = '321 Main Street';
+        $xa[0]['ReturnToAddress']['Line2'] = 'Suite 16';
+        $xa[0]['ReturnToAddress']['Line3'] = 'Hole in Wall';
+        $xa[0]['ReturnToAddress']['DistrictOrCounty'] = 'Ninth';
+        $xa[0]['ReturnToAddress']['City'] = 'Anywhere';
+        $xa[1]['ReturnToAddress']['City'] = 'Somewhere';
+        $xa[0]['ReturnToAddress']['StateOrProvinceCode'] = 'WA';
+        $xa[1]['ReturnToAddress']['StateOrProvinceCode'] = 'WA';
+        $xa[0]['ReturnToAddress']['CountryCode'] = 'US';
+        $xa[1]['ReturnToAddress']['CountryCode'] = 'US';
+        $xa[0]['ReturnToAddress']['PostalCode'] = '98122';
+        $xa[1]['ReturnToAddress']['PostalCode'] = '98123';
+        $xa[0]['ReturnToAddress']['PhoneNumber'] = '555-867-5309';
+        $xa[0]['AmazonRmaId'] = 'test123';
+        $xa[1]['AmazonRmaId'] = 'test321';
+        $xa[0]['RmaPageURL'] = 'https://sellercentral.amazon.com/URL';
+        $xa[1]['RmaPageURL'] = 'https://sellercentral.amazon.com/URL#2';
+
+        $x['ReturnAuthorizations'] = $xa;
         
         $this->assertEquals($x,$get);
         

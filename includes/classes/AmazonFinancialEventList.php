@@ -565,8 +565,8 @@ class AmazonFinancialEventList extends AmazonFinanceCore {
     /**
      * Parses XML for a single charge into an array.
      * This structure is used many times throughout shipment events.
-     * @param SimpleXMLElement $xml <p>The XML response from Amazon.</p>
-     * @return array parsed structure from XML
+     * @param SimpleXMLElement $xml <p>Charge node of the XML response from Amazon.</p>
+     * @return array Parsed structure from XML
      */
     protected function parseCharge($xml) {
         $r = array();

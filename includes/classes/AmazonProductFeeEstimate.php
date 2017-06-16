@@ -215,10 +215,10 @@ class AmazonProductFeeEstimate extends AmazonProductsCore implements Iterator{
     }
 
     /**
-     * Parses XML for a single charge into an array.
+     * Parses XML for a single money element into an array.
      * This structure is used many times throughout fee estimates.
-     * @param SimpleXMLElement $xml <p>The XML response from Amazon.</p>
-     * @return boolean <b>FALSE</b> if no XML data is found
+     * @param SimpleXMLElement $xml <p>Money node of the XML response from Amazon.</p>
+     * @return array Parsed structure from XML
      */
     protected function parseMoney($xml){
         $r = array();
@@ -230,8 +230,8 @@ class AmazonProductFeeEstimate extends AmazonProductsCore implements Iterator{
     /**
      * Parses XML for a single fee detail into an array.
      * This structure is used recursively in fee estimates.
-     * @param SimpleXMLElement $xml <p>The XML response from Amazon.</p>
-     * @return boolean <b>FALSE</b> if no XML data is found
+     * @param SimpleXMLElement $xml <p>Fee Detail node of the XML response from Amazon.</p>
+     * @return array Parsed structure from XML
      */
     protected function parseFeeDetail($xml){
         $r = array();

@@ -419,6 +419,56 @@ class AmazonMerchantShipmentCreator extends AmazonMerchantCore {
     }
 
     /**
+     * Sets the Label Format. (Optional)
+     *
+     * This method sets the label format to be sent in the next request.
+     * @param string $f <p>Label format (ex: "PNG")</p>
+     * @return boolean <b>FALSE</b> if improper input
+     */
+    public function setLabelFormat($f) {
+        if (is_string($f)){
+            $this->options['ShipmentRequestDetails.ShippingServiceOptions.LabelFormat'] = $f;
+        } else {
+            $this->log("Tried to set LabelFormat to invalid value",'Warning');
+            return false;
+        }
+    }
+
+    /**
+     * Sets the Custom Text for the Label. (Optional)
+     *
+     * This method sets the custom text for the label to be sent in the next request.
+     * @param string $t <p>Up to 14 characters</p>
+     * @return boolean <b>FALSE</b> if improper input
+     */
+    public function setCustomText($t) {
+        if (is_string($t)){
+            $this->options['ShipmentRequestDetails.LabelCustomization.CustomTextForLabel'] = $t;
+        } else {
+            $this->log("Tried to set CustomTextForLabel to invalid value",'Warning');
+            return false;
+        }
+    }
+
+    /**
+     * Sets the Standard ID for the Label. (Optional)
+     *
+     * This method sets the standard ID option for the label to be sent in the next request.
+     * @param string $id <p>"AmazonOrderId"</p>
+     */
+    public function setLabelId($id) {
+        $options = array(
+            'AmazonOrderId'
+        );
+        if (in_array($id, $options)){
+            $this->options['ShipmentRequestDetails.LabelCustomization.StandardIdForLabel'] = $id;
+        } else {
+            $this->log("Tried to set StandardIdForLabel to invalid value",'Warning');
+            return false;
+        }
+    }
+
+    /**
      * Sets the Shipping Service ID. (Required)
      *
      * This method sets the shipping service ID to be sent in the next request.
@@ -447,6 +497,26 @@ class AmazonMerchantShipmentCreator extends AmazonMerchantCore {
             $this->options['ShippingServiceOfferId'] = $id;
         } else {
             $this->log("Tried to set ShippingServiceOfferId to invalid value",'Warning');
+            return false;
+        }
+    }
+
+    /**
+     * Sets the Hazmat Type. (Optional)
+     *
+     * This method sets the hazmat type to be sent in the next request.
+     * @param string $h <p>"None" or "LQHazmat"</p>
+     * @return boolean <b>FALSE</b> if improper input
+     */
+    public function setHazmat($h) {
+        $options = array(
+            'None',
+            'LQHazmat'
+        );
+        if (in_array($h, $options)){
+            $this->options['HazmatType'] = $h;
+        } else {
+            $this->log("Tried to set HazmatType to invalid value",'Warning');
             return false;
         }
     }

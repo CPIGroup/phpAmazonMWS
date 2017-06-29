@@ -605,7 +605,7 @@ class AmazonOrder extends AmazonOrderCore{
      * Returns the payment method details of the Order.
      *
      * This method will return <b>FALSE</b> if the payment method details have not been set yet.
-     * @return array|boolean array of detail strings, or <b>FALSE</b> if method not set yet
+     * @return array|boolean array of detail strings, or <b>FALSE</b> if value not set yet
      */
     public function getPaymentMethodDetails(){
         if (isset($this->data['PaymentMethodDetails'])){
@@ -618,8 +618,8 @@ class AmazonOrder extends AmazonOrderCore{
     /**
      * Returns an indication of whether or not the Order is a Replacement Order.
      *
-     * This method will return <b>FALSE</b> if the replacement ordre flag has not been set yet.
-     * @return string|boolean "true" or "false", or <b>FALSE</b> if method not set yet
+     * This method will return <b>FALSE</b> if the replacement order flag has not been set yet.
+     * @return string|boolean "true" or "false", or <b>FALSE</b> if value not set yet
      */
     public function getIsReplacementOrder(){
         if (isset($this->data['IsReplacementOrder'])){

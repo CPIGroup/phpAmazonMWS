@@ -20,8 +20,8 @@
  * Fetches list marketplace fee estimates from Amazon.
  *
  * This Amazon Products Core object retrieves a list of fee estimates from Amazon
- * that match the given marketplaces. In order to do this, at least one set of
- * marketplace-specific information must be given.
+ * that match the given requests. In order to do this, at least one set of
+ * item-related information must be given.
  */
 class AmazonProductFeeEstimate extends AmazonProductsCore implements Iterator{
     protected $i = 0;
@@ -119,7 +119,7 @@ class AmazonProductFeeEstimate extends AmazonProductsCore implements Iterator{
     /**
      * Removes request options.
      *
-     * Since the list of items is a required parameter, these options should not be removed
+     * Since the list of requests is a required parameter, these options should not be removed
      * without replacing them, so this method is not public.
      */
     protected function resetRequests() {

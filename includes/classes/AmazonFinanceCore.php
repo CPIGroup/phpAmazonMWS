@@ -22,7 +22,8 @@
  * This is the core class for all objects in the Amazon Finance section.
  * It contains no methods in itself other than the constructor.
  */
-abstract class AmazonFinanceCore extends AmazonCore {
+abstract class AmazonFinanceCore extends AmazonCore
+{
     /**
      * AmazonFinanceCore constructor sets up key information used in all Amazon Finance Core requests
      *
@@ -37,19 +38,20 @@ abstract class AmazonFinanceCore extends AmazonCore {
      * @param array|string $m [optional] <p>The files (or file) to use in Mock Mode.</p>
      * @param string $config [optional] <p>An alternate config file to set. Used for testing.</p>
      */
-    public function __construct($s = null, $mock = false, $m = null, $config = null){
+    public function __construct($s = null, $mock = false, $m = null, $config = null)
+    {
         parent::__construct($s, $mock, $m, $config);
         include($this->env);
 
-        if(isset($AMAZON_VERSION_FINANCE)){
+        if (isset($AMAZON_VERSION_FINANCE)) {
             $this->urlbranch = 'Finances/'.$AMAZON_VERSION_FINANCE;
             $this->options['Version'] = $AMAZON_VERSION_FINANCE;
         }
 
-        if(isset($THROTTLE_LIMIT_FINANCE)) {
+        if (isset($THROTTLE_LIMIT_FINANCE)) {
             $this->throttleLimit = $THROTTLE_LIMIT_FINANCE;
         }
-        if(isset($THROTTLE_TIME_FINANCE)) {
+        if (isset($THROTTLE_TIME_FINANCE)) {
             $this->throttleTime = $THROTTLE_TIME_FINANCE;
         }
         $this->throttleGroup = 'Finance';

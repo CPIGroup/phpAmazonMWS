@@ -23,7 +23,8 @@
  * In order to do this, detailed information about the shipment and its contents must be given.
  * This information can be used to find eligible services before creating the shipment.
  */
-class AmazonMerchantShipmentCreator extends AmazonMerchantCore {
+class AmazonMerchantShipmentCreator extends AmazonMerchantCore
+{
     protected $shipment;
 
     /**
@@ -39,7 +40,8 @@ class AmazonMerchantShipmentCreator extends AmazonMerchantCore {
      * @param array|string $m [optional] <p>The files (or file) to use in Mock Mode.</p>
      * @param string $config [optional] <p>An alternate config file to set. Used for testing.</p>
      */
-    public function __construct($s = null, $mock = false, $m = null, $config = null){
+    public function __construct($s = null, $mock = false, $m = null, $config = null)
+    {
         parent::__construct($s, $mock, $m, $config);
 
         $this->options['Action'] = 'CreateShipment';
@@ -53,11 +55,12 @@ class AmazonMerchantShipmentCreator extends AmazonMerchantCore {
      * @param string $id <p>Amazon Order ID</p>
      * @return boolean <b>FALSE</b> if improper input
      */
-    public function setOrderId($id) {
-        if (is_string($id)){
+    public function setOrderId($id)
+    {
+        if (is_string($id)) {
             $this->options['ShipmentRequestDetails.AmazonOrderId'] = $id;
         } else {
-            $this->log("Tried to set AmazonOrderId to invalid value",'Warning');
+            $this->log("Tried to set AmazonOrderId to invalid value", 'Warning');
             return false;
         }
     }
@@ -69,11 +72,12 @@ class AmazonMerchantShipmentCreator extends AmazonMerchantCore {
      * @param string $id <p>Maximum 64 characters.</p>
      * @return boolean <b>FALSE</b> if improper input
      */
-    public function setSellerOrderId($id) {
-        if (is_string($id) || is_numeric($id)){
+    public function setSellerOrderId($id)
+    {
+        if (is_string($id) || is_numeric($id)) {
             $this->options['ShipmentRequestDetails.SellerOrderId'] = $id;
         } else {
-            $this->log("Tried to set SellerOrderId to invalid value",'Warning');
+            $this->log("Tried to set SellerOrderId to invalid value", 'Warning');
             return false;
         }
     }
@@ -91,21 +95,22 @@ class AmazonMerchantShipmentCreator extends AmazonMerchantCore {
      * @param array $a <p>See above.</p>
      * @return boolean <b>FALSE</b> if improper input
      */
-    public function setItems($a){
-        if (is_null($a) || is_string($a) || !$a){
-            $this->log("Tried to set Items to invalid values",'Warning');
+    public function setItems($a)
+    {
+        if (is_null($a) || is_string($a) || !$a) {
+            $this->log("Tried to set Items to invalid values", 'Warning');
             return false;
         }
         $this->resetItems();
         $i = 1;
-        foreach ($a as $x){
-            if (is_array($x) && isset($x['OrderItemId']) && isset($x['Quantity'])){
+        foreach ($a as $x) {
+            if (is_array($x) && isset($x['OrderItemId']) && isset($x['Quantity'])) {
                 $this->options['ShipmentRequestDetails.ItemList.Item.'.$i.'.OrderItemId'] = $x['OrderItemId'];
                 $this->options['ShipmentRequestDetails.ItemList.Item.'.$i.'.Quantity'] = $x['Quantity'];
                 $i++;
             } else {
                 $this->resetItems();
-                $this->log("Tried to set Items with invalid array",'Warning');
+                $this->log("Tried to set Items with invalid array", 'Warning');
                 return false;
             }
         }
@@ -117,9 +122,10 @@ class AmazonMerchantShipmentCreator extends AmazonMerchantCore {
      * Since the list of items is a required parameter, these options should not be removed
      * without replacing them, so this method is not public.
      */
-    protected function resetItems(){
-        foreach($this->options as $op=>$junk){
-            if(preg_match("#ShipmentRequestDetails.ItemList#",$op)){
+    protected function resetItems()
+    {
+        foreach ($this->options as $op=>$junk) {
+            if (preg_match("#ShipmentRequestDetails.ItemList#", $op)) {
                 unset($this->options[$op]);
             }
         }
@@ -147,26 +153,27 @@ class AmazonMerchantShipmentCreator extends AmazonMerchantCore {
      * @param array $a <p>See above.</p>
      * @return boolean <b>FALSE</b> if improper input
      */
-    public function setAddress($a){
-        if (empty($a) || !is_array($a)){
-            $this->log("Tried to set ShipFromAddress to invalid values",'Warning');
+    public function setAddress($a)
+    {
+        if (empty($a) || !is_array($a)) {
+            $this->log("Tried to set ShipFromAddress to invalid values", 'Warning');
             return false;
         }
         $this->resetAddress();
         $this->options['ShipmentRequestDetails.ShipFromAddress.Name'] = $a['Name'];
         $this->options['ShipmentRequestDetails.ShipFromAddress.AddressLine1'] = $a['AddressLine1'];
-        if (isset($a['AddressLine2'])){
+        if (isset($a['AddressLine2'])) {
             $this->options['ShipmentRequestDetails.ShipFromAddress.AddressLine2'] = $a['AddressLine2'];
         }
-        if (isset($a['AddressLine3'])){
+        if (isset($a['AddressLine3'])) {
             $this->options['ShipmentRequestDetails.ShipFromAddress.AddressLine3'] = $a['AddressLine3'];
         }
-        if (isset($a['DistrictOrCounty'])){
+        if (isset($a['DistrictOrCounty'])) {
             $this->options['ShipmentRequestDetails.ShipFromAddress.DistrictOrCounty'] = $a['DistrictOrCounty'];
         }
         $this->options['ShipmentRequestDetails.ShipFromAddress.Email'] = $a['Email'];
         $this->options['ShipmentRequestDetails.ShipFromAddress.City'] = $a['City'];
-        if (isset($a['StateOrProvinceCode'])){
+        if (isset($a['StateOrProvinceCode'])) {
             $this->options['ShipmentRequestDetails.ShipFromAddress.StateOrProvinceCode'] = $a['StateOrProvinceCode'];
         }
         $this->options['ShipmentRequestDetails.ShipFromAddress.PostalCode'] = $a['PostalCode'];
@@ -180,9 +187,10 @@ class AmazonMerchantShipmentCreator extends AmazonMerchantCore {
      * Since address is a required parameter, these options should not be removed
      * without replacing them, so this method is not public.
      */
-    protected function resetAddress(){
-        foreach($this->options as $op=>$junk){
-            if(preg_match("#ShipmentRequestDetails.ShipFromAddress#",$op)){
+    protected function resetAddress()
+    {
+        foreach ($this->options as $op=>$junk) {
+            if (preg_match("#ShipmentRequestDetails.ShipFromAddress#", $op)) {
                 unset($this->options[$op]);
             }
         }
@@ -204,9 +212,10 @@ class AmazonMerchantShipmentCreator extends AmazonMerchantCore {
      * @param array $d <p>See above.</p>
      * @return boolean <b>FALSE</b> if improper input
      */
-    public function setPackageDimensions($d) {
-        if (empty($d) || !is_array($d)){
-            $this->log("Tried to set PackageDimensions to invalid values",'Warning');
+    public function setPackageDimensions($d)
+    {
+        if (empty($d) || !is_array($d)) {
+            $this->log("Tried to set PackageDimensions to invalid values", 'Warning');
             return false;
         }
         $this->resetPackageDimensions();
@@ -227,9 +236,10 @@ class AmazonMerchantShipmentCreator extends AmazonMerchantCore {
      * See the comment inside the function for the complete list.</p>
      * @return boolean <b>FALSE</b> if improper input
      */
-    public function setPredefinedPackage($s) {
+    public function setPredefinedPackage($s)
+    {
         $this->resetPackageDimensions();
-        if (is_string($s) && $s){
+        if (is_string($s) && $s) {
             $this->options['ShipmentRequestDetails.PackageDimensions.PredefinedPackageDimensions'] = $s;
         } else {
             return false;
@@ -295,9 +305,10 @@ class AmazonMerchantShipmentCreator extends AmazonMerchantCore {
      * Since dimensions are a required parameter, these options should not be removed
      * without replacing them, so this method is not public.
      */
-    protected function resetPackageDimensions(){
-        foreach($this->options as $op=>$junk){
-            if(preg_match("#ShipmentRequestDetails.PackageDimensions#",$op)){
+    protected function resetPackageDimensions()
+    {
+        foreach ($this->options as $op=>$junk) {
+            if (preg_match("#ShipmentRequestDetails.PackageDimensions#", $op)) {
                 unset($this->options[$op]);
             }
         }
@@ -311,8 +322,9 @@ class AmazonMerchantShipmentCreator extends AmazonMerchantCore {
      * @param string $u <p>"oz" for ounces, or "g" for grams, defaults to grams</p>
      * @return boolean <b>FALSE</b> if improper input
      */
-    public function setWeight($v, $u = 'g') {
-        if (!empty($v) && !empty($u) && is_numeric($v) && ($u == 'oz' || $u == 'g')){
+    public function setWeight($v, $u = 'g')
+    {
+        if (!empty($v) && !empty($u) && is_numeric($v) && ($u == 'oz' || $u == 'g')) {
             $this->options['ShipmentRequestDetails.Weight.Value'] = $v;
             $this->options['ShipmentRequestDetails.Weight.Unit'] = $u;
         } else {
@@ -329,10 +341,11 @@ class AmazonMerchantShipmentCreator extends AmazonMerchantCore {
      * @param string $d <p>A time string</p>
      * @return boolean <b>FALSE</b> if improper input
      */
-    public function setMaxArrivalDate($d) {
-        try{
+    public function setMaxArrivalDate($d)
+    {
+        try {
             $this->options['ShipmentRequestDetails.MustArriveByDate'] = $this->genTime($d);
-        } catch (Exception $e){
+        } catch (Exception $e) {
             unset($this->options['ShipmentRequestDetails.MustArriveByDate']);
             $this->log('Error: '.$e->getMessage(), 'Warning');
             return false;
@@ -346,10 +359,11 @@ class AmazonMerchantShipmentCreator extends AmazonMerchantCore {
      * @param string $d <p>A time string</p>
      * @return boolean <b>FALSE</b> if improper input
      */
-    public function setShipDate($d) {
-        try{
+    public function setShipDate($d)
+    {
+        try {
             $this->options['ShipmentRequestDetails.ShipDate'] = $this->genTime($d);
-        } catch (Exception $e){
+        } catch (Exception $e) {
             unset($this->options['ShipmentRequestDetails.ShipDate']);
             $this->log('Error: '.$e->getMessage(), 'Warning');
             return false;
@@ -367,17 +381,18 @@ class AmazonMerchantShipmentCreator extends AmazonMerchantCore {
      *      or "NoTracking"</p>
      * @return boolean <b>FALSE</b> if improper input
      */
-    public function setDeliveryOption($s) {
+    public function setDeliveryOption($s)
+    {
         $options = array(
             'DeliveryConfirmationWithAdultSignature',
             'DeliveryConfirmationWithSignature',
             'DeliveryConfirmationWithoutSignature',
             'NoTracking'
         );
-        if (in_array($s, $options)){
+        if (in_array($s, $options)) {
             $this->options['ShipmentRequestDetails.ShippingServiceOptions.DeliveryExperience'] = $s;
         } else {
-            $this->log("Tried to set DeliveryExperience to invalid value",'Warning');
+            $this->log("Tried to set DeliveryExperience to invalid value", 'Warning');
             return false;
         }
     }
@@ -392,8 +407,9 @@ class AmazonMerchantShipmentCreator extends AmazonMerchantCore {
      * @param string $c <p>ISO 4217 currency code (ex: USD)</p>
      * @return boolean <b>FALSE</b> if improper input
      */
-    public function setDeclaredValue($v, $c) {
-        if (!empty($v) && !empty($c) && is_numeric($v) && is_string($c) && !is_numeric($c)){
+    public function setDeclaredValue($v, $c)
+    {
+        if (!empty($v) && !empty($c) && is_numeric($v) && is_string($c) && !is_numeric($c)) {
             $this->options['ShipmentRequestDetails.ShippingServiceOptions.DeclaredValue.Amount'] = $v;
             $this->options['ShipmentRequestDetails.ShippingServiceOptions.DeclaredValue.CurrencyCode'] = $c;
         } else {
@@ -409,7 +425,8 @@ class AmazonMerchantShipmentCreator extends AmazonMerchantCore {
      * @param boolean $b [optional] <p>Defaults to TRUE</p>
      * @return boolean <b>FALSE</b> if improper input
      */
-    public function setCarrierWillPickUp($b = true) {
+    public function setCarrierWillPickUp($b = true)
+    {
         if ($b) {
             $v = 'true';
         } else {
@@ -426,11 +443,12 @@ class AmazonMerchantShipmentCreator extends AmazonMerchantCore {
      * @param string $id <p>Service ID</p>
      * @return boolean <b>FALSE</b> if improper input
      */
-    public function setService($id) {
-        if (is_string($id)){
+    public function setService($id)
+    {
+        if (is_string($id)) {
             $this->options['ShippingServiceId'] = $id;
         } else {
-            $this->log("Tried to set ShippingServiceId to invalid value",'Warning');
+            $this->log("Tried to set ShippingServiceId to invalid value", 'Warning');
             return false;
         }
     }
@@ -442,11 +460,12 @@ class AmazonMerchantShipmentCreator extends AmazonMerchantCore {
      * @param string $id <p>Service Offer ID</p>
      * @return boolean <b>FALSE</b> if improper input
      */
-    public function setServiceOffer($id) {
-        if (is_string($id)){
+    public function setServiceOffer($id)
+    {
+        if (is_string($id)) {
             $this->options['ShippingServiceOfferId'] = $id;
         } else {
-            $this->log("Tried to set ShippingServiceOfferId to invalid value",'Warning');
+            $this->log("Tried to set ShippingServiceOfferId to invalid value", 'Warning');
             return false;
         }
     }
@@ -459,7 +478,8 @@ class AmazonMerchantShipmentCreator extends AmazonMerchantCore {
      * package dimensions, shipment weight, delivery experience option, and carrier pick-up option.
      * @return AmazonMerchantServiceList container for services
      */
-    public function fetchServices() {
+    public function fetchServices()
+    {
         $services = new AmazonMerchantServiceList($this->storeName, $this->mockMode, $this->mockFiles, $this->config);
         $services->mockIndex = $this->mockIndex;
         $services->setLogPath($this->logpath);
@@ -479,38 +499,39 @@ class AmazonMerchantShipmentCreator extends AmazonMerchantCore {
      * and service ID.
      * @return boolean <b>FALSE</b> if something goes wrong
      */
-    public function createShipment(){
-        if (!array_key_exists('ShipmentRequestDetails.AmazonOrderId',$this->options)){
-            $this->log("Amazon Order ID must be set in order to create a shipment",'Warning');
+    public function createShipment()
+    {
+        if (!array_key_exists('ShipmentRequestDetails.AmazonOrderId', $this->options)) {
+            $this->log("Amazon Order ID must be set in order to create a shipment", 'Warning');
             return false;
         }
-        if (!array_key_exists('ShipmentRequestDetails.ItemList.Item.1.OrderItemId',$this->options)){
-            $this->log("Items must be set in order to create a shipment",'Warning');
+        if (!array_key_exists('ShipmentRequestDetails.ItemList.Item.1.OrderItemId', $this->options)) {
+            $this->log("Items must be set in order to create a shipment", 'Warning');
             return false;
         }
-        if (!array_key_exists('ShipmentRequestDetails.ShipFromAddress.Name',$this->options)){
-            $this->log("Shipping Address must be set in order to create a shipment",'Warning');
+        if (!array_key_exists('ShipmentRequestDetails.ShipFromAddress.Name', $this->options)) {
+            $this->log("Shipping Address must be set in order to create a shipment", 'Warning');
             return false;
         }
-        if (!array_key_exists('ShipmentRequestDetails.PackageDimensions.Length',$this->options) &&
-                !array_key_exists('ShipmentRequestDetails.PackageDimensions.PredefinedPackageDimensions',$this->options)){
-            $this->log("Package Dimensions must be set in order to create a shipment",'Warning');
+        if (!array_key_exists('ShipmentRequestDetails.PackageDimensions.Length', $this->options) &&
+                !array_key_exists('ShipmentRequestDetails.PackageDimensions.PredefinedPackageDimensions', $this->options)) {
+            $this->log("Package Dimensions must be set in order to create a shipment", 'Warning');
             return false;
         }
-        if (!array_key_exists('ShipmentRequestDetails.Weight.Value',$this->options)){
-            $this->log("Weight must be set in order to create a shipment",'Warning');
+        if (!array_key_exists('ShipmentRequestDetails.Weight.Value', $this->options)) {
+            $this->log("Weight must be set in order to create a shipment", 'Warning');
             return false;
         }
-        if (!array_key_exists('ShipmentRequestDetails.ShippingServiceOptions.DeliveryExperience',$this->options)){
-            $this->log("Delivery Experience must be set in order to create a shipment",'Warning');
+        if (!array_key_exists('ShipmentRequestDetails.ShippingServiceOptions.DeliveryExperience', $this->options)) {
+            $this->log("Delivery Experience must be set in order to create a shipment", 'Warning');
             return false;
         }
-        if (!array_key_exists('ShipmentRequestDetails.ShippingServiceOptions.CarrierWillPickUp',$this->options)){
-            $this->log("Carrier Pick-Up Option must be set in order to create a shipment",'Warning');
+        if (!array_key_exists('ShipmentRequestDetails.ShippingServiceOptions.CarrierWillPickUp', $this->options)) {
+            $this->log("Carrier Pick-Up Option must be set in order to create a shipment", 'Warning');
             return false;
         }
-        if (!array_key_exists('ShippingServiceId',$this->options)){
-            $this->log("Shipping Service must be set in order to create a shipment",'Warning');
+        if (!array_key_exists('ShippingServiceId', $this->options)) {
+            $this->log("Shipping Service must be set in order to create a shipment", 'Warning');
             return false;
         }
 
@@ -519,12 +540,12 @@ class AmazonMerchantShipmentCreator extends AmazonMerchantCore {
         $query = $this->genQuery();
 
         $path = $this->options['Action'].'Result';
-        if ($this->mockMode){
-           $xml = $this->fetchMockFile()->$path;
+        if ($this->mockMode) {
+            $xml = $this->fetchMockFile()->$path;
         } else {
             $response = $this->sendRequest($url, array('Post'=>$query));
 
-            if (!$this->checkResponse($response)){
+            if (!$this->checkResponse($response)) {
                 return false;
             }
 
@@ -541,12 +562,13 @@ class AmazonMerchantShipmentCreator extends AmazonMerchantCore {
      * @param SimpleXMLElement $xml <p>The XML response from Amazon.</p>
      * @return boolean <b>FALSE</b> if no XML data is found
      */
-    protected function parseXML($xml){
-        if (!$xml){
+    protected function parseXML($xml)
+    {
+        if (!$xml) {
             return false;
         }
 
-        $this->shipment = new AmazonMerchantShipment($this->storeName, NULL, $xml, $this->mockMode, $this->mockFiles, $this->config);
+        $this->shipment = new AmazonMerchantShipment($this->storeName, null, $xml, $this->mockMode, $this->mockFiles, $this->config);
         $this->shipment->setLogPath($this->logpath);
         $this->shipment->mockIndex = $this->mockIndex;
     }
@@ -555,7 +577,8 @@ class AmazonMerchantShipmentCreator extends AmazonMerchantCore {
      * Returns the object containing information about the shipment.
      * @return AmazonMerchantShipment|boolean shipment object, or FALSE if the shipment has not been created yet
      */
-    public function getShipment() {
+    public function getShipment()
+    {
         if (!isset($this->shipment)) {
             return false;
         }

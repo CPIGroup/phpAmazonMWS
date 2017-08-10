@@ -23,7 +23,8 @@ if ($list) {
  * Note that this does not relay whether or not the feed had any errors.
  * To get this information, the feed's results must be retrieved.
  */
-function getAmazonFeedStatus(){
+function getAmazonFeedStatus()
+{
     require('../includes/classes.php'); //autoload classes, not needed if composer is being used
     try {
         $amz=new AmazonFeedList("myStore");
@@ -41,7 +42,8 @@ function getAmazonFeedStatus(){
  * Amazon's response to the feed is returned as an array.
  * This function is not actively used on this example page as a safety precaution.
  */
-function sendInventoryFeed($feed) {
+function sendInventoryFeed($feed)
+{
     try {
         $amz=new AmazonFeed(); //if there is only one store in config, it can be omitted
         $amz->setFeedType("_POST_INVENTORY_AVAILABILITY_DATA_"); //feed types listed in documentation
@@ -57,7 +59,8 @@ function sendInventoryFeed($feed) {
  * This function will get the processing results of a feed previously sent to Amazon and give the data.
  * In order to do this, a feed ID is required. The response is in XML.
  */
-function getFeedResult($feedId) {
+function getFeedResult($feedId)
+{
     try {
         $amz=new AmazonFeedResult("myStore", $feedId); //feed ID can be quickly set by passing it to the constructor
         $amz->setFeedId($feedId); //otherwise, it must be set this way
@@ -67,6 +70,3 @@ function getFeedResult($feedId) {
         echo 'There was a problem with the Amazon library. Error: '.$ex->getMessage();
     }
 }
-
-
-?>

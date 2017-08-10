@@ -1,6 +1,7 @@
 <?php
 
-class AmazonFinancialEventListTest extends PHPUnit_Framework_TestCase {
+class AmazonFinancialEventListTest extends PHPUnit_Framework_TestCase
+{
 
     /**
      * @var AmazonFinancialEventList
@@ -11,19 +12,22 @@ class AmazonFinancialEventListTest extends PHPUnit_Framework_TestCase {
      * Sets up the fixture, for example, opens a network connection.
      * This method is called before a test is executed.
      */
-    protected function setUp() {
+    protected function setUp()
+    {
         resetLog();
         $this->object = new AmazonFinancialEventList('testStore', true, null, __DIR__.'/../../test-config.php');
     }
 
-    public function testSetUseToken(){
+    public function testSetUseToken()
+    {
         $this->assertNull($this->object->setUseToken());
         $this->assertNull($this->object->setUseToken(true));
         $this->assertNull($this->object->setUseToken(false));
         $this->assertFalse($this->object->setUseToken('wrong'));
     }
 
-    public function testSetMaxResultsPerPage(){
+    public function testSetMaxResultsPerPage()
+    {
         $this->assertFalse($this->object->setMaxResultsPerPage(null)); //can't be nothing
         $this->assertFalse($this->object->setMaxResultsPerPage(-5)); //too low
         $this->assertFalse($this->object->setMaxResultsPerPage(150)); //too high
@@ -39,7 +43,8 @@ class AmazonFinancialEventListTest extends PHPUnit_Framework_TestCase {
     /**
     * @return array
     */
-    public function timeProvider() {
+    public function timeProvider()
+    {
         return array(
             array(null, null, false, false), //nothing given, so no change
             array(time(), time(), true, true), //timestamps
@@ -53,7 +58,8 @@ class AmazonFinancialEventListTest extends PHPUnit_Framework_TestCase {
     /**
      * @dataProvider timeProvider
      */
-    public function testSetTimeLimits($a, $b, $c, $d){
+    public function testSetTimeLimits($a, $b, $c, $d)
+    {
         $this->object->setOrderFilter('123-1234567-1234567');
         $try = $this->object->setTimeLimits($a, $b);
         $o = $this->object->getOptions();
@@ -80,7 +86,8 @@ class AmazonFinancialEventListTest extends PHPUnit_Framework_TestCase {
         }
     }
 
-    public function testFetchEventList() {
+    public function testFetchEventList()
+    {
         resetLog();
         $this->object->setMock(true, 'fetchFinancialEvents.xml'); //no token
         $this->assertNull($this->object->fetchEventList());
@@ -97,7 +104,8 @@ class AmazonFinancialEventListTest extends PHPUnit_Framework_TestCase {
         return $this->object;
     }
 
-    public function testFetchEventListToken1() {
+    public function testFetchEventListToken1()
+    {
         resetLog();
         $this->object->setMock(true, 'fetchFinancialEventsToken.xml');
         //without using token
@@ -116,7 +124,8 @@ class AmazonFinancialEventListTest extends PHPUnit_Framework_TestCase {
         }
     }
 
-    public function testFetchEventListToken2() {
+    public function testFetchEventListToken2()
+    {
         resetLog();
         $this->object->setMock(true, array('fetchFinancialEventsToken.xml', 'fetchFinancialEventsToken2.xml'));
 
@@ -144,7 +153,8 @@ class AmazonFinancialEventListTest extends PHPUnit_Framework_TestCase {
      * @param AmazonFinancialEventList $o
      * @depends testFetchEventList
      */
-    public function testGetEvents($o) {
+    public function testGetEvents($o)
+    {
         $list = $o->getEvents();
         $this->assertInternalType('array', $list);
         $this->assertArrayHasKey('Shipment', $list);
@@ -181,7 +191,8 @@ class AmazonFinancialEventListTest extends PHPUnit_Framework_TestCase {
      * @param AmazonFinancialEventList $o
      * @depends testFetchEventList
      */
-    public function testGetShipmentEvents($o) {
+    public function testGetShipmentEvents($o)
+    {
         $x = array();
         $x[0]['AmazonOrderId'] = '333-1234567-1234567';
         $x[0]['SellerOrderId'] = '333-1234567-7654321';
@@ -284,7 +295,8 @@ class AmazonFinancialEventListTest extends PHPUnit_Framework_TestCase {
      * @param AmazonFinancialEventList $o
      * @depends testFetchEventList
      */
-    public function testGetRefundEvents($o) {
+    public function testGetRefundEvents($o)
+    {
         $x = array();
         $x[0]['AmazonOrderId'] = '333-7654321-7654321';
         $x[0]['SellerOrderId'] = '333-7654321-1234567';
@@ -381,7 +393,8 @@ class AmazonFinancialEventListTest extends PHPUnit_Framework_TestCase {
      * @param AmazonFinancialEventList $o
      * @depends testFetchEventList
      */
-    public function testGetGuaranteeClaimEvents($o) {
+    public function testGetGuaranteeClaimEvents($o)
+    {
         $x = array();
         $x[0]['AmazonOrderId'] = '333-5551234-7654321';
         $x[0]['SellerOrderId'] = '333-5551234-1234567';
@@ -426,7 +439,8 @@ class AmazonFinancialEventListTest extends PHPUnit_Framework_TestCase {
      * @param AmazonFinancialEventList $o
      * @depends testFetchEventList
      */
-    public function testGetChargebackEvents($o) {
+    public function testGetChargebackEvents($o)
+    {
         $x = array();
         $x[0]['AmazonOrderId'] = '555-7654321-7654321';
         $x[0]['SellerOrderId'] = '555-7654321-1234567';
@@ -460,7 +474,8 @@ class AmazonFinancialEventListTest extends PHPUnit_Framework_TestCase {
      * @param AmazonFinancialEventList $o
      * @depends testFetchEventList
      */
-    public function testGetPayWithAmazonEvents($o) {
+    public function testGetPayWithAmazonEvents($o)
+    {
         $x = array();
         $x[0]['SellerOrderId'] = '333-7654321-7654321';
         $x[0]['TransactionPostedDate'] = '2013-09-071T02:00:00.000-06:00';
@@ -505,7 +520,8 @@ class AmazonFinancialEventListTest extends PHPUnit_Framework_TestCase {
      * @param AmazonFinancialEventList $o
      * @depends testFetchEventList
      */
-    public function testGetServiceProviderCreditEvents($o) {
+    public function testGetServiceProviderCreditEvents($o)
+    {
         $x = array();
         $x[0]['ProviderTransactionType'] = 'SolutionProviderCredit';
         $x[0]['SellerOrderId'] = '333-7654321-7654321';
@@ -535,7 +551,8 @@ class AmazonFinancialEventListTest extends PHPUnit_Framework_TestCase {
      * @param AmazonFinancialEventList $o
      * @depends testFetchEventList
      */
-    public function testGetRetrochargeEvents($o) {
+    public function testGetRetrochargeEvents($o)
+    {
         $x = array();
         $x[0]['RetrochargeEventType'] = 'Retrocharge';
         $x[0]['AmazonOrderId'] = '333-1234567-1234567';
@@ -565,7 +582,8 @@ class AmazonFinancialEventListTest extends PHPUnit_Framework_TestCase {
      * @param AmazonFinancialEventList $o
      * @depends testFetchEventList
      */
-    public function testGetRentalTransactionEvents($o) {
+    public function testGetRentalTransactionEvents($o)
+    {
         $x = array();
         $x[0]['AmazonOrderId'] = '333-1234567-1234567';
         $x[0]['RentalEventType'] = 'RentalCustomerPayment-Buyout';
@@ -615,7 +633,8 @@ class AmazonFinancialEventListTest extends PHPUnit_Framework_TestCase {
      * @param AmazonFinancialEventList $o
      * @depends testFetchEventList
      */
-    public function testGetPerformanceBondRefundEvents($o) {
+    public function testGetPerformanceBondRefundEvents($o)
+    {
         $x = array();
         $x[0]['MarketplaceCountryCode'] = 'US';
         $x[0]['Amount'] = '1.99';
@@ -638,7 +657,8 @@ class AmazonFinancialEventListTest extends PHPUnit_Framework_TestCase {
      * @param AmazonFinancialEventList $o
      * @depends testFetchEventList
      */
-    public function testGetServiceFeeEvents($o) {
+    public function testGetServiceFeeEvents($o)
+    {
         $x = array();
         $x[0]['AmazonOrderId'] = '333-1234567-1234567';
         $x[0]['FeeReason'] = 'fba inbound defect fee';
@@ -673,7 +693,8 @@ class AmazonFinancialEventListTest extends PHPUnit_Framework_TestCase {
      * @param AmazonFinancialEventList $o
      * @depends testFetchEventList
      */
-    public function testGetDebtRecoveryEvents($o) {
+    public function testGetDebtRecoveryEvents($o)
+    {
         $x = array();
         $x[0]['DebtRecoveryType'] = 'DebtAdjustment';
         $x[0]['RecoveryAmount']['Amount'] = '10.99';
@@ -727,7 +748,8 @@ class AmazonFinancialEventListTest extends PHPUnit_Framework_TestCase {
      * @param AmazonFinancialEventList $o
      * @depends testFetchEventList
      */
-    public function testGetLoanServicingEvents($o) {
+    public function testGetLoanServicingEvents($o)
+    {
         $x = array();
         $x[0]['Amount'] = '13.99';
         $x[0]['CurrencyCode'] = 'USD';
@@ -747,7 +769,8 @@ class AmazonFinancialEventListTest extends PHPUnit_Framework_TestCase {
      * @param AmazonFinancialEventList $o
      * @depends testFetchEventList
      */
-    public function testGetAdjustmentEvents($o) {
+    public function testGetAdjustmentEvents($o)
+    {
         $x = array();
         $x[0]['AdjustmentType'] = 'PostageBilling';
         $x[0]['Amount'] = '-5.99';
@@ -789,7 +812,6 @@ class AmazonFinancialEventListTest extends PHPUnit_Framework_TestCase {
         //not fetched yet for this object
         $this->assertFalse($this->object->getAdjustmentEvents());
     }
-
 }
 
 require_once('helperFunctions.php');

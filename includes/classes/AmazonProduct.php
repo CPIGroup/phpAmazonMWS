@@ -18,16 +18,17 @@
 
 /**
  * Contains Amazon product data.
- * 
+ *
  * This Amazon Products Core object acts as a container for data fetched by
  * other Products Core objects. It has no Amazon functions in itself.
  */
-class AmazonProduct extends AmazonProductsCore{
+class AmazonProduct extends AmazonProductsCore
+{
     protected $data;
     
     /**
      * AmazonProduct acts as a container for various results from other classes.
-     * 
+     *
      * The parameters are passed to the parent constructor, which are
      * in turn passed to the AmazonCore constructor. See it for more information
      * on these parameters and common methods.
@@ -41,15 +42,15 @@ class AmazonProduct extends AmazonProductsCore{
      * @param array|string $m [optional] <p>The files (or file) to use in Mock Mode.</p>
      * @param string $config [optional] <p>An alternate config file to set. Used for testing.</p>
      */
-    public function __construct($s = null, $data = null, $mock = false, $m = null, $config = null){
+    public function __construct($s = null, $data = null, $mock = false, $m = null, $config = null)
+    {
         parent::__construct($s, $mock, $m, $config);
         
-        if ($data){
+        if ($data) {
             $this->loadXML($data);
         }
         
         unset($this->productList);
-        
     }
     
     /**
@@ -57,49 +58,50 @@ class AmazonProduct extends AmazonProductsCore{
      * @param SimpleXMLElement $xml <p>XML Product data from Amazon</p>
      * @return boolean <b>FALSE</b> if no XML data is found
      */
-    public function loadXML($xml){
-        if (!$xml){
+    public function loadXML($xml)
+    {
+        if (!$xml) {
             return false;
         }
         
         $this->data = array();
         
         //Categories first
-        if ($xml->getName() == 'GetProductCategoriesForSKUResult' || $xml->getName() == 'GetProductCategoriesForASINResult'){
+        if ($xml->getName() == 'GetProductCategoriesForSKUResult' || $xml->getName() == 'GetProductCategoriesForASINResult') {
             $this->loadCategories($xml);
             return;
         }
 
         //Lowest Price uses different format
-        if ($xml->getName() == 'GetLowestPricedOffersForSKUResult' || $xml->getName() == 'GetLowestPricedOffersForASINResult'){
+        if ($xml->getName() == 'GetLowestPricedOffersForSKUResult' || $xml->getName() == 'GetLowestPricedOffersForASINResult') {
             return $this->loadLowestPricedOfferXml($xml);
         }
         
-        if ($xml->getName() != 'Product'){
+        if ($xml->getName() != 'Product') {
             return;
         }
         
         //Identifiers
-        if ($xml->Identifiers){
-            foreach($xml->Identifiers->children() as $x){
-                foreach($x->children() as $z){
+        if ($xml->Identifiers) {
+            foreach ($xml->Identifiers->children() as $x) {
+                foreach ($x->children() as $z) {
                     $this->data['Identifiers'][$x->getName()][$z->getName()] = (string)$z;
                 }
             }
         }
         
         //AttributeSets
-        if ($xml->AttributeSets){
+        if ($xml->AttributeSets) {
             $anum = 0;
-            foreach($xml->AttributeSets->children('ns2',true) as $aset){
-                foreach($aset->children('ns2',true) as $x){
-                    if ($x->children('ns2',true)->count() > 0){
+            foreach ($xml->AttributeSets->children('ns2', true) as $aset) {
+                foreach ($aset->children('ns2', true) as $x) {
+                    if ($x->children('ns2', true)->count() > 0) {
                         //another layer
-                        foreach($x->children('ns2',true) as $y){
-                            if ($y->children('ns2',true)->count() > 0){
+                        foreach ($x->children('ns2', true) as $y) {
+                            if ($y->children('ns2', true)->count() > 0) {
                                 //we need to go deeper
-                                foreach($y->children('ns2',true) as $z){
-                                    if ($z->children('ns2',true)->count() > 0){
+                                foreach ($y->children('ns2', true) as $z) {
+                                    if ($z->children('ns2', true)->count() > 0) {
                                         //we need to go deeper
                                         $this->log('Warning! Attribute '.$z->getName().' is too deep for this!', 'Urgent');
                                     } else {
@@ -110,15 +112,14 @@ class AmazonProduct extends AmazonProductsCore{
                                 $this->data['AttributeSets'][$anum][$x->getName()][$y->getName()] = (string)$y;
                             }
                         }
-
                     } else {
                         //Check for duplicates
-                        if (array_key_exists('AttributeSets', $this->data) && 
-                                array_key_exists($anum, $this->data['AttributeSets']) && 
-                                array_key_exists($x->getName(), $this->data['AttributeSets'][$anum])){
+                        if (array_key_exists('AttributeSets', $this->data) &&
+                                array_key_exists($anum, $this->data['AttributeSets']) &&
+                                array_key_exists($x->getName(), $this->data['AttributeSets'][$anum])) {
 
                             //check for previous cases of duplicates
-                            if (is_array($this->data['AttributeSets'][$anum][$x->getName()])){
+                            if (is_array($this->data['AttributeSets'][$anum][$x->getName()])) {
                                 $this->data['AttributeSets'][$anum][$x->getName()][] = (string)$x;
                             } else {
                                 //first instance of duplicates, make into array
@@ -137,32 +138,32 @@ class AmazonProduct extends AmazonProductsCore{
         }
         
         //Relationships
-        if ($xml->Relationships){
-            foreach($xml->Relationships->children() as $x){
+        if ($xml->Relationships) {
+            foreach ($xml->Relationships->children() as $x) {
                 $temp = array();
-                foreach($x->children() as $y){
-                    foreach($y->children() as $z){
-                        foreach($z->children() as $zzz){
+                foreach ($x->children() as $y) {
+                    foreach ($y->children() as $z) {
+                        foreach ($z->children() as $zzz) {
                             $temp[$y->getName()][$z->getName()][$zzz->getName()] = (string)$zzz;
                         }
                     }
                 }
-                foreach($x->children('ns2',true) as $y){
+                foreach ($x->children('ns2', true) as $y) {
                     $temp[$y->getName()] = (string)$y;
                 }
                 $this->data['Relationships'][$x->getName()][] = $temp;
             }
             //child relations use namespace but parent does not
-            foreach($xml->Relationships->children('ns2',true) as $x){
+            foreach ($xml->Relationships->children('ns2', true) as $x) {
                 $temp = array();
-                foreach($x->children() as $y){
-                    foreach($y->children() as $z){
-                        foreach($z->children() as $zzz){
+                foreach ($x->children() as $y) {
+                    foreach ($y->children() as $z) {
+                        foreach ($z->children() as $zzz) {
                             $temp[$y->getName()][$z->getName()][$zzz->getName()] = (string)$zzz;
                         }
                     }
                 }
-                foreach($x->children('ns2',true) as $y){
+                foreach ($x->children('ns2', true) as $y) {
                     $temp[$y->getName()] = (string)$y;
                 }
                 $this->data['Relationships'][$x->getName()][] = $temp;
@@ -170,9 +171,9 @@ class AmazonProduct extends AmazonProductsCore{
         }
         
         //CompetitivePricing
-        if ($xml->CompetitivePricing){
+        if ($xml->CompetitivePricing) {
             //CompetitivePrices
-            foreach($xml->CompetitivePricing->CompetitivePrices->children() as $pset){
+            foreach ($xml->CompetitivePricing->CompetitivePrices->children() as $pset) {
                 $pnum = (string)$pset->CompetitivePriceId;
                 $temp = (array)$pset->attributes();
                 $belongs = $temp['@attributes']['belongsToRequester'];
@@ -183,19 +184,18 @@ class AmazonProduct extends AmazonProductsCore{
                 $this->data['CompetitivePricing']['CompetitivePrices'][$pnum]['subcondition'] = $sub;
                 
                 
-                foreach($pset->Price->children() as $x){
+                foreach ($pset->Price->children() as $x) {
                     //CompetitivePrice->Price
-                    foreach($x->children() as $y){
+                    foreach ($x->children() as $y) {
                         $this->data['CompetitivePricing']['CompetitivePrices'][$pnum]['Price'][$x->getName()][$y->getName()] = (string)$y;
                     }
-                    
                 }
                 
                 $pnum++;
             }
             //NumberOfOfferListings
-            if ($xml->CompetitivePricing->NumberOfOfferListings){
-                foreach($xml->CompetitivePricing->NumberOfOfferListings->children() as $x){
+            if ($xml->CompetitivePricing->NumberOfOfferListings) {
+                foreach ($xml->CompetitivePricing->NumberOfOfferListings->children() as $x) {
                     $temp = (array)$x->attributes();
                     $att = $temp['@attributes']['condition'];
                     $this->data['CompetitivePricing']['NumberOfOfferListings'][$x->getName()][$att] = (string)$x;
@@ -203,8 +203,8 @@ class AmazonProduct extends AmazonProductsCore{
             }
             
             //TradeInValue
-            if ($xml->CompetitivePricing->TradeInValue){
-                foreach($xml->CompetitivePricing->TradeInValue->children() as $x){
+            if ($xml->CompetitivePricing->TradeInValue) {
+                foreach ($xml->CompetitivePricing->TradeInValue->children() as $x) {
                     $this->data['CompetitivePricing']['TradeInValue'][$x->getName()] = (string)$x;
                 }
             }
@@ -212,10 +212,10 @@ class AmazonProduct extends AmazonProductsCore{
             
         
         //SalesRankings
-        if ($xml->SalesRankings){
-            foreach($xml->SalesRankings->children() as $x){
+        if ($xml->SalesRankings) {
+            foreach ($xml->SalesRankings->children() as $x) {
                 $temp = array();
-                foreach($x->children() as $y){
+                foreach ($x->children() as $y) {
                     $temp[$y->getName()] = (string)$y;
                 }
                 $this->data['SalesRankings'][$x->getName()][] = $temp;
@@ -223,21 +223,20 @@ class AmazonProduct extends AmazonProductsCore{
         }
         
         //LowestOfferListings
-        if ($xml->LowestOfferListings){
+        if ($xml->LowestOfferListings) {
             $lnum = 0;
-            foreach($xml->LowestOfferListings->children() as $x){
+            foreach ($xml->LowestOfferListings->children() as $x) {
                 //LowestOfferListing
-                foreach($x->children() as $y){
-                    if ($y->children()->count() > 0){
-                        foreach($y->children() as $z){
-                            if ($z->children()->count() > 0){
-                                foreach($z->children() as $zzz){
+                foreach ($x->children() as $y) {
+                    if ($y->children()->count() > 0) {
+                        foreach ($y->children() as $z) {
+                            if ($z->children()->count() > 0) {
+                                foreach ($z->children() as $zzz) {
                                     $this->data['LowestOfferListings'][$lnum][$y->getName()][$z->getName()][$zzz->getName()] = (string)$zzz;
                                 }
                             } else {
                                 $this->data['LowestOfferListings'][$lnum][$y->getName()][$z->getName()] = (string)$z;
                             }
-                            
                         }
                     } else {
                         $this->data['LowestOfferListings'][$lnum][$y->getName()] = (string)$y;
@@ -248,21 +247,20 @@ class AmazonProduct extends AmazonProductsCore{
         }
         
         //Offers
-        if ($xml->Offers){
+        if ($xml->Offers) {
             $onum = 0;
-            foreach($xml->Offers->children() as $x){
+            foreach ($xml->Offers->children() as $x) {
                 //Offer
-                foreach($x->children() as $y){
-                    if ($y->children()->count() > 0){
-                        foreach($y->children() as $z){
-                            if ($z->children()->count() > 0){
-                                foreach($z->children() as $zzz){
+                foreach ($x->children() as $y) {
+                    if ($y->children()->count() > 0) {
+                        foreach ($y->children() as $z) {
+                            if ($z->children()->count() > 0) {
+                                foreach ($z->children() as $zzz) {
                                     $this->data['Offers'][$onum][$y->getName()][$z->getName()][$zzz->getName()] = (string)$zzz;
                                 }
                             } else {
                                 $this->data['Offers'][$onum][$y->getName()][$z->getName()] = (string)$z;
                             }
-                            
                         }
                     } else {
                         $this->data['Offers'][$onum][$y->getName()] = (string)$y;
@@ -271,9 +269,6 @@ class AmazonProduct extends AmazonProductsCore{
                 $onum++;
             }
         }
-        
-        
-        
     }
     
     /**
@@ -281,13 +276,14 @@ class AmazonProduct extends AmazonProductsCore{
      * @param SimpleXMLElement $xml <p>The XML data from Amazon.</p>
      * @return boolean <b>FALSE</b> if no valid XML data is found
      */
-    protected function loadCategories($xml){
+    protected function loadCategories($xml)
+    {
         //Categories
-        if (!$xml->Self){
+        if (!$xml->Self) {
             return false;
         }
         $cnum = 0;
-        foreach($xml->children() as $x){
+        foreach ($xml->children() as $x) {
             $this->data['Categories'][$cnum] = $this->genHierarchy($x);
             $cnum++;
         }
@@ -298,13 +294,14 @@ class AmazonProduct extends AmazonProductsCore{
      * @param SimpleXMLElement $xml <p>The XML data from Amazon.</p>
      * @return boolean <b>FALSE</b> if no valid XML data is found
      */
-    protected function loadLowestPricedOfferXml($xml) {
-        if (!$xml->Summary){
+    protected function loadLowestPricedOfferXml($xml)
+    {
+        if (!$xml->Summary) {
             return false;
         }
 
         //Identifier
-        foreach($xml->Identifier->children() as $x){
+        foreach ($xml->Identifier->children() as $x) {
             $this->data['Identifiers']['Identifier'][$x->getName()] = (string)$x;
         }
 
@@ -312,7 +309,7 @@ class AmazonProduct extends AmazonProductsCore{
         $this->data['Summary']['TotalOfferCount'] = (string)$xml->Summary->TotalOfferCount;
         //Offer counts
         if ($xml->Summary->NumberOfOffers) {
-            foreach($xml->Summary->NumberOfOffers->children() as $x){
+            foreach ($xml->Summary->NumberOfOffers->children() as $x) {
                 $att = (array)$x->attributes();
                 $tchannel = 'UnknownChannel';
                 if (isset($att['@attributes']['fulfillmentChannel'])) {
@@ -327,10 +324,10 @@ class AmazonProduct extends AmazonProductsCore{
         }
         //Lowest prices
         if ($xml->Summary->LowestPrices) {
-            foreach($xml->Summary->LowestPrices->children() as $x){
+            foreach ($xml->Summary->LowestPrices->children() as $x) {
                 $temp = array();
-                foreach($x->children() as $y) {
-                    foreach($y->children() as $z) {
+                foreach ($x->children() as $y) {
+                    foreach ($y->children() as $z) {
                         $temp[$y->getName()][$z->getName()] = (string)$z;
                     }
                 }
@@ -348,10 +345,10 @@ class AmazonProduct extends AmazonProductsCore{
         }
         //BuyBox prices
         if ($xml->Summary->BuyBoxPrices) {
-            foreach($xml->Summary->BuyBoxPrices->children() as $x){
+            foreach ($xml->Summary->BuyBoxPrices->children() as $x) {
                 $temp = array();
-                foreach($x->children() as $y) {
-                    foreach($y->children() as $z) {
+                foreach ($x->children() as $y) {
+                    foreach ($y->children() as $z) {
                         $temp[$y->getName()][$z->getName()] = (string)$z;
                     }
                 }
@@ -365,19 +362,19 @@ class AmazonProduct extends AmazonProductsCore{
         }
         //List price
         if ($xml->Summary->ListPrice) {
-            foreach($xml->Summary->ListPrice->children() as $x) {
+            foreach ($xml->Summary->ListPrice->children() as $x) {
                 $this->data['Summary']['ListPrice'][$x->getName()] = (string)$x;
             }
         }
         //Lower price with shipping
         if ($xml->Summary->SuggestedLowerPricePlusShipping) {
-            foreach($xml->Summary->SuggestedLowerPricePlusShipping->children() as $x) {
+            foreach ($xml->Summary->SuggestedLowerPricePlusShipping->children() as $x) {
                 $this->data['Summary']['SuggestedLowerPricePlusShipping'][$x->getName()] = (string)$x;
             }
         }
         //BuyBox offers
         if ($xml->Summary->BuyBoxEligibleOffers) {
-            foreach($xml->Summary->BuyBoxEligibleOffers->children() as $x) {
+            foreach ($xml->Summary->BuyBoxEligibleOffers->children() as $x) {
                 $att = (array)$x->attributes();
                 $tchannel = 'UnknownChannel';
                 if (isset($att['@attributes']['fulfillmentChannel'])) {
@@ -391,20 +388,19 @@ class AmazonProduct extends AmazonProductsCore{
             }
         }
         //Offers
-        foreach($xml->Offers->children() as $x){
+        foreach ($xml->Offers->children() as $x) {
             $temp = array();
             //Offer
-            foreach($x->children() as $y){
-                if ($y->children()->count() > 0){
-                    foreach($y->children() as $z){
-                        if ($z->children()->count() > 0){
-                            foreach($z->children() as $zzz){
+            foreach ($x->children() as $y) {
+                if ($y->children()->count() > 0) {
+                    foreach ($y->children() as $z) {
+                        if ($z->children()->count() > 0) {
+                            foreach ($z->children() as $zzz) {
                                 $temp[$y->getName()][$z->getName()][$zzz->getName()] = (string)$zzz;
                             }
                         } else {
                             $temp[$y->getName()][$z->getName()] = (string)$z;
                         }
-
                     }
                 } else {
                     if ($y->getName() == 'ShippingTime') {
@@ -424,21 +420,22 @@ class AmazonProduct extends AmazonProductsCore{
     
     /**
      * Recursively builds the hierarchy array.
-     * 
+     *
      * The returned array will have the fields <b>ProductCategoryId</b> and
      * <b>ProductCategoryName</b>, as well as maybe a <b>Parent</b> field with the same
      * structure as the array containing it.
      * @param SimpleXMLElement $xml <p>The XML data from Amazon.</p>
      * @return array Recursive, multi-dimensional array
      */
-    protected function genHierarchy($xml){
-        if (!$xml){
+    protected function genHierarchy($xml)
+    {
+        if (!$xml) {
             return false;
         }
         $a = array();
         $a['ProductCategoryId'] = (string)$xml->ProductCategoryId;
         $a['ProductCategoryName'] = (string)$xml->ProductCategoryName;
-        if ($xml->Parent){
+        if ($xml->Parent) {
             $a['Parent'] = $this->genHierarchy($xml->Parent);
         }
         return $a;
@@ -448,24 +445,24 @@ class AmazonProduct extends AmazonProductsCore{
      * See <i>getData</i>.
      * @return array Huge array of Product data.
      */
-    public function getProduct($num=null){
+    public function getProduct($num=null)
+    {
         return $this->getData();
     }
     
     /**
      * Returns all product data.
-     * 
+     *
      * The array returned will likely be very large and contain data too varied
      * to be described here.
      * @return array Huge array of Product data.
      */
-    public function getData(){
-        if (isset($this->data)){
+    public function getData()
+    {
+        if (isset($this->data)) {
             return $this->data;
         } else {
             return false;
         }
     }
-    
 }
-?>

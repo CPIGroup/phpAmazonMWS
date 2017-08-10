@@ -17,13 +17,13 @@
  */
 
 /**
- * Autoload Amazon Classes * 
+ * Autoload Amazon Classes *
  */
-function autoloadAmazonClasses($className) {
-	$file = dirname(__FILE__).'/classes/' . $className. '.php';
-	if (file_exists($file)){
-		include($file);
-	}
+function autoloadAmazonClasses($className)
+{
+    $file = dirname(__FILE__).'/classes/' . $className. '.php';
+    if (file_exists($file)) {
+        include($file);
+    }
 }
 spl_autoload_register('autoloadAmazonClasses');
-?>

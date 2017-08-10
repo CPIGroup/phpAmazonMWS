@@ -18,17 +18,18 @@
 
 /**
  * Fetches a fulfillment shipment template from Amazon.
- * 
+ *
  * This Amazon Outbound Core object retrieves fulfillment shipment previews,
  * which Amazon generates from the parameters sent. This is how you get
  * Shipment IDs, which are needed for dealing with fulfillment orders.
  */
-class AmazonFulfillmentPreview extends AmazonOutboundCore{
+class AmazonFulfillmentPreview extends AmazonOutboundCore
+{
     protected $previewList;
     
     /**
      * AmazonFulfillmentPreview sends a request to Amazon to generate a Fulfillment Shipment Preview.
-     * 
+     *
      * The parameters are passed to the parent constructor, which are
      * in turn passed to the AmazonCore constructor. See it for more information
      * on these parameters and common methods.
@@ -39,7 +40,8 @@ class AmazonFulfillmentPreview extends AmazonOutboundCore{
      * @param array|string $m [optional] <p>The files (or file) to use in Mock Mode.</p>
      * @param string $config [optional] <p>An alternate config file to set. Used for testing.</p>
      */
-    public function __construct($s = null, $mock = false, $m = null, $config = null) {
+    public function __construct($s = null, $mock = false, $m = null, $config = null)
+    {
         parent::__construct($s, $mock, $m, $config);
         
         $this->options['Action'] = 'GetFulfillmentPreview';
@@ -47,7 +49,7 @@ class AmazonFulfillmentPreview extends AmazonOutboundCore{
     
     /**
      * Sets the address. (Required)
-     * 
+     *
      * This method sets the destination address to be sent in the next request.
      * This parameter is required for creating a fulfillment order with Amazon.
      * The array provided should have the following fields:
@@ -66,25 +68,26 @@ class AmazonFulfillmentPreview extends AmazonOutboundCore{
      * @param array $a <p>See above.</p>
      * @return boolean <b>FALSE</b> if improper input
      */
-    public function setAddress($a){
-        if (is_null($a) || is_string($a) || !$a){
-            $this->log("Tried to set address to invalid values",'Warning');
+    public function setAddress($a)
+    {
+        if (is_null($a) || is_string($a) || !$a) {
+            $this->log("Tried to set address to invalid values", 'Warning');
             return false;
         }
         $this->resetAddress();
         $this->options['Address.Name'] = $a['Name'];
         $this->options['Address.Line1'] = $a['Line1'];
-        if (array_key_exists('Line2', $a)){
+        if (array_key_exists('Line2', $a)) {
             $this->options['Address.Line2'] = $a['Line2'];
         } else {
             $this->options['Address.Line2'] = null;
         }
-        if (array_key_exists('Line3', $a)){
+        if (array_key_exists('Line3', $a)) {
             $this->options['Address.Line3'] = $a['Line3'];
         } else {
             $this->options['Address.Line3'] = null;
         }
-        if (array_key_exists('DistrictOrCounty', $a)){
+        if (array_key_exists('DistrictOrCounty', $a)) {
             $this->options['Address.DistrictOrCounty'] = $a['DistrictOrCounty'];
         } else {
             $this->options['Address.DistrictOrCounty'] = null;
@@ -93,7 +96,7 @@ class AmazonFulfillmentPreview extends AmazonOutboundCore{
         $this->options['Address.StateOrProvinceCode'] = $a['StateOrProvinceCode'];
         $this->options['Address.CountryCode'] = $a['CountryCode'];
         $this->options['Address.PostalCode'] = $a['PostalCode'];
-        if (array_key_exists('PhoneNumber', $a)){
+        if (array_key_exists('PhoneNumber', $a)) {
             $this->options['Address.PhoneNumber'] = $a['PhoneNumber'];
         } else {
             $this->options['Address.PhoneNumber'] = null;
@@ -102,11 +105,12 @@ class AmazonFulfillmentPreview extends AmazonOutboundCore{
     
     /**
      * Resets the address options.
-     * 
+     *
      * Since address is a required parameter, these options should not be removed
      * without replacing them, so this method is not public.
      */
-    protected function resetAddress(){
+    protected function resetAddress()
+    {
         unset($this->options['Address.Name']);
         unset($this->options['Address.Line1']);
         unset($this->options['Address.Line2']);
@@ -121,7 +125,7 @@ class AmazonFulfillmentPreview extends AmazonOutboundCore{
     
     /**
      * Sets the items. (Required)
-     * 
+     *
      * This method sets the Fulfillment Order ID to be sent in the next request.
      * This parameter is required for creating a fulfillment order with Amazon.
      * The array provided should contain a list of arrays, each with the following fields:
@@ -133,22 +137,23 @@ class AmazonFulfillmentPreview extends AmazonOutboundCore{
      * @param array $a <p>See above.</p>
      * @return boolean <b>FALSE</b> if improper input
      */
-    public function setItems($a){
-        if (is_null($a) || is_string($a) || !$a){
-            $this->log("Tried to set Items to invalid values",'Warning');
+    public function setItems($a)
+    {
+        if (is_null($a) || is_string($a) || !$a) {
+            $this->log("Tried to set Items to invalid values", 'Warning');
             return false;
         }
         $this->resetItems();
         $i = 1;
-        foreach ($a as $x){
-            if (is_array($x) && array_key_exists('SellerSKU', $x) && array_key_exists('SellerFulfillmentOrderItemId', $x) && array_key_exists('Quantity', $x)){
+        foreach ($a as $x) {
+            if (is_array($x) && array_key_exists('SellerSKU', $x) && array_key_exists('SellerFulfillmentOrderItemId', $x) && array_key_exists('Quantity', $x)) {
                 $this->options['Items.member.'.$i.'.SellerSKU'] = $x['SellerSKU'];
                 $this->options['Items.member.'.$i.'.SellerFulfillmentOrderItemId'] = $x['SellerFulfillmentOrderItemId'];
                 $this->options['Items.member.'.$i.'.Quantity'] = $x['Quantity'];
                 $i++;
             } else {
                 $this->resetItems();
-                $this->log("Tried to set Items with invalid array",'Warning');
+                $this->log("Tried to set Items with invalid array", 'Warning');
                 return false;
             }
         }
@@ -156,13 +161,14 @@ class AmazonFulfillmentPreview extends AmazonOutboundCore{
     
     /**
      * Resets the item options.
-     * 
+     *
      * Since the list of items is a required parameter, these options should not be removed
      * without replacing them, so this method is not public.
      */
-    protected function resetItems(){
-        foreach($this->options as $op=>$junk){
-            if(preg_match("#Items#",$op)){
+    protected function resetItems()
+    {
+        foreach ($this->options as $op=>$junk) {
+            if (preg_match("#Items#", $op)) {
                 unset($this->options[$op]);
             }
         }
@@ -170,19 +176,20 @@ class AmazonFulfillmentPreview extends AmazonOutboundCore{
     
     /**
      * Sets the preferred shipping speeds. (Optional)
-     * 
+     *
      * This method sets the shipping speed to be sent in the next request.
      * @param string|array $s <p>"Standard", "Expedited", or "Priority", or an array of these values</p>
      * @return boolean <b>FALSE</b> if improper input
      */
-    public function setShippingSpeeds($s){
-        if (is_string($s)){
+    public function setShippingSpeeds($s)
+    {
+        if (is_string($s)) {
             $this->resetShippingSpeeds();
             $this->options['ShippingSpeedCategories.1'] = $s;
-        } else if (is_array($s)){
+        } elseif (is_array($s)) {
             $this->resetShippingSpeeds();
             $i = 1;
-            foreach ($s as $x){
+            foreach ($s as $x) {
                 $this->options['ShippingSpeedCategories.'.$i] = $x;
                 $i++;
             }
@@ -193,13 +200,14 @@ class AmazonFulfillmentPreview extends AmazonOutboundCore{
     
     /**
      * Removes shipping speed options.
-     * 
+     *
      * Use this in case you change your mind and want to remove the shipping speed
      * parameters you previously set.
      */
-    public function resetShippingSpeeds(){
-        foreach($this->options as $op=>$junk){
-            if(preg_match("#ShippingSpeedCategories#",$op)){
+    public function resetShippingSpeeds()
+    {
+        foreach ($this->options as $op=>$junk) {
+            if (preg_match("#ShippingSpeedCategories#", $op)) {
                 unset($this->options[$op]);
             }
         }
@@ -212,7 +220,8 @@ class AmazonFulfillmentPreview extends AmazonOutboundCore{
      * If this option is not set or is set to FALSE, Amazon will not give previews that are for COD.
      * @param boolean $s [optional] <p>Defaults to TRUE</p>
      */
-    public function setIncludeCod($s = 'true') {
+    public function setIncludeCod($s = 'true')
+    {
         if (filter_var($s, FILTER_VALIDATE_BOOLEAN)) {
             $s = 'true';
         } else {
@@ -228,7 +237,8 @@ class AmazonFulfillmentPreview extends AmazonOutboundCore{
      * If this option is not set or is set to FALSE, Amazon will not give delivery window data.
      * @param boolean $s [optional] <p>Defaults to TRUE</p>
      */
-    public function setIncludeDeliveryWindows($s = 'true') {
+    public function setIncludeDeliveryWindows($s = 'true')
+    {
         if (filter_var($s, FILTER_VALIDATE_BOOLEAN)) {
             $s = 'true';
         } else {
@@ -239,7 +249,7 @@ class AmazonFulfillmentPreview extends AmazonOutboundCore{
     
     /**
      * Generates a Fulfillment Preview with Amazon.
-     * 
+     *
      * Submits a <i>GetFulfillmentPreview</i> request to Amazon. In order to do this,
      * an address and list of items are required. Amazon will send back a list of
      * previews as a response, which can be retrieved using <i>getPreview</i>.
@@ -248,13 +258,14 @@ class AmazonFulfillmentPreview extends AmazonOutboundCore{
      * the order would be like.
      * @return boolean <b>FALSE</b> if something goes wrong
      */
-    public function fetchPreview(){
-        if (!array_key_exists('Address.Name',$this->options)){
-            $this->log("Address must be set in order to create a preview",'Warning');
+    public function fetchPreview()
+    {
+        if (!array_key_exists('Address.Name', $this->options)) {
+            $this->log("Address must be set in order to create a preview", 'Warning');
             return false;
         }
-        if (!array_key_exists('Items.member.1.SellerSKU',$this->options)){
-            $this->log("Items must be set in order to create a preview",'Warning');
+        if (!array_key_exists('Items.member.1.SellerSKU', $this->options)) {
+            $this->log("Items must be set in order to create a preview", 'Warning');
             return false;
         }
         
@@ -263,12 +274,12 @@ class AmazonFulfillmentPreview extends AmazonOutboundCore{
         $query = $this->genQuery();
         
         $path = $this->options['Action'].'Result';
-        if ($this->mockMode){
-           $xml = $this->fetchMockFile()->$path->FulfillmentPreviews;
+        if ($this->mockMode) {
+            $xml = $this->fetchMockFile()->$path->FulfillmentPreviews;
         } else {
             $response = $this->sendRequest($url, array('Post'=>$query));
             
-            if (!$this->checkResponse($response)){
+            if (!$this->checkResponse($response)) {
                 return false;
             }
             
@@ -280,32 +291,33 @@ class AmazonFulfillmentPreview extends AmazonOutboundCore{
     
     /**
      * Parses XML response into array.
-     * 
+     *
      * This is what reads the response XML and converts it into an array.
      * @param SimpleXMLElement $xml <p>The XML response from Amazon.</p>
      * @return boolean <b>FALSE</b> if no XML data is found
      */
-    protected function parseXML($xml) {
-        if (!$xml){
+    protected function parseXML($xml)
+    {
+        if (!$xml) {
             return false;
         }
         $i = 0;
-        foreach($xml->children() as $x){
+        foreach ($xml->children() as $x) {
             $this->previewList[$i]['ShippingSpeedCategory'] = (string)$x->ShippingSpeedCategory;
             $this->previewList[$i]['IsFulfillable'] = (string)$x->IsFulfillable;
             $this->previewList[$i]['IsCODCapable'] = (string)$x->IsCODCapable;
             $this->previewList[$i]['MarketplaceId'] = (string)$x->MarketplaceId;
-            if (isset($x->EstimatedShippingWeight)){
+            if (isset($x->EstimatedShippingWeight)) {
                 $this->previewList[$i]['EstimatedShippingWeight']['Unit'] = (string)$x->EstimatedShippingWeight->Unit;
                 $this->previewList[$i]['EstimatedShippingWeight']['Value'] = (string)$x->EstimatedShippingWeight->Value;
             }
-            if (isset($x->FulfillmentPreviewShipments)){
+            if (isset($x->FulfillmentPreviewShipments)) {
                 $j = 0;
-                foreach ($x->FulfillmentPreviewShipments->children() as $y){
+                foreach ($x->FulfillmentPreviewShipments->children() as $y) {
                     $this->previewList[$i]['FulfillmentPreviewShipments'][$j]['LatestShipDate'] = (string)$y->LatestShipDate;
                     $this->previewList[$i]['FulfillmentPreviewShipments'][$j]['LatestArrivalDate'] = (string)$y->LatestArrivalDate;
                     $k = 0;
-                    foreach ($y->FulfillmentPreviewItems->children() as $z){
+                    foreach ($y->FulfillmentPreviewItems->children() as $z) {
                         $this->previewList[$i]['FulfillmentPreviewShipments'][$j]['FulfillmentPreviewItems'][$k]['EstimatedShippingWeight']['Unit'] = (string)$z->EstimatedShippingWeight->Unit;
                         $this->previewList[$i]['FulfillmentPreviewShipments'][$j]['FulfillmentPreviewItems'][$k]['EstimatedShippingWeight']['Value'] = (string)$z->EstimatedShippingWeight->Value;
                         $this->previewList[$i]['FulfillmentPreviewShipments'][$j]['FulfillmentPreviewItems'][$k]['SellerSKU'] = (string)$z->SellerSKU;
@@ -319,18 +331,18 @@ class AmazonFulfillmentPreview extends AmazonOutboundCore{
                     $j++;
                 }
             }
-            if (isset($x->EstimatedFees)){
+            if (isset($x->EstimatedFees)) {
                 $j = 0;
-                foreach ($x->EstimatedFees->children() as $y){
+                foreach ($x->EstimatedFees->children() as $y) {
                     $this->previewList[$i]['EstimatedFees'][$j]['CurrencyCode'] = (string)$y->Amount->CurrencyCode;
                     $this->previewList[$i]['EstimatedFees'][$j]['Value'] = (string)$y->Amount->Value;
                     $this->previewList[$i]['EstimatedFees'][$j]['Name'] = (string)$y->Name;
                     $j++;
                 }
             }
-            if (isset($x->UnfulfillablePreviewItems)){
+            if (isset($x->UnfulfillablePreviewItems)) {
                 $j = 0;
-                foreach ($x->UnfulfillablePreviewItems->children() as $y){
+                foreach ($x->UnfulfillablePreviewItems->children() as $y) {
                     $this->previewList[$i]['UnfulfillablePreviewItems'][$j]['SellerSKU'] = (string)$y->SellerSKU;
                     $this->previewList[$i]['UnfulfillablePreviewItems'][$j]['SellerFulfillmentOrderItemId'] = (string)$y->SellerFulfillmentOrderItemId;
                     $this->previewList[$i]['UnfulfillablePreviewItems'][$j]['Quantity'] = (string)$y->Quantity;
@@ -338,16 +350,16 @@ class AmazonFulfillmentPreview extends AmazonOutboundCore{
                     $j++;
                 }
             }
-            if (isset($x->OrderUnfulfillableReasons)){
+            if (isset($x->OrderUnfulfillableReasons)) {
                 $j = 0;
-                foreach ($x->OrderUnfulfillableReasons->children() as $y){
+                foreach ($x->OrderUnfulfillableReasons->children() as $y) {
                     $this->previewList[$i]['OrderUnfulfillableReasons'][$j] = (string)$y;
                     $j++;
                 }
             }
-            if (isset($x->ScheduledDeliveryInfo)){
+            if (isset($x->ScheduledDeliveryInfo)) {
                 $this->previewList[$i]['ScheduledDeliveryInfo']['DeliveryTimeZone'] = (string)$x->ScheduledDeliveryInfo->DeliveryTimeZone;
-                foreach ($x->ScheduledDeliveryInfo->DeliveryWindows->children() as $y){
+                foreach ($x->ScheduledDeliveryInfo->DeliveryWindows->children() as $y) {
                     $temp = array();
                     $temp['StartDateTime'] = (string)$y->DeliveryWindow->StartDateTime;
                     $temp['EndDateTime'] = (string)$y->DeliveryWindow->EndDateTime;
@@ -361,7 +373,7 @@ class AmazonFulfillmentPreview extends AmazonOutboundCore{
     
     /**
      * Returns the specified fulfillment preview, or all of them.
-     * 
+     *
      * This method will return <b>FALSE</b> if the list has not yet been filled.
      * The array for a single fulfillment order will have the following fields:
      * <ul>
@@ -413,11 +425,12 @@ class AmazonFulfillmentPreview extends AmazonOutboundCore{
      * If none is given, the entire list will be returned. Defaults to NULL.</p>
      * @return array|boolean array, multi-dimensional array, or <b>FALSE</b> if list not filled yet
      */
-    public function getPreview($i = null){
-        if (!isset($this->previewList)){
+    public function getPreview($i = null)
+    {
+        if (!isset($this->previewList)) {
             return false;
         }
-        if (is_numeric($i)){
+        if (is_numeric($i)) {
             return $this->previewList[$i];
         } else {
             return $this->previewList;
@@ -426,23 +439,23 @@ class AmazonFulfillmentPreview extends AmazonOutboundCore{
     
     /**
      * Returns the estimated shipping weight for the specified entry.
-     * 
+     *
      * The mode can be set to change what is returned: 0 = value, 1 = unit, 2 = value & unit
      * @param int $i [optional]<p>List index to retrieve the value from. Defaults to 0.</p>
      * @param int $mode [optional]<p>The type of value to return. Defaults to only value.</p>
      * @return string|boolean weight value, or <b>FALSE</b> if improper input
      */
-    public function getEstimatedWeight($i = 0,$mode = 0){
-        if (!isset($this->previewList)){
+    public function getEstimatedWeight($i = 0, $mode = 0)
+    {
+        if (!isset($this->previewList)) {
             return false;
         }
-        if (is_int($i) && $i >= 0){
-            if ($mode == 1){
+        if (is_int($i) && $i >= 0) {
+            if ($mode == 1) {
                 return $this->previewList[$i]['EstimatedShippingWeight']['Unit'];
-            } else if ($mode == 2){
+            } elseif ($mode == 2) {
                 return $this->previewList[$i]['EstimatedShippingWeight'];
-            } else 
-            {
+            } else {
                 return $this->previewList[$i]['EstimatedShippingWeight']['Value'];
             }
         } else {
@@ -450,4 +463,3 @@ class AmazonFulfillmentPreview extends AmazonOutboundCore{
         }
     }
 }
-?>

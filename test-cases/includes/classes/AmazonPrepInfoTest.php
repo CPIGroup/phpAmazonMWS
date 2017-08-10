@@ -1,6 +1,7 @@
 <?php
 
-class AmazonPrepInfoTest extends PHPUnit_Framework_TestCase {
+class AmazonPrepInfoTest extends PHPUnit_Framework_TestCase
+{
 
     /**
      * @var AmazonPrepInfo
@@ -11,79 +12,84 @@ class AmazonPrepInfoTest extends PHPUnit_Framework_TestCase {
      * Sets up the fixture, for example, opens a network connection.
      * This method is called before a test is executed.
      */
-    protected function setUp() {
+    protected function setUp()
+    {
         resetLog();
         $this->object = new AmazonPrepInfo('testStore', true, null, __DIR__.'/../../test-config.php');
     }
 
-    public function testSetSKUs() {
+    public function testSetSKUs()
+    {
         $this->object->setASINs('123456789');
         $this->assertNull($this->object->setSKUs(array('123','456')));
         $o = $this->object->getOptions();
-        $this->assertArrayHasKey('SellerSKUList.Id.1',$o);
-        $this->assertEquals('123',$o['SellerSKUList.Id.1']);
-        $this->assertArrayHasKey('SellerSKUList.Id.2',$o);
-        $this->assertEquals('456',$o['SellerSKUList.Id.2']);
-        $this->assertArrayNotHasKey('ASINList.Id.1',$o);
+        $this->assertArrayHasKey('SellerSKUList.Id.1', $o);
+        $this->assertEquals('123', $o['SellerSKUList.Id.1']);
+        $this->assertArrayHasKey('SellerSKUList.Id.2', $o);
+        $this->assertEquals('456', $o['SellerSKUList.Id.2']);
+        $this->assertArrayNotHasKey('ASINList.Id.1', $o);
 
         $this->assertNull($this->object->setSKUs('789')); //causes reset
         $o2 = $this->object->getOptions();
-        $this->assertEquals('789',$o2['SellerSKUList.Id.1']);
-        $this->assertArrayNotHasKey('SellerSKUList.Id.2',$o2);
+        $this->assertEquals('789', $o2['SellerSKUList.Id.1']);
+        $this->assertArrayNotHasKey('SellerSKUList.Id.2', $o2);
 
         $this->assertFalse($this->object->setSKUs(null));
         $this->assertFalse($this->object->setSKUs(707));
     }
 
-    public function testSetASINs() {
+    public function testSetASINs()
+    {
         $this->object->setSKUs('123456789');
         $this->assertNull($this->object->setASINs(array('123','456')));
         $o = $this->object->getOptions();
-        $this->assertArrayHasKey('ASINList.Id.1',$o);
-        $this->assertEquals('123',$o['ASINList.Id.1']);
-        $this->assertArrayHasKey('ASINList.Id.2',$o);
-        $this->assertEquals('456',$o['ASINList.Id.2']);
-        $this->assertArrayNotHasKey('SellerSKUList.Id.1',$o);
+        $this->assertArrayHasKey('ASINList.Id.1', $o);
+        $this->assertEquals('123', $o['ASINList.Id.1']);
+        $this->assertArrayHasKey('ASINList.Id.2', $o);
+        $this->assertEquals('456', $o['ASINList.Id.2']);
+        $this->assertArrayNotHasKey('SellerSKUList.Id.1', $o);
 
         $this->assertNull($this->object->setASINs('789')); //causes reset
         $o2 = $this->object->getOptions();
-        $this->assertEquals('789',$o2['ASINList.Id.1']);
-        $this->assertArrayNotHasKey('ASINList.Id.2',$o2);
+        $this->assertEquals('789', $o2['ASINList.Id.1']);
+        $this->assertArrayNotHasKey('ASINList.Id.2', $o2);
 
         $this->assertFalse($this->object->setASINs(null));
         $this->assertFalse($this->object->setASINs(707));
     }
 
-    public function testFetchPrepInstructionsAsin() {
+    public function testFetchPrepInstructionsAsin()
+    {
         resetLog();
         $this->object->setMock(true, 'fetchPrepInstructionsAsin.xml');
         $this->assertFalse($this->object->fetchPrepInstructions());
         $this->assertNull($this->object->setASINs('123'));
         $this->assertNull($this->object->fetchPrepInstructions());
         $o = $this->object->getOptions();
-        $this->assertEquals('GetPrepInstructionsForASIN',$o['Action']);
+        $this->assertEquals('GetPrepInstructionsForASIN', $o['Action']);
 
         $check = parseLog();
-        $this->assertEquals('Single Mock File set: fetchPrepInstructionsAsin.xml',$check[1]);
-        $this->assertEquals('Product IDs must be set in order to get prep instructions!',$check[2]);
-        $this->assertEquals('Fetched Mock File: mock/fetchPrepInstructionsAsin.xml',$check[3]);
+        $this->assertEquals('Single Mock File set: fetchPrepInstructionsAsin.xml', $check[1]);
+        $this->assertEquals('Product IDs must be set in order to get prep instructions!', $check[2]);
+        $this->assertEquals('Fetched Mock File: mock/fetchPrepInstructionsAsin.xml', $check[3]);
 
         return $this->object;
     }
 
-    public function testFetchPrepInstructionsSku() {
+    public function testFetchPrepInstructionsSku()
+    {
         resetLog();
         $this->object->setMock(true, 'fetchPrepInstructionsSku.xml');
         $this->assertFalse($this->object->fetchPrepInstructions());
         $this->assertNull($this->object->setSKUs('123'));
         $this->assertNull($this->object->fetchPrepInstructions());
         $o = $this->object->getOptions();
-        $this->assertEquals('GetPrepInstructionsForSKU',$o['Action']);
+        $this->assertEquals('GetPrepInstructionsForSKU', $o['Action']);
 
         $check = parseLog();
-        $this->assertEquals('Single Mock File set: fetchPrepInstructionsSku.xml',$check[1]);
-        $this->assertEquals('Product IDs must be set in order to get prep instructions!',$check[2]);
-        $this->assertEquals('Fetched Mock File: mock/fetchPrepInstructionsSku.xml',$check[3]);
+        $this->assertEquals('Single Mock File set: fetchPrepInstructionsSku.xml', $check[1]);
+        $this->assertEquals('Product IDs must be set in order to get prep instructions!', $check[2]);
+        $this->assertEquals('Fetched Mock File: mock/fetchPrepInstructionsSku.xml', $check[3]);
 
         return $this->object;
     }
@@ -92,7 +98,8 @@ class AmazonPrepInfoTest extends PHPUnit_Framework_TestCase {
      * @param AmazonPrepInfo
      * @depends testFetchPrepInstructionsSku
      */
-    public function testGetSku($o) {
+    public function testGetSku($o)
+    {
         $this->assertEquals('ca_001', $o->getSku(0));
         $this->assertEquals('ca_002', $o->getSku(1));
         $this->assertEquals($o->getSku(0), $o->getSku());
@@ -107,7 +114,8 @@ class AmazonPrepInfoTest extends PHPUnit_Framework_TestCase {
      * @param AmazonPrepInfo
      * @depends testFetchPrepInstructionsAsin
      */
-    public function testGetSkuWithAsin($o) {
+    public function testGetSkuWithAsin($o)
+    {
         //no SKUs when getting by ASIN
         $this->assertFalse($o->getSku(0));
         $this->assertFalse($o->getSku(1));
@@ -119,7 +127,8 @@ class AmazonPrepInfoTest extends PHPUnit_Framework_TestCase {
      * @param AmazonPrepInfo
      * @depends testFetchPrepInstructionsSku
      */
-    public function testGetAsin($o) {
+    public function testGetAsin($o)
+    {
         $this->assertEquals('B00EXAMPLE', $o->getAsin(0));
         $this->assertEquals('B00EXAMPLE2', $o->getAsin(1));
         $this->assertEquals($o->getAsin(0), $o->getAsin());
@@ -134,7 +143,8 @@ class AmazonPrepInfoTest extends PHPUnit_Framework_TestCase {
      * @param AmazonPrepInfo
      * @depends testFetchPrepInstructionsSku
      */
-    public function testGetBarcodeInstruction($o) {
+    public function testGetBarcodeInstruction($o)
+    {
         $this->assertEquals('RequiresFNSKULabel', $o->getBarcodeInstruction(0));
         $this->assertEquals('CanUseOriginalBarcode', $o->getBarcodeInstruction(1));
         $this->assertEquals($o->getBarcodeInstruction(0), $o->getBarcodeInstruction());
@@ -149,7 +159,8 @@ class AmazonPrepInfoTest extends PHPUnit_Framework_TestCase {
      * @param AmazonPrepInfo
      * @depends testFetchPrepInstructionsSku
      */
-    public function testGetPrepGuidance($o) {
+    public function testGetPrepGuidance($o)
+    {
         $this->assertEquals('SeePrepInstructionsList', $o->getPrepGuidance(0));
         $this->assertEquals('ConsultHelpDocuments', $o->getPrepGuidance(1));
         $this->assertEquals($o->getPrepGuidance(0), $o->getPrepGuidance());
@@ -164,7 +175,8 @@ class AmazonPrepInfoTest extends PHPUnit_Framework_TestCase {
      * @param AmazonPrepInfo
      * @depends testFetchPrepInstructionsSku
      */
-    public function testGetPrepInstructions($o) {
+    public function testGetPrepInstructions($o)
+    {
         $list1 = array(
             'Polybagging',
             'Taping',
@@ -187,7 +199,8 @@ class AmazonPrepInfoTest extends PHPUnit_Framework_TestCase {
      * @param AmazonPrepInfo
      * @depends testFetchPrepInstructionsSku
      */
-    public function testGetAmazonPrepFees($o) {
+    public function testGetAmazonPrepFees($o)
+    {
         $list1 = array(
             array(
                 'PrepInstruction' => 'Polybagging',
@@ -234,7 +247,8 @@ class AmazonPrepInfoTest extends PHPUnit_Framework_TestCase {
      * @param AmazonPrepInfo
      * @depends testFetchPrepInstructionsAsin
      */
-    public function testGetAmazonPrepFeesWithAsin($o) {
+    public function testGetAmazonPrepFeesWithAsin($o)
+    {
         //no SKUs when getting by ASIN
         $this->assertFalse($o->getAmazonPrepFees(0));
         $this->assertFalse($o->getAmazonPrepFees(1));
@@ -246,7 +260,8 @@ class AmazonPrepInfoTest extends PHPUnit_Framework_TestCase {
      * @param AmazonPrepInfo
      * @depends testFetchPrepInstructionsSku
      */
-    public function testGetPrepList($o) {
+    public function testGetPrepList($o)
+    {
         $list = $o->getPrepList();
         $this->assertInternalType('array', $list);
         $this->assertCount(2, $list);
@@ -277,7 +292,8 @@ class AmazonPrepInfoTest extends PHPUnit_Framework_TestCase {
      * @param AmazonPrepInfo
      * @depends testFetchPrepInstructionsAsin
      */
-    public function testGetPrepListWithAsin($o) {
+    public function testGetPrepListWithAsin($o)
+    {
         $list = $o->getPrepList();
         $this->assertInternalType('array', $list);
         $this->assertCount(1, $list);
@@ -304,7 +320,8 @@ class AmazonPrepInfoTest extends PHPUnit_Framework_TestCase {
      * @param AmazonPrepInfo
      * @depends testFetchPrepInstructionsSku
      */
-    public function testGetInvalidItemList($o) {
+    public function testGetInvalidItemList($o)
+    {
         $list = $o->getInvalidItemList();
         $this->assertInternalType('array', $list);
         $this->assertCount(2, $list);
@@ -331,7 +348,8 @@ class AmazonPrepInfoTest extends PHPUnit_Framework_TestCase {
      * @param AmazonPrepInfo
      * @depends testFetchPrepInstructionsAsin
      */
-    public function testGetInvalidItemListWithAsin($o) {
+    public function testGetInvalidItemListWithAsin($o)
+    {
         $list = $o->getInvalidItemList();
         $this->assertInternalType('array', $list);
         $this->assertCount(2, $list);
@@ -358,7 +376,8 @@ class AmazonPrepInfoTest extends PHPUnit_Framework_TestCase {
      * @param AmazonPrepInfo
      * @depends testFetchPrepInstructionsSku
      */
-    public function testIterator($o) {
+    public function testIterator($o)
+    {
         $passed = 0;
         foreach ($o as $k => $x) {
             $passed++;
@@ -371,7 +390,6 @@ class AmazonPrepInfoTest extends PHPUnit_Framework_TestCase {
             $this->fail('There should be nothing to loop though');
         }
     }
-
 }
 
 require_once('helperFunctions.php');

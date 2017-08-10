@@ -1,6 +1,7 @@
 <?php
 
-class AmazonTransportTest extends PHPUnit_Framework_TestCase {
+class AmazonTransportTest extends PHPUnit_Framework_TestCase
+{
 
     /**
      * @var AmazonTransport
@@ -11,12 +12,14 @@ class AmazonTransportTest extends PHPUnit_Framework_TestCase {
      * Sets up the fixture, for example, opens a network connection.
      * This method is called before a test is executed.
      */
-    protected function setUp() {
+    protected function setUp()
+    {
         resetLog();
         $this->object = new AmazonTransport('testStore', null, true, null, __DIR__.'/../../test-config.php');
     }
 
-    public function testSetUp() {
+    public function testSetUp()
+    {
         $obj = new AmazonTransport('testStore', '77', true, null, __DIR__.'/../../test-config.php');
 
         $o = $obj->getOptions();
@@ -24,7 +27,8 @@ class AmazonTransportTest extends PHPUnit_Framework_TestCase {
         $this->assertEquals('77', $o['ShipmentId']);
     }
 
-    public function testSetShipmentId() {
+    public function testSetShipmentId()
+    {
         $this->assertNull($this->object->setShipmentId('777'));
         $o = $this->object->getOptions();
         $this->assertArrayHasKey('ShipmentId', $o);
@@ -34,7 +38,8 @@ class AmazonTransportTest extends PHPUnit_Framework_TestCase {
         $this->assertFalse($this->object->setShipmentId(null)); //won't work for other things
     }
 
-    public function testSetIsPartnered() {
+    public function testSetIsPartnered()
+    {
         $o1 = $this->object->getOptions();
         $this->assertArrayNotHasKey('IsPartnered', $o1);
         $this->assertNull($this->object->setIsPartnered(true));
@@ -47,7 +52,8 @@ class AmazonTransportTest extends PHPUnit_Framework_TestCase {
         $this->assertEquals('false', $o3['IsPartnered']);
     }
 
-    public function testSetShipmentType(){
+    public function testSetShipmentType()
+    {
         $this->assertFalse($this->object->setShipmentType(null)); //can't be nothing
         $this->assertFalse($this->object->setShipmentType(5)); //can't be an int
         $this->assertFalse($this->object->setShipmentType('wrong')); //not a valid value
@@ -61,7 +67,8 @@ class AmazonTransportTest extends PHPUnit_Framework_TestCase {
     /**
      * @return array
      */
-    public function comboProvider() {
+    public function comboProvider()
+    {
         return array(
             array('SP', true),
             array('SP', false),
@@ -75,7 +82,8 @@ class AmazonTransportTest extends PHPUnit_Framework_TestCase {
      * @param boolean $partnered partnered or not
      * @dataProvider comboProvider
      */
-    public function testSetCarrier($type, $partnered) {
+    public function testSetCarrier($type, $partnered)
+    {
         resetLog();
 
         $this->assertFalse($this->object->setCarrier('truck')); //missing partnered and type
@@ -105,7 +113,8 @@ class AmazonTransportTest extends PHPUnit_Framework_TestCase {
      * @param boolean $partnered partnered or not
      * @dataProvider comboProvider
      */
-    public function testSetPackages($type, $partnered) {
+    public function testSetPackages($type, $partnered)
+    {
         $op = $this->findOp($type, $partnered);
         resetLog();
 
@@ -225,7 +234,8 @@ class AmazonTransportTest extends PHPUnit_Framework_TestCase {
      * @param boolean $partnered partnered or not
      * @dataProvider comboProvider
      */
-    public function testSetProNumber($type, $partnered) {
+    public function testSetProNumber($type, $partnered)
+    {
         resetLog();
 
         $this->assertFalse($this->object->setProNumber('123ABC7')); //missing partnered and type
@@ -255,7 +265,8 @@ class AmazonTransportTest extends PHPUnit_Framework_TestCase {
      * @param boolean $partnered partnered or not
      * @dataProvider comboProvider
      */
-    public function testContact($type, $partnered) {
+    public function testContact($type, $partnered)
+    {
         resetLog();
 
         //missing partnered and type
@@ -303,7 +314,8 @@ class AmazonTransportTest extends PHPUnit_Framework_TestCase {
      * @param boolean $partnered partnered or not
      * @dataProvider comboProvider
      */
-    public function testSetBoxCount($type, $partnered) {
+    public function testSetBoxCount($type, $partnered)
+    {
         resetLog();
 
         $this->assertFalse($this->object->setBoxCount('12')); //missing partnered and type
@@ -335,7 +347,8 @@ class AmazonTransportTest extends PHPUnit_Framework_TestCase {
      * @param boolean $partnered partnered or not
      * @dataProvider comboProvider
      */
-    public function testSetFreightClass($type, $partnered) {
+    public function testSetFreightClass($type, $partnered)
+    {
         resetLog();
 
         $this->assertFalse($this->object->setFreightClass('12')); //missing partnered and type
@@ -365,7 +378,8 @@ class AmazonTransportTest extends PHPUnit_Framework_TestCase {
      * @param boolean $partnered partnered or not
      * @dataProvider comboProvider
      */
-    public function testSetReadyDate($type, $partnered) {
+    public function testSetReadyDate($type, $partnered)
+    {
         resetLog();
 
         $this->assertFalse($this->object->setReadyDate('+50 min')); //missing partnered and type
@@ -394,7 +408,8 @@ class AmazonTransportTest extends PHPUnit_Framework_TestCase {
      * @param boolean $partnered partnered or not
      * @dataProvider comboProvider
      */
-    public function testSetPallets($type, $partnered) {
+    public function testSetPallets($type, $partnered)
+    {
         $op = $this->findOp($type, $partnered);
         resetLog();
 
@@ -514,7 +529,8 @@ class AmazonTransportTest extends PHPUnit_Framework_TestCase {
      * @param boolean $partnered partnered or not
      * @dataProvider comboProvider
      */
-    public function testSetTotalWeight($type, $partnered) {
+    public function testSetTotalWeight($type, $partnered)
+    {
         resetLog();
 
         $this->assertFalse($this->object->setTotalWeight('123')); //missing partnered and type
@@ -549,7 +565,8 @@ class AmazonTransportTest extends PHPUnit_Framework_TestCase {
      * @param boolean $partnered partnered or not
      * @dataProvider comboProvider
      */
-    public function testSetDeclaredValue($type, $partnered) {
+    public function testSetDeclaredValue($type, $partnered)
+    {
         resetLog();
 
         $this->assertFalse($this->object->setDeclaredValue('1.23', 'USD')); //missing partnered and type
@@ -579,7 +596,8 @@ class AmazonTransportTest extends PHPUnit_Framework_TestCase {
         $this->assertEquals($check[1], $check[3]);
     }
 
-    public function testSendTransportContentsWithPartneredSp() {
+    public function testSendTransportContentsWithPartneredSp()
+    {
         resetLog();
         $this->object->setMock(true, 'sendTransportContents.xml');
 
@@ -613,7 +631,8 @@ class AmazonTransportTest extends PHPUnit_Framework_TestCase {
         $this->assertEquals('Fetched Mock File: mock/sendTransportContents.xml', $check[6]);
     }
 
-    public function testSendTransportContentsWithNonPartneredSp() {
+    public function testSendTransportContentsWithNonPartneredSp()
+    {
         resetLog();
         $this->object->setMock(true, 'sendTransportContents.xml');
 
@@ -650,7 +669,8 @@ class AmazonTransportTest extends PHPUnit_Framework_TestCase {
         $this->assertEquals('Fetched Mock File: mock/sendTransportContents.xml', $check[7]);
     }
 
-    public function testSendTransportContentsWithPartneredLtl() {
+    public function testSendTransportContentsWithPartneredLtl()
+    {
         resetLog();
         $this->object->setMock(true, 'sendTransportContents.xml');
 
@@ -684,7 +704,8 @@ class AmazonTransportTest extends PHPUnit_Framework_TestCase {
         $this->assertEquals('Fetched Mock File: mock/sendTransportContents.xml', $check[8]);
     }
 
-    public function testSendTransportContentsWithNonPartneredLtl() {
+    public function testSendTransportContentsWithNonPartneredLtl()
+    {
         resetLog();
         $this->object->setMock(true, 'sendTransportContents.xml');
 
@@ -715,7 +736,8 @@ class AmazonTransportTest extends PHPUnit_Framework_TestCase {
         $this->assertEquals('Fetched Mock File: mock/sendTransportContents.xml', $check[7]);
     }
 
-    public function testEstimateTransport() {
+    public function testEstimateTransport()
+    {
         resetLog();
         $this->object->setMock(true, 'estimateTransport.xml');
 
@@ -732,7 +754,8 @@ class AmazonTransportTest extends PHPUnit_Framework_TestCase {
         $this->assertEquals('Fetched Mock File: mock/estimateTransport.xml', $check[3]);
     }
 
-    public function testConfirmTransport() {
+    public function testConfirmTransport()
+    {
         resetLog();
         $this->object->setMock(true, 'confirmTransport.xml');
 
@@ -749,7 +772,8 @@ class AmazonTransportTest extends PHPUnit_Framework_TestCase {
         $this->assertEquals('Fetched Mock File: mock/confirmTransport.xml', $check[3]);
     }
 
-    public function testVoidTransport() {
+    public function testVoidTransport()
+    {
         resetLog();
         $this->object->setMock(true, 'voidTransport.xml');
 
@@ -766,7 +790,8 @@ class AmazonTransportTest extends PHPUnit_Framework_TestCase {
         $this->assertEquals('Fetched Mock File: mock/voidTransport.xml', $check[3]);
     }
 
-    public function testFetchTransportSpPartnered() {
+    public function testFetchTransportSpPartnered()
+    {
         resetLog();
         $this->object->setMock(true, 'fetchTransportContentSpPartnered.xml');
 
@@ -783,7 +808,8 @@ class AmazonTransportTest extends PHPUnit_Framework_TestCase {
         return $this->object;
     }
 
-    public function testFetchTransportSpNonPartnered() {
+    public function testFetchTransportSpNonPartnered()
+    {
         resetLog();
         $this->object->setMock(true, 'fetchTransportContentSpNonPartnered.xml');
 
@@ -800,7 +826,8 @@ class AmazonTransportTest extends PHPUnit_Framework_TestCase {
         return $this->object;
     }
 
-    public function testFetchTransportLtlPartnered() {
+    public function testFetchTransportLtlPartnered()
+    {
         resetLog();
         $this->object->setMock(true, 'fetchTransportContentLtlPartnered.xml');
 
@@ -817,7 +844,8 @@ class AmazonTransportTest extends PHPUnit_Framework_TestCase {
         return $this->object;
     }
 
-    public function testFetchTransportLtlNonPartnered() {
+    public function testFetchTransportLtlNonPartnered()
+    {
         resetLog();
         $this->object->setMock(true, 'fetchTransportContentLtlNonPartnered.xml');
 
@@ -844,7 +872,8 @@ class AmazonTransportTest extends PHPUnit_Framework_TestCase {
      * @param AmazonTransport $pltl partnered LTL
      * @param AmazonTransport $nltl non-partnered LTL
      */
-    public function testGetContentInfo($psp, $nsp, $pltl, $nltl) {
+    public function testGetContentInfo($psp, $nsp, $pltl, $nltl)
+    {
         foreach (array($psp, $nsp, $pltl, $nltl) as $o) {
             $info = $o->getContentInfo();
             $this->assertInternalType('array', $info);
@@ -874,7 +903,8 @@ class AmazonTransportTest extends PHPUnit_Framework_TestCase {
      * @param AmazonTransport $pltl partnered LTL
      * @param AmazonTransport $nltl non-partnered LTL
      */
-    public function testGetContentDetails($psp, $nsp, $pltl, $nltl) {
+    public function testGetContentDetails($psp, $nsp, $pltl, $nltl)
+    {
         $pspDetails = $psp->getContentDetails();
         $nspDetails = $nsp->getContentDetails();
         $pltlDetails = $pltl->getContentDetails();
@@ -947,7 +977,8 @@ class AmazonTransportTest extends PHPUnit_Framework_TestCase {
      * @param AmazonTransport $pltl partnered LTL
      * @param AmazonTransport $nltl non-partnered LTL
      */
-    public function testGetSellerId($psp, $nsp, $pltl, $nltl) {
+    public function testGetSellerId($psp, $nsp, $pltl, $nltl)
+    {
         $this->assertEquals('A135KKEKWF1J56', $psp->getSellerId());
         $this->assertEquals('A995KKEKWF1J56', $nsp->getSellerId());
         $this->assertEquals('A123KKEKWF1J56', $pltl->getSellerId());
@@ -966,7 +997,8 @@ class AmazonTransportTest extends PHPUnit_Framework_TestCase {
      * @param AmazonTransport $pltl partnered LTL
      * @param AmazonTransport $nltl non-partnered LTL
      */
-    public function testGetShipmentId($psp, $nsp, $pltl, $nltl) {
+    public function testGetShipmentId($psp, $nsp, $pltl, $nltl)
+    {
         $this->assertEquals('FBAQF72K', $psp->getShipmentId());
         $this->assertEquals('FBAQ6QBP', $nsp->getShipmentId());
         $this->assertEquals('FBAQFCQC', $pltl->getShipmentId());
@@ -985,7 +1017,8 @@ class AmazonTransportTest extends PHPUnit_Framework_TestCase {
      * @param AmazonTransport $pltl partnered LTL
      * @param AmazonTransport $nltl non-partnered LTL
      */
-    public function testGetIsPartnered($psp, $nsp, $pltl, $nltl) {
+    public function testGetIsPartnered($psp, $nsp, $pltl, $nltl)
+    {
         $this->assertEquals('true', $psp->getIsPartnered());
         $this->assertEquals('false', $nsp->getIsPartnered());
         $this->assertEquals('true', $pltl->getIsPartnered());
@@ -1004,7 +1037,8 @@ class AmazonTransportTest extends PHPUnit_Framework_TestCase {
      * @param AmazonTransport $pltl partnered LTL
      * @param AmazonTransport $nltl non-partnered LTL
      */
-    public function testGetShipmentType($psp, $nsp, $pltl, $nltl) {
+    public function testGetShipmentType($psp, $nsp, $pltl, $nltl)
+    {
         $this->assertEquals('SP', $psp->getShipmentType());
         $this->assertEquals('SP', $nsp->getShipmentType());
         $this->assertEquals('LTL', $pltl->getShipmentType());
@@ -1023,7 +1057,8 @@ class AmazonTransportTest extends PHPUnit_Framework_TestCase {
      * @param AmazonTransport $pltl partnered LTL
      * @param AmazonTransport $nltl non-partnered LTL
      */
-    public function testGetPackageList($psp, $nsp, $pltl, $nltl) {
+    public function testGetPackageList($psp, $nsp, $pltl, $nltl)
+    {
         $plist = $psp->getPackageList();
         $nlist = $nsp->getPackageList();
         $this->assertInternalType('array', $plist);
@@ -1076,7 +1111,8 @@ class AmazonTransportTest extends PHPUnit_Framework_TestCase {
      * @param AmazonTransport $pltl partnered LTL
      * @param AmazonTransport $nltl non-partnered LTL
      */
-    public function testGetPartneredEstimate($psp, $nsp, $pltl, $nltl) {
+    public function testGetPartneredEstimate($psp, $nsp, $pltl, $nltl)
+    {
         $list = $psp->getPartneredEstimate();
         $this->assertInternalType('array', $list);
 
@@ -1106,7 +1142,8 @@ class AmazonTransportTest extends PHPUnit_Framework_TestCase {
      * @param AmazonTransport $pltl partnered LTL
      * @param AmazonTransport $nltl non-partnered LTL
      */
-    public function testGetCarrier($psp, $nsp, $pltl, $nltl) {
+    public function testGetCarrier($psp, $nsp, $pltl, $nltl)
+    {
         $this->assertEquals('ABF FREIGHT SYSTEM INC', $pltl->getCarrier());
         $this->assertEquals('ABF FREIGHT SYSTEM INC', $nltl->getCarrier());
 
@@ -1126,7 +1163,8 @@ class AmazonTransportTest extends PHPUnit_Framework_TestCase {
      * @param AmazonTransport $pltl partnered LTL
      * @param AmazonTransport $nltl non-partnered LTL
      */
-    public function testGetProNumber($psp, $nsp, $pltl, $nltl) {
+    public function testGetProNumber($psp, $nsp, $pltl, $nltl)
+    {
         $this->assertEquals('123456', $nltl->getProNumber());
 
         //not set for these objects
@@ -1146,7 +1184,8 @@ class AmazonTransportTest extends PHPUnit_Framework_TestCase {
      * @param AmazonTransport $pltl partnered LTL
      * @param AmazonTransport $nltl non-partnered LTL
      */
-    public function testGetContact($psp, $nsp, $pltl, $nltl) {
+    public function testGetContact($psp, $nsp, $pltl, $nltl)
+    {
         $list = $pltl->getContact();
         $this->assertInternalType('array', $list);
 
@@ -1176,7 +1215,8 @@ class AmazonTransportTest extends PHPUnit_Framework_TestCase {
      * @param AmazonTransport $pltl partnered LTL
      * @param AmazonTransport $nltl non-partnered LTL
      */
-    public function testGetBoxCount($psp, $nsp, $pltl, $nltl) {
+    public function testGetBoxCount($psp, $nsp, $pltl, $nltl)
+    {
         $this->assertEquals('12', $pltl->getBoxCount());
 
         //not set for these objects
@@ -1196,7 +1236,8 @@ class AmazonTransportTest extends PHPUnit_Framework_TestCase {
      * @param AmazonTransport $pltl partnered LTL
      * @param AmazonTransport $nltl non-partnered LTL
      */
-    public function testGetFreightClass($psp, $nsp, $pltl, $nltl) {
+    public function testGetFreightClass($psp, $nsp, $pltl, $nltl)
+    {
         $this->assertEquals('50', $pltl->getFreightClass());
 
         //not set for these objects
@@ -1216,7 +1257,8 @@ class AmazonTransportTest extends PHPUnit_Framework_TestCase {
      * @param AmazonTransport $pltl partnered LTL
      * @param AmazonTransport $nltl non-partnered LTL
      */
-    public function testGetReadyDate($psp, $nsp, $pltl, $nltl) {
+    public function testGetReadyDate($psp, $nsp, $pltl, $nltl)
+    {
         $this->assertEquals('2012-12-21', $pltl->getReadyDate());
 
         //not set for these objects
@@ -1236,7 +1278,8 @@ class AmazonTransportTest extends PHPUnit_Framework_TestCase {
      * @param AmazonTransport $pltl partnered LTL
      * @param AmazonTransport $nltl non-partnered LTL
      */
-    public function testGetPalletList($psp, $nsp, $pltl, $nltl) {
+    public function testGetPalletList($psp, $nsp, $pltl, $nltl)
+    {
         $list = $pltl->getPalletList();
         $this->assertInternalType('array', $list);
         $this->assertCount(2, $list);
@@ -1275,7 +1318,8 @@ class AmazonTransportTest extends PHPUnit_Framework_TestCase {
      * @param AmazonTransport $pltl partnered LTL
      * @param AmazonTransport $nltl non-partnered LTL
      */
-    public function testGetTotalWeight($psp, $nsp, $pltl, $nltl) {
+    public function testGetTotalWeight($psp, $nsp, $pltl, $nltl)
+    {
         $weight = $pltl->getTotalWeight();
         $this->assertInternalType('array', $weight);
 
@@ -1304,7 +1348,8 @@ class AmazonTransportTest extends PHPUnit_Framework_TestCase {
      * @param AmazonTransport $pltl partnered LTL
      * @param AmazonTransport $nltl non-partnered LTL
      */
-    public function testGetDeclaredValue($psp, $nsp, $pltl, $nltl) {
+    public function testGetDeclaredValue($psp, $nsp, $pltl, $nltl)
+    {
         $amount = $pltl->getDeclaredValue();
         $this->assertInternalType('array', $amount);
 
@@ -1333,7 +1378,8 @@ class AmazonTransportTest extends PHPUnit_Framework_TestCase {
      * @param AmazonTransport $pltl partnered LTL
      * @param AmazonTransport $nltl non-partnered LTL
      */
-    public function testGetCalculatedValue($psp, $nsp, $pltl, $nltl) {
+    public function testGetCalculatedValue($psp, $nsp, $pltl, $nltl)
+    {
         $amount = $pltl->getCalculatedValue();
         $this->assertInternalType('array', $amount);
 
@@ -1362,7 +1408,8 @@ class AmazonTransportTest extends PHPUnit_Framework_TestCase {
      * @param AmazonTransport $pltl partnered LTL
      * @param AmazonTransport $nltl non-partnered LTL
      */
-    public function testGetPickupDate($psp, $nsp, $pltl, $nltl) {
+    public function testGetPickupDate($psp, $nsp, $pltl, $nltl)
+    {
         $this->assertEquals('2013-08-10T00:25:05.650Z', $pltl->getPickupDate());
 
         //not set for these objects
@@ -1382,7 +1429,8 @@ class AmazonTransportTest extends PHPUnit_Framework_TestCase {
      * @param AmazonTransport $pltl partnered LTL
      * @param AmazonTransport $nltl non-partnered LTL
      */
-    public function testGetDeliveryDate($psp, $nsp, $pltl, $nltl) {
+    public function testGetDeliveryDate($psp, $nsp, $pltl, $nltl)
+    {
         $this->assertEquals('2013-08-15T00:25:05.650Z', $pltl->getDeliveryDate());
 
         //not set for these objects
@@ -1402,7 +1450,8 @@ class AmazonTransportTest extends PHPUnit_Framework_TestCase {
      * @param AmazonTransport $pltl partnered LTL
      * @param AmazonTransport $nltl non-partnered LTL
      */
-    public function testGetReferenceId($psp, $nsp, $pltl, $nltl) {
+    public function testGetReferenceId($psp, $nsp, $pltl, $nltl)
+    {
         $this->assertEquals('123ABC789', $pltl->getReferenceId());
 
         //not set for these objects
@@ -1422,7 +1471,8 @@ class AmazonTransportTest extends PHPUnit_Framework_TestCase {
      * @param AmazonTransport $pltl partnered LTL
      * @param AmazonTransport $nltl non-partnered LTL
      */
-    public function testGetIsBillOfLadingAvailable($psp, $nsp, $pltl, $nltl) {
+    public function testGetIsBillOfLadingAvailable($psp, $nsp, $pltl, $nltl)
+    {
         $this->assertEquals('false', $pltl->getIsBillOfLadingAvailable());
 
         //not set for these objects
@@ -1438,7 +1488,8 @@ class AmazonTransportTest extends PHPUnit_Framework_TestCase {
      * @param boolean $p <p>partnered or not</p>
      * @return string|boolean parameter prefix or <b>FALSE</b> if it could not be determined
      */
-    private function findOp($t, $p) {
+    private function findOp($t, $p)
+    {
         if (!isset($p) || !isset($t)) {
             return false;
         }
@@ -1449,7 +1500,7 @@ class AmazonTransportTest extends PHPUnit_Framework_TestCase {
             } else {
                 return $op . 'NonPartneredSmallParcelData';
             }
-        } else if ($t == 'LTL') {
+        } elseif ($t == 'LTL') {
             if ($p) {
                 return $op . 'PartneredLtlData';
             } else {
@@ -1463,10 +1514,10 @@ class AmazonTransportTest extends PHPUnit_Framework_TestCase {
      * Gives the error message that appears for all parameters that rely on carrier type and partnered.
      * @return string
      */
-    private function getOpError() {
+    private function getOpError()
+    {
         return 'Cannot set transport details without shipment type and partner parameters!';
     }
-
 }
 
 require_once('helperFunctions.php');

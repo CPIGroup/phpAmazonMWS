@@ -1,6 +1,7 @@
 <?php
 
-class AmazonFinancialGroupListTest extends PHPUnit_Framework_TestCase {
+class AmazonFinancialGroupListTest extends PHPUnit_Framework_TestCase
+{
 
     /**
      * @var AmazonFinancialGroupList
@@ -11,19 +12,22 @@ class AmazonFinancialGroupListTest extends PHPUnit_Framework_TestCase {
      * Sets up the fixture, for example, opens a network connection.
      * This method is called before a test is executed.
      */
-    protected function setUp() {
+    protected function setUp()
+    {
         resetLog();
         $this->object = new AmazonFinancialGroupList('testStore', true, null, __DIR__.'/../../test-config.php');
     }
 
-    public function testSetUseToken(){
+    public function testSetUseToken()
+    {
         $this->assertNull($this->object->setUseToken());
         $this->assertNull($this->object->setUseToken(true));
         $this->assertNull($this->object->setUseToken(false));
         $this->assertFalse($this->object->setUseToken('wrong'));
     }
 
-    public function testSetMaxResultsPerPage(){
+    public function testSetMaxResultsPerPage()
+    {
         $this->assertFalse($this->object->setMaxResultsPerPage(null)); //can't be nothing
         $this->assertFalse($this->object->setMaxResultsPerPage(-5)); //too low
         $this->assertFalse($this->object->setMaxResultsPerPage(150)); //too high
@@ -39,7 +43,8 @@ class AmazonFinancialGroupListTest extends PHPUnit_Framework_TestCase {
     /**
     * @return array
     */
-    public function timeProvider() {
+    public function timeProvider()
+    {
         return array(
             array(null, null, false, false), //nothing given, so no change
             array(time(), time(), true, true), //timestamps
@@ -53,7 +58,8 @@ class AmazonFinancialGroupListTest extends PHPUnit_Framework_TestCase {
     /**
      * @dataProvider timeProvider
      */
-    public function testSetTimeLimits($a, $b, $c, $d){
+    public function testSetTimeLimits($a, $b, $c, $d)
+    {
         $try = $this->object->setTimeLimits($a, $b);
         $o = $this->object->getOptions();
         if ($c) {
@@ -77,7 +83,8 @@ class AmazonFinancialGroupListTest extends PHPUnit_Framework_TestCase {
         }
     }
 
-    public function testFetchGroupList() {
+    public function testFetchGroupList()
+    {
         resetLog();
         $this->object->setMock(true, 'fetchFinancialGroups.xml'); //no token
         $this->assertFalse($this->object->fetchGroupList()); //no date yet
@@ -97,7 +104,8 @@ class AmazonFinancialGroupListTest extends PHPUnit_Framework_TestCase {
         return $this->object;
     }
 
-    public function testFetchGroupListToken1() {
+    public function testFetchGroupListToken1()
+    {
         resetLog();
         $this->object->setMock(true, 'fetchFinancialGroupsToken.xml');
         //without using token
@@ -115,7 +123,8 @@ class AmazonFinancialGroupListTest extends PHPUnit_Framework_TestCase {
         $this->assertCount(1, $r);
     }
 
-    public function testFetchGroupListToken2() {
+    public function testFetchGroupListToken2()
+    {
         resetLog();
         $this->object->setMock(true, array('fetchFinancialGroupsToken.xml', 'fetchFinancialGroupsToken2.xml'));
 
@@ -142,7 +151,8 @@ class AmazonFinancialGroupListTest extends PHPUnit_Framework_TestCase {
      * @param AmazonFinancialGroupList $o
      * @depends testFetchGroupList
      */
-    public function testGetGroups($o) {
+    public function testGetGroups($o)
+    {
         $list = $o->getGroups();
         $this->assertInternalType('array', $list);
         $this->assertCount(2, $list);
@@ -178,7 +188,8 @@ class AmazonFinancialGroupListTest extends PHPUnit_Framework_TestCase {
      * @param AmazonFinancialGroupList $o
      * @depends testFetchGroupList
      */
-    public function testGetGroupId($o) {
+    public function testGetGroupId($o)
+    {
         $this->assertEquals('22YgYW55IGNhcm5hbCBwbGVhEXAMPLE', $o->getGroupId(0));
         $this->assertEquals('22Y99995IGNhcm5hbANOTHEREXAMPLE', $o->getGroupId(1));
         $this->assertEquals($o->getGroupId(0), $o->getGroupId());
@@ -190,7 +201,8 @@ class AmazonFinancialGroupListTest extends PHPUnit_Framework_TestCase {
      * @param AmazonFinancialGroupList $o
      * @depends testFetchGroupList
      */
-    public function testGetProcessingStatus($o) {
+    public function testGetProcessingStatus($o)
+    {
         $this->assertEquals('Closed', $o->getProcessingStatus(0));
         $this->assertEquals('Closed2', $o->getProcessingStatus(1));
         $this->assertEquals($o->getProcessingStatus(0), $o->getProcessingStatus());
@@ -202,7 +214,8 @@ class AmazonFinancialGroupListTest extends PHPUnit_Framework_TestCase {
      * @param AmazonFinancialGroupList $o
      * @depends testFetchGroupList
      */
-    public function testGetTransferStatus($o) {
+    public function testGetTransferStatus($o)
+    {
         $this->assertEquals('Successful', $o->getTransferStatus(0));
         $this->assertEquals('Successful2', $o->getTransferStatus(1));
         $this->assertEquals($o->getTransferStatus(0), $o->getTransferStatus());
@@ -214,7 +227,8 @@ class AmazonFinancialGroupListTest extends PHPUnit_Framework_TestCase {
      * @param AmazonFinancialGroupList $o
      * @depends testFetchGroupList
      */
-    public function testGetOriginalTotal($o) {
+    public function testGetOriginalTotal($o)
+    {
         $x0 = array();
         $x0['Amount'] = '19.00';
         $x0['CurrencyCode'] = 'USD';
@@ -234,7 +248,8 @@ class AmazonFinancialGroupListTest extends PHPUnit_Framework_TestCase {
      * @param AmazonFinancialGroupList $o
      * @depends testFetchGroupList
      */
-    public function testGetConvertedTotal($o) {
+    public function testGetConvertedTotal($o)
+    {
         $x0 = array();
         $x0['Amount'] = '19.50';
         $x0['CurrencyCode'] = 'USD';
@@ -254,7 +269,8 @@ class AmazonFinancialGroupListTest extends PHPUnit_Framework_TestCase {
      * @param AmazonFinancialGroupList $o
      * @depends testFetchGroupList
      */
-    public function testGetTransferDate($o) {
+    public function testGetTransferDate($o)
+    {
         $this->assertEquals('2014-09-09T01:30:00.000-06:00', $o->getTransferDate(0));
         $this->assertEquals('2014-10-09T01:30:00.000-06:00', $o->getTransferDate(1));
         $this->assertEquals($o->getTransferDate(0), $o->getTransferDate());
@@ -266,7 +282,8 @@ class AmazonFinancialGroupListTest extends PHPUnit_Framework_TestCase {
      * @param AmazonFinancialGroupList $o
      * @depends testFetchGroupList
      */
-    public function testGetTraceId($o) {
+    public function testGetTraceId($o)
+    {
         $this->assertEquals('128311029381HSADJEXAMPLE', $o->getTraceId(0));
         $this->assertEquals('128999929381HADJEXAMPLE2', $o->getTraceId(1));
         $this->assertEquals($o->getTraceId(0), $o->getTraceId());
@@ -278,7 +295,8 @@ class AmazonFinancialGroupListTest extends PHPUnit_Framework_TestCase {
      * @param AmazonFinancialGroupList $o
      * @depends testFetchGroupList
      */
-    public function testGetAccountTail($o) {
+    public function testGetAccountTail($o)
+    {
         $this->assertEquals('1212', $o->getAccountTail(0));
         $this->assertEquals('1313', $o->getAccountTail(1));
         $this->assertEquals($o->getAccountTail(0), $o->getAccountTail());
@@ -290,7 +308,8 @@ class AmazonFinancialGroupListTest extends PHPUnit_Framework_TestCase {
      * @param AmazonFinancialGroupList $o
      * @depends testFetchGroupList
      */
-    public function testGetBeginningBalance($o) {
+    public function testGetBeginningBalance($o)
+    {
         $x0 = array();
         $x0['Amount'] = '0.00';
         $x0['CurrencyCode'] = 'USD';
@@ -310,7 +329,8 @@ class AmazonFinancialGroupListTest extends PHPUnit_Framework_TestCase {
      * @param AmazonFinancialGroupList $o
      * @depends testFetchGroupList
      */
-    public function testGetStartDate($o) {
+    public function testGetStartDate($o)
+    {
         $this->assertEquals('2014-09-01T01:30:00.000-06:00', $o->getStartDate(0));
         $this->assertEquals('2014-10-01T01:30:00.000-06:00', $o->getStartDate(1));
         $this->assertEquals($o->getStartDate(0), $o->getStartDate());
@@ -322,14 +342,14 @@ class AmazonFinancialGroupListTest extends PHPUnit_Framework_TestCase {
      * @param AmazonFinancialGroupList $o
      * @depends testFetchGroupList
      */
-    public function testGetEndDate($o) {
+    public function testGetEndDate($o)
+    {
         $this->assertEquals('2014-09-09T01:30:00.000-06:00', $o->getEndDate(0));
         $this->assertEquals('2014-10-09T01:30:00.000-06:00', $o->getEndDate(1));
         $this->assertEquals($o->getEndDate(0), $o->getEndDate());
         //not fetched yet for this object
         $this->assertFalse($this->object->getEndDate());
     }
-
 }
 
 require_once('helperFunctions.php');

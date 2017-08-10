@@ -20,7 +20,8 @@ if ($list) {
  * This function will retrieve a list of all items with quantity that was adjusted within the past 24 hours.
  * The entire list of items is returned, with each item contained in an array.
  */
-function getAmazonSupply(){
+function getAmazonSupply()
+{
     require('../includes/classes.php'); //autoload classes, not needed if composer is being used
     try {
         $obj = new AmazonInventoryList("myStore"); //store name matches the array key in the config file
@@ -32,6 +33,3 @@ function getAmazonSupply(){
         echo 'There was a problem with the Amazon library. Error: '.$ex->getMessage();
     }
 }
-
-
-?>

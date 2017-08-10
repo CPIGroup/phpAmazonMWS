@@ -25,7 +25,8 @@
  * Any carriers that are temporarily unavailable will be stored in separate lists
  * based on the reason for why the carrier is unavailable.
  */
-class AmazonMerchantServiceList extends AmazonMerchantCore implements Iterator{
+class AmazonMerchantServiceList extends AmazonMerchantCore implements Iterator
+{
     protected $serviceList;
     protected $downList;
     protected $termsList;
@@ -44,7 +45,8 @@ class AmazonMerchantServiceList extends AmazonMerchantCore implements Iterator{
      * @param array|string $m [optional] <p>The files (or file) to use in Mock Mode.</p>
      * @param string $config [optional] <p>An alternate config file to set. Used for testing.</p>
      */
-    public function __construct($s = null, $mock = false, $m = null, $config = null){
+    public function __construct($s = null, $mock = false, $m = null, $config = null)
+    {
         parent::__construct($s, $mock, $m, $config);
 
         $this->options['Action'] = 'GetEligibleShippingServices';
@@ -58,11 +60,12 @@ class AmazonMerchantServiceList extends AmazonMerchantCore implements Iterator{
      * @param string $id <p>Amazon Order ID</p>
      * @return boolean <b>FALSE</b> if improper input
      */
-    public function setOrderId($id) {
-        if (is_string($id)){
+    public function setOrderId($id)
+    {
+        if (is_string($id)) {
             $this->options['ShipmentRequestDetails.AmazonOrderId'] = $id;
         } else {
-            $this->log("Tried to set AmazonOrderId to invalid value",'Warning');
+            $this->log("Tried to set AmazonOrderId to invalid value", 'Warning');
             return false;
         }
     }
@@ -74,11 +77,12 @@ class AmazonMerchantServiceList extends AmazonMerchantCore implements Iterator{
      * @param string $id <p>Maximum 64 characters.</p>
      * @return boolean <b>FALSE</b> if improper input
      */
-    public function setSellerOrderId($id) {
-        if (is_string($id) || is_numeric($id)){
+    public function setSellerOrderId($id)
+    {
+        if (is_string($id) || is_numeric($id)) {
             $this->options['ShipmentRequestDetails.SellerOrderId'] = $id;
         } else {
-            $this->log("Tried to set SellerOrderId to invalid value",'Warning');
+            $this->log("Tried to set SellerOrderId to invalid value", 'Warning');
             return false;
         }
     }
@@ -96,21 +100,22 @@ class AmazonMerchantServiceList extends AmazonMerchantCore implements Iterator{
      * @param array $a <p>See above.</p>
      * @return boolean <b>FALSE</b> if improper input
      */
-    public function setItems($a){
-        if (is_null($a) || is_string($a) || !$a){
-            $this->log("Tried to set Items to invalid values",'Warning');
+    public function setItems($a)
+    {
+        if (is_null($a) || is_string($a) || !$a) {
+            $this->log("Tried to set Items to invalid values", 'Warning');
             return false;
         }
         $this->resetItems();
         $i = 1;
-        foreach ($a as $x){
-            if (is_array($x) && isset($x['OrderItemId']) && isset($x['Quantity'])){
+        foreach ($a as $x) {
+            if (is_array($x) && isset($x['OrderItemId']) && isset($x['Quantity'])) {
                 $this->options['ShipmentRequestDetails.ItemList.Item.'.$i.'.OrderItemId'] = $x['OrderItemId'];
                 $this->options['ShipmentRequestDetails.ItemList.Item.'.$i.'.Quantity'] = $x['Quantity'];
                 $i++;
             } else {
                 $this->resetItems();
-                $this->log("Tried to set Items with invalid array",'Warning');
+                $this->log("Tried to set Items with invalid array", 'Warning');
                 return false;
             }
         }
@@ -122,9 +127,10 @@ class AmazonMerchantServiceList extends AmazonMerchantCore implements Iterator{
      * Since the list of items is a required parameter, these options should not be removed
      * without replacing them, so this method is not public.
      */
-    protected function resetItems(){
-        foreach($this->options as $op=>$junk){
-            if(preg_match("#ShipmentRequestDetails.ItemList#",$op)){
+    protected function resetItems()
+    {
+        foreach ($this->options as $op=>$junk) {
+            if (preg_match("#ShipmentRequestDetails.ItemList#", $op)) {
                 unset($this->options[$op]);
             }
         }
@@ -152,26 +158,27 @@ class AmazonMerchantServiceList extends AmazonMerchantCore implements Iterator{
      * @param array $a <p>See above.</p>
      * @return boolean <b>FALSE</b> if improper input
      */
-    public function setAddress($a){
-        if (empty($a) || !is_array($a)){
-            $this->log("Tried to set ShipFromAddress to invalid values",'Warning');
+    public function setAddress($a)
+    {
+        if (empty($a) || !is_array($a)) {
+            $this->log("Tried to set ShipFromAddress to invalid values", 'Warning');
             return false;
         }
         $this->resetAddress();
         $this->options['ShipmentRequestDetails.ShipFromAddress.Name'] = $a['Name'];
         $this->options['ShipmentRequestDetails.ShipFromAddress.AddressLine1'] = $a['AddressLine1'];
-        if (isset($a['AddressLine2'])){
+        if (isset($a['AddressLine2'])) {
             $this->options['ShipmentRequestDetails.ShipFromAddress.AddressLine2'] = $a['AddressLine2'];
         }
-        if (isset($a['AddressLine3'])){
+        if (isset($a['AddressLine3'])) {
             $this->options['ShipmentRequestDetails.ShipFromAddress.AddressLine3'] = $a['AddressLine3'];
         }
-        if (isset($a['DistrictOrCounty'])){
+        if (isset($a['DistrictOrCounty'])) {
             $this->options['ShipmentRequestDetails.ShipFromAddress.DistrictOrCounty'] = $a['DistrictOrCounty'];
         }
         $this->options['ShipmentRequestDetails.ShipFromAddress.Email'] = $a['Email'];
         $this->options['ShipmentRequestDetails.ShipFromAddress.City'] = $a['City'];
-        if (isset($a['StateOrProvinceCode'])){
+        if (isset($a['StateOrProvinceCode'])) {
             $this->options['ShipmentRequestDetails.ShipFromAddress.StateOrProvinceCode'] = $a['StateOrProvinceCode'];
         }
         $this->options['ShipmentRequestDetails.ShipFromAddress.PostalCode'] = $a['PostalCode'];
@@ -185,9 +192,10 @@ class AmazonMerchantServiceList extends AmazonMerchantCore implements Iterator{
      * Since address is a required parameter, these options should not be removed
      * without replacing them, so this method is not public.
      */
-    protected function resetAddress(){
-        foreach($this->options as $op=>$junk){
-            if(preg_match("#ShipmentRequestDetails.ShipFromAddress#",$op)){
+    protected function resetAddress()
+    {
+        foreach ($this->options as $op=>$junk) {
+            if (preg_match("#ShipmentRequestDetails.ShipFromAddress#", $op)) {
                 unset($this->options[$op]);
             }
         }
@@ -209,9 +217,10 @@ class AmazonMerchantServiceList extends AmazonMerchantCore implements Iterator{
      * @param array $d <p>See above.</p>
      * @return boolean <b>FALSE</b> if improper input
      */
-    public function setPackageDimensions($d) {
-        if (empty($d) || !is_array($d)){
-            $this->log("Tried to set PackageDimensions to invalid values",'Warning');
+    public function setPackageDimensions($d)
+    {
+        if (empty($d) || !is_array($d)) {
+            $this->log("Tried to set PackageDimensions to invalid values", 'Warning');
             return false;
         }
         $this->resetPackageDimensions();
@@ -232,9 +241,10 @@ class AmazonMerchantServiceList extends AmazonMerchantCore implements Iterator{
      * See the comment inside the function for the complete list.</p>
      * @return boolean <b>FALSE</b> if improper input
      */
-    public function setPredefinedPackage($s) {
+    public function setPredefinedPackage($s)
+    {
         $this->resetPackageDimensions();
-        if (is_string($s) && $s){
+        if (is_string($s) && $s) {
             $this->options['ShipmentRequestDetails.PackageDimensions.PredefinedPackageDimensions'] = $s;
         } else {
             return false;
@@ -300,9 +310,10 @@ class AmazonMerchantServiceList extends AmazonMerchantCore implements Iterator{
      * Since dimensions are a required parameter, these options should not be removed
      * without replacing them, so this method is not public.
      */
-    protected function resetPackageDimensions(){
-        foreach($this->options as $op=>$junk){
-            if(preg_match("#ShipmentRequestDetails.PackageDimensions#",$op)){
+    protected function resetPackageDimensions()
+    {
+        foreach ($this->options as $op=>$junk) {
+            if (preg_match("#ShipmentRequestDetails.PackageDimensions#", $op)) {
                 unset($this->options[$op]);
             }
         }
@@ -316,8 +327,9 @@ class AmazonMerchantServiceList extends AmazonMerchantCore implements Iterator{
      * @param string $u <p>"oz" for ounces, or "g" for grams, defaults to grams</p>
      * @return boolean <b>FALSE</b> if improper input
      */
-    public function setWeight($v, $u = 'g') {
-        if (!empty($v) && !empty($u) && is_numeric($v) && ($u == 'oz' || $u == 'g')){
+    public function setWeight($v, $u = 'g')
+    {
+        if (!empty($v) && !empty($u) && is_numeric($v) && ($u == 'oz' || $u == 'g')) {
             $this->options['ShipmentRequestDetails.Weight.Value'] = $v;
             $this->options['ShipmentRequestDetails.Weight.Unit'] = $u;
         } else {
@@ -334,10 +346,11 @@ class AmazonMerchantServiceList extends AmazonMerchantCore implements Iterator{
      * @param string $d <p>A time string</p>
      * @return boolean <b>FALSE</b> if improper input
      */
-    public function setMaxArrivalDate($d) {
-        try{
+    public function setMaxArrivalDate($d)
+    {
+        try {
             $this->options['ShipmentRequestDetails.MustArriveByDate'] = $this->genTime($d);
-        } catch (Exception $e){
+        } catch (Exception $e) {
             unset($this->options['ShipmentRequestDetails.MustArriveByDate']);
             $this->log('Error: '.$e->getMessage(), 'Warning');
             return false;
@@ -351,10 +364,11 @@ class AmazonMerchantServiceList extends AmazonMerchantCore implements Iterator{
      * @param string $d <p>A time string</p>
      * @return boolean <b>FALSE</b> if improper input
      */
-    public function setShipDate($d) {
-        try{
+    public function setShipDate($d)
+    {
+        try {
             $this->options['ShipmentRequestDetails.ShipDate'] = $this->genTime($d);
-        } catch (Exception $e){
+        } catch (Exception $e) {
             unset($this->options['ShipmentRequestDetails.ShipDate']);
             $this->log('Error: '.$e->getMessage(), 'Warning');
             return false;
@@ -372,17 +386,18 @@ class AmazonMerchantServiceList extends AmazonMerchantCore implements Iterator{
      *      or "NoTracking"</p>
      * @return boolean <b>FALSE</b> if improper input
      */
-    public function setDeliveryOption($s) {
+    public function setDeliveryOption($s)
+    {
         $options = array(
             'DeliveryConfirmationWithAdultSignature',
             'DeliveryConfirmationWithSignature',
             'DeliveryConfirmationWithoutSignature',
             'NoTracking'
         );
-        if (in_array($s, $options)){
+        if (in_array($s, $options)) {
             $this->options['ShipmentRequestDetails.ShippingServiceOptions.DeliveryExperience'] = $s;
         } else {
-            $this->log("Tried to set DeliveryExperience to invalid value",'Warning');
+            $this->log("Tried to set DeliveryExperience to invalid value", 'Warning');
             return false;
         }
     }
@@ -397,8 +412,9 @@ class AmazonMerchantServiceList extends AmazonMerchantCore implements Iterator{
      * @param string $c <p>ISO 4217 currency code (ex: USD)</p>
      * @return boolean <b>FALSE</b> if improper input
      */
-    public function setDeclaredValue($v, $c) {
-        if (!empty($v) && !empty($c) && is_numeric($v) && is_string($c) && !is_numeric($c)){
+    public function setDeclaredValue($v, $c)
+    {
+        if (!empty($v) && !empty($c) && is_numeric($v) && is_string($c) && !is_numeric($c)) {
             $this->options['ShipmentRequestDetails.ShippingServiceOptions.DeclaredValue.Amount'] = $v;
             $this->options['ShipmentRequestDetails.ShippingServiceOptions.DeclaredValue.CurrencyCode'] = $c;
         } else {
@@ -414,7 +430,8 @@ class AmazonMerchantServiceList extends AmazonMerchantCore implements Iterator{
      * @param boolean $b [optional] <p>Defaults to TRUE</p>
      * @return boolean <b>FALSE</b> if improper input
      */
-    public function setCarrierWillPickUp($b = true) {
+    public function setCarrierWillPickUp($b = true)
+    {
         if ($b) {
             $v = 'true';
         } else {
@@ -427,12 +444,13 @@ class AmazonMerchantServiceList extends AmazonMerchantCore implements Iterator{
      * Sets all of the same Shipment details used by the given Amazon Merchant Shipment Creator object.
      * @param AmazonMerchantShipmentCreator $obj <p>Shipment Creator object with options already set</p>
      */
-    public function setDetailsByCreator(AmazonMerchantShipmentCreator $obj) {
+    public function setDetailsByCreator(AmazonMerchantShipmentCreator $obj)
+    {
         $this->resetDetails();
 
         $options = $obj->getOptions();
-        foreach($options as $op=>$val){
-            if(preg_match("#ShipmentRequestDetails#",$op)){
+        foreach ($options as $op=>$val) {
+            if (preg_match("#ShipmentRequestDetails#", $op)) {
                 $this->options[$op] = $val;
             }
         }
@@ -444,9 +462,10 @@ class AmazonMerchantServiceList extends AmazonMerchantCore implements Iterator{
      * Since shipment details are required parameters, these options should not be removed
      * without replacing them, so this method is not public.
      */
-    protected function resetDetails() {
-        foreach($this->options as $op=>$junk){
-            if(preg_match("#ShipmentRequestDetails#",$op)){
+    protected function resetDetails()
+    {
+        foreach ($this->options as $op=>$junk) {
+            if (preg_match("#ShipmentRequestDetails#", $op)) {
                 unset($this->options[$op]);
             }
         }
@@ -462,34 +481,35 @@ class AmazonMerchantServiceList extends AmazonMerchantCore implements Iterator{
      * package dimensions, shipment weight, delivery experience option, and carrier pick-up option.
      * @return boolean <b>FALSE</b> if something goes wrong
      */
-    public function fetchServices(){
-        if (!array_key_exists('ShipmentRequestDetails.AmazonOrderId',$this->options)){
-            $this->log("Amazon Order ID must be set in order to fetch a service list",'Warning');
+    public function fetchServices()
+    {
+        if (!array_key_exists('ShipmentRequestDetails.AmazonOrderId', $this->options)) {
+            $this->log("Amazon Order ID must be set in order to fetch a service list", 'Warning');
             return false;
         }
-        if (!array_key_exists('ShipmentRequestDetails.ItemList.Item.1.OrderItemId',$this->options)){
-            $this->log("Items must be set in order to fetch a service list",'Warning');
+        if (!array_key_exists('ShipmentRequestDetails.ItemList.Item.1.OrderItemId', $this->options)) {
+            $this->log("Items must be set in order to fetch a service list", 'Warning');
             return false;
         }
-        if (!array_key_exists('ShipmentRequestDetails.ShipFromAddress.Name',$this->options)){
-            $this->log("Shipping Address must be set in order to fetch a service list",'Warning');
+        if (!array_key_exists('ShipmentRequestDetails.ShipFromAddress.Name', $this->options)) {
+            $this->log("Shipping Address must be set in order to fetch a service list", 'Warning');
             return false;
         }
-        if (!array_key_exists('ShipmentRequestDetails.PackageDimensions.Length',$this->options) &&
-                !array_key_exists('ShipmentRequestDetails.PackageDimensions.PredefinedPackageDimensions',$this->options)){
-            $this->log("Package Dimensions must be set in order to fetch a service list",'Warning');
+        if (!array_key_exists('ShipmentRequestDetails.PackageDimensions.Length', $this->options) &&
+                !array_key_exists('ShipmentRequestDetails.PackageDimensions.PredefinedPackageDimensions', $this->options)) {
+            $this->log("Package Dimensions must be set in order to fetch a service list", 'Warning');
             return false;
         }
-        if (!array_key_exists('ShipmentRequestDetails.Weight.Value',$this->options)){
-            $this->log("Weight must be set in order to fetch a service list",'Warning');
+        if (!array_key_exists('ShipmentRequestDetails.Weight.Value', $this->options)) {
+            $this->log("Weight must be set in order to fetch a service list", 'Warning');
             return false;
         }
-        if (!array_key_exists('ShipmentRequestDetails.ShippingServiceOptions.DeliveryExperience',$this->options)){
-            $this->log("Delivery Experience must be set in order to fetch a service list",'Warning');
+        if (!array_key_exists('ShipmentRequestDetails.ShippingServiceOptions.DeliveryExperience', $this->options)) {
+            $this->log("Delivery Experience must be set in order to fetch a service list", 'Warning');
             return false;
         }
-        if (!array_key_exists('ShipmentRequestDetails.ShippingServiceOptions.CarrierWillPickUp',$this->options)){
-            $this->log("Carrier Pick-Up Option must be set in order to fetch a service list",'Warning');
+        if (!array_key_exists('ShipmentRequestDetails.ShippingServiceOptions.CarrierWillPickUp', $this->options)) {
+            $this->log("Carrier Pick-Up Option must be set in order to fetch a service list", 'Warning');
             return false;
         }
 
@@ -498,12 +518,12 @@ class AmazonMerchantServiceList extends AmazonMerchantCore implements Iterator{
         $query = $this->genQuery();
 
         $path = $this->options['Action'].'Result';
-        if ($this->mockMode){
-           $xml = $this->fetchMockFile()->$path;
+        if ($this->mockMode) {
+            $xml = $this->fetchMockFile()->$path;
         } else {
             $response = $this->sendRequest($url, array('Post'=>$query));
 
-            if (!$this->checkResponse($response)){
+            if (!$this->checkResponse($response)) {
                 return false;
             }
 
@@ -520,17 +540,18 @@ class AmazonMerchantServiceList extends AmazonMerchantCore implements Iterator{
      * @param SimpleXMLElement $xml <p>The XML response from Amazon.</p>
      * @return boolean <b>FALSE</b> if no XML data is found
      */
-    protected function parseXML($xml){
+    protected function parseXML($xml)
+    {
         $this->serviceList = array();
         $this->downList = array();
         $this->termsList = array();
-        if (!$xml){
+        if (!$xml) {
             return false;
         }
         if (isset($xml->ShippingServiceList)) {
             $i = 0;
-            foreach($xml->ShippingServiceList->children() as $key=>$x){
-                if ($key != 'ShippingService'){
+            foreach ($xml->ShippingServiceList->children() as $key=>$x) {
+                if ($key != 'ShippingService') {
                     break;
                 }
 
@@ -559,8 +580,8 @@ class AmazonMerchantServiceList extends AmazonMerchantCore implements Iterator{
         }
         if (isset($xml->TemporarilyUnavailableCarrierList)) {
             $i = 0;
-            foreach($xml->TemporarilyUnavailableCarrierList->children() as $key=>$x){
-                if ($key != 'TemporarilyUnavailableCarrier'){
+            foreach ($xml->TemporarilyUnavailableCarrierList->children() as $key=>$x) {
+                if ($key != 'TemporarilyUnavailableCarrier') {
                     break;
                 }
 
@@ -570,8 +591,8 @@ class AmazonMerchantServiceList extends AmazonMerchantCore implements Iterator{
         }
         if (isset($xml->TermsAndConditionsNotAcceptedCarrierList)) {
             $i = 0;
-            foreach($xml->TermsAndConditionsNotAcceptedCarrierList->children() as $key=>$x){
-                if ($key != 'TermsAndConditionsNotAcceptedCarrier'){
+            foreach ($xml->TermsAndConditionsNotAcceptedCarrierList->children() as $key=>$x) {
+                if ($key != 'TermsAndConditionsNotAcceptedCarrier') {
                     break;
                 }
 
@@ -597,8 +618,9 @@ class AmazonMerchantServiceList extends AmazonMerchantCore implements Iterator{
      * </ul>
      * @return array|boolean multi-dimensional array, or <b>FALSE</b> if list not filled yet
      */
-    public function getServiceList(){
-        if (isset($this->serviceList)){
+    public function getServiceList()
+    {
+        if (isset($this->serviceList)) {
             return $this->serviceList;
         } else {
             return false;
@@ -610,8 +632,9 @@ class AmazonMerchantServiceList extends AmazonMerchantCore implements Iterator{
      * These carriers may become available at a later time or at a later date.
      * @return array|boolean list of strings, or <b>FALSE</b> if list not filled yet
      */
-    public function getUnavailableCarrierList(){
-        if (isset($this->downList)){
+    public function getUnavailableCarrierList()
+    {
+        if (isset($this->downList)) {
             return $this->downList;
         } else {
             return false;
@@ -622,8 +645,9 @@ class AmazonMerchantServiceList extends AmazonMerchantCore implements Iterator{
      * Returns the list of carriers that cannot be used until certain terms and conditions are agreed to.
      * @return array|boolean list of strings, or <b>FALSE</b> if list not filled yet
      */
-    public function getRestrictedCarrierList(){
-        if (isset($this->termsList)){
+    public function getRestrictedCarrierList()
+    {
+        if (isset($this->termsList)) {
             return $this->termsList;
         } else {
             return false;
@@ -634,14 +658,16 @@ class AmazonMerchantServiceList extends AmazonMerchantCore implements Iterator{
      * Iterator function
      * @return array
      */
-    public function current(){
-       return $this->serviceList[$this->i];
+    public function current()
+    {
+        return $this->serviceList[$this->i];
     }
 
     /**
      * Iterator function
      */
-    public function rewind(){
+    public function rewind()
+    {
         $this->i = 0;
     }
 
@@ -649,14 +675,16 @@ class AmazonMerchantServiceList extends AmazonMerchantCore implements Iterator{
      * Iterator function
      * @return type
      */
-    public function key() {
+    public function key()
+    {
         return $this->i;
     }
 
     /**
      * Iterator function
      */
-    public function next() {
+    public function next()
+    {
         $this->i++;
     }
 
@@ -664,8 +692,8 @@ class AmazonMerchantServiceList extends AmazonMerchantCore implements Iterator{
      * Iterator function
      * @return boolean
      */
-    public function valid() {
+    public function valid()
+    {
         return isset($this->serviceList[$this->i]);
     }
-
 }

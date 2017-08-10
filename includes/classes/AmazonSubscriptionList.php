@@ -24,7 +24,8 @@
  * for a particular marketplace. In order to do this, a marketplace ID is needed.
  * The current store's configured marketplace is used by default.
  */
-class AmazonSubscriptionList extends AmazonSubscriptionCore implements Iterator{
+class AmazonSubscriptionList extends AmazonSubscriptionCore implements Iterator
+{
     protected $list;
     protected $i = 0;
 
@@ -36,8 +37,9 @@ class AmazonSubscriptionList extends AmazonSubscriptionCore implements Iterator{
      * Other methods are available for fetching specific values from the order.
      * @return boolean <b>FALSE</b> if something goes wrong
      */
-    public function fetchSubscriptions(){
-        if (!array_key_exists('MarketplaceId', $this->options)){
+    public function fetchSubscriptions()
+    {
+        if (!array_key_exists('MarketplaceId', $this->options)) {
             $this->log("Marketplace ID must be set in order to fetch subscriptions!", 'Warning');
             return false;
         }
@@ -49,12 +51,12 @@ class AmazonSubscriptionList extends AmazonSubscriptionCore implements Iterator{
         $query = $this->genQuery();
 
         $path = $this->options['Action'] . 'Result';
-        if ($this->mockMode){
+        if ($this->mockMode) {
             $xml = $this->fetchMockFile()->$path;
         } else {
             $response = $this->sendRequest($url, array('Post' => $query));
 
-            if (!$this->checkResponse($response)){
+            if (!$this->checkResponse($response)) {
                 return false;
             }
 
@@ -71,9 +73,10 @@ class AmazonSubscriptionList extends AmazonSubscriptionCore implements Iterator{
      * @param SimpleXMLElement $xml <p>The XML response from Amazon.</p>
      * @return boolean <b>FALSE</b> if no XML data is found
      */
-    protected function parseXML($xml){
+    protected function parseXML($xml)
+    {
         $this->list = array();
-        if (!$xml){
+        if (!$xml) {
             return false;
         }
 
@@ -97,9 +100,10 @@ class AmazonSubscriptionList extends AmazonSubscriptionCore implements Iterator{
      * If none is given, the entire list will be returned. Defaults to NULL.</p>
      * @return array|boolean multi-dimensional array, or <b>FALSE</b> if list not filled yet
      */
-    public function getList($i = null){
-        if (isset($this->list)){
-            if (is_numeric($i)){
+    public function getList($i = null)
+    {
+        if (isset($this->list)) {
+            if (is_numeric($i)) {
                 return $this->list[$i];
             } else {
                 return $this->list;
@@ -118,8 +122,9 @@ class AmazonSubscriptionList extends AmazonSubscriptionCore implements Iterator{
      * @return string|boolean single value, or <b>FALSE</b> if not set yet or invalid index
      * @see setNotificationType
      */
-    public function getNotificationType($i = 0){
-        if (isset($this->list[$i]['NotificationType'])){
+    public function getNotificationType($i = 0)
+    {
+        if (isset($this->list[$i]['NotificationType'])) {
             return $this->list[$i]['NotificationType'];
         } else {
             return false;
@@ -135,8 +140,9 @@ class AmazonSubscriptionList extends AmazonSubscriptionCore implements Iterator{
      * @param int $i [optional] <p>List index to retrieve the value from. Defaults to 0.</p>
      * @return string|boolean "true" or "false", or <b>FALSE</b> if not set yet or invalid index
      */
-    public function getIsEnabled($i = 0){
-        if (isset($this->list[$i]['IsEnabled'])){
+    public function getIsEnabled($i = 0)
+    {
+        if (isset($this->list[$i]['IsEnabled'])) {
             return $this->list[$i]['IsEnabled'];
         } else {
             return false;
@@ -152,8 +158,9 @@ class AmazonSubscriptionList extends AmazonSubscriptionCore implements Iterator{
      * @return string|boolean single value, or <b>FALSE</b> if not set yet or invalid index
      * @see setDeliveryChannel
      */
-    public function getDeliveryChannel($i = 0){
-        if (isset($this->list[$i]['Destination']['DeliveryChannel'])){
+    public function getDeliveryChannel($i = 0)
+    {
+        if (isset($this->list[$i]['Destination']['DeliveryChannel'])) {
             return $this->list[$i]['Destination']['DeliveryChannel'];
         } else {
             return false;
@@ -168,8 +175,9 @@ class AmazonSubscriptionList extends AmazonSubscriptionCore implements Iterator{
      * @param string $j [optional] <p>Second list index to retrieve the value from. Defaults to NULL.</p>
      * @return array|boolean associative array, or <b>FALSE</b> if not set yet or invalid index
      */
-    public function getAttributes($i = 0, $j = null){
-        if (isset($this->list[$i]['Destination']['AttributeList'])){
+    public function getAttributes($i = 0, $j = null)
+    {
+        if (isset($this->list[$i]['Destination']['AttributeList'])) {
             if (isset($this->list[$i]['Destination']['AttributeList'][$j])) {
                 return $this->list[$i]['Destination']['AttributeList'][$j];
             } else {
@@ -184,14 +192,16 @@ class AmazonSubscriptionList extends AmazonSubscriptionCore implements Iterator{
      * Iterator function
      * @return array
      */
-    public function current(){
+    public function current()
+    {
         return $this->list[$this->i];
     }
 
     /**
      * Iterator function
      */
-    public function rewind(){
+    public function rewind()
+    {
         $this->i = 0;
     }
 
@@ -199,14 +209,16 @@ class AmazonSubscriptionList extends AmazonSubscriptionCore implements Iterator{
      * Iterator function
      * @return int
      */
-    public function key(){
+    public function key()
+    {
         return $this->i;
     }
 
     /**
      * Iterator function
      */
-    public function next(){
+    public function next()
+    {
         $this->i++;
     }
 
@@ -214,8 +226,8 @@ class AmazonSubscriptionList extends AmazonSubscriptionCore implements Iterator{
      * Iterator function
      * @return boolean
      */
-    public function valid(){
+    public function valid()
+    {
         return isset($this->list[$this->i]);
     }
-
 }

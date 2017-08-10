@@ -26,5 +26,3 @@ $logfunction = '';
 
 //Turn off normal logging
 $muteLog = false;
-
-?>

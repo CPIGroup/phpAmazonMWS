@@ -25,15 +25,16 @@ if ($list) {
  * Note that the items in the order are not included in the data.
  * To get the order's items, the "fetchItems" method must be used by the specific order object.
  */
-function getAmazonOrders() {
+function getAmazonOrders()
+{
     require('../includes/classes.php'); //autoload classes, not needed if composer is being used
     try {
         $amz = new AmazonOrderList("myStore"); //store name matches the array key in the config file
-        $amz->setLimits('Modified', "- 24 hours"); //accepts either specific timestamps or relative times 
+        $amz->setLimits('Modified', "- 24 hours"); //accepts either specific timestamps or relative times
         $amz->setFulfillmentChannelFilter("MFN"); //no Amazon-fulfilled orders
         $amz->setOrderStatusFilter(
             array("Unshipped", "PartiallyShipped", "Canceled", "Unfulfillable")
-            ); //no shipped or pending orders
+        ); //no shipped or pending orders
         $amz->setUseToken(); //tells the object to automatically use tokens right away
         $amz->fetchOrders(); //this is what actually sends the request
         return $amz->getList();
@@ -41,5 +42,3 @@ function getAmazonOrders() {
         echo 'There was a problem with the Amazon library. Error: '.$ex->getMessage();
     }
 }
-
-?>

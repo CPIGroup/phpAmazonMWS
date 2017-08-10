@@ -25,7 +25,8 @@
  * In order to fetch labels, the paper type must be specified. Use the
  * AmazonShipment object to create an inbound shipment and acquire a shipment ID.
  */
-class AmazonTransportDocument extends AmazonInboundCore {
+class AmazonTransportDocument extends AmazonInboundCore
+{
     protected $doc;
     protected $checksum;
 
@@ -45,10 +46,11 @@ class AmazonTransportDocument extends AmazonInboundCore {
      * @param array|string $m [optional] <p>The files (or file) to use in Mock Mode.</p>
      * @param string $config [optional] <p>An alternate config file to set. Used for testing.</p>
      */
-    public function __construct($s = null, $id = null, $mock = false, $m = null, $config = null){
+    public function __construct($s = null, $id = null, $mock = false, $m = null, $config = null)
+    {
         parent::__construct($s, $mock, $m, $config);
 
-        if($id){
+        if ($id) {
             $this->setShipmentId($id);
         }
     }
@@ -58,8 +60,9 @@ class AmazonTransportDocument extends AmazonInboundCore {
      * @param string $s <p>Shipment ID</p>
      * @return boolean <b>FALSE</b> if improper input
      */
-    public function setShipmentId($s){
-        if (is_string($s) && $s){
+    public function setShipmentId($s)
+    {
+        if (is_string($s) && $s) {
             $this->options['ShipmentId'] = $s;
         } else {
             return false;
@@ -73,8 +76,9 @@ class AmazonTransportDocument extends AmazonInboundCore {
      * @param string $s <p>See the comment inside for a list of valid values.</p>
      * @return boolean <b>FALSE</b> if improper input
      */
-    public function setPageType($s) {
-        if (is_string($s) && $s){
+    public function setPageType($s)
+    {
+        if (is_string($s) && $s) {
             $this->options['PageType'] = $s;
         } else {
             $this->log('Tried to set PageType to invalid value', 'Warning');
@@ -99,14 +103,15 @@ class AmazonTransportDocument extends AmazonInboundCore {
      * @param array|string $s <p>A list of package IDs, or a single ID string.</p>
      * @return boolean <b>FALSE</b> if improper input or needed parameters are not set
      */
-    public function setPackageIds($s) {
+    public function setPackageIds($s)
+    {
         if (is_string($s) || is_numeric($s)) {
             $s = array($s);
         }
-        if (is_array($s)){
+        if (is_array($s)) {
             $this->resetPackageIds();
             $i = 1;
-            foreach ($s as $x){
+            foreach ($s as $x) {
                 $this->options['PackageLabelsToPrint.member.'.$i] = $x;
                 $i++;
             }
@@ -121,9 +126,10 @@ class AmazonTransportDocument extends AmazonInboundCore {
      * Since package IDs are required, these parameters should not be removed
      * without replacing them, so this method is not public.
      */
-    protected function resetPackageIds() {
-        foreach($this->options as $op=>$junk){
-            if(preg_match("#PackageLabelsToPrint#",$op)){
+    protected function resetPackageIds()
+    {
+        foreach ($this->options as $op=>$junk) {
+            if (preg_match("#PackageLabelsToPrint#", $op)) {
                 unset($this->options[$op]);
             }
         }
@@ -135,8 +141,9 @@ class AmazonTransportDocument extends AmazonInboundCore {
      * @param int $n <p>number of boxes</p>
      * @return boolean <b>FALSE</b> if improper input or needed parameters are not set
      */
-    public function setPalletCount($n){
-        if (is_numeric($n) && $n >= 1){
+    public function setPalletCount($n)
+    {
+        if (is_numeric($n) && $n >= 1) {
             $this->options['NumberOfPallets'] = $n;
         } else {
             return false;
@@ -151,7 +158,8 @@ class AmazonTransportDocument extends AmazonInboundCore {
      * Amazon will send a document back as a response, which can be retrieved using <i>getDocument</i>.
      * @return boolean <b>FALSE</b> if something goes wrong
      */
-    public function fetchPackageLabels() {
+    public function fetchPackageLabels()
+    {
         if (!array_key_exists('ShipmentId', $this->options)) {
             $this->log('ShipmentId must be set in order to get package labels!', 'Warning');
             return false;
@@ -168,12 +176,12 @@ class AmazonTransportDocument extends AmazonInboundCore {
         $query = $this->genQuery();
 
         $path = $this->options['Action'].'Result';
-        if ($this->mockMode){
+        if ($this->mockMode) {
             $xml = $this->fetchMockFile();
         } else {
             $response = $this->sendRequest($url, array('Post'=>$query));
 
-            if (!$this->checkResponse($response)){
+            if (!$this->checkResponse($response)) {
                 return false;
             }
 
@@ -192,7 +200,8 @@ class AmazonTransportDocument extends AmazonInboundCore {
      * number of pallets.
      * @see resetSendParams
      */
-    protected function preparePackage() {
+    protected function preparePackage()
+    {
         $this->throttleGroup = 'GetUniquePackageLabels';
         $this->options['Action'] = 'GetUniquePackageLabels';
         unset($this->options['NumberOfPallets']);
@@ -206,7 +215,8 @@ class AmazonTransportDocument extends AmazonInboundCore {
      * Amazon will send a document back as a response, which can be retrieved using <i>getDocument</i>.
      * @return boolean <b>FALSE</b> if something goes wrong
      */
-    public function fetchPalletLabels() {
+    public function fetchPalletLabels()
+    {
         if (!array_key_exists('ShipmentId', $this->options)) {
             $this->log('ShipmentId must be set in order to get pallet labels!', 'Warning');
             return false;
@@ -223,12 +233,12 @@ class AmazonTransportDocument extends AmazonInboundCore {
         $query = $this->genQuery();
 
         $path = $this->options['Action'].'Result';
-        if ($this->mockMode){
+        if ($this->mockMode) {
             $xml = $this->fetchMockFile();
         } else {
             $response = $this->sendRequest($url, array('Post'=>$query));
 
-            if (!$this->checkResponse($response)){
+            if (!$this->checkResponse($response)) {
                 return false;
             }
 
@@ -247,7 +257,8 @@ class AmazonTransportDocument extends AmazonInboundCore {
      * package IDs.
      * @see resetSendParams
      */
-    protected function preparePallet() {
+    protected function preparePallet()
+    {
         $this->throttleGroup = 'GetPalletLabels';
         $this->options['Action'] = 'GetPalletLabels';
         $this->resetPackageIds();
@@ -261,7 +272,8 @@ class AmazonTransportDocument extends AmazonInboundCore {
      * Amazon will send a document back as a response, which can be retrieved using <i>getDocument</i>.
      * @return boolean <b>FALSE</b> if something goes wrong
      */
-    public function fetchBillOfLading() {
+    public function fetchBillOfLading()
+    {
         if (!array_key_exists('ShipmentId', $this->options)) {
             $this->log('ShipmentId must be set in order to get a bill of lading!', 'Warning');
             return false;
@@ -274,12 +286,12 @@ class AmazonTransportDocument extends AmazonInboundCore {
         $query = $this->genQuery();
 
         $path = $this->options['Action'].'Result';
-        if ($this->mockMode){
+        if ($this->mockMode) {
             $xml = $this->fetchMockFile();
         } else {
             $response = $this->sendRequest($url, array('Post'=>$query));
 
-            if (!$this->checkResponse($response)){
+            if (!$this->checkResponse($response)) {
                 return false;
             }
 
@@ -298,7 +310,8 @@ class AmazonTransportDocument extends AmazonInboundCore {
      * package IDs, number of pallets.
      * @see resetSendParams
      */
-    protected function prepareBillOfLading() {
+    protected function prepareBillOfLading()
+    {
         $this->throttleGroup = 'GetBillOfLading';
         $this->options['Action'] = 'GetBillOfLading';
         $this->resetPackageIds();
@@ -312,8 +325,9 @@ class AmazonTransportDocument extends AmazonInboundCore {
      * @param SimpleXMLElement $xml <p>The XML response from Amazon.</p>
      * @return boolean <b>FALSE</b> if no XML data is found
      */
-    protected function parseXml($xml) {
-        if (!$xml){
+    protected function parseXml($xml)
+    {
+        if (!$xml) {
             return false;
         }
 
@@ -332,7 +346,8 @@ class AmazonTransportDocument extends AmazonInboundCore {
      * @param boolean $raw [optional] <p>Set to TRUE to get the raw, base64-encoded file contents.</p>
      * @return string|boolean file contents, encoded file, or <b>FALSE</b> if file not fetched yet
      */
-    public function getDocument($raw = FALSE) {
+    public function getDocument($raw = false)
+    {
         if (isset($this->doc)) {
             if ($raw) {
                 return $this->doc;
@@ -354,7 +369,8 @@ class AmazonTransportDocument extends AmazonInboundCore {
      * @param boolean $raw [optional] <p>Set to TRUE to get the raw, base64-encoded checksum.</p>
      * @return string|boolean checksum, or <b>FALSE</b> if file not fetched yet
      */
-    public function getChecksum($raw = FALSE) {
+    public function getChecksum($raw = false)
+    {
         if (isset($this->checksum)) {
             if ($raw) {
                 return $this->checksum;
@@ -368,5 +384,4 @@ class AmazonTransportDocument extends AmazonInboundCore {
         }
         return false;
     }
-
 }

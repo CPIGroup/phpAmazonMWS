@@ -1,6 +1,7 @@
 <?php
 
-class AmazonSubscriptionTest extends PHPUnit_Framework_TestCase {
+class AmazonSubscriptionTest extends PHPUnit_Framework_TestCase
+{
 
     /**
      * @var AmazonSubscription
@@ -11,12 +12,14 @@ class AmazonSubscriptionTest extends PHPUnit_Framework_TestCase {
      * Sets up the fixture, for example, opens a network connection.
      * This method is called before a test is executed.
      */
-    protected function setUp() {
+    protected function setUp()
+    {
         resetLog();
         $this->object = new AmazonSubscription('testStore', true, null, __DIR__.'/../../test-config.php');
     }
 
-    public function testSetMarketplace() {
+    public function testSetMarketplace()
+    {
         $this->assertNull($this->object->setMarketplace('ATVPDKIKX0DER2'));
         $o = $this->object->getOptions();
         $this->assertArrayHasKey('MarketplaceId', $o);
@@ -26,7 +29,8 @@ class AmazonSubscriptionTest extends PHPUnit_Framework_TestCase {
         $this->assertFalse($this->object->setMarketplace(null)); //won't work for other things
     }
 
-    public function testSetDeliveryChannel() {
+    public function testSetDeliveryChannel()
+    {
         $this->assertNull($this->object->setDeliveryChannel('SQS'));
         $o = $this->object->getOptions();
         $this->assertArrayHasKey('Destination.DeliveryChannel', $o);
@@ -38,7 +42,8 @@ class AmazonSubscriptionTest extends PHPUnit_Framework_TestCase {
         $this->assertFalse($this->object->setDeliveryChannel(null)); //won't work for other things
     }
 
-    public function testSetAttributes() {
+    public function testSetAttributes()
+    {
         $this->assertNull($this->object->setAttributes(array(
             'url' => '123',
             'another' => '456',
@@ -66,7 +71,8 @@ class AmazonSubscriptionTest extends PHPUnit_Framework_TestCase {
         $this->assertFalse($this->object->setAttributes(707));
     }
 
-    public function testSetNotificationType() {
+    public function testSetNotificationType()
+    {
         $this->assertNull($this->object->setNotificationType('special'));
         $o = $this->object->getOptions();
         $this->assertArrayHasKey('Subscription.NotificationType', $o);
@@ -78,7 +84,8 @@ class AmazonSubscriptionTest extends PHPUnit_Framework_TestCase {
         $this->assertFalse($this->object->setNotificationType(null)); //won't work for other things
     }
 
-    public function testSetIsEnabled() {
+    public function testSetIsEnabled()
+    {
         $this->assertNull($this->object->setIsEnabled());
         $o = $this->object->getOptions();
         $this->assertArrayHasKey('Subscription.IsEnabled', $o);
@@ -89,7 +96,8 @@ class AmazonSubscriptionTest extends PHPUnit_Framework_TestCase {
         $this->assertEquals('false', $o2['Subscription.IsEnabled']);
     }
 
-    public function testRegisterDestination() {
+    public function testRegisterDestination()
+    {
         resetLog();
         $this->object->setMock(true, 'registerDestination.xml');
         $this->assertNull($this->object->setIsEnabled());
@@ -108,13 +116,14 @@ class AmazonSubscriptionTest extends PHPUnit_Framework_TestCase {
         $this->assertArrayNotHasKey('NotificationType', $o);
 
         $check = parseLog();
-        $this->assertEquals('Single Mock File set: registerDestination.xml',$check[1]);
-        $this->assertEquals('Delivery channel must be set in order to register a subscription destination!',$check[2]);
-        $this->assertEquals('Attributes must be set in order to register a subscription destination!',$check[3]);
-        $this->assertEquals('Fetched Mock File: mock/registerDestination.xml',$check[4]);
+        $this->assertEquals('Single Mock File set: registerDestination.xml', $check[1]);
+        $this->assertEquals('Delivery channel must be set in order to register a subscription destination!', $check[2]);
+        $this->assertEquals('Attributes must be set in order to register a subscription destination!', $check[3]);
+        $this->assertEquals('Fetched Mock File: mock/registerDestination.xml', $check[4]);
     }
 
-    public function testDeregisterDestination() {
+    public function testDeregisterDestination()
+    {
         resetLog();
         $this->object->setMock(true, 'deregisterDestination.xml');
         $this->assertNull($this->object->setIsEnabled());
@@ -133,13 +142,14 @@ class AmazonSubscriptionTest extends PHPUnit_Framework_TestCase {
         $this->assertArrayNotHasKey('NotificationType', $o);
 
         $check = parseLog();
-        $this->assertEquals('Single Mock File set: deregisterDestination.xml',$check[1]);
-        $this->assertEquals('Delivery channel must be set in order to deregister a subscription destination!',$check[2]);
-        $this->assertEquals('Attributes must be set in order to deregister a subscription destination!',$check[3]);
-        $this->assertEquals('Fetched Mock File: mock/deregisterDestination.xml',$check[4]);
+        $this->assertEquals('Single Mock File set: deregisterDestination.xml', $check[1]);
+        $this->assertEquals('Delivery channel must be set in order to deregister a subscription destination!', $check[2]);
+        $this->assertEquals('Attributes must be set in order to deregister a subscription destination!', $check[3]);
+        $this->assertEquals('Fetched Mock File: mock/deregisterDestination.xml', $check[4]);
     }
 
-    public function testTestDestination() {
+    public function testTestDestination()
+    {
         resetLog();
         $this->object->setMock(true, 'pingDestination.xml');
         $this->assertNull($this->object->setIsEnabled());
@@ -158,13 +168,14 @@ class AmazonSubscriptionTest extends PHPUnit_Framework_TestCase {
         $this->assertArrayNotHasKey('NotificationType', $o);
 
         $check = parseLog();
-        $this->assertEquals('Single Mock File set: pingDestination.xml',$check[1]);
-        $this->assertEquals('Delivery channel must be set in order to test a subscription destination!',$check[2]);
-        $this->assertEquals('Attributes must be set in order to test a subscription destination!',$check[3]);
-        $this->assertEquals('Fetched Mock File: mock/pingDestination.xml',$check[4]);
+        $this->assertEquals('Single Mock File set: pingDestination.xml', $check[1]);
+        $this->assertEquals('Delivery channel must be set in order to test a subscription destination!', $check[2]);
+        $this->assertEquals('Attributes must be set in order to test a subscription destination!', $check[3]);
+        $this->assertEquals('Fetched Mock File: mock/pingDestination.xml', $check[4]);
     }
 
-    public function testCreateSubscription() {
+    public function testCreateSubscription()
+    {
         resetLog();
         $this->object->setMock(true, 'createSubscription.xml');
         $this->assertFalse($this->object->createSubscription()); //no channel yet
@@ -183,15 +194,16 @@ class AmazonSubscriptionTest extends PHPUnit_Framework_TestCase {
         $this->assertArrayNotHasKey('NotificationType', $o);
 
         $check = parseLog();
-        $this->assertEquals('Single Mock File set: createSubscription.xml',$check[1]);
-        $this->assertEquals('Delivery channel must be set in order to create a subscription!',$check[2]);
-        $this->assertEquals('Attributes must be set in order to create a subscription!',$check[3]);
-        $this->assertEquals('Notification type must be set in order to create a subscription!',$check[4]);
-        $this->assertEquals('Enabled status must be set in order to create a subscription!',$check[5]);
-        $this->assertEquals('Fetched Mock File: mock/createSubscription.xml',$check[6]);
+        $this->assertEquals('Single Mock File set: createSubscription.xml', $check[1]);
+        $this->assertEquals('Delivery channel must be set in order to create a subscription!', $check[2]);
+        $this->assertEquals('Attributes must be set in order to create a subscription!', $check[3]);
+        $this->assertEquals('Notification type must be set in order to create a subscription!', $check[4]);
+        $this->assertEquals('Enabled status must be set in order to create a subscription!', $check[5]);
+        $this->assertEquals('Fetched Mock File: mock/createSubscription.xml', $check[6]);
     }
 
-    public function testFetchSubscription() {
+    public function testFetchSubscription()
+    {
         resetLog();
         $this->object->setMock(true, 'fetchSubscription.xml');
         $this->object->setIsEnabled();
@@ -210,16 +222,17 @@ class AmazonSubscriptionTest extends PHPUnit_Framework_TestCase {
         $this->assertArrayNotHasKey('Subscription.NotificationType', $o);
 
         $check = parseLog();
-        $this->assertEquals('Single Mock File set: fetchSubscription.xml',$check[1]);
-        $this->assertEquals('Delivery channel must be set in order to fetch a subscription!',$check[2]);
-        $this->assertEquals('Attributes must be set in order to fetch a subscription!',$check[3]);
-        $this->assertEquals('Notification type must be set in order to fetch a subscription!',$check[4]);
-        $this->assertEquals('Fetched Mock File: mock/fetchSubscription.xml',$check[5]);
+        $this->assertEquals('Single Mock File set: fetchSubscription.xml', $check[1]);
+        $this->assertEquals('Delivery channel must be set in order to fetch a subscription!', $check[2]);
+        $this->assertEquals('Attributes must be set in order to fetch a subscription!', $check[3]);
+        $this->assertEquals('Notification type must be set in order to fetch a subscription!', $check[4]);
+        $this->assertEquals('Fetched Mock File: mock/fetchSubscription.xml', $check[5]);
 
         return $this->object;
     }
 
-    public function testUpdateSubscription() {
+    public function testUpdateSubscription()
+    {
         resetLog();
         $this->object->setMock(true, 'updateSubscription.xml');
         $this->assertFalse($this->object->updateSubscription()); //no channel yet
@@ -238,15 +251,16 @@ class AmazonSubscriptionTest extends PHPUnit_Framework_TestCase {
         $this->assertArrayNotHasKey('NotificationType', $o);
 
         $check = parseLog();
-        $this->assertEquals('Single Mock File set: updateSubscription.xml',$check[1]);
-        $this->assertEquals('Delivery channel must be set in order to update a subscription!',$check[2]);
-        $this->assertEquals('Attributes must be set in order to update a subscription!',$check[3]);
-        $this->assertEquals('Notification type must be set in order to update a subscription!',$check[4]);
-        $this->assertEquals('Enabled status must be set in order to update a subscription!',$check[5]);
-        $this->assertEquals('Fetched Mock File: mock/updateSubscription.xml',$check[6]);
+        $this->assertEquals('Single Mock File set: updateSubscription.xml', $check[1]);
+        $this->assertEquals('Delivery channel must be set in order to update a subscription!', $check[2]);
+        $this->assertEquals('Attributes must be set in order to update a subscription!', $check[3]);
+        $this->assertEquals('Notification type must be set in order to update a subscription!', $check[4]);
+        $this->assertEquals('Enabled status must be set in order to update a subscription!', $check[5]);
+        $this->assertEquals('Fetched Mock File: mock/updateSubscription.xml', $check[6]);
     }
 
-    public function testDeleteSubscription() {
+    public function testDeleteSubscription()
+    {
         resetLog();
         $this->object->setMock(true, 'deleteSubscription.xml');
         $this->object->setIsEnabled();
@@ -265,18 +279,19 @@ class AmazonSubscriptionTest extends PHPUnit_Framework_TestCase {
         $this->assertArrayNotHasKey('Subscription.NotificationType', $o);
 
         $check = parseLog();
-        $this->assertEquals('Single Mock File set: deleteSubscription.xml',$check[1]);
-        $this->assertEquals('Delivery channel must be set in order to delete a subscription!',$check[2]);
-        $this->assertEquals('Attributes must be set in order to delete a subscription!',$check[3]);
-        $this->assertEquals('Notification type must be set in order to delete a subscription!',$check[4]);
-        $this->assertEquals('Fetched Mock File: mock/deleteSubscription.xml',$check[5]);
+        $this->assertEquals('Single Mock File set: deleteSubscription.xml', $check[1]);
+        $this->assertEquals('Delivery channel must be set in order to delete a subscription!', $check[2]);
+        $this->assertEquals('Attributes must be set in order to delete a subscription!', $check[3]);
+        $this->assertEquals('Notification type must be set in order to delete a subscription!', $check[4]);
+        $this->assertEquals('Fetched Mock File: mock/deleteSubscription.xml', $check[5]);
     }
 
     /**
      * @param AmazonSubscription $o
      * @depends testFetchSubscription
      */
-    public function testGetSubscription($o) {
+    public function testGetSubscription($o)
+    {
         $data = array();
         $data['NotificationType'] = $o->getNotificationType();
         $data['IsEnabled'] = $o->getIsEnabled();
@@ -291,7 +306,8 @@ class AmazonSubscriptionTest extends PHPUnit_Framework_TestCase {
      * @param AmazonSubscription $o
      * @depends testFetchSubscription
      */
-    public function testGetNotificationType($o) {
+    public function testGetNotificationType($o)
+    {
         $this->assertEquals('AnyOfferChanged', $o->getNotificationType());
         //not fetched yet for this object
         $this->assertFalse($this->object->getNotificationType());
@@ -301,7 +317,8 @@ class AmazonSubscriptionTest extends PHPUnit_Framework_TestCase {
      * @param AmazonSubscription $o
      * @depends testFetchSubscription
      */
-    public function testGetIsEnabled($o) {
+    public function testGetIsEnabled($o)
+    {
         $this->assertEquals('true', $o->getIsEnabled());
         //not fetched yet for this object
         $this->assertFalse($this->object->getIsEnabled());
@@ -311,7 +328,8 @@ class AmazonSubscriptionTest extends PHPUnit_Framework_TestCase {
      * @param AmazonSubscription $o
      * @depends testFetchSubscription
      */
-    public function testGetDeliveryChannel($o) {
+    public function testGetDeliveryChannel($o)
+    {
         $this->assertEquals('SQS', $o->getDeliveryChannel());
         //not fetched yet for this object
         $this->assertFalse($this->object->getDeliveryChannel());
@@ -321,7 +339,8 @@ class AmazonSubscriptionTest extends PHPUnit_Framework_TestCase {
      * @param AmazonSubscription $o
      * @depends testFetchSubscription
      */
-    public function testGetAttributes($o) {
+    public function testGetAttributes($o)
+    {
         $data = array(
             'sqsQueueUrl' => 'https://sqs.us-east-1.amazonaws.com/51471EXAMPLE/mws_notifications',
         );
@@ -329,7 +348,6 @@ class AmazonSubscriptionTest extends PHPUnit_Framework_TestCase {
         //not fetched yet for this object
         $this->assertFalse($this->object->getAttributes());
     }
-
 }
 
 require_once('helperFunctions.php');

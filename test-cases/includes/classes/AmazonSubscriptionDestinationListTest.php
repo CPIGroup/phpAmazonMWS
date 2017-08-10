@@ -1,6 +1,7 @@
 <?php
 
-class AmazonSubscriptionDestinationListTest extends PHPUnit_Framework_TestCase {
+class AmazonSubscriptionDestinationListTest extends PHPUnit_Framework_TestCase
+{
 
     /**
      * @var AmazonSubscriptionDestinationList
@@ -11,12 +12,14 @@ class AmazonSubscriptionDestinationListTest extends PHPUnit_Framework_TestCase {
      * Sets up the fixture, for example, opens a network connection.
      * This method is called before a test is executed.
      */
-    protected function setUp() {
+    protected function setUp()
+    {
         resetLog();
         $this->object = new AmazonSubscriptionDestinationList('testStore', true, null, __DIR__.'/../../test-config.php');
     }
 
-    public function testFetchDestinations() {
+    public function testFetchDestinations()
+    {
         resetLog();
         $this->object->setMock(true, 'fetchDestinations.xml');
         $this->assertNull($this->object->fetchDestinations());
@@ -24,8 +27,8 @@ class AmazonSubscriptionDestinationListTest extends PHPUnit_Framework_TestCase {
         $this->assertEquals('ListRegisteredDestinations', $o['Action']);
 
         $check = parseLog();
-        $this->assertEquals('Single Mock File set: fetchDestinations.xml',$check[1]);
-        $this->assertEquals('Fetched Mock File: mock/fetchDestinations.xml',$check[2]);
+        $this->assertEquals('Single Mock File set: fetchDestinations.xml', $check[1]);
+        $this->assertEquals('Fetched Mock File: mock/fetchDestinations.xml', $check[2]);
 
         return $this->object;
     }
@@ -34,7 +37,8 @@ class AmazonSubscriptionDestinationListTest extends PHPUnit_Framework_TestCase {
      * @param AmazonSubscriptionDestinationList $o
      * @depends testFetchDestinations
      */
-    public function testGetDeliveryChannel($o) {
+    public function testGetDeliveryChannel($o)
+    {
         $this->assertEquals('SQS', $o->getDeliveryChannel(0));
         $this->assertEquals('SQS2', $o->getDeliveryChannel(1));
         $this->assertEquals($o->getDeliveryChannel(0), $o->getDeliveryChannel());
@@ -49,7 +53,8 @@ class AmazonSubscriptionDestinationListTest extends PHPUnit_Framework_TestCase {
      * @param AmazonSubscriptionDestinationList $o
      * @depends testFetchDestinations
      */
-    public function testGetAttributes($o) {
+    public function testGetAttributes($o)
+    {
         $data1 = array(
             'sqsQueueUrl' => 'https://sqs.us-east-1.amazonaws.com/51471EXAMPLE/mws_notifications',
         );
@@ -66,7 +71,6 @@ class AmazonSubscriptionDestinationListTest extends PHPUnit_Framework_TestCase {
         //not fetched yet for this object
         $this->assertFalse($this->object->getAttributes());
     }
-
 }
 
 require_once('helperFunctions.php');

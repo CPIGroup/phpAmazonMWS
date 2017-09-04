@@ -12,5 +12,13 @@ matrix:
         php: 7.1
         php: 7.2
 
-install: composer update
-script: cd test-cases && phpunit --bootstrap bootstrap.php
+# install packages explicitly
+install:
+  - composer self-update && composer install
+
+# show me what phpunit version we are running
+before_script:
+  - vendor/bin/phpunit --version
+
+# run the test suite
+script: cd test-cases && php ../vendor/bin/phpunit --bootstrap bootstrap.php

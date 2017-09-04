@@ -12,4 +12,5 @@ matrix:
         php: 7.1
         php: 7.2
 
+install: composer update
 script: cd test-cases && phpunit --bootstrap bootstrap.php

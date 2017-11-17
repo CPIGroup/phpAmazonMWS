@@ -346,6 +346,29 @@
           </AdjustmentItemList>
         </AdjustmentEvent>
       </AdjustmentEventList>
+      <SAFETReimbursementEventList>
+        <SAFETReimbursementEvent>
+          <PostedDate>2017-02-11T14:15:16.000Z</PostedDate>
+          <SAFETClaimId>12345-98760-8675309</SAFETClaimId>
+          <ReimbursedAmount>
+            <CurrencyAmount>12.99</CurrencyAmount>
+            <CurrencyCode>INR</CurrencyCode>
+          </ReimbursedAmount>
+          <SAFETReimbursementItemList>
+            <SAFETReimbursementItem>
+              <ItemChargeList>
+                <ChargeComponent>
+                  <ChargeType>SAFE-T Reimbursement</ChargeType>
+                  <ChargeAmount>
+                    <CurrencyAmount>29.99</CurrencyAmount>
+                    <CurrencyCode>USD</CurrencyCode>
+                  </ChargeAmount>
+                </ChargeComponent>
+              </ItemChargeList>
+            </SAFETReimbursementItem>
+          </SAFETReimbursementItemList>
+        </SAFETReimbursementEvent>
+      </SAFETReimbursementEventList>
     </FinancialEvents>
   </ListFinancialEventsByNextTokenResult>
   <ResponseMetadata>

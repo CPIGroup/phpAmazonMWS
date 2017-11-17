@@ -123,9 +123,17 @@ class AmazonOrderTest extends PHPUnit_Framework_TestCase {
         $x['PaymentExecutionDetail'][1]['CurrencyCode'] = 'USD';
         $x['PaymentExecutionDetail'][1]['SubPaymentMethod'] = 'GC';
         $x['PaymentMethod'] = 'COD';
+        $x['PaymentMethodDetails'][0] = 'CreditCard';
+        $x['IsReplacementOrder'] = 'true';
+        $x['ReplacedOrderId'] = '555-1233752-8214740';
         $x['MarketplaceId'] = 'ATVPDKIKX0DER';
         $x['BuyerName'] = 'Amazon User';
         $x['BuyerEmail'] = '5vlh04mgfmjh9h5@marketplace.amazon.com';
+        $x['BuyerCounty'] = 'Best';
+        $x['BuyerTaxInfo']['CompanyLegalName'] = 'Company Name';
+        $x['BuyerTaxInfo']['TaxingRegion'] = 'US';
+        $x['BuyerTaxInfo']['TaxClassifications'][0]['Name'] = 'VATNumber';
+        $x['BuyerTaxInfo']['TaxClassifications'][0]['Value'] = 'XXX123';
         $x['ShipmentServiceLevelCategory'] = 'Standard';
         $x['CbaDisplayableShippingLabel'] = 'Best';
         $x['ShippedByAmazonTFM'] = 'false';
@@ -326,6 +334,37 @@ class AmazonOrderTest extends PHPUnit_Framework_TestCase {
         
         $this->assertFalse($this->object->getPaymentMethod()); //not fetched yet for this object
     }
+
+    /**
+     * @depends testFetchOrder
+     */
+    public function testGetPaymentMethodDetails($o){
+        $get = $o->getPaymentMethodDetails();
+        $x = array('CreditCard');
+        $this->assertEquals($x, $get);
+
+        $this->assertFalse($this->object->getPaymentMethodDetails()); //not fetched yet for this object
+    }
+
+    /**
+     * @depends testFetchOrder
+     */
+    public function testGetIsReplacementOrder($o){
+        $get = $o->getIsReplacementOrder();
+        $this->assertEquals('true',$get);
+
+        $this->assertFalse($this->object->getIsReplacementOrder()); //not fetched yet for this object
+    }
+
+    /**
+     * @depends testFetchOrder
+     */
+    public function testGetReplacedOrderId($o){
+        $get = $o->getReplacedOrderId();
+        $this->assertEquals('555-1233752-8214740',$get);
+
+        $this->assertFalse($this->object->getReplacedOrderId()); //not fetched yet for this object
+    }
     
     /**
      * @depends testFetchOrder
@@ -355,6 +394,31 @@ class AmazonOrderTest extends PHPUnit_Framework_TestCase {
         $this->assertEquals('5vlh04mgfmjh9h5@marketplace.amazon.com',$get);
         
         $this->assertFalse($this->object->getBuyerEmail()); //not fetched yet for this object
+    }
+
+    /**
+     * @depends testFetchOrder
+     */
+    public function testGetBuyerCounty($o){
+        $get = $o->getBuyerCounty();
+        $this->assertEquals('Best', $get);
+
+        $this->assertFalse($this->object->getBuyerCounty()); //not fetched yet for this object
+    }
+
+    /**
+     * @depends testFetchOrder
+     */
+    public function testGetBuyerTaxInfo($o){
+        $get = $o->getBuyerTaxInfo();
+        $x = array();
+        $x['CompanyLegalName'] = 'Company Name';
+        $x['TaxingRegion'] = 'US';
+        $x['TaxClassifications'][0]['Name'] = 'VATNumber';
+        $x['TaxClassifications'][0]['Value'] = 'XXX123';
+        $this->assertEquals($x, $get);
+
+        $this->assertFalse($this->object->getBuyerTaxInfo()); //not fetched yet for this object
     }
     
     /**
@@ -421,7 +485,7 @@ class AmazonOrderTest extends PHPUnit_Framework_TestCase {
      * @depends testFetchOrder
      * @param AmazonOrder $o
      */
-    public function testgetLatestShipDate($o) {
+    public function testGetLatestShipDate($o) {
         $this->assertEquals('2010-10-07T12:43:16.000Z', $o->getLatestShipDate());
 
         $this->assertFalse($this->object->getLatestShipDate()); //not fetched yet for this object

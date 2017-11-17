@@ -2,6 +2,22 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## 1.4.0 - 2017-11-17
+### Added
+ - Travis support for PHP 7.1 and 7.2
+ - Option to disable SSL verification (not recommended outside of testing)
+ - New response fields in Financial Event List class for SAFE-T Reimbursement events
+ - New response fields in the Fulfillment Order class: `ReturnItems` and `ReturnAuthorizations`
+ - New response field in the Merchant Service List class: `AvailableLabelFormats`
+ - New response fields in the Merchant Shipment class: `CustomTextForLabel`, `LabelFormat`, and `StandardIdForLabel`
+ - New parameters for the Merchant Shipment Creator class: `CustomTextForLabel`, `LabelFormat`, `StandardIdForLabel`, and `HazmatType`
+ - New response fields in the Order class: `PaymentMethodDetails`, `IsReplacementOrder`, `ReplacedOrderId`, `BuyerCounty`, and `BuyerTaxInfo`
+ - New product class for getting Product Fee Estimates
+### Changed
+ - Composer now allows PHPUnit versions 4 and 5
+ - Tries to create the log file specified in config if it does not exist
+ - Fixed undefined index error when processing an empty or invalid response from cURL
+
 ## 1.3.0 - 2016-08-03
 ### Added
 - Travis support

@@ -2,7 +2,7 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
-## 1.4.0 - TBD
+## 1.4.0 - 2017-11-17
 ### Added
  - Travis support for PHP 7.1 and 7.2
  - Option to disable SSL verification (not recommended outside of testing)

@@ -63,8 +63,8 @@ class AmazonProductFeeEstimateTest extends PHPUnit_Framework_TestCase {
         $this->assertArrayHasKey($pre.'1.IdValue', $o);
         $this->assertEquals('B00123ASIN', $o[$pre.'1.IdValue']);
         $this->assertArrayHasKey($pre.'1.ListingPrice.CurrencyCode', $o);
-        $this->assertEquals('USD', $o[$pre.'1.ListingPrice.CurrencyCode']);
-        $this->assertArrayHasKey($pre.'1.ListingPrice.Value', $o);
+        $this->assertEquals('USD', $o[$pre.'1.PriceToEstimateFees.ListingPrice.CurrencyCode']);
+        $this->assertArrayHasKey($pre.'1.PriceToEstimateFees.ListingPrice.Amount', $o);
         $this->assertEquals('123', $o[$pre.'1.ListingPrice.Value']);
         $this->assertArrayHasKey($pre.'1.Identifier', $o);
         $this->assertEquals('TEST123', $o[$pre.'1.Identifier']);

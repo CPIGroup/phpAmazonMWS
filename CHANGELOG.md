@@ -2,6 +2,10 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## 1.4.1 - 2018-01-19
+### Changed
+ - Fixed parameter names for Product Fees Estimates
+
 ## 1.4.0 - 2017-11-17
 ### Added
  - Travis support for PHP 7.1 and 7.2

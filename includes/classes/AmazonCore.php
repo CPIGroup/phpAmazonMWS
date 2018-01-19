@@ -760,7 +760,7 @@ abstract class AmazonCore{
         $ch = curl_init();
         
         curl_setopt($ch,CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch,CURLOPT_TIMEOUT, 0);
+        curl_setopt($ch,CURLOPT_TIMEOUT, 180);
         curl_setopt($ch,CURLOPT_FORBID_REUSE, 1);
         curl_setopt($ch,CURLOPT_FRESH_CONNECT, 1);
         curl_setopt($ch,CURLOPT_HEADER, 1);
@@ -775,7 +775,11 @@ abstract class AmazonCore{
         }
         
         $data = curl_exec($ch);
-        if ( curl_errno($ch) ) {
+        $error_no = curl_errno($ch);
+        if ( $error_no ) {
+                if( $error_no == CURLE_OPERATION_TIMEDOUT) {
+                    throw new Exception("Timeout", CURLE_OPERATION_TIMEDOUT);
+                }
                 $return['ok'] = -1;
                 $return['error'] = curl_error($ch);
                 return $return;

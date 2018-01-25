@@ -29,7 +29,7 @@ $store['YourAmazonStore']['MWSAuthToken'] = ''; //token needed for web apps and 
 $AMAZON_SERVICE_URL = 'https://mws.amazonservices.com/';
 
 //Location of log file to use
-$logpath = __DIR__.'/log.txt';
+$logpath = false; //__DIR__.'/log.txt';
 
 //Name of custom log function to use
 $logfunction = '';

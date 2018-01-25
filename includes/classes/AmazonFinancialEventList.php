@@ -426,6 +426,29 @@ class AmazonFinancialEventList extends AmazonFinanceCore {
                 $this->list['Adjustment'][] = $temp;
             }
         }
+        if (isset($xml->SAFETReimbursementEventList)) {
+            foreach($xml->SAFETReimbursementEventList->children() as $x) {
+                $temp = array();
+                $temp['PostedDate'] = (string)$x->PostedDate;
+                $temp['SAFETClaimId'] = (string)$x->SAFETClaimId;
+                $temp['Amount'] = (string)$x->ReimbursedAmount->CurrencyAmount;
+                $temp['CurrencyCode'] = (string)$x->ReimbursedAmount->CurrencyCode;
+                $temp['SAFETReimbursementItemList'] = array();
+                if (isset($x->SAFETReimbursementItemList)) {
+                    foreach($x->SAFETReimbursementItemList->children() as $y) {
+                        if (!isset($y->ItemChargeList)) {
+                            continue;
+                        }
+                        $ztemp = array();
+                        foreach($y->ItemChargeList->children() as $z) {
+                            $ztemp['ItemChargeList'][] = $this->parseCharge($z);
+                        }
+                        $temp['SAFETReimbursementItemList'][] = $ztemp;
+                    }
+                }
+                $this->list['SAFET'][] = $temp;
+            }
+        }
     }
 
     /**
@@ -542,8 +565,8 @@ class AmazonFinancialEventList extends AmazonFinanceCore {
     /**
      * Parses XML for a single charge into an array.
      * This structure is used many times throughout shipment events.
-     * @param SimpleXMLElement $xml <p>The XML response from Amazon.</p>
-     * @return array parsed structure from XML
+     * @param SimpleXMLElement $xml <p>Charge node of the XML response from Amazon.</p>
+     * @return array Parsed structure from XML
      */
     protected function parseCharge($xml) {
         $r = array();
@@ -585,6 +608,7 @@ class AmazonFinancialEventList extends AmazonFinanceCore {
      * <li><b>DebtRecovery</b> - see <i>getDebtRecoveryEvents</i></li>
      * <li><b>LoanServicing</b> - see <i>getLoanServicingEvents</i></li>
      * <li><b>Adjustment</b> - see <i>getAdjustmentEvents</i></li>
+     * <li><b>SAFET</b> - see <i>getSafetEvents</i></li>
      * </ul>
      * @return array|boolean multi-dimensional array, or <b>FALSE</b> if list not filled yet
      * @see getShipmentEvents
@@ -600,6 +624,7 @@ class AmazonFinancialEventList extends AmazonFinanceCore {
      * @see getDebtRecoveryEvents
      * @see getLoanServicingEvents
      * @see getAdjustmentEvents
+     * @see getSafetEvents
      */
     public function getEvents(){
         if (isset($this->list)){
@@ -986,6 +1011,35 @@ class AmazonFinancialEventList extends AmazonFinanceCore {
     public function getAdjustmentEvents(){
         if (isset($this->list['Adjustment'])){
             return $this->list['Adjustment'];
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * Returns all SAFE-T reimbursement events.
+     *
+     * Each event array will have the following keys:
+     * <ul>
+     * <li><b>PostedDate</b> - ISO 8601 date format</li>
+     * <li><b>Amount</b> - number</li>
+     * <li><b>CurrencyCode</b> - ISO 4217 currency code</li>
+     * <li><b>SAFETClaimId</b></li>
+     * <li><b>SAFETReimbursementItemList</b> - multi-dimensional array, each array has the following keys:</li>
+     * <ul>
+     * <li><b>ItemChargeList</b> - multi-dimensional array, each array has the following keys:</li>
+     * <ul>
+     * <li><b>ChargeType</b></li>
+     * <li><b>Amount</b> - number</li>
+     * <li><b>CurrencyCode</b> - ISO 4217 currency code</li>
+     * </ul>
+     * </ul>
+     * </ul>
+     * @return array|boolean multi-dimensional array, or <b>FALSE</b> if list not filled yet
+     */
+    public function getSafetEvents(){
+        if (isset($this->list['SAFET'])){
+            return $this->list['SAFET'];
         } else {
             return false;
         }

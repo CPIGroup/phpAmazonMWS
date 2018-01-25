@@ -132,6 +132,68 @@
                 <EstimatedArrivalDateTime>2006-08-12T07:00:00Z</EstimatedArrivalDateTime>
             </member>
         </FulfillmentShipment>
+        <ReturnItemList>
+          <ReturnItem>
+            <SellerReturnItemId>16a6a142EXAMPLE</SellerReturnItemId>
+            <SellerFulfillmentOrderItemId>order-item-1</SellerFulfillmentOrderItemId>
+            <AmazonShipmentId>DLHg36GDN</AmazonShipmentId >
+            <SellerReturnReasonCode>REASON-CODE</SellerReturnReasonCode>
+            <ReturnComment>Did not like color</ReturnComment>
+            <AmazonReturnReasonCode>OTHER-REASON-CODE</AmazonReturnReasonCode>
+            <Status>Processed</Status>
+            <StatusChangedDate>2016-09-02T02:40:36Z</StatusChangedDate>
+            <ReturnAuthorizationId>amzn-rma-id</ReturnAuthorizationId>
+            <ReturnReceivedCondition>Sellable</ReturnReceivedCondition>
+            <FulfillmentCenterId>FC123</FulfillmentCenterId>
+          </ReturnItem>
+          <ReturnItem>
+            <SellerReturnItemId>16a6a142EXAMPLE2</SellerReturnItemId>
+            <SellerFulfillmentOrderItemId>order-item-2</SellerFulfillmentOrderItemId>
+            <AmazonShipmentId>DKMKLXJmN</AmazonShipmentId >
+            <SellerReturnReasonCode>REASON-CODE-2</SellerReturnReasonCode>
+            <ReturnComment>Did not like shape</ReturnComment>
+            <AmazonReturnReasonCode>OTHER-REASON-CODE-2</AmazonReturnReasonCode>
+            <Status>Processed2</Status>
+            <StatusChangedDate>2016-09-08T02:40:36Z</StatusChangedDate>
+            <ReturnAuthorizationId>amzn-rma-id-2</ReturnAuthorizationId>
+            <ReturnReceivedCondition>Sellable2</ReturnReceivedCondition>
+            <FulfillmentCenterId>FC321</FulfillmentCenterId>
+          </ReturnItem>
+        </ReturnItemList>
+        <ReturnAuthorizationList>
+          <ReturnAuthorization>
+            <ReturnAuthorizationId>amzn-rma-id</ReturnAuthorizationId>
+            <FulfillmentCenterId>FC123</FulfillmentCenterId>
+            <ReturnToAddress>
+              <Name>Amazon FC</Name>
+              <Line1>123 Main Street</Line1>
+              <Line2>Suite 16</Line2>
+              <Line3>Hole in Wall</Line3>
+              <DistrictOrCounty>Ninth</DistrictOrCounty>
+              <City>Anywhere</City>
+              <StateOrProvinceCode>WA</StateOrProvinceCode>
+              <CountryCode>US</CountryCode>
+              <PostalCode>98122</PostalCode>
+              <PhoneNumber>555-867-5309</PhoneNumber>
+            </ReturnToAddress>
+            <AmazonRmaId>test123</AmazonRmaId>
+            <RmaPageURL>https://sellercentral.amazon.com/URL</RmaPageURL>
+          </ReturnAuthorization>
+          <ReturnAuthorization>
+            <ReturnAuthorizationId>amzn-rma-id-2</ReturnAuthorizationId>
+            <FulfillmentCenterId>FC321</FulfillmentCenterId>
+            <ReturnToAddress>
+              <Name>Amazon FC2</Name>
+              <Line1>321 Main Street</Line1>
+              <City>Somewhere</City>
+              <StateOrProvinceCode>WA</StateOrProvinceCode>
+              <CountryCode>US</CountryCode>
+              <PostalCode>98123</PostalCode>
+            </ReturnToAddress>
+            <AmazonRmaId>test321</AmazonRmaId>
+            <RmaPageURL>https://sellercentral.amazon.com/URL#2</RmaPageURL>
+          </ReturnAuthorization>
+        </ReturnAuthorizationList>
     </GetFulfillmentOrderResult>
     <ResponseMetadata>
         <RequestId>5e5e5694-8e76-11df-929f-87c80302f8f6</RequestId>

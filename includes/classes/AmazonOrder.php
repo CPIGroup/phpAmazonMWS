@@ -70,7 +70,7 @@ class AmazonOrder extends AmazonOrderCore{
      * 
      * This method sets the Amazon Order ID to be sent in the next request.
      * This parameter is required for fetching the order from Amazon.
-     * @param string $s <p>either string or number</p>
+     * @param string $id <p>either string or number</p>
      * @return boolean <b>FALSE</b> if improper input
      */
     public function setOrderId($id){
@@ -209,12 +209,41 @@ class AmazonOrder extends AmazonOrderCore{
         if (isset($xml->PaymentMethod)){
             $d['PaymentMethod'] = (string)$xml->PaymentMethod;
         }
+        if (isset($xml->PaymentMethodDetails)){
+            foreach ($xml->PaymentMethodDetails as $x) {
+                $d['PaymentMethodDetails'][] = (string)$x->PaymentMethodDetail;
+            }
+        }
+        if (isset($xml->IsReplacementOrder)){
+            $d['IsReplacementOrder'] = (string)$xml->IsReplacementOrder;
+            $d['ReplacedOrderId'] = (string)$xml->ReplacedOrderId;
+        }
         $d['MarketplaceId'] = (string)$xml->MarketplaceId;
         if (isset($xml->BuyerName)){
             $d['BuyerName'] = (string)$xml->BuyerName;
         }
         if (isset($xml->BuyerEmail)){
             $d['BuyerEmail'] = (string)$xml->BuyerEmail;
+        }
+        if (isset($xml->BuyerCounty)){
+            $d['BuyerCounty'] = (string)$xml->BuyerCounty;
+        }
+        if (isset($xml->BuyerTaxInfo)){
+            $d['BuyerTaxInfo'] = array();
+            if (isset($xml->BuyerTaxInfo->CompanyLegalName)){
+                $d['BuyerTaxInfo']['CompanyLegalName'] = (string)$xml->BuyerTaxInfo->CompanyLegalName;
+            }
+            if (isset($xml->BuyerTaxInfo->TaxingRegion)){
+                $d['BuyerTaxInfo']['TaxingRegion'] = (string)$xml->BuyerTaxInfo->TaxingRegion;
+            }
+            if (isset($xml->BuyerTaxInfo->TaxClassifications)){
+                foreach($xml->BuyerTaxInfo->TaxClassifications->children() as $x){
+                    $temp = array();
+                    $temp['Name'] = (string)$x->Name;
+                    $temp['Value'] = (string)$x->Value;
+                    $d['BuyerTaxInfo']['TaxClassifications'][] = $temp;
+                }
+            }
         }
         if (isset($xml->ShipmentServiceLevelCategory)){
             $d['ShipmentServiceLevelCategory'] = (string)$xml->ShipmentServiceLevelCategory;
@@ -281,10 +310,28 @@ class AmazonOrder extends AmazonOrderCore{
      * <li><b>NumberOfItemsUnshipped</b> (optional) - number of items not shipped</li>
      * <li><b>PaymentExecutionDetail</b> (optional) - multi-dimensional array, see <i>getPaymentExecutionDetail</i> for more details</li>
      * <li><b>PaymentMethod</b> (optional) - "COD", "CVS", or "Other"</li>
+     * <li><b>PaymentMethodDetails</b> (optional) - array of payment detail strings</li>
+     * <li><b>IsReplacementOrder</b> (optional) - "true" or "false"</li>
+     * <li><b>ReplacedOrderId</b> (optional) - Amazon Order ID, only given if <i>IsReplacementOrder</i> is true</li>
+     * <li><b>MarketplaceId</b> (optional) - marketplace for the order</li>
      * <li><b>BuyerName</b> (optional) - name of the buyer</li>
      * <li><b>BuyerEmail</b> (optional) - Amazon-generated email for the buyer</li>
+     * <li><b>BuyerCounty</b> (optional) - county for the buyer</li>
+     * <li><b>BuyerTaxInfo</b> (optional) - tax information about the buyer, see <i>getBuyerTaxInfo</i> for more details</li>
      * <li><b>ShipmentServiceLevelCategory</b> (optional) - "Expedited", "FreeEconomy", "NextDay",
      * "SameDay", "SecondDay", "Scheduled", or "Standard"</li>
+     * <li><b>ShippedByAmazonTFM</b> (optional) - "true" or "false"</li>
+     * <li><b>TFMShipmentStatus</b> (optional) - the status of the TFM shipment, see <i>getTfmShipmentStatus</i> for more details</li>
+     * <li><b>CbaDisplayableShippingLabel</b> (optional) - customized Checkout by Amazon label of the order</li>
+     * <li><b>OrderType</b> (optional) - "StandardOrder" or "Preorder"</li>
+     * <li><b>EarliestShipDate</b> (optional) - time in ISO8601 date format</li>
+     * <li><b>LatestShipDate</b> (optional) - time in ISO8601 date format</li>
+     * <li><b>EarliestDeliveryDate</b> (optional) - time in ISO8601 date format</li>
+     * <li><b>LatestDeliveryDate</b> (optional) - time in ISO8601 date format</li>
+     * <li><b>IsBusinessOrder</b> (optional) - "true" or "false"</li>
+     * <li><b>PurchaseOrderNumber</b> (optional) - the Purchase Order number entered by the buyer</li>
+     * <li><b>IsPrime</b> (optional) - "true" or "false"</li>
+     * <li><b>IsPremiumOrder</b> (optional) - "true" or "false"</li>
      * </ul>
      * @return array|boolean array of data, or <b>FALSE</b> if data not filled yet
      */
@@ -553,6 +600,48 @@ class AmazonOrder extends AmazonOrderCore{
             return false;
         }
     }
+
+    /**
+     * Returns the payment method details of the Order.
+     *
+     * This method will return <b>FALSE</b> if the payment method details have not been set yet.
+     * @return array|boolean array of detail strings, or <b>FALSE</b> if value not set yet
+     */
+    public function getPaymentMethodDetails(){
+        if (isset($this->data['PaymentMethodDetails'])){
+            return $this->data['PaymentMethodDetails'];
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * Returns an indication of whether or not the Order is a Replacement Order.
+     *
+     * This method will return <b>FALSE</b> if the replacement order flag has not been set yet.
+     * @return string|boolean "true" or "false", or <b>FALSE</b> if value not set yet
+     */
+    public function getIsReplacementOrder(){
+        if (isset($this->data['IsReplacementOrder'])){
+            return $this->data['IsReplacementOrder'];
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * Returns the ID of the Order that this Order replaces.
+     *
+     * This method will return <b>FALSE</b> if the replaced order ID has not been set yet.
+     * @return string|boolean single value, or <b>FALSE</b> if ID not set yet
+     */
+    public function getReplacedOrderId(){
+        if (isset($this->data['ReplacedOrderId'])){
+            return $this->data['ReplacedOrderId'];
+        } else {
+            return false;
+        }
+    }
     
     /**
      * Returns the ID of the Marketplace in which the Order was placed.
@@ -591,6 +680,44 @@ class AmazonOrder extends AmazonOrderCore{
     public function getBuyerEmail(){
         if (isset($this->data['BuyerEmail'])){
             return $this->data['BuyerEmail'];
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * Returns the county of the buyer.
+     *
+     * This method will return <b>FALSE</b> if the buyer county has not been set yet.
+     * @return string|boolean single value, or <b>FALSE</b> if county not set yet
+     */
+    public function getBuyerCounty(){
+        if (isset($this->data['BuyerCounty'])){
+            return $this->data['BuyerCounty'];
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * Returns additional tax information about the buyer.
+     *
+     * This method will return <b>FALSE</b> if the tax info has not been set yet.
+     * The returned array has the following fields:
+     * <ul>
+     * <li><b>CompanyLegalName</b></li>
+     * <li><b>TaxingRegion</b></li>
+     * <li><b>TaxClassifications</b> - array of arrays, each with the following keys:</li>
+     * <ul>
+     * <li><b>Name</b></li>
+     * <li><b>Value</b></li>
+     * </ul>
+     * </ul>
+     * @return array|boolean associative array, or <b>FALSE</b> if info not set yet
+     */
+    public function getBuyerTaxInfo(){
+        if (isset($this->data['BuyerTaxInfo'])){
+            return $this->data['BuyerTaxInfo'];
         } else {
             return false;
         }
@@ -786,7 +913,7 @@ class AmazonOrder extends AmazonOrderCore{
      * Returns an indication of whether or not the Order is a business number.
      *
      * This method will return <b>FALSE</b> if the business order flag has not been set yet.
-     * @return string|boolean single value, or <b>FALSE</b> if value not set yet
+     * @return string|boolean "true" or "false", or <b>FALSE</b> if value not set yet
      */
     public function getIsBusinessOrder(){
         if (isset($this->data['IsBusinessOrder'])){

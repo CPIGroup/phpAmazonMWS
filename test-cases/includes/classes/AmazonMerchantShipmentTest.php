@@ -275,6 +275,107 @@ class AmazonMerchantShipmentTest extends PHPUnit_Framework_TestCase {
         $this->assertEquals('false', $o4[$key]);
     }
 
+    public function testSetLabelFormat() {
+        $key = 'ShipmentRequestDetails.ShippingServiceOptions.LabelFormat';
+        $this->assertNull($this->object->setLabelFormat('PNG'));
+        $o = $this->object->getOptions();
+        $this->assertArrayHasKey($key, $o);
+        $this->assertEquals('PNG', $o[$key]);
+
+        $this->assertFalse($this->object->setLabelFormat(77)); //won't work for this
+        $this->assertFalse($this->object->setLabelFormat(array())); //won't work for this
+        $this->assertFalse($this->object->setLabelFormat(null)); //won't work for other things
+
+        $check = parseLog();
+        $this->assertEquals('Tried to set LabelFormat to invalid value',$check[1]);
+        $this->assertEquals('Tried to set LabelFormat to invalid value',$check[2]);
+        $this->assertEquals('Tried to set LabelFormat to invalid value',$check[3]);
+    }
+
+    public function testSetCustomText() {
+        $key = 'ShipmentRequestDetails.LabelCustomization.CustomTextForLabel';
+        $this->assertNull($this->object->setCustomText('Very Neat'));
+        $o = $this->object->getOptions();
+        $this->assertArrayHasKey($key, $o);
+        $this->assertEquals('Very Neat', $o[$key]);
+
+        $this->assertFalse($this->object->setCustomText(77)); //won't work for this
+        $this->assertFalse($this->object->setCustomText(array())); //won't work for this
+        $this->assertFalse($this->object->setCustomText(null)); //won't work for other things
+
+        $check = parseLog();
+        $this->assertEquals('Tried to set CustomTextForLabel to invalid value',$check[1]);
+        $this->assertEquals('Tried to set CustomTextForLabel to invalid value',$check[2]);
+        $this->assertEquals('Tried to set CustomTextForLabel to invalid value',$check[3]);
+    }
+
+    public function testSetLabelId() {
+        $key = 'ShipmentRequestDetails.LabelCustomization.StandardIdForLabel';
+        $this->assertNull($this->object->setLabelId('AmazonOrderId'));
+        $o = $this->object->getOptions();
+        $this->assertArrayHasKey($key, $o);
+        $this->assertEquals('AmazonOrderId', $o[$key]);
+
+        $this->assertFalse($this->object->setLabelId('something')); //won't work for this
+        $this->assertFalse($this->object->setLabelId(array())); //won't work for other things
+        $this->assertFalse($this->object->setLabelId(null)); //won't work for other things
+
+        $check = parseLog();
+        $this->assertEquals('Tried to set StandardIdForLabel to invalid value',$check[1]);
+        $this->assertEquals('Tried to set StandardIdForLabel to invalid value',$check[2]);
+        $this->assertEquals('Tried to set StandardIdForLabel to invalid value',$check[3]);
+    }
+
+    public function testSetService() {
+        $key = 'ShippingServiceId';
+        $this->assertNull($this->object->setService('Ground'));
+        $o = $this->object->getOptions();
+        $this->assertArrayHasKey($key, $o);
+        $this->assertEquals('Ground', $o[$key]);
+
+        $this->assertFalse($this->object->setService(77)); //won't work for this
+        $this->assertFalse($this->object->setService(array())); //won't work for this
+        $this->assertFalse($this->object->setService(null)); //won't work for other things
+
+        $check = parseLog();
+        $this->assertEquals('Tried to set ShippingServiceId to invalid value',$check[1]);
+        $this->assertEquals('Tried to set ShippingServiceId to invalid value',$check[2]);
+        $this->assertEquals('Tried to set ShippingServiceId to invalid value',$check[3]);
+    }
+
+    public function testSetServiceOffer() {
+        $key = 'ShippingServiceOfferId';
+        $this->assertNull($this->object->setServiceOffer('123ABC'));
+        $o = $this->object->getOptions();
+        $this->assertArrayHasKey($key, $o);
+        $this->assertEquals('123ABC', $o[$key]);
+
+        $this->assertFalse($this->object->setServiceOffer(77)); //won't work for this
+        $this->assertFalse($this->object->setServiceOffer(array())); //won't work for this
+        $this->assertFalse($this->object->setServiceOffer(null)); //won't work for other things
+
+        $check = parseLog();
+        $this->assertEquals('Tried to set ShippingServiceOfferId to invalid value',$check[1]);
+        $this->assertEquals('Tried to set ShippingServiceOfferId to invalid value',$check[2]);
+        $this->assertEquals('Tried to set ShippingServiceOfferId to invalid value',$check[3]);
+    }
+
+    public function testSetHazmat() {
+        $key = 'HazmatType';
+        $this->assertNull($this->object->setHazmat('LQHazmat'));
+        $o = $this->object->getOptions();
+        $this->assertArrayHasKey($key, $o);
+        $this->assertEquals('LQHazmat', $o[$key]);
+
+        $this->assertFalse($this->object->setHazmat('something')); //won't work for this
+        $this->assertFalse($this->object->setHazmat(array())); //won't work for other things
+        $this->assertFalse($this->object->setHazmat(null)); //won't work for other things
+
+        $check = parseLog();
+        $this->assertEquals('Tried to set HazmatType to invalid value',$check[1]);
+        $this->assertEquals('Tried to set HazmatType to invalid value',$check[2]);
+        $this->assertEquals('Tried to set HazmatType to invalid value',$check[3]);
+    }
 
     public function testCreateShipment(){
         resetLog();
@@ -515,6 +616,9 @@ class AmazonMerchantShipmentTest extends PHPUnit_Framework_TestCase {
         $x['FileContents']['Contents'] = 'This is a test';
         $x['FileContents']['FileType'] = 'application/pdf';
         $x['FileContents']['Checksum'] = 'DmsWbJpdMPALN3jV4wHOrg==';
+        $x['CustomTextForLabel'] = 'Wow Cool';
+        $x['LabelFormat'] = 'ZPL203';
+        $x['StandardIdForLabel'] = 'AmazonOrderId';
         $this->assertEquals($x, $get);
         $this->assertEquals($x['FileContents']['Contents'], $o->getLabelFileContents());
 

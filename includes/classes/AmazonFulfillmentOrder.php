@@ -135,28 +135,7 @@ class AmazonFulfillmentOrder extends AmazonOutboundCore{
             $this->order['Details']['DeliveryWindow']['StartDateTime'] = (string)$d->DeliveryWindow->StartDateTime;
             $this->order['Details']['DeliveryWindow']['EndDateTime'] = (string)$d->DeliveryWindow->EndDateTime;
         }
-        //Address
-            $this->order['Details']['DestinationAddress']['Name'] = (string)$d->DestinationAddress->Name;
-            $this->order['Details']['DestinationAddress']['Line1'] = (string)$d->DestinationAddress->Line1;
-            if (isset($d->DestinationAddress->Line2)){
-                $this->order['Details']['DestinationAddress']['Line2'] = (string)$d->DestinationAddress->Line2;
-            }
-            if (isset($d->DestinationAddress->Line3)){
-                $this->order['Details']['DestinationAddress']['Line3'] = (string)$d->DestinationAddress->Line3;
-            }
-            if (isset($d->DestinationAddress->DistrictOrCounty)){
-                $this->order['Details']['DestinationAddress']['DistrictOrCounty'] = (string)$d->DestinationAddress->DistrictOrCounty;
-            }
-            $this->order['Details']['DestinationAddress']['City'] = (string)$d->DestinationAddress->City;
-            $this->order['Details']['DestinationAddress']['StateOrProvinceCode'] = (string)$d->DestinationAddress->StateOrProvinceCode;
-            $this->order['Details']['DestinationAddress']['CountryCode'] = (string)$d->DestinationAddress->CountryCode;
-            if (isset($d->DestinationAddress->PostalCode)){
-                $this->order['Details']['DestinationAddress']['PostalCode'] = (string)$d->DestinationAddress->PostalCode;
-            }
-            if (isset($d->DestinationAddress->PhoneNumber)){
-                $this->order['Details']['DestinationAddress']['PhoneNumber'] = (string)$d->DestinationAddress->PhoneNumber;
-            }
-        //End of Address
+        $this->order['Details']['DestinationAddress'] = $this->parseAddress($d->DestinationAddress);
         if (isset($d->FulfillmentAction)){
             $this->order['Details']['FulfillmentAction'] = (string)$d->FulfillmentAction;
         }
@@ -279,6 +258,78 @@ class AmazonFulfillmentOrder extends AmazonOutboundCore{
             
             $i++;
         }
+
+        //Section 4: Return Items
+        if (isset($xml->ReturnItemList)) {
+            foreach ($xml->ReturnItemList->children() as $x) {
+                $temp = array();
+                $temp['SellerReturnItemId'] = (string)$x->SellerReturnItemId;
+                $temp['SellerFulfillmentOrderItemId'] = (string)$x->SellerFulfillmentOrderItemId;
+                $temp['AmazonShipmentId'] = (string)$x->AmazonShipmentId;
+                $temp['SellerReturnReasonCode'] = (string)$x->SellerReturnReasonCode;
+                if (isset($x->ReturnComment)) {
+                    $temp['ReturnComment'] = (string)$x->ReturnComment;
+                }
+                if (isset($x->AmazonReturnReasonCode)) {
+                    $temp['AmazonReturnReasonCode'] = (string)$x->AmazonReturnReasonCode;
+                }
+                $temp['Status'] = (string)$x->Status;
+                $temp['StatusChangedDate'] = (string)$x->StatusChangedDate;
+                if (isset($x->ReturnAuthorizationId)) {
+                    $temp['ReturnAuthorizationId'] = (string)$x->ReturnAuthorizationId;
+                }
+                if (isset($x->ReturnReceivedCondition)) {
+                    $temp['ReturnReceivedCondition'] = (string)$x->ReturnReceivedCondition;
+                }
+                if (isset($x->FulfillmentCenterId)) {
+                    $temp['FulfillmentCenterId'] = (string)$x->FulfillmentCenterId;
+                }
+                $this->order['ReturnItems'][] = $temp;
+            }
+        }
+
+        //Section 5: Return Authorizations
+        if (isset($xml->ReturnAuthorizationList)) {
+            foreach ($xml->ReturnAuthorizationList->children() as $x) {
+                $temp = array();
+                $temp['ReturnAuthorizationId'] = (string)$x->ReturnAuthorizationId;
+                $temp['FulfillmentCenterId'] = (string)$x->FulfillmentCenterId;
+                $temp['ReturnToAddress'] = $this->parseAddress($x->ReturnToAddress);
+                $temp['AmazonRmaId'] = (string)$x->AmazonRmaId;
+                $temp['RmaPageURL'] = (string)$x->RmaPageURL;
+                $this->order['ReturnAuthorizations'][] = $temp;
+            }
+        }
+    }
+
+    /**
+     * Parses XML for an address into an array.
+     * @param SimpleXMLElement $xml <p>Address node of the XML response from Amazon.</p>
+     * @return array Parsed structure from XML
+     */
+    public function parseAddress($xml) {
+        $r = array();
+        $r['Name'] = (string)$xml->Name;
+        $r['Line1'] = (string)$xml->Line1;
+        if (isset($xml->Line2)){
+            $r['Line2'] = (string)$xml->Line2;
+        }
+        if (isset($xml->Line3)){
+            $r['Line3'] = (string)$xml->Line3;
+        }
+        if (isset($xml->DistrictOrCounty)){
+            $r['DistrictOrCounty'] = (string)$xml->DistrictOrCounty;
+        }
+        $r['City'] = (string)$xml->City;
+        $r['StateOrProvinceCode'] = (string)$xml->StateOrProvinceCode;
+        $r['CountryCode'] = (string)$xml->CountryCode;
+        if (isset($xml->PostalCode)){
+            $r['PostalCode'] = (string)$xml->PostalCode;
+        }
+        if (isset($xml->PhoneNumber)){
+            $r['PhoneNumber'] = (string)$xml->PhoneNumber;
+        }
+        return $r;
     }
     
     /**
@@ -323,6 +374,8 @@ class AmazonFulfillmentOrder extends AmazonOutboundCore{
      * <li><b>Details</b> - array of general information, such as destination address</li>
      * <li><b>Items</b> - multi-dimensional array of item data</li>
      * <li><b>Shipments</b> - multi-dimensional array of shipment data</li>
+     * <li><b>ReturnItems</b> - multi-dimensional array of return item data</li>
+     * <li><b>ReturnAuthorizations</b> - multi-dimensional array of return authorization data</li>
      * </ul>
      * @return array|boolean data array, or <b>FALSE</b> if data not filled yet
      */

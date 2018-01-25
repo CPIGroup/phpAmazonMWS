@@ -3,15 +3,21 @@
     "type": "library",
     "description": "An open-source library to connect to Amazon's MWS web services in an object-oriented manner, with a focus on intuitive usage.",
     "license": "Apache-2.0",
-    "keywords": ["API", "Amazon", "PHP"],
-    "require":{
-                "php": ">=5.4",
-                "ext-curl": "*"
+    "keywords": [
+        "API",
+        "Amazon",
+        "PHP"
+    ],
+    "require": {
+        "php": ">=5.4",
+        "ext-curl": "*"
     },
     "require-dev": {
-                "phpunit/phpunit": "3.7.*"
-                   },
+        "phpunit/phpunit": ">=4.0.0, <6.0.0"
+    },
     "autoload": {
-        "classmap": ["includes/classes/"]
+        "classmap": [
+            "includes/classes/"
+        ]
     }
 }

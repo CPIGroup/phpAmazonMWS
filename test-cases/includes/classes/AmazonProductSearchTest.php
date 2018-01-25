@@ -16,7 +16,7 @@ class AmazonProductSearchTest extends PHPUnit_Framework_TestCase {
      */
     protected function setUp() {
         resetLog();
-        $this->object = new AmazonProductSearch('testStore', null, true, null, __DIR__.'/../../test-config.php');
+        $this->object = new AmazonProductSearch(null, true, null, __DIR__ . '/../../test-config.php');
     }
 
     /**
@@ -28,7 +28,7 @@ class AmazonProductSearchTest extends PHPUnit_Framework_TestCase {
     }
     
     public function testSetUp(){
-        $obj = new AmazonProductSearch('testStore', 'platinum', true, null, __DIR__.'/../../test-config.php');
+        $obj = new AmazonProductSearch('platinum', true, null, __DIR__ . '/../../test-config.php');
         
         $o = $obj->getOptions();
         $this->assertArrayHasKey('Query',$o);

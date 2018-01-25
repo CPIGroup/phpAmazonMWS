@@ -13,7 +13,7 @@ class AmazonMerchantShipmentTest extends PHPUnit_Framework_TestCase {
      */
     protected function setUp() {
         resetLog();
-        $this->object = new AmazonMerchantShipmentCreator('testStore', true, null, __DIR__.'/../../test-config.php');
+        $this->object = new AmazonMerchantShipmentCreator(true, null, __DIR__ . '/../../test-config.php');
     }
 
     public function testSetOrderId(){
@@ -691,7 +691,7 @@ class AmazonMerchantShipmentTest extends PHPUnit_Framework_TestCase {
      * @return \AmazonMerchantShipment
      */
     private function genEmptyShipment() {
-        return new AmazonMerchantShipment('testStore', null, null, true, null, __DIR__.'/../../test-config.php');
+        return new AmazonMerchantShipment(null, null, true, null, __DIR__ . '/../../test-config.php');
     }
 }
 

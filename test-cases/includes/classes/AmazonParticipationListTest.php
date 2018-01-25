@@ -16,7 +16,7 @@ class AmazonParticipationListTest extends PHPUnit_Framework_TestCase {
      */
     protected function setUp() {
         resetLog();
-        $this->object = new AmazonParticipationList('testStore', true, null, __DIR__.'/../../test-config.php');
+        $this->object = new AmazonParticipationList(true, null, __DIR__ . '/../../test-config.php');
     }
 
     /**

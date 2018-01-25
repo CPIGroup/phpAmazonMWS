@@ -13,11 +13,11 @@ class AmazonTransportDocumentTest extends PHPUnit_Framework_TestCase {
      */
     protected function setUp() {
         resetLog();
-        $this->object = new AmazonTransportDocument('testStore', null, true, null, __DIR__.'/../../test-config.php');
+        $this->object = new AmazonTransportDocument(null, true, null, __DIR__ . '/../../test-config.php');
     }
 
     public function testSetUp() {
-        $obj = new AmazonTransportDocument('testStore', '77', true, null, __DIR__.'/../../test-config.php');
+        $obj = new AmazonTransportDocument('77', true, null, __DIR__ . '/../../test-config.php');
 
         $o = $obj->getOptions();
         $this->assertArrayHasKey('ShipmentId',$o);

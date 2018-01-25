@@ -16,7 +16,7 @@ class AmazonReportAcknowledgerTest extends PHPUnit_Framework_TestCase {
      */
     protected function setUp() {
         resetLog();
-        $this->object = new AmazonReportAcknowledger('testStore', null, true, null, __DIR__.'/../../test-config.php');
+        $this->object = new AmazonReportAcknowledger(null, true, null, __DIR__ . '/../../test-config.php');
     }
 
     /**
@@ -28,7 +28,7 @@ class AmazonReportAcknowledgerTest extends PHPUnit_Framework_TestCase {
     }
     
     public function testSetUp(){
-        $obj = new AmazonReportAcknowledger('testStore', '77', true, null, __DIR__.'/../../test-config.php');
+        $obj = new AmazonReportAcknowledger('77', true, null, __DIR__ . '/../../test-config.php');
         
         $o = $obj->getOptions();
         $this->assertArrayHasKey('ReportIdList.Id.1',$o);

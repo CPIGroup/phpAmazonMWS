@@ -16,7 +16,7 @@ class AmazonFulfillmentOrderTest extends PHPUnit_Framework_TestCase {
      */
     protected function setUp() {
         resetLog();
-        $this->object = new AmazonFulfillmentOrder('testStore', null, true, null, __DIR__.'/../../test-config.php');
+        $this->object = new AmazonFulfillmentOrder(null, true, null, __DIR__ . '/../../test-config.php');
     }
 
     /**
@@ -28,7 +28,7 @@ class AmazonFulfillmentOrderTest extends PHPUnit_Framework_TestCase {
     }
     
     public function testSetUp(){
-        $obj = new AmazonFulfillmentOrder('testStore', '77', true, null, __DIR__.'/../../test-config.php');
+        $obj = new AmazonFulfillmentOrder('77', true, null, __DIR__ . '/../../test-config.php');
         
         $o = $obj->getOptions();
         $this->assertArrayHasKey('SellerFulfillmentOrderId',$o);

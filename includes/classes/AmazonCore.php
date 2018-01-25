@@ -108,14 +108,15 @@ abstract class AmazonCore{
     protected $rawResponses = array();
     protected $disableSslVerify = false;
 
+    protected $configArray = [];
+
+    protected $lastErrorXml = null;
+
     /**
      * AmazonCore constructor sets up key information used in all Amazon requests.
      * 
      * This constructor is called when initializing all objects in this library.
      * The parameters are passed by the child objects' constructors.
-     * @param string $s [optional] <p>Name for the store you want to use as seen in the config file.
-     * If there is only one store defined in the config file, this parameter is not necessary.
-     * If there is more than one store and this is not set to a valid name, none of these objects will work.</p>
      * @param boolean $mock [optional] <p>This is a flag for enabling Mock Mode.
      * When this is set to <b>TRUE</b>, the object will fetch responses from
      * files you specify instead of sending the requests to Amazon.
@@ -125,20 +126,27 @@ abstract class AmazonCore{
      * When Mock Mode is enabled, the object will retrieve one of these files
      * from the list to use as a response. See <i>setMock</i> for more information.</p>
      * @param string $config [optional] <p>An alternate config file to set. Used for testing.</p>
+     * @internal param string $s [optional] <p>Name for the store you want to use as seen in the config file.
+     * If there is only one store defined in the config file, this parameter is not necessary.
+     * If there is more than one store and this is not set to a valid name, none of these objects will work.</p>
      */
-    protected function __construct($s = null, $mock = false, $m = null, $config = null){
+    protected function __construct($mock = false, $m = null, $config = null){
         if (is_null($config)){
-            $config = __DIR__.'/../../amazon-config.php';
+            $config = __DIR__.'/../../amazon-config.default.php';
         }
         $this->setConfig($config);
-        $this->setStore($s);
         $this->setMock($mock,$m);
         
         $this->env=__DIR__.'/../../environment.php';
         $this->options['SignatureVersion'] = 2;
         $this->options['SignatureMethod'] = 'HmacSHA256';
     }
-    
+
+    public function getFullRequestUrl()
+    {
+        return $this->urlbase . $this->urlbranch;
+    }
+
     /**
      * Enables or disables Mock Mode for the object.
      * 
@@ -340,14 +348,21 @@ abstract class AmazonCore{
             return false;
         }
         if ($r['code'] == 200){
+            $this->lastErrorXml = null;
             return true;
         } else {
             $xml = simplexml_load_string($r['body'])->Error;
+            $this->lastErrorXml = $xml;
             $this->log("Bad Response! ".$r['code']." ".$r['error'].": ".$xml->Code." - ".$xml->Message,'Urgent');
             return false;
         }
     }
-    
+
+    public function getLastErrorXml()
+    {
+        return $this->lastErrorXml;
+    }
+
     /**
      * Set the config file.
      * 
@@ -379,6 +394,10 @@ abstract class AmazonCore{
      * @throws Exception If the file cannot be found or read.
      */
     public function setLogPath($path){
+        if (!$path) {
+            return;
+        }
+
         if (!file_exists($path)){
             touch($path);
         }
@@ -388,7 +407,7 @@ abstract class AmazonCore{
         } else {
             throw new Exception("Log file does not exist or cannot be read! ($path)");
         }
-        
+
     }
     
     /**
@@ -403,10 +422,9 @@ abstract class AmazonCore{
      * This parameter is not required if there is only one store defined in the config file.</p>
      * @throws Exception If the file can't be found.
      */
-    public function setStore($s=null){
-        if (file_exists($this->config)){
-            include($this->config);
-        } else {
+    public function setStoreConfigFromFile($s = null)
+    {
+        if (!file_exists($this->config)) {
             throw new Exception("Config file does not exist!");
         }
         
@@ -417,37 +435,50 @@ abstract class AmazonCore{
         if (!isset($s) && count($store)===1) {
             $s=key($store);
         }
-        
-        if(array_key_exists($s, $store)){
-            $this->storeName = $s;
-            if(array_key_exists('merchantId', $store[$s])){
-                $this->options['SellerId'] = $store[$s]['merchantId'];
-            } else {
-                $this->log("Merchant ID is missing!",'Warning');
-            }
-            if(array_key_exists('keyId', $store[$s])){
-                $this->options['AWSAccessKeyId'] = $store[$s]['keyId'];
-            } else {
-                $this->log("Access Key ID is missing!",'Warning');
-            }
-            if(!array_key_exists('secretKey', $store[$s])){
-                $this->log("Secret Key is missing!",'Warning');
-            }
-            if (!empty($store[$s]['serviceUrl'])) {
-                $this->urlbase = $store[$s]['serviceUrl'];
-            }
-            if (!empty($store[$s]['MWSAuthToken'])) {
-                $this->options['MWSAuthToken'] = $store[$s]['MWSAuthToken'];
-            }
-            
-        } else {
-            $this->log("Store $s does not exist!",'Warning');
+
+        if(!array_key_exists($s, $store)) {
+            throw new Exception("Could not locate config for store {$s} in confing file!");
         }
+
+        $this->setConfigArray($store[$s]);
+
     }
-    
+
+    /**
+     * Sets array with config parameters to use
+     *
+     * @param array $config
+     */
+    public function setConfigArray($config)
+    {
+        if (array_key_exists('merchantId', $config)) {
+            $this->options['SellerId'] = $config['merchantId'];
+        } else {
+            $this->log("Merchant ID is missing!", 'Warning');
+        }
+        if (array_key_exists('keyId', $config)) {
+            $this->options['AWSAccessKeyId'] = $config['keyId'];
+        } else {
+            $this->log("Access Key ID is missing!", 'Warning');
+        }
+        if (!array_key_exists('secretKey', $config)) {
+            $this->log("Secret Key is missing!", 'Warning');
+        }
+        $this->options['secretKey'] = $config['secretKey'];
+        $this->options['marketplaceId'] = $config['marketplaceId'];
+        if (!empty($config['serviceUrl'])) {
+            $this->urlbase = $config['serviceUrl'];
+        }
+        if (!empty($config['MWSAuthToken'])) {
+            $this->options['MWSAuthToken'] = $config['MWSAuthToken'];
+        }
+
+        $this->configArray = $config;
+    }
+
     /**
      * Enables or disables the throttle stop.
-     * 
+     *
      * When the throttle stop is enabled, throttled requests will not  be repeated.
      * This setting is off by default.
      * @param boolean $b <p>Defaults to <b>TRUE</b>.</p>
@@ -455,10 +486,10 @@ abstract class AmazonCore{
     public function setThrottleStop($b=true) {
         $this->throttleStop=!empty($b);
     }
-    
+
     /**
      * Writes a message to the log.
-     * 
+     *
      * This method adds a message line to the log file defined by the config.
      * This includes the priority level, user IP, and a backtrace of the call.
      * @param string $msg <p>The message to write to the log.</p>
@@ -470,6 +501,9 @@ abstract class AmazonCore{
      * @throws Exception If the file can't be written to.
      */
     protected function log($msg, $level = 'Info'){
+        if (!$this->logpath) {
+            return;
+        }
         if ($msg != false) {
             $backtrace = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS);
             
@@ -581,19 +615,10 @@ abstract class AmazonCore{
      * @return string query string to send to cURL
      * @throws Exception if config file or secret key is missing
      */
-    protected function genQuery(){
-        if (file_exists($this->config)){
-            include($this->config);
-        } else {
-            throw new Exception("Config file does not exist!");
-        }
-        
-        if (array_key_exists($this->storeName, $store) && array_key_exists('secretKey', $store[$this->storeName])){
-            $secretKey = $store[$this->storeName]['secretKey'];
-        } else {
-            throw new Exception("Secret Key is missing!");
-        }
-        
+    protected function genQuery()
+    {
+        $secretKey = $this->options['secretKey'];
+
         unset($this->options['Signature']);
         $this->options['Timestamp'] = $this->genTime();
         $this->options['Signature'] = $this->_signParameters($this->options, $secretKey);
@@ -782,7 +807,7 @@ abstract class AmazonCore{
         $ch = curl_init();
         
         curl_setopt($ch,CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch,CURLOPT_TIMEOUT, 180);
+        curl_setopt($ch,CURLOPT_TIMEOUT, 0);
         curl_setopt($ch,CURLOPT_FORBID_REUSE, 1);
         curl_setopt($ch,CURLOPT_FRESH_CONNECT, 1);
         curl_setopt($ch,CURLOPT_HEADER, 1);
@@ -802,11 +827,8 @@ abstract class AmazonCore{
         }
         
         $data = curl_exec($ch);
-        $error_no = curl_errno($ch);
+        $error_no = curl_errno($ch) ;
         if ( $error_no ) {
-                if( $error_no == CURLE_OPERATION_TIMEDOUT) {
-                    throw new Exception("Timeout", CURLE_OPERATION_TIMEDOUT);
-                }
                 $return['ok'] = -1;
                 $return['error'] = curl_error($ch);
                 return $return;
@@ -951,5 +973,3 @@ abstract class AmazonCore{
     // -- End Functions from Amazon --
     
 }
-
-?>

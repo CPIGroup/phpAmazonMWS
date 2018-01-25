@@ -16,7 +16,7 @@ class AmazonInventoryListTest extends PHPUnit_Framework_TestCase {
      */
     protected function setUp() {
         resetLog();
-        $this->object = new AmazonInventoryList('testStore', true, null, __DIR__.'/../../test-config.php');
+        $this->object = new AmazonInventoryList(true, null, __DIR__ . '/../../test-config.php');
     }
 
     /**

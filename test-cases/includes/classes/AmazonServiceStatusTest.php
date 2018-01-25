@@ -16,7 +16,7 @@ class AmazonServiceStatusTest extends PHPUnit_Framework_TestCase {
      */
     protected function setUp() {
         resetLog();
-        $this->object = new AmazonServiceStatus('testStore', null, true, null, __DIR__.'/../../test-config.php');
+        $this->object = new AmazonServiceStatus(null, true, null, __DIR__ . '/../../test-config.php');
     }
 
     /**
@@ -28,7 +28,7 @@ class AmazonServiceStatusTest extends PHPUnit_Framework_TestCase {
     }
     
     public function testSetUp(){
-        $obj = new AmazonServiceStatus('testStore', 'Inbound', true, null, __DIR__.'/../../test-config.php');
+        $obj = new AmazonServiceStatus('Inbound', true, null, __DIR__ . '/../../test-config.php');
         $this->assertTrue($obj->isReady());
     }
     

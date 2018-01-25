@@ -28,7 +28,7 @@ if ($list) {
 function getAmazonOrders() {
     require('../includes/classes.php'); //autoload classes, not needed if composer is being used
     try {
-        $amz = new AmazonOrderList("myStore"); //store name matches the array key in the config file
+        $amz = new AmazonOrderList(); //store name matches the array key in the config file
         $amz->setLimits('Modified', "- 24 hours"); //accepts either specific timestamps or relative times 
         $amz->setFulfillmentChannelFilter("MFN"); //no Amazon-fulfilled orders
         $amz->setOrderStatusFilter(

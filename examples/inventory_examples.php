@@ -23,7 +23,7 @@ if ($list) {
 function getAmazonSupply(){
     require('../includes/classes.php'); //autoload classes, not needed if composer is being used
     try {
-        $obj = new AmazonInventoryList("myStore"); //store name matches the array key in the config file
+        $obj = new AmazonInventoryList(); //store name matches the array key in the config file
         $obj->setUseToken(); //tells the object to automatically use tokens right away
         $obj->setStartTime("- 24 hours");
         $obj->fetchInventoryList(); //this is what actually sends the request

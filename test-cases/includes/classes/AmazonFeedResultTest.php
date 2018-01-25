@@ -16,7 +16,7 @@ class AmazonFeedResultTest extends PHPUnit_Framework_TestCase {
      */
     protected function setUp() {
         resetLog();
-        $this->object = new AmazonFeedResult('testStore', null, true, null, __DIR__.'/../../test-config.php');
+        $this->object = new AmazonFeedResult(null, true, null, __DIR__ . '/../../test-config.php');
     }
 
     /**
@@ -28,7 +28,7 @@ class AmazonFeedResultTest extends PHPUnit_Framework_TestCase {
     }
     
     public function testSetUp(){
-        $obj = new AmazonFeedResult('testStore', 77, true, null, __DIR__.'/../../test-config.php');
+        $obj = new AmazonFeedResult(77, true, null, __DIR__ . '/../../test-config.php');
         
         $o = $obj->getOptions();
         $this->assertArrayHasKey('FeedSubmissionId',$o);

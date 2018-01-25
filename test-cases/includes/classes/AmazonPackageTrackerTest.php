@@ -16,7 +16,7 @@ class AmazonPackageTrackerTest extends PHPUnit_Framework_TestCase {
      */
     protected function setUp() {
         resetLog();
-        $this->object = new AmazonPackageTracker('testStore', null, true, null, __DIR__.'/../../test-config.php');
+        $this->object = new AmazonPackageTracker(null, true, null, __DIR__ . '/../../test-config.php');
     }
 
     /**
@@ -28,7 +28,7 @@ class AmazonPackageTrackerTest extends PHPUnit_Framework_TestCase {
     }
     
     public function testSetUp(){
-        $obj = new AmazonPackageTracker('testStore', '77', true, null, __DIR__.'/../../test-config.php');
+        $obj = new AmazonPackageTracker('77', true, null, __DIR__ . '/../../test-config.php');
         
         $o = $obj->getOptions();
         $this->assertArrayHasKey('PackageNumber',$o);

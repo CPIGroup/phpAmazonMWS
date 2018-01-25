@@ -16,7 +16,7 @@ class AmazonReportScheduleManagerTest extends PHPUnit_Framework_TestCase {
      */
     protected function setUp() {
         resetLog();
-        $this->object = new AmazonReportScheduleManager('testStore', true, null, __DIR__.'/../../test-config.php');
+        $this->object = new AmazonReportScheduleManager(true, null, __DIR__ . '/../../test-config.php');
     }
 
     /**

@@ -26,7 +26,7 @@ if ($list) {
 function getAmazonFeedStatus(){
     require('../includes/classes.php'); //autoload classes, not needed if composer is being used
     try {
-        $amz=new AmazonFeedList("myStore");
+        $amz=new AmazonFeedList();
         $amz->setTimeLimits('- 24 hours'); //limit time frame for feeds to any updated since the given time
         $amz->setFeedStatuses(array("_SUBMITTED_", "_IN_PROGRESS_", "_DONE_")); //exclude cancelled feeds
         $amz->fetchFeedSubmissions(); //this is what actually sends the request
@@ -59,7 +59,7 @@ function sendInventoryFeed($feed) {
  */
 function getFeedResult($feedId) {
     try {
-        $amz=new AmazonFeedResult("myStore", $feedId); //feed ID can be quickly set by passing it to the constructor
+        $amz=new AmazonFeedResult($feedId); //feed ID can be quickly set by passing it to the constructor
         $amz->setFeedId($feedId); //otherwise, it must be set this way
         $amz->fetchFeedResult();
         return $amz->getRawFeed();

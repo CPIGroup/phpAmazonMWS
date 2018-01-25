@@ -16,7 +16,7 @@ class AmazonOrderListTest extends PHPUnit_Framework_TestCase {
      */
     protected function setUp() {
         resetLog();
-        $this->object = new AmazonOrderList('testStore', true, null, __DIR__.'/../../test-config.php');
+        $this->object = new AmazonOrderList(true, null, __DIR__ . '/../../test-config.php');
     }
 
     /**
@@ -348,7 +348,7 @@ class AmazonOrderListTest extends PHPUnit_Framework_TestCase {
         $getOne = $this->object->fetchItems('string', 0); //$token will be set to false
         $this->assertInternalType('object',$getOne);
         
-        $o = new AmazonOrderList('testStore', true, null, __DIR__.'/../../test-config.php');
+        $o = new AmazonOrderList(true, null, __DIR__ . '/../../test-config.php');
         $this->assertFalse($o->fetchItems()); //not fetched yet for this object
     }
     /**

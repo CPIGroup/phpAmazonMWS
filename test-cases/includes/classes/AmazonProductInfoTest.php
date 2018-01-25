@@ -16,7 +16,7 @@ class AmazonProductInfoTest extends PHPUnit_Framework_TestCase {
      */
     protected function setUp() {
         resetLog();
-        $this->object = new AmazonProductInfo('testStore', true, null, __DIR__.'/../../test-config.php');
+        $this->object = new AmazonProductInfo(true, null, __DIR__ . '/../../test-config.php');
     }
 
     /**

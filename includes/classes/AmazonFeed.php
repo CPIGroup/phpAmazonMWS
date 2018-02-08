@@ -325,6 +325,14 @@ class AmazonFeed extends AmazonFeedsCore{
         }
     }
     
+    /**
+     *
+     * Returns currently set feed content
+     * @return mixed
+     */
+    public function getFeedContent(){
+        return $this->feedContent;
+    }
     
     
 }

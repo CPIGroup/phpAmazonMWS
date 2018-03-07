@@ -41,7 +41,7 @@ class AmazonInventoryListTest extends PHPUnit_Framework_TestCase {
         $this->assertNull($this->object->setStartTime('-1 min'));
         $o = $this->object->getOptions();
         $this->assertArrayHasKey('QueryStartDateTime',$o);
-        $this->assertNotEquals('1969-12-31T18:58:00-0500',$o['QueryStartDateTime']);
+        $this->assertNotEquals('1969-12-31T18:58:00-05:00', $o['QueryStartDateTime']);
         $this->assertArrayNotHasKey('SellerSkus.member.1',$o);
     }
     

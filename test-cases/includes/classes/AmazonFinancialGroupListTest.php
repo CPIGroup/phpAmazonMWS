@@ -59,7 +59,7 @@ class AmazonFinancialGroupListTest extends PHPUnit_Framework_TestCase {
         if ($c) {
             $this->assertNull($try);
             $this->assertArrayHasKey('FinancialEventGroupStartedAfter', $o);
-            $this->assertStringMatchesFormat('%d-%d-%dT%d:%d:%d%i', $o['FinancialEventGroupStartedAfter']);
+            $this->assertStringMatchesFormat('%d-%d-%dT%d:%d:%d%i:%i', $o['FinancialEventGroupStartedAfter']);
         } else {
             $this->assertFalse($try);
             $this->assertArrayNotHasKey('FinancialEventGroupStartedAfter', $o);
@@ -67,7 +67,7 @@ class AmazonFinancialGroupListTest extends PHPUnit_Framework_TestCase {
 
         if ($c && $d) {
             $this->assertArrayHasKey('FinancialEventGroupStartedBefore', $o);
-            $this->assertStringMatchesFormat('%d-%d-%dT%d:%d:%d%i', $o['FinancialEventGroupStartedBefore']);
+            $this->assertStringMatchesFormat('%d-%d-%dT%d:%d:%d%i:%i', $o['FinancialEventGroupStartedBefore']);
             //setting only first date resets second one
             $this->assertNull($this->object->setTimeLimits($a));
             $o2 = $this->object->getOptions();

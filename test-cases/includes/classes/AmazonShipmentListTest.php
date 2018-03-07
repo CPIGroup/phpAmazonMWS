@@ -88,9 +88,9 @@ class AmazonShipmentListTest extends PHPUnit_Framework_TestCase {
         $this->object->setTimeLimits($a,$b);
         $o = $this->object->getOptions();
         $this->assertArrayHasKey('LastUpdatedAfter',$o);
-        $this->assertStringMatchesFormat('%d-%d-%dT%d:%d:%d%i',$o['LastUpdatedAfter']);
+        $this->assertStringMatchesFormat('%d-%d-%dT%d:%d:%d%i:%i', $o['LastUpdatedAfter']);
         $this->assertArrayHasKey('LastUpdatedBefore',$o);
-        $this->assertStringMatchesFormat('%d-%d-%dT%d:%d:%d%i',$o['LastUpdatedBefore']);
+        $this->assertStringMatchesFormat('%d-%d-%dT%d:%d:%d%i:%i', $o['LastUpdatedBefore']);
     }
     
     public function testResetTimeLimit(){

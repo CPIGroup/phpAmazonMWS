@@ -137,14 +137,14 @@ class AmazonReportListTest extends PHPUnit_Framework_TestCase {
         $o = $this->object->getOptions();
         if ($c){
             $this->assertArrayHasKey('AvailableFromDate',$o);
-            $this->assertStringMatchesFormat('%d-%d-%dT%d:%d:%d%i',$o['AvailableFromDate']);
+            $this->assertStringMatchesFormat('%d-%d-%dT%d:%d:%d%i:%i', $o['AvailableFromDate']);
         } else {
             $this->assertArrayNotHasKey('AvailableFromDate',$o);
         }
         
         if ($d){
             $this->assertArrayHasKey('AvailableToDate',$o);
-            $this->assertStringMatchesFormat('%d-%d-%dT%d:%d:%d%i',$o['AvailableToDate']);
+            $this->assertStringMatchesFormat('%d-%d-%dT%d:%d:%d%i:%i', $o['AvailableToDate']);
         } else {
             $this->assertArrayNotHasKey('AvailableToDate',$o);
         }

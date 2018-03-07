@@ -291,9 +291,9 @@ class AmazonFulfillmentOrderCreatorTest extends PHPUnit_Framework_TestCase {
         $o = $this->object->getOptions();
         if ($c) {
             $this->assertArrayHasKey('DeliveryWindow.StartDateTime', $o);
-            $this->assertStringMatchesFormat('%d-%d-%dT%d:%d:%d%i', $o['DeliveryWindow.StartDateTime']);
+            $this->assertStringMatchesFormat('%d-%d-%dT%d:%d:%d%i:%i', $o['DeliveryWindow.StartDateTime']);
             $this->assertArrayHasKey('DeliveryWindow.EndDateTime', $o);
-            $this->assertStringMatchesFormat('%d-%d-%dT%d:%d:%d%i', $o['DeliveryWindow.EndDateTime']);
+            $this->assertStringMatchesFormat('%d-%d-%dT%d:%d:%d%i:%i', $o['DeliveryWindow.EndDateTime']);
         } else {
             $this->assertArrayNotHasKey('DeliveryWindow.StartDateTime', $o);
             $this->assertArrayNotHasKey('DeliveryWindow.EndDateTime', $o);

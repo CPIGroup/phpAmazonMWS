@@ -2,6 +2,10 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## 1.4.2 - 2018-03-07
+### Changed
+ - Fixed timestamp to fully comply with ISO8601 standard
+
 ## 1.4.1 - 2018-01-19
 ### Changed
  - Fixed parameter names for Product Fees Estimates

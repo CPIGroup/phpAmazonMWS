@@ -58,14 +58,14 @@ class AmazonReportRequestTest extends PHPUnit_Framework_TestCase {
         $o = $this->object->getOptions();
         if ($c){
             $this->assertArrayHasKey('StartDate',$o);
-            $this->assertStringMatchesFormat('%d-%d-%dT%d:%d:%d%i',$o['StartDate']);
+            $this->assertStringMatchesFormat('%d-%d-%dT%d:%d:%d%i:%i', $o['StartDate']);
         } else {
             $this->assertArrayNotHasKey('StartDate',$o);
         }
         
         if ($d){
             $this->assertArrayHasKey('EndDate',$o);
-            $this->assertStringMatchesFormat('%d-%d-%dT%d:%d:%d%i',$o['EndDate']);
+            $this->assertStringMatchesFormat('%d-%d-%dT%d:%d:%d%i:%i', $o['EndDate']);
         } else {
             $this->assertArrayNotHasKey('EndDate',$o);
         }

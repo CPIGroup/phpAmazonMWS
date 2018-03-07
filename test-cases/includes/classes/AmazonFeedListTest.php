@@ -124,14 +124,14 @@ class AmazonFeedListTest extends PHPUnit_Framework_TestCase {
         $o = $this->object->getOptions();
         if ($c){
             $this->assertArrayHasKey('SubmittedFromDate',$o);
-            $this->assertStringMatchesFormat('%d-%d-%dT%d:%d:%d%i',$o['SubmittedFromDate']);
+            $this->assertStringMatchesFormat('%d-%d-%dT%d:%d:%d%i:%i', $o['SubmittedFromDate']);
         } else {
             $this->assertArrayNotHasKey('SubmittedFromDate',$o);
         }
         
         if ($d){
             $this->assertArrayHasKey('SubmittedToDate',$o);
-            $this->assertStringMatchesFormat('%d-%d-%dT%d:%d:%d%i',$o['SubmittedToDate']);
+            $this->assertStringMatchesFormat('%d-%d-%dT%d:%d:%d%i:%i', $o['SubmittedToDate']);
         } else {
             $this->assertArrayNotHasKey('SubmittedToDate',$o);
         }

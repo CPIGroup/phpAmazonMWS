@@ -51,8 +51,8 @@ class AmazonReportScheduleManagerTest extends PHPUnit_Framework_TestCase {
         $this->assertNull($this->object->setScheduledDate('-1 min'));
         $o = $this->object->getOptions();
         $this->assertArrayHasKey('ScheduledDate',$o);
-        $this->assertStringMatchesFormat('%d-%d-%dT%d:%d:%d%i',$o['ScheduledDate']);
-        $this->assertNotEquals('1969-12-31T18:58:00-0500',$o['ScheduledDate']);
+        $this->assertStringMatchesFormat('%d-%d-%dT%d:%d:%d%i:%i', $o['ScheduledDate']);
+        $this->assertNotEquals('1969-12-31T18:58:00-05:00', $o['ScheduledDate']);
     }
     
     public function testManageReportSchedule(){

@@ -60,7 +60,7 @@ class AmazonFinancialEventListTest extends PHPUnit_Framework_TestCase {
         if ($c) {
             $this->assertNull($try);
             $this->assertArrayHasKey('PostedAfter', $o);
-            $this->assertStringMatchesFormat('%d-%d-%dT%d:%d:%d%i', $o['PostedAfter']);
+            $this->assertStringMatchesFormat('%d-%d-%dT%d:%d:%d%i:%i', $o['PostedAfter']);
             $this->assertArrayNotHasKey('AmazonOrderId', $o);
         } else {
             $this->assertFalse($try);
@@ -70,7 +70,7 @@ class AmazonFinancialEventListTest extends PHPUnit_Framework_TestCase {
 
         if ($c && $d) {
             $this->assertArrayHasKey('PostedBefore', $o);
-            $this->assertStringMatchesFormat('%d-%d-%dT%d:%d:%d%i', $o['PostedBefore']);
+            $this->assertStringMatchesFormat('%d-%d-%dT%d:%d:%d%i:%i', $o['PostedBefore']);
             //setting only first date resets second one
             $this->assertNull($this->object->setTimeLimits($a));
             $o2 = $this->object->getOptions();

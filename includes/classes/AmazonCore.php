@@ -105,6 +105,7 @@ abstract class AmazonCore{
     protected $mockIndex = 0;
     protected $logpath;
     protected $env;
+    protected $rawRequests = array();
     protected $rawResponses = array();
     protected $disableSslVerify = false;
 
@@ -645,7 +646,29 @@ abstract class AmazonCore{
         $this->rawResponses[]=$response;
         return $response;
     }
-    
+
+    /**
+     * Gives the latest request data sent to Amazon.
+     * Request arrays contain the following keys:
+     * <ul>
+     * <li><b>head</b> - The raw HTTP head</li>
+     * <li><b>body</b> - The raw HTTP body, which will almost always be in XML format</li>
+     * </ul>
+     * @param int $i [optional] <p>If set, retrieves the specific response instead of the last one.
+     * If the index for the response is not used, <b>FALSE</b> will be returned.</p>
+     * @return array|false associative array of HTTP request params or <b>FALSE</b> if not set yet
+     */
+    public function getLastRequest($i=NULL) {
+        if (!isset($i)) {
+            $i=count($this->rawRequests)-1;
+        }
+        if ($i >= 0 && isset($this->rawRequests[$i])) {
+            return $this->rawRequests[$i];
+        } else {
+            return false;
+        }
+    }
+
     /**
      * Gives the latest response data received from Amazon.
      * Response arrays contain the following keys:
@@ -659,7 +682,7 @@ abstract class AmazonCore{
      * </ul>
      * @param int $i [optional] <p>If set, retrieves the specific response instead of the last one.
      * If the index for the response is not used, <b>FALSE</b> will be returned.</p>
-     * @return array associative array of HTTP response or <b>FALSE</b> if not set yet
+     * @return array|false associative array of HTTP response or <b>FALSE</b> if not set yet
      */
     public function getLastResponse($i=NULL) {
         if (!isset($i)) {
@@ -802,6 +825,11 @@ abstract class AmazonCore{
         *               $return['head']  - http header
         */
        function fetchURL ($url, $param) {
+        $this->rawRequests[] = array(
+            'method'    => !empty($param['Post']) ? 'POST' : 'GET',
+            'head'      => isset($param['Header']) ? $param['Header'] : null,
+            'body'      => isset($param['Post']) ? $param['Post'] : null,
+        );
         $return = array();
         
         $ch = curl_init();

@@ -107,6 +107,7 @@ abstract class AmazonCore{
     protected $env;
     protected $rawResponses = array();
     protected $disableSslVerify = false;
+    protected $proxy;
 
     /**
      * AmazonCore constructor sets up key information used in all Amazon requests.
@@ -180,6 +181,14 @@ abstract class AmazonCore{
                 $this->log("Single Mock Response set: $files");
             }
         }
+    }
+
+    /**
+     * set Proxy server to be used for all Amazon calls.
+     * @param $proxy
+     */
+    public function setProxy($proxy){
+        $this->proxy = $proxy;
     }
     
     /**
@@ -611,8 +620,17 @@ abstract class AmazonCore{
     protected function sendRequest($url,$param){
         $this->log("Making request to Amazon: ".$this->options['Action']);
         $response = $this->fetchURL($url,$param);
-        
-        while (isset($response['code']) && $response['code'] == '503' && $this->throttleStop==false){
+
+        if ( $response['ok']) {
+            $this->rawResponses[] = $response;
+            return $response;
+        }
+
+        if ($this->throttleStop) {
+            throw new Exception("Api Call Throttled.", $response);
+        }
+
+        while (isset($response['code']) && $response['code'] == '503'){
             $this->sleep();
             $response = $this->fetchURL($url,$param);
         }
@@ -787,6 +805,9 @@ abstract class AmazonCore{
         curl_setopt($ch,CURLOPT_FRESH_CONNECT, 1);
         curl_setopt($ch,CURLOPT_HEADER, 1);
         curl_setopt($ch,CURLOPT_URL,$url);
+        if ($this->proxy){
+            curl_setopt($ch,CURLOPT_PROXY,$this->proxy);
+        }
         if ($this->disableSslVerify) {
             $this->log('Caution: Request being sent without SSL verification.', 'Warning');
             curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);

@@ -602,11 +602,21 @@ abstract class AmazonCore{
      * @param string $url <p>URL to feed to cURL</p>
      * @param array $param <p>parameter array to feed to cURL</p>
      * @return array cURL response array
+     * @throws Exception
      */
     protected function sendRequest($url,$param){
         $this->log("Making request to Amazon: ".$this->options['Action']);
         $response = $this->fetchURL($url,$param);
-        
+
+        if ($response['ok']) {
+            $this->rawResponses[] = $response;
+            return $response;
+        }
+
+        if ($response['code'] == '503' && $this->throttleStop) {
+            $this->log("Api Call Throttled.: ".$this->options['Action']);
+            throw new Exception('Api Call Throttled.');
+        }
         while ($response['code'] == '503' && $this->throttleStop==false){
             $this->sleep();
             $response = $this->fetchURL($url,$param);

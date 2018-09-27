@@ -608,12 +608,12 @@ abstract class AmazonCore{
         $this->log("Making request to Amazon: ".$this->options['Action']);
         $response = $this->fetchURL($url,$param);
 
-        if ($response['ok']) {
+        if ($response['ok']){
             $this->rawResponses[] = $response;
             return $response;
         }
 
-        if ($response['code'] == '503' && $this->throttleStop) {
+        if ($response['code'] == '503' && $this->throttleStop){
             $this->log("Api Call Throttled.: ".$this->options['Action']);
             throw new Exception('Api Call Throttled.');
         }

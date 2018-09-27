@@ -106,6 +106,8 @@ abstract class AmazonCore{
     protected $logpath;
     protected $env;
     protected $rawResponses = array();
+    protected $headers = [];
+    protected $proxy;
     
     /**
      * AmazonCore constructor sets up key information used in all Amazon requests.
@@ -179,6 +181,17 @@ abstract class AmazonCore{
                 $this->log("Single Mock Response set: $files");
             }
         }
+    }
+
+    /**
+     * set Proxy address and auth
+     * should be of the form : tcp://user:pass@ip-address:port
+     * or                    : http://user:pass@ip-address:port
+     * @param string $proxy
+     */
+    public function setProxy($proxy)
+    {
+        $this->proxy = $proxy;
     }
     
     /**
@@ -450,6 +463,15 @@ abstract class AmazonCore{
     public function setThrottleStop($b=true) {
         $this->throttleStop=!empty($b);
     }
+
+    /**
+     * For now returns the header saved at throttling.
+     * @return array
+     */
+    public function getThrottleDetails()
+    {
+        return $this->headers;
+    }
     
     /**
      * Writes a message to the log.
@@ -607,6 +629,7 @@ abstract class AmazonCore{
     protected function sendRequest($url,$param){
         $this->log("Making request to Amazon: ".$this->options['Action']);
         $response = $this->fetchURL($url,$param);
+        $this->headers = $response['head'];
 
         if ($response['ok']) {
             $this->rawResponses[] = $response;
@@ -775,6 +798,9 @@ abstract class AmazonCore{
         curl_setopt($ch,CURLOPT_FRESH_CONNECT, 1);
         curl_setopt($ch,CURLOPT_HEADER, 1);
         curl_setopt($ch,CURLOPT_URL,$url);
+        if ($this->proxy){
+            curl_setopt($ch,CURLOPT_PROXY,$this->proxy);
+        }
         if (!empty($param)){
             if (!empty($param['Header'])){
                 curl_setopt($ch,CURLOPT_HTTPHEADER, $param['Header']);
@@ -790,9 +816,15 @@ abstract class AmazonCore{
                 $return['error'] = curl_error($ch);
                 return $return;
         }
-        
+
         if (is_numeric(strpos($data, 'HTTP/1.1 100 Continue'))) {
             $data=str_replace('HTTP/1.1 100 Continue', '', $data);
+        }
+        if ($this->proxy ) {
+            // this needs to be more resilient for other http version
+            if (is_numeric(strpos($data, 'HTTP/1.1 200 Connection established'))) {
+                $data = str_replace('HTTP/1.1 200 Connection established', '', $data);
+            }
         }
         $data = preg_split("/\r\n\r\n/",$data, 2, PREG_SPLIT_NO_EMPTY);
         if (!empty($data)) {

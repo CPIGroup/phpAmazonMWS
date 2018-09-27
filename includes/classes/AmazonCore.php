@@ -608,7 +608,7 @@ abstract class AmazonCore{
         $this->log("Making request to Amazon: ".$this->options['Action']);
         $response = $this->fetchURL($url,$param);
 
-        if ($response['ok']){
+        if ($response['ok']) {
             $this->rawResponses[] = $response;
             return $response;
         }

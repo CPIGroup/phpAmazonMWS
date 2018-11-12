@@ -176,6 +176,24 @@ class AmazonReportRequest extends AmazonReportsCore{
         unset($this->options['StartDate']);
         unset($this->options['EndDate']);
     }
+
+    /**
+     * Sets ReportOptions (Optional)
+     *
+     * Use this function to add ReportOptions (for example: custom = true)
+     * @param string $option <p>ReportOption</p>
+     * @param string|boolean $value <p>"true" or "false", or boolean</p>
+     * @return boolean <b>FALSE</b> if improper input
+     */
+    public function setReportOptions($option, $value){
+        if ($value == 'true' || (is_bool($value) && $value == true)){
+            $this->options['ReportOptions'] = $option.'=true';
+        } else if ($value == 'false' || (is_bool($value) && $value == false)){
+            $this->options['ReportOptions'] = $option.'=false';
+        } else {
+            return false;
+        }
+    }
     
     /**
      * Sets whether or not the report should return the Sales Channel column. (Optional)

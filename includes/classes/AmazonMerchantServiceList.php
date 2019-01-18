@@ -554,7 +554,7 @@ class AmazonMerchantServiceList extends AmazonMerchantCore implements Iterator{
                     $this->serviceList[$i]['ShippingServiceOptions']['DeclaredValue']['CurrencyCode'] = (string)$x->ShippingServiceOptions->DeclaredValue->CurrencyCode;
                 }
                 if (isset($x->AvailableLabelFormats)) {
-                    foreach ($x->AvailableLabelFormats as $z) {
+                    foreach ($x->AvailableLabelFormats->children() as $z) {
                         $this->serviceList[$i]['AvailableLabelFormats'][] = (string)$z;
                     }
                 }

@@ -98,6 +98,11 @@ class AmazonProduct extends AmazonProductsCore{
                         foreach($x->children('ns2',true) as $y){
                             if ($y->children('ns2',true)->count() > 0){
                                 //we need to go deeper
+                                $nodeValue = (string) $y;
+                                if($x->getName() === 'ItemDimensions' || $x->getName() === 'PackageDimensions'){
+                                    $nodeValue .= ' ' . (string) $y->attributes()['Units'];
+                                }
+                                $this->data['AttributeSets'][$anum][$x->getName()][$y->getName()] = $nodeValue;
                                 foreach($y->children('ns2',true) as $z){
                                     if ($z->children('ns2',true)->count() > 0){
                                         //we need to go deeper

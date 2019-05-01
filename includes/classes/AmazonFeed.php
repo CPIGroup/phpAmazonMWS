@@ -302,6 +302,10 @@ class AmazonFeed extends AmazonFeedsCore{
      */
     protected function genHeader(){
         $return[0] = "Content-MD5:".$this->feedMD5;
+        $return[1] = 'Content-Type: text/xml';
+        if (strpos($this->options['FeedType'], "_FLAT_FILE_") !== false){
+            $return[1] = 'Content-Type: text/tab-separated-values';
+        }
         return $return;
     }
     

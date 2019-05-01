@@ -293,16 +293,18 @@ class AmazonFeed extends AmazonFeedsCore{
         
         $this->log("Successfully submitted feed #".$this->response['FeedSubmissionId'].' ('.$this->response['FeedType'].')');
     }
-    
+
     /**
      * Generates array for Header.
-     * 
+     *
      * This method creates the Header array to use with cURL. It contains the Content MD5.
      * @return array
      */
     protected function genHeader(){
-        $return[0] = "Content-MD5:".$this->feedMD5;
-        return $return;
+        return [
+            "Content-Type: text/xml",
+            "Content-MD5:" . $this->feedMD5,
+        ];
     }
     
     /**

@@ -28,6 +28,7 @@ class AmazonFeed extends AmazonFeedsCore{
     protected $response;
     protected $feedContent;
     protected $feedMD5;
+    protected $feedCharSet;
     
     /**
      * AmazonFeed submits a Feed to Amazon.
@@ -223,6 +224,42 @@ class AmazonFeed extends AmazonFeedsCore{
             return false;
         }
     }
+
+    /**
+     * Sets the character set for the content type.
+     * Use this if you are uploading a tab-delimited feed for either the Japan or China marketplace.
+     * The supported character sets are "iso-8859-1", "Shift_JIS", "UTF-8", and "UTF-16".
+     * @param string $set A valid char set name accepted by Amazon
+     * @return boolean <b>FALSE</b> if improper input
+     */
+    public function setCharSet($set) {
+        $valid = array('iso-8859-1', 'Shift_JIS', 'UTF-8', 'UTF-16');
+        if (in_array($set, $valid)) {
+            $this->feedCharSet = $set;
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * Gets the type value for the Content-Type header.
+     * This does not give the full header.
+     * @return string HTTP Content-Type header value
+     * @todo Auto-detection for the other character sets if possible
+     */
+    protected function getContentType() {
+        if (substr($this->feedContent, 0, 1) === '<') {
+            return 'text/xml';
+        }
+
+        $charSet = 'iso-8859-1';
+        if ($this->feedCharSet) {
+            $charSet = $this->feedCharSet;
+        }
+
+        return 'text/tab-separated-values; charset='.$charSet;
+    }
     
     /**
      * Submits a feed to Amazon.
@@ -302,6 +339,7 @@ class AmazonFeed extends AmazonFeedsCore{
      */
     protected function genHeader(){
         $return[0] = "Content-MD5:".$this->feedMD5;
+        $return[1] = "Content-Type:".$this->getContentType();
         return $return;
     }
     

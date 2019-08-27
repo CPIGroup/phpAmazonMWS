@@ -408,6 +408,7 @@ class AmazonFinancialEventList extends AmazonFinanceCore {
                 $temp['AdjustmentType'] = (string)$x->AdjustmentType;
                 $temp['Amount'] = (string)$x->AdjustmentAmount->CurrencyAmount;
                 $temp['CurrencyCode'] = (string)$x->AdjustmentAmount->CurrencyCode;
+                $temp['PostedDate'] = (string)$x->PostedDate;
                 if (isset($x->AdjustmentItemList)) {
                     foreach($x->AdjustmentItemList->children() as $z) {
                         $ztemp = array();
@@ -995,6 +996,7 @@ class AmazonFinancialEventList extends AmazonFinanceCore {
      * <li><b>AdjustmentType</b> "FBAInventoryReimbursement", "ReserveEvent", "PostageBilling", or "PostageRefund"</li>
      * <li><b>Amount</b> - number</li>
      * <li><b>CurrencyCode</b> - ISO 4217 currency code</li>
+     * <li><b>PostedDate</b> - ISO 8601 date format</li>
      * <li><b>AdjustmentItemList</b> - multi-dimensional array, each array has the following keys:</li>
      * <ul>
      * <li><b>Quantity</b></li>

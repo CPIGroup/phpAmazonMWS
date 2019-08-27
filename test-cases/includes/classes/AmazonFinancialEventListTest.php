@@ -772,6 +772,7 @@ class AmazonFinancialEventListTest extends PHPUnit_Framework_TestCase {
         $x[0]['AdjustmentItemList'][1]['FnSKU'] = 'ASDFJDS12';
         $x[0]['AdjustmentItemList'][1]['ProductDescription'] = 'Test Product 2';
         $x[0]['AdjustmentItemList'][1]['ASIN'] = 'BT0093F0N3';
+        $x[0]['PostedDate'] = '2017-01-11T13:17:15.000Z';
         $x[1]['AdjustmentType'] = 'PostageBilling2';
         $x[1]['Amount'] = '-8.99';
         $x[1]['CurrencyCode'] = 'USD';
@@ -784,6 +785,7 @@ class AmazonFinancialEventListTest extends PHPUnit_Framework_TestCase {
         $x[1]['AdjustmentItemList'][0]['FnSKU'] = 'ASDFJDS99';
         $x[1]['AdjustmentItemList'][0]['ProductDescription'] = 'Test Product 3';
         $x[1]['AdjustmentItemList'][0]['ASIN'] = 'BT0093BNNA';
+        $x[1]['PostedDate'] = '2017-02-11T14:15:16.000Z';
 
         $list = $o->getAdjustmentEvents();
         $this->assertInternalType('array', $list);

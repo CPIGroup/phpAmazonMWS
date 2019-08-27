@@ -951,6 +951,7 @@
               <ASIN>BT0093F0N3</ASIN>
             </AdjustmentItem>
           </AdjustmentItemList>
+          <PostedDate>2017-01-11T13:17:15.000Z</PostedDate>
         </AdjustmentEvent>
         <AdjustmentEvent>
           <AdjustmentType>PostageBilling2</AdjustmentType>
@@ -975,6 +976,7 @@
               <ASIN>BT0093BNNA</ASIN>
             </AdjustmentItem>
           </AdjustmentItemList>
+          <PostedDate>2017-02-11T14:15:16.000Z</PostedDate>
         </AdjustmentEvent>
       </AdjustmentEventList>
       <SAFETReimbursementEventList>

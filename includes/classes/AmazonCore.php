@@ -107,6 +107,7 @@ abstract class AmazonCore{
     protected $env;
     protected $rawResponses = array();
     protected $disableSslVerify = false;
+    protected $headers = [];
     protected $proxy;
 
     /**
@@ -186,6 +187,9 @@ abstract class AmazonCore{
     /**
      * set Proxy server to be used for all Amazon calls.
      * @param $proxy
+     * set Proxy address and auth
+     * should be of the form : tcp://user:pass@ip-address:port
+     * or                    : http://user:pass@ip-address:port
      */
     public function setProxy($proxy){
         $this->proxy = $proxy;
@@ -464,6 +468,15 @@ abstract class AmazonCore{
     public function setThrottleStop($b=true) {
         $this->throttleStop=!empty($b);
     }
+
+    /**
+     * For now returns the header saved at throttling.
+     * @return array
+     */
+    public function getThrottleDetails()
+    {
+        return $this->headers;
+    }
     
     /**
      * Writes a message to the log.
@@ -616,25 +629,45 @@ abstract class AmazonCore{
      * @param string $url <p>URL to feed to cURL</p>
      * @param array $param <p>parameter array to feed to cURL</p>
      * @return array cURL response array
+     * @throws Exception
      */
     protected function sendRequest($url,$param){
         $this->log("Making request to Amazon: ".$this->options['Action']);
         $response = $this->fetchURL($url,$param);
+        $this->headers = $response['head'];
 
-        if ( $response['ok']) {
+        if ($response['ok']) {
             $this->rawResponses[] = $response;
             return $response;
         }
 
-        if ($this->throttleStop) {
-            throw new Exception("Api Call Throttled.", $response);
+        if ( ! isset($response['code'])) {
+            // we dont know what went wrong
+            $this->rawResponses[] = $response;
+            return $response;
+        }
+        if ($response['code'] != 503) {
+            // we have some other problem ,
+            $this->rawResponses[] = $response;
+            return $response;
         }
 
-        while (isset($response['code']) && $response['code'] == '503'){
-            $this->sleep();
-            $response = $this->fetchURL($url,$param);
+        /**
+         * At this point we know the call is throttled and we SHOULD raise an exception when that happens
+         */
+        if ($this->throttleStop) {
+            $this->log("Api Call Throttled.: ".$this->options['Action']);
+            throw new Exception('Api Call Throttled.');
         }
-        
+
+        /**
+         * At this point we know the call is throttled and we MUST continute calling after designated sleep time
+         */
+        while (isset($response['code']) && $response['code'] == '503') {
+            $this->sleep();
+            $response = $this->fetchURL($url, $param);
+        }
+
         $this->rawResponses[]=$response;
         return $response;
     }
@@ -828,9 +861,15 @@ abstract class AmazonCore{
                 $return['error'] = curl_error($ch);
                 return $return;
         }
-        
+
         if (is_numeric(strpos($data, 'HTTP/1.1 100 Continue'))) {
             $data=str_replace('HTTP/1.1 100 Continue', '', $data);
+        }
+        if ($this->proxy ) {
+            // this needs to be more resilient for other http version
+            if (is_numeric(strpos($data, 'HTTP/1.1 200 Connection established'))) {
+                $data = str_replace('HTTP/1.1 200 Connection established', '', $data);
+            }
         }
         $data = preg_split("/\r\n\r\n/",$data, 2, PREG_SPLIT_NO_EMPTY);
         if (!empty($data)) {

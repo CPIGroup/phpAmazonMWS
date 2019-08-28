@@ -107,15 +107,19 @@ class AmazonProduct extends AmazonProductsCore{
                                     }
                                 }
                             } else {
-                                $this->data['AttributeSets'][$anum][$x->getName()][$y->getName()] = (string)$y;
+                                $nodeValue = (string) $y;
+                                if($x->getName() === 'ItemDimensions' || $x->getName() === 'PackageDimensions'){
+                                    $nodeValue .= ' ' . (string) $y->attributes()['Units'];
+                                }
+                                $this->data['AttributeSets'][$anum][$x->getName()][$y->getName()] = $nodeValue;
                             }
                         }
 
                     } else {
                         //Check for duplicates
-                        if (array_key_exists('AttributeSets', $this->data) && 
-                                array_key_exists($anum, $this->data['AttributeSets']) && 
-                                array_key_exists($x->getName(), $this->data['AttributeSets'][$anum])){
+                        if (array_key_exists('AttributeSets', $this->data) &&
+                            array_key_exists($anum, $this->data['AttributeSets']) &&
+                            array_key_exists($x->getName(), $this->data['AttributeSets'][$anum])){
 
                             //check for previous cases of duplicates
                             if (is_array($this->data['AttributeSets'][$anum][$x->getName()])){

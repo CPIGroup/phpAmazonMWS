@@ -296,19 +296,32 @@ class AmazonFeed extends AmazonFeedsCore{
     
     /**
      * Generates array for Header.
-     * 
      * This method creates the Header array to use with cURL. It contains the Content MD5.
      * @return array
      */
-    protected function genHeader(){
-        $return[0] = "Content-MD5:".$this->feedMD5;
-        $return[1] = 'Content-Type: text/xml';
-        if (strpos($this->options['FeedType'], "_FLAT_FILE_") !== false){
-            $return[1] = 'Content-Type: text/tab-separated-values';
+    protected function genHeader()
+    {
+        $contentType = 'text/xml';
+        if (strpos($this->options['FeedType'], "_FLAT_FILE_") !== false) {
+            switch ($this->options['MarketplaceIdList.Id.1']) {
+                case 'AAHKV2X7AFYLW': //china
+                    $charset = 'UTF-8';
+                    break;
+                case 'A1VC38T7YXB528': //japan
+                    $charset = 'Shift_JIS';
+                    break;
+                default:
+                    $charset = 'iso-8859-1';
+                    break;
+            }
+            $contentType = "text/tab-separated-values {$charset}";
         }
-        return $return;
+
+        return [
+            "Content-MD5:{$this->feedMD5}",
+            "Content-Type: {$contentType}",
+        ];
     }
-    
     /**
      * Returns the response data in array.
      * 

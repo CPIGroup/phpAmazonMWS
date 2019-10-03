@@ -50,9 +50,25 @@
                     </PaymentExecutionDetailItem>
                 </PaymentExecutionDetail>
                 <PaymentMethod>COD</PaymentMethod>
+                <PaymentMethodDetails>
+                    <PaymentMethodDetail>CreditCard</PaymentMethodDetail>
+                </PaymentMethodDetails>
+                <IsReplacementOrder>true</IsReplacementOrder>
+                <ReplacedOrderId>555-1233752-8214740</ReplacedOrderId>
                 <MarketplaceId>ATVPDKIKX0DER</MarketplaceId>
                 <BuyerName>Amazon User</BuyerName>
                 <BuyerEmail>5vlh04mgfmjh9h5@marketplace.amazon.com</BuyerEmail>
+                <BuyerCounty>Best</BuyerCounty>
+                <BuyerTaxInfo>
+                    <CompanyLegalName>Company Name</CompanyLegalName>
+                    <TaxingRegion>US</TaxingRegion>
+                    <TaxClassifications>
+                        <TaxClassification>
+                            <Name>VATNumber</Name>
+                            <Value>XXX123</Value>
+                        </TaxClassification>
+                    </TaxClassifications>
+                </BuyerTaxInfo>
                 <ShipmentServiceLevelCategory>Standard</ShipmentServiceLevelCategory>
                 <CbaDisplayableShippingLabel>Best</CbaDisplayableShippingLabel>
                 <ShippedByAmazonTFM>false</ShippedByAmazonTFM>

@@ -553,6 +553,11 @@ class AmazonMerchantServiceList extends AmazonMerchantCore implements Iterator{
                     $this->serviceList[$i]['ShippingServiceOptions']['DeclaredValue']['Amount'] = (string)$x->ShippingServiceOptions->DeclaredValue->Amount;
                     $this->serviceList[$i]['ShippingServiceOptions']['DeclaredValue']['CurrencyCode'] = (string)$x->ShippingServiceOptions->DeclaredValue->CurrencyCode;
                 }
+                if (isset($x->AvailableLabelFormats)) {
+                    foreach ($x->AvailableLabelFormats as $z) {
+                        $this->serviceList[$i]['AvailableLabelFormats'][] = (string)$z;
+                    }
+                }
 
                 $i++;
             }
@@ -594,6 +599,7 @@ class AmazonMerchantServiceList extends AmazonMerchantCore implements Iterator{
      * <li><b>LatestEstimatedDeliveryDate</b></li>
      * <li><b>Rate</b></li>
      * <li><b>ShippingServiceOptions</b></li>
+     * <li><b>AvailableLabelFormats</b></li>
      * </ul>
      * @return array|boolean multi-dimensional array, or <b>FALSE</b> if list not filled yet
      */

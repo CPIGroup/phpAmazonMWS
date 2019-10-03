@@ -32,6 +32,9 @@
           <Length>11.00000</Length>
           <Unit>inches</Unit>
         </Dimensions>
+        <CustomTextForLabel>Wow Cool</CustomTextForLabel>
+        <LabelFormat>ZPL203</LabelFormat>
+        <StandardIdForLabel>AmazonOrderId</StandardIdForLabel>
       </Label>
       <ShippingService>
         <CarrierName>FEDEX</CarrierName>

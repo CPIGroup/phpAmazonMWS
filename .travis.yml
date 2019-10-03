@@ -4,4 +4,6 @@ php:
     - '5.5'
     - '5.6'
     - '7'
-script: cd test-cases && phpunit --bootstrap bootstrap.php
+before_script:
+    - wget https://phar.phpunit.de/phpunit-3.7.phar
+script: cd test-cases && php ../phpunit-3.7.phar --bootstrap bootstrap.php

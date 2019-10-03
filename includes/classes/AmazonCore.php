@@ -106,7 +106,10 @@ abstract class AmazonCore{
     protected $logpath;
     protected $env;
     protected $rawResponses = array();
-    
+    protected $disableSslVerify = false;
+    protected $headers = [];
+    protected $proxy;
+
     /**
      * AmazonCore constructor sets up key information used in all Amazon requests.
      * 
@@ -179,6 +182,17 @@ abstract class AmazonCore{
                 $this->log("Single Mock Response set: $files");
             }
         }
+    }
+
+    /**
+     * set Proxy server to be used for all Amazon calls.
+     * @param $proxy
+     * set Proxy address and auth
+     * should be of the form : tcp://user:pass@ip-address:port
+     * or                    : http://user:pass@ip-address:port
+     */
+    public function setProxy($proxy){
+        $this->proxy = $proxy;
     }
     
     /**
@@ -378,6 +392,10 @@ abstract class AmazonCore{
      * @throws Exception If the file cannot be found or read.
      */
     public function setLogPath($path){
+        if (!file_exists($path)){
+            touch($path);
+        }
+
         if (file_exists($path) && is_readable($path)){
             $this->logpath = $path;
         } else {
@@ -449,6 +467,15 @@ abstract class AmazonCore{
      */
     public function setThrottleStop($b=true) {
         $this->throttleStop=!empty($b);
+    }
+
+    /**
+     * For now returns the header saved at throttling.
+     * @return array
+     */
+    public function getThrottleDetails()
+    {
+        return $this->headers;
     }
     
     /**
@@ -602,16 +629,45 @@ abstract class AmazonCore{
      * @param string $url <p>URL to feed to cURL</p>
      * @param array $param <p>parameter array to feed to cURL</p>
      * @return array cURL response array
+     * @throws Exception
      */
     protected function sendRequest($url,$param){
         $this->log("Making request to Amazon: ".$this->options['Action']);
         $response = $this->fetchURL($url,$param);
-        
-        while ($response['code'] == '503' && $this->throttleStop==false){
-            $this->sleep();
-            $response = $this->fetchURL($url,$param);
+        $this->headers = $response['head'];
+
+        if ($response['ok']) {
+            $this->rawResponses[] = $response;
+            return $response;
         }
-        
+
+        if ( ! isset($response['code'])) {
+            // we dont know what went wrong
+            $this->rawResponses[] = $response;
+            return $response;
+        }
+        if ($response['code'] != 503) {
+            // we have some other problem ,
+            $this->rawResponses[] = $response;
+            return $response;
+        }
+
+        /**
+         * At this point we know the call is throttled and we SHOULD raise an exception when that happens
+         */
+        if ($this->throttleStop) {
+            $this->log("Api Call Throttled.: ".$this->options['Action']);
+            throw new Exception('Api Call Throttled.');
+        }
+
+        /**
+         * At this point we know the call is throttled and we MUST continute calling after designated sleep time
+         */
+        while (isset($response['code']) && $response['code'] == '503') {
+            $this->sleep();
+            $response = $this->fetchURL($url, $param);
+        }
+
         $this->rawResponses[]=$response;
         return $response;
     }
@@ -742,7 +798,24 @@ abstract class AmazonCore{
             $this->tokenFlag = false;
         }
     }
-    
+
+    /**
+     * Disables or enables the use of SSL verification when sending requests to Amazon.
+     *
+     * This is <b>not recommended</b> for a production environment,
+     * as it is a <b>security risk</b> and can put merchant credentials in danger.
+     * However, this option is still available in case it is needed.
+     *
+     * Use at your own risk.
+     * @param boolean $b [optional] <p>Defaults to <b>TRUE</b>.</p>
+     */
+    public function setDisableSslVerify($b = true) {
+        $this->disableSslVerify = $b;
+        if ($b) {
+            $this->log('Caution: Disabling SSL verification.', 'Warning');
+        }
+    }
+
     //Functions from Athena:
        /**
         * Get url or send POST data
@@ -765,6 +838,14 @@ abstract class AmazonCore{
         curl_setopt($ch,CURLOPT_FRESH_CONNECT, 1);
         curl_setopt($ch,CURLOPT_HEADER, 1);
         curl_setopt($ch,CURLOPT_URL,$url);
+        if ($this->proxy){
+            curl_setopt($ch,CURLOPT_PROXY,$this->proxy);
+        }
+        if ($this->disableSslVerify) {
+            $this->log('Caution: Request being sent without SSL verification.', 'Warning');
+            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+            curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
+        }
         if (!empty($param)){
             if (!empty($param['Header'])){
                 curl_setopt($ch,CURLOPT_HTTPHEADER, $param['Header']);
@@ -780,9 +861,15 @@ abstract class AmazonCore{
                 $return['error'] = curl_error($ch);
                 return $return;
         }
-        
+
         if (is_numeric(strpos($data, 'HTTP/1.1 100 Continue'))) {
             $data=str_replace('HTTP/1.1 100 Continue', '', $data);
+        }
+        if ($this->proxy ) {
+            // this needs to be more resilient for other http version
+            if (is_numeric(strpos($data, 'HTTP/1.1 200 Connection established'))) {
+                $data = str_replace('HTTP/1.1 200 Connection established', '', $data);
+            }
         }
         $data = preg_split("/\r\n\r\n/",$data, 2, PREG_SPLIT_NO_EMPTY);
         if (!empty($data)) {

@@ -977,6 +977,68 @@
           </AdjustmentItemList>
         </AdjustmentEvent>
       </AdjustmentEventList>
+      <SAFETReimbursementEventList>
+        <SAFETReimbursementEvent>
+          <PostedDate>2017-01-11T13:17:15.000Z</PostedDate>
+          <SAFETClaimId>77165-06605-4776427</SAFETClaimId>
+          <ReimbursedAmount>
+            <CurrencyAmount>4.99</CurrencyAmount>
+            <CurrencyCode>INR</CurrencyCode>
+          </ReimbursedAmount>
+          <SAFETReimbursementItemList>
+            <SAFETReimbursementItem>
+              <ItemChargeList>
+                <ChargeComponent>
+                  <ChargeType>SAFE-T Reimbursement</ChargeType>
+                  <ChargeAmount>
+                    <CurrencyAmount>25.99</CurrencyAmount>
+                    <CurrencyCode>USD</CurrencyCode>
+                  </ChargeAmount>
+                </ChargeComponent>
+                <ChargeComponent>
+                  <ChargeType>Test</ChargeType>
+                  <ChargeAmount>
+                    <CurrencyAmount>1.99</CurrencyAmount>
+                    <CurrencyCode>USD</CurrencyCode>
+                  </ChargeAmount>
+                </ChargeComponent>
+              </ItemChargeList>
+            </SAFETReimbursementItem>
+          </SAFETReimbursementItemList>
+        </SAFETReimbursementEvent>
+        <SAFETReimbursementEvent>
+          <PostedDate>2017-02-11T14:15:16.000Z</PostedDate>
+          <SAFETClaimId>12345-98760-8675309</SAFETClaimId>
+          <ReimbursedAmount>
+            <CurrencyAmount>12.99</CurrencyAmount>
+            <CurrencyCode>INR</CurrencyCode>
+          </ReimbursedAmount>
+          <SAFETReimbursementItemList>
+            <SAFETReimbursementItem>
+              <ItemChargeList>
+                <ChargeComponent>
+                  <ChargeType>SAFE-T Reimbursement</ChargeType>
+                  <ChargeAmount>
+                    <CurrencyAmount>29.99</CurrencyAmount>
+                    <CurrencyCode>USD</CurrencyCode>
+                  </ChargeAmount>
+                </ChargeComponent>
+              </ItemChargeList>
+            </SAFETReimbursementItem>
+            <SAFETReimbursementItem>
+              <ItemChargeList>
+                <ChargeComponent>
+                  <ChargeType>Double Test</ChargeType>
+                  <ChargeAmount>
+                    <CurrencyAmount>22.22</CurrencyAmount>
+                    <CurrencyCode>USD</CurrencyCode>
+                  </ChargeAmount>
+                </ChargeComponent>
+              </ItemChargeList>
+            </SAFETReimbursementItem>
+          </SAFETReimbursementItemList>
+        </SAFETReimbursementEvent>
+      </SAFETReimbursementEventList>
     </FinancialEvents>
   </ListFinancialEventsResult>
   <ResponseMetadata>

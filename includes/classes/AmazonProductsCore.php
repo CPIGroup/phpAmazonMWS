@@ -131,7 +131,11 @@ abstract class AmazonProductsCore extends AmazonCore
                     $this->log("Product Error: $error", 'Warning');
                     continue;
                 }
-                if ($z->getName() === 'AllOfferListingsConsidered') {
+                if ($z->getName() == 'AllOfferListingsConsidered') {
+                    $this->productList[$z->getName()] = (string) $z;
+                    continue;
+                }
+                if ($z->getName() != 'Product') {
                     $this->productList[$z->getName()] = (string) $z;
                     continue;
                 }

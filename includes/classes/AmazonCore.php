@@ -336,7 +336,7 @@ abstract class AmazonCore{
      */
     protected function checkResponse($r){
         if (!is_array($r) || !array_key_exists('code', $r)){
-            $this->log("No Response found",'Warning');
+            $this->log("No Response found: ".json_encode($r),'Warning');
             return false;
         }
         if ($r['code'] == 200){

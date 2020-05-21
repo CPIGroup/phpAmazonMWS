@@ -296,6 +296,10 @@ class AmazonOrderItemList extends AmazonOrderCore implements Iterator{
             if (isset($item->ScheduledDeliveryEndDate)){
                 $this->itemList[$n]['ScheduledDeliveryEndDate'] = (string)$item->ScheduledDeliveryEndDate;
             }
+            if (isset($item->TaxCollection)) {
+                $this->itemList[$n]['TaxCollection']['Model'] = (string) $item->TaxCollection->Model;
+                $this->itemList[$n]['TaxCollection']['ResponsibleParty'] = (string) $item->TaxCollection->ResponsibleParty;
+            }
             $this->index++;
         }
             

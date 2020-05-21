@@ -590,7 +590,7 @@ abstract class AmazonCore{
         } else {
             throw new InvalidArgumentException('Invalid time input given');
         }
-        return date('Y-m-d\TH:i:sO',$time-120);
+        return date('c', $time-120);
             
     }
     
